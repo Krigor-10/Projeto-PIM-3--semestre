@@ -18,7 +18,7 @@ export const SECOES = [
     chave: "usuarios",
     rotulo: "Usuários",
     icone: "US",
-    perfis: ["Admin"],
+    perfis: [],
   },
   {
     chave: "alunos",
@@ -66,19 +66,19 @@ export const SECOES = [
     chave: "avaliacoes",
     rotulo: "Avaliações",
     icone: "AV",
-    perfis: ["Admin", "Coordenador", "Professor", "Aluno"],
+    perfis: ["Professor", "Aluno"],
   },
   {
     chave: "conteudos",
     rotulo: "Conteúdos",
     icone: "CT",
-    perfis: ["Admin", "Coordenador", "Professor", "Aluno"],
+    perfis: ["Professor", "Aluno"],
   },
   {
     chave: "progresso",
     rotulo: "Progresso",
     icone: "PG",
-    perfis: ["Admin", "Coordenador", "Professor", "Aluno"],
+    perfis: ["Professor", "Aluno"],
   },
 ];
 
@@ -97,8 +97,8 @@ const ACOES = {
   modulos:      { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin", "Coordenador"]     },
   turmas:       { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
   matriculas:   { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
-  avaliacoes:   { criar: ["Admin", "Professor"],             editar: ["Admin", "Professor"],             excluir: ["Admin"]                   },
-  conteudos:    { criar: ["Admin", "Coordenador", "Professor"], editar: ["Admin", "Coordenador", "Professor"], excluir: ["Admin", "Coordenador"] },
+  avaliacoes:   { criar: ["Professor"],                      editar: ["Professor"],                      excluir: ["Professor"]               },
+  conteudos:    { criar: ["Professor"],                      editar: ["Professor"],                      excluir: ["Professor"]               },
   progresso:    { criar: [],                                 editar: [],                                 excluir: []                          },
 };
 
