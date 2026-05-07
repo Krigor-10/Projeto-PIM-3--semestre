@@ -7,6 +7,7 @@ export default function TelaMatriculas({ usuario }) {
   const tipo = usuario?.tipo;
   const [listaMat, setListaMat] = useState(matriculas);
   const [selecionados, setSelecionados] = useState(new Set());
+  const [abaAtiva, setAbaAtiva] = useState("pendentes");
 
   const podeAgir = podeEditar(tipo, "matriculas");
 
@@ -108,15 +109,44 @@ export default function TelaMatriculas({ usuario }) {
         )}
       </header>
 
-      {/* ── Seção: Pendentes e Rejeitadas ── */}
-      <section className="painel-secao" aria-labelledby="titulo-pendentes">
-        <header className="painel-secao__cabecalho">
-          <h2 className="painel-secao__titulo" id="titulo-pendentes">
-            Pendentes e Rejeitadas
+      {/* ── Navegação por abas ── */}
+      <div className="abas-matriculas" role="tablist" aria-label="Filtrar matrículas">
+        <button
+          role="tab"
+          aria-selected={abaAtiva === "pendentes"}
+          aria-controls="painel-pendentes"
+          className={`abas-matriculas__aba ${abaAtiva === "pendentes" ? "abas-matriculas__aba--ativa" : ""}`}
+          onClick={() => setAbaAtiva("pendentes")}
+          type="button"
+        >
+          Pendentes e Rejeitadas
+          {pendentes.length > 0 && (
             <span className="criar-avaliacao__contagem">{pendentes.length}</span>
-          </h2>
-        </header>
+          )}
+        </button>
+        <button
+          role="tab"
+          aria-selected={abaAtiva === "aprovadas"}
+          aria-controls="painel-aprovadas"
+          className={`abas-matriculas__aba ${abaAtiva === "aprovadas" ? "abas-matriculas__aba--ativa" : ""}`}
+          onClick={() => setAbaAtiva("aprovadas")}
+          type="button"
+        >
+          Aprovadas
+          {aprovadas.length > 0 && (
+            <span className="criar-avaliacao__contagem">{aprovadas.length}</span>
+          )}
+        </button>
+      </div>
 
+      {/* ── Painel: Pendentes e Rejeitadas ── */}
+      <section
+        id="painel-pendentes"
+        role="tabpanel"
+        aria-labelledby="painel-pendentes"
+        hidden={abaAtiva !== "pendentes"}
+        className="painel-secao painel-secao--sem-topo"
+      >
         <div className="tabela-dados-container" role="region" aria-label="Matrículas pendentes e rejeitadas">
           <table className="tabela-dados">
             <thead>
@@ -213,19 +243,14 @@ export default function TelaMatriculas({ usuario }) {
         </div>
       </section>
 
-      {/* ── Seção: Aprovadas ── */}
+      {/* ── Painel: Aprovadas ── */}
       <section
-        className="painel-secao"
-        style={{ marginTop: "var(--espaco-xl)" }}
-        aria-labelledby="titulo-aprovadas"
+        id="painel-aprovadas"
+        role="tabpanel"
+        aria-labelledby="painel-aprovadas"
+        hidden={abaAtiva !== "aprovadas"}
+        className="painel-secao painel-secao--sem-topo"
       >
-        <header className="painel-secao__cabecalho">
-          <h2 className="painel-secao__titulo" id="titulo-aprovadas">
-            Aprovadas
-            <span className="criar-avaliacao__contagem">{aprovadas.length}</span>
-          </h2>
-        </header>
-
         <div className="tabela-dados-container" role="region" aria-label="Matrículas aprovadas">
           <table className="tabela-dados">
             <thead>

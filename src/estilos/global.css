@@ -1215,6 +1215,41 @@ select.campo__entrada {
   width: 42px;
 }
 
+/* ── Abas de navegação (ex: Matrículas) ─────────────────────── */
+.abas-matriculas {
+  display: flex;
+  gap: 2px;
+  border-bottom: 2px solid var(--cor-borda);
+  margin-bottom: 0;
+}
+
+.abas-matriculas__aba {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--cor-texto-mudo);
+  cursor: pointer;
+  font-size: var(--fonte-sm);
+  font-weight: 600;
+  margin-bottom: -2px;
+  padding: var(--espaco-sm) var(--espaco-lg);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.abas-matriculas__aba:hover {
+  color: var(--cor-texto);
+}
+
+.abas-matriculas__aba--ativa {
+  border-bottom-color: var(--cor-marca);
+  color: var(--cor-marca);
+}
+
+.painel-secao--sem-topo {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
 @media (max-width: 768px) {
   :root {
     --altura-topbar: 76px;
