@@ -121,7 +121,7 @@ export default function TelaMatriculas({ usuario }) {
         >
           Pendentes e Rejeitadas
           {pendentes.length > 0 && (
-            <span className="criar-avaliacao__contagem">{pendentes.length}</span>
+            <span className="abas-matriculas__contagem">{pendentes.length}</span>
           )}
         </button>
         <button
@@ -134,7 +134,7 @@ export default function TelaMatriculas({ usuario }) {
         >
           Aprovadas
           {aprovadas.length > 0 && (
-            <span className="criar-avaliacao__contagem">{aprovadas.length}</span>
+            <span className="abas-matriculas__contagem">{aprovadas.length}</span>
           )}
         </button>
       </div>

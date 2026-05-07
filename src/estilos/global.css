@@ -1215,34 +1215,58 @@ select.campo__entrada {
   width: 42px;
 }
 
-/* ── Abas de navegação (ex: Matrículas) ─────────────────────── */
+/* ── Abas de navegação — segmented control ───────────────────── */
 .abas-matriculas {
-  display: flex;
-  gap: 2px;
-  border-bottom: 2px solid var(--cor-borda);
-  margin-bottom: 0;
+  display: inline-flex;
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  gap: 4px;
+  margin-bottom: var(--espaco-lg);
+  padding: 4px;
 }
 
 .abas-matriculas__aba {
-  background: none;
+  align-items: center;
+  background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 8px;
   color: var(--cor-texto-mudo);
   cursor: pointer;
-  font-size: var(--fonte-sm);
+  display: flex;
+  font-size: 0.875rem;
   font-weight: 600;
-  margin-bottom: -2px;
-  padding: var(--espaco-sm) var(--espaco-lg);
-  transition: color 0.15s, border-color 0.15s;
+  gap: var(--espaco-sm);
+  padding: 10px 20px;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  white-space: nowrap;
 }
 
-.abas-matriculas__aba:hover {
-  color: var(--cor-texto);
+.abas-matriculas__aba:hover:not(.abas-matriculas__aba--ativa) {
+  background: rgba(185, 153, 255, 0.08);
+  color: var(--cor-texto-suave);
 }
 
 .abas-matriculas__aba--ativa {
-  border-bottom-color: var(--cor-marca);
-  color: var(--cor-marca);
+  background: var(--cor-marca);
+  box-shadow: 0 2px 14px rgba(123, 47, 247, 0.45);
+  color: #fff;
+}
+
+.abas-matriculas__contagem {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  min-width: 22px;
+  padding: 2px 8px;
+  text-align: center;
+}
+
+.abas-matriculas__aba:not(.abas-matriculas__aba--ativa) .abas-matriculas__contagem {
+  background: rgba(123, 47, 247, 0.18);
+  color: var(--cor-marca-clara);
 }
 
 .painel-secao--sem-topo {
