@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Insignia from "../componentes/Insignia.jsx";
 import Modal from "../componentes/Modal.jsx";
-import { conteudos, modulos } from "../dados/dadosMock.js";
+import { conteudos, modulos, matriculas } from "../dados/dadosMock.js";
 import { podeCriar, podeEditar } from "../dados/permissoes.js";
 
 const iconesPorTipo = {
@@ -16,16 +16,29 @@ export default function TelaConteudos({ usuario }) {
 
   const tipo = usuario?.tipo;
 
-  const conteudosFiltrados = filtroModulo
-    ? conteudos.filter((c) => c.moduloId === Number(filtroModulo))
+  /* Aluno enxerga apenas módulos/conteúdos do seu curso matriculado */
+  const matriculaAluno = tipo === "Aluno"
+    ? matriculas.find((m) => m.alunoId === usuario?.id && m.status === "Aprovada")
+    : null;
+
+  const modulosVisiveis = matriculaAluno
+    ? modulos.filter((m) => m.cursoId === matriculaAluno.cursoId)
+    : modulos;
+
+  const listaBase = matriculaAluno
+    ? conteudos.filter((c) => modulosVisiveis.some((m) => m.id === c.moduloId))
     : conteudos;
+
+  const conteudosFiltrados = filtroModulo
+    ? listaBase.filter((c) => c.moduloId === Number(filtroModulo))
+    : listaBase;
 
   return (
     <div className="tela-conteudos">
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Conteudos Didaticos</h2>
-          <p className="cabecalho-pagina__subtitulo">{conteudos.length} conteudos cadastrados</p>
+          <p className="cabecalho-pagina__subtitulo">{listaBase.length} conteúdos disponíveis</p>
         </div>
         {podeCriar(tipo, "conteudos") && (
           <button className="botao botao--primario" onClick={() => setModalAberto(true)} type="button">
@@ -42,8 +55,8 @@ export default function TelaConteudos({ usuario }) {
           value={filtroModulo}
           onChange={(e) => setFiltroModulo(e.target.value)}
         >
-          <option value="">Todos os modulos</option>
-          {modulos.map((m) => (
+          <option value="">Todos os módulos</option>
+          {modulosVisiveis.map((m) => (
             <option key={m.id} value={m.id}>{m.titulo}</option>
           ))}
         </select>

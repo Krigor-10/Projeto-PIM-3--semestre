@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Insignia from "../componentes/Insignia.jsx";
 import Modal from "../componentes/Modal.jsx";
-import { avaliacoes, cursos } from "../dados/dadosMock.js";
+import { avaliacoes, cursos, matriculas } from "../dados/dadosMock.js";
 
 const LETRAS = ["A", "B", "C", "D", "E"];
 
@@ -320,6 +320,11 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao }) {
 
   const isAluno = usuario?.tipo === "Aluno";
 
+  /* Matrícula aprovada do aluno — restringe curso visível */
+  const matriculaAluno = isAluno
+    ? matriculas.find((m) => m.alunoId === usuario?.id && m.status === "Aprovada")
+    : null;
+
   if (modo === "criar") {
     return (
       <FormularioCriarAvaliacao
@@ -330,9 +335,11 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao }) {
   }
 
   const avaliacoesFiltradas = avaliacoes.filter((a) => {
+    if (isAluno && a.status !== "Publicada") return false;
+    /* Aluno só enxerga avaliações do seu curso matriculado */
+    if (isAluno && matriculaAluno && a.cursoId !== matriculaAluno.cursoId) return false;
     if (filtroStatus && a.status !== filtroStatus) return false;
     if (filtroCurso && String(a.cursoId) !== filtroCurso) return false;
-    if (isAluno && a.status !== "Publicada") return false;
     return true;
   });
 
@@ -364,18 +371,22 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao }) {
       </header>
 
       <div className="barra-filtros">
-        <label htmlFor="filtro-curso-av" className="visualmente-oculto">Filtrar por curso</label>
-        <select
-          id="filtro-curso-av"
-          className="campo__entrada barra-filtros__select"
-          value={filtroCurso}
-          onChange={(e) => setFiltroCurso(e.target.value)}
-        >
-          <option value="">Todos os cursos</option>
-          {cursos.map((c) => (
-            <option key={c.id} value={String(c.id)}>{c.titulo}</option>
-          ))}
-        </select>
+        {!isAluno && (
+          <>
+            <label htmlFor="filtro-curso-av" className="visualmente-oculto">Filtrar por curso</label>
+            <select
+              id="filtro-curso-av"
+              className="campo__entrada barra-filtros__select"
+              value={filtroCurso}
+              onChange={(e) => setFiltroCurso(e.target.value)}
+            >
+              <option value="">Todos os cursos</option>
+              {cursos.map((c) => (
+                <option key={c.id} value={String(c.id)}>{c.titulo}</option>
+              ))}
+            </select>
+          </>
+        )}
 
         {!isAluno && (
           <>

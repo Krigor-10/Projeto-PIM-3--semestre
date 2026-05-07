@@ -1,12 +1,20 @@
 import CartaoEstatistica from "../componentes/CartaoEstatistica.jsx";
 import BarraProgresso from "../componentes/BarraProgresso.jsx";
 import Insignia from "../componentes/Insignia.jsx";
-import { progressoAluno, avaliacoes, conteudos } from "../dados/dadosMock.js";
+import { progressoAluno, conteudos, matriculas } from "../dados/dadosMock.js";
 
 export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
   const cursoPrincipal = progressoAluno.cursos[0];
-  const avaliacoesPendentes = avaliacoes.filter((a) => a.status === "Publicada").slice(0, 3);
   const proximosConteudos = conteudos.filter((c) => !c.concluido).slice(0, 4);
+
+  const matriculaAluno = matriculas.find(
+    (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
+  );
+
+  const conteudosConcluidos = conteudos.filter((c) => c.concluido).length;
+  const modulosConcluidos = progressoAluno.modulos.filter((m) =>
+    m.status.normalize("NFD").replace(/[̀-ͯ]/g, "") === "Concluido"
+  ).length;
 
   function tipoConteudo(tipo) {
     if (tipo === "Video") return "VD";
@@ -18,9 +26,9 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
     <div className="dashboard-aluno">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Ola, {usuario.nome.split(" ")[0]}</h2>
+          <h2 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h2>
           <p className="cabecalho-pagina__subtitulo">
-            Continue de onde parou e acompanhe sua trilha academica.
+            Continue de onde parou e acompanhe sua trilha acadêmica.
           </p>
         </div>
         <Insignia texto="Aluno" variante="marca" />
@@ -30,19 +38,40 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
         <h2 className="visualmente-oculto" id="titulo-stats-aluno">Resumo de atividades</h2>
         <div className="grade-estatisticas">
           <CartaoEstatistica icone="CU" valor="1" rotulo="Curso em andamento" />
-          <CartaoEstatistica icone="OK" valor="3" rotulo="Conteudos concluidos" corBorda="var(--cor-sucesso)" />
-          <CartaoEstatistica icone="AV" valor="3" rotulo="Avaliacoes disponiveis" corBorda="var(--cor-aviso)" />
-          <CartaoEstatistica icone="PR" valor="42%" rotulo="Progresso geral" corBorda="var(--cor-info)" />
+          <CartaoEstatistica
+            icone="OK"
+            valor={conteudosConcluidos}
+            rotulo="Conteúdos concluídos"
+            corBorda="var(--cor-sucesso)"
+          />
+          <CartaoEstatistica
+            icone="MO"
+            valor={modulosConcluidos}
+            rotulo="Módulos concluídos"
+            corBorda="var(--cor-info)"
+          />
+          <CartaoEstatistica
+            icone="PR"
+            valor={`${cursoPrincipal?.percentual ?? 0}%`}
+            rotulo="Progresso geral"
+            corBorda="var(--cor-marca)"
+          />
         </div>
       </section>
 
+      {/* Curso em andamento com progresso por módulo */}
       {cursoPrincipal && (
-        <section className="painel-secao" aria-labelledby="titulo-progresso-curso" style={{ marginTop: "var(--espaco-xl)" }}>
+        <section
+          className="painel-secao"
+          aria-labelledby="titulo-progresso-curso"
+          style={{ marginTop: "var(--espaco-xl)" }}
+        >
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-progresso-curso">Curso em Andamento</h2>
             <button
               className="botao botao--fantasma botao--pequeno"
               onClick={() => onMudarSecao("progresso")}
+              type="button"
             >
               Ver progresso completo
             </button>
@@ -52,7 +81,7 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
               <div className="cartao-curso-ativo__info">
                 <h3 className="cartao-curso-ativo__titulo">{cursoPrincipal.cursoTitulo}</h3>
                 <p className="cartao-curso-ativo__meta">
-                  Ultimo acesso: {new Date(cursoPrincipal.ultimoAcesso).toLocaleDateString("pt-BR")}
+                  Último acesso: {new Date(cursoPrincipal.ultimoAcesso).toLocaleDateString("pt-BR")}
                 </p>
               </div>
               <div className="cartao-curso-ativo__progresso">
@@ -60,7 +89,7 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
               </div>
             </div>
 
-            <ul className="lista-modulos" role="list" aria-label="Progresso por modulo">
+            <ul className="lista-modulos" role="list" aria-label="Progresso por módulo">
               {progressoAluno.modulos.map((mod) => (
                 <li key={mod.moduloId} className="item-modulo">
                   <div className="item-modulo__info">
@@ -75,11 +104,16 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
         </section>
       )}
 
+      {/* Próximos conteúdos e dados da matrícula */}
       <div className="grade-2" style={{ marginTop: "var(--espaco-xl)" }}>
         <section className="painel-secao" aria-labelledby="titulo-proximos-conteudos">
           <header className="painel-secao__cabecalho">
-            <h2 className="painel-secao__titulo" id="titulo-proximos-conteudos">Proximos Conteudos</h2>
-            <button className="botao botao--fantasma botao--pequeno" onClick={() => onMudarSecao("conteudos")}>
+            <h2 className="painel-secao__titulo" id="titulo-proximos-conteudos">Próximos Conteúdos</h2>
+            <button
+              className="botao botao--fantasma botao--pequeno"
+              onClick={() => onMudarSecao("conteudos")}
+              type="button"
+            >
               Ver todos
             </button>
           </header>
@@ -92,7 +126,7 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
                   </span>
                   <div className="item-conteudo__info">
                     <span className="item-conteudo__titulo">{conteudo.titulo}</span>
-                    <span className="item-conteudo__meta">{conteudo.tipo} - {conteudo.duracao}</span>
+                    <span className="item-conteudo__meta">{conteudo.tipo} — {conteudo.duracao}</span>
                   </div>
                 </li>
               ))}
@@ -100,31 +134,45 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
           </div>
         </section>
 
-        <section className="painel-secao" aria-labelledby="titulo-avaliacoes-aluno">
-          <header className="painel-secao__cabecalho">
-            <h2 className="painel-secao__titulo" id="titulo-avaliacoes-aluno">Avaliacoes Disponiveis</h2>
-            <button className="botao botao--fantasma botao--pequeno" onClick={() => onMudarSecao("avaliacoes")}>
-              Ver todas
-            </button>
-          </header>
-          <div className="painel-secao__conteudo">
-            <ul className="lista-avaliacoes" role="list">
-              {avaliacoesPendentes.map((av) => (
-                <li key={av.id} className="item-avaliacao">
-                  <div className="item-avaliacao__info">
-                    <span className="item-avaliacao__titulo">{av.titulo}</span>
-                    <span className="item-avaliacao__meta">
-                      {av.totalQuestoes} questoes - {av.tempoLimiteMinutos}min
-                    </span>
-                  </div>
-                  <button className="botao botao--primario botao--pequeno">
-                    Iniciar
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        {/* Dados da matrícula aprovada */}
+        {matriculaAluno && (
+          <section className="painel-secao" aria-labelledby="titulo-matricula-aluno">
+            <header className="painel-secao__cabecalho">
+              <h2 className="painel-secao__titulo" id="titulo-matricula-aluno">Minha Matrícula</h2>
+              <button
+                className="botao botao--fantasma botao--pequeno"
+                onClick={() => onMudarSecao("matriculas")}
+                type="button"
+              >
+                Ver detalhes
+              </button>
+            </header>
+            <div className="painel-secao__conteudo">
+              <dl className="lista-detalhes">
+                <div className="lista-detalhes__item">
+                  <dt>Código</dt>
+                  <dd>{matriculaAluno.codigoMatricula}</dd>
+                </div>
+                <div className="lista-detalhes__item">
+                  <dt>Curso</dt>
+                  <dd>{matriculaAluno.cursoTitulo}</dd>
+                </div>
+                <div className="lista-detalhes__item">
+                  <dt>Turma</dt>
+                  <dd>{matriculaAluno.turmaNome}</dd>
+                </div>
+                <div className="lista-detalhes__item">
+                  <dt>Status</dt>
+                  <dd><Insignia texto={matriculaAluno.status} variante="sucesso" /></dd>
+                </div>
+                <div className="lista-detalhes__item">
+                  <dt>Desde</dt>
+                  <dd>{new Date(matriculaAluno.dataSolicitacao).toLocaleDateString("pt-BR")}</dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
