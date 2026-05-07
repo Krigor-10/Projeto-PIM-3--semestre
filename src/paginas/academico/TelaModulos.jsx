@@ -1,8 +1,8 @@
 import { useState } from "react";
-import TabelaDados from "../componentes/TabelaDados.jsx";
-import Modal from "../componentes/Modal.jsx";
-import { modulos, cursos } from "../dados/dadosMock.js";
-import { podeCriar } from "../dados/permissoes.js";
+import TabelaDados from "../../componentes/TabelaDados.jsx";
+import Modal from "../../componentes/Modal.jsx";
+import { modulos, cursos } from "../../dados/dadosMock.js";
+import { podeCriar } from "../../dados/permissoes.js";
 
 export default function TelaModulos({ usuario }) {
   const [filtroId, setFiltroId] = useState("");

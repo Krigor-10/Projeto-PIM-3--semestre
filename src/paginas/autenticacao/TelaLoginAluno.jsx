@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { perfisDemo } from "../dados/dadosMock.js";
+import { perfisDemo } from "../../dados/dadosMock.js";
 
 /* Somente o perfil de aluno é exibido nesta tela */
 const perfilAluno = perfisDemo.find((p) => p.chave === "aluno");

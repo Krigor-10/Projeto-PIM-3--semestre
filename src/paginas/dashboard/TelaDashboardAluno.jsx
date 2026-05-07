@@ -1,7 +1,7 @@
-import CartaoEstatistica from "../componentes/CartaoEstatistica.jsx";
-import BarraProgresso from "../componentes/BarraProgresso.jsx";
-import Insignia from "../componentes/Insignia.jsx";
-import { progressoAluno, conteudos, matriculas } from "../dados/dadosMock.js";
+import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
+import BarraProgresso from "../../componentes/BarraProgresso.jsx";
+import Insignia from "../../componentes/Insignia.jsx";
+import { progressoAluno, conteudos, matriculas } from "../../dados/dadosMock.js";
 
 export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
   const cursoPrincipal = progressoAluno.cursos[0];

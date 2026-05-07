@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Insignia from "../componentes/Insignia.jsx";
-import Modal from "../componentes/Modal.jsx";
-import { turmas, cursos } from "../dados/dadosMock.js";
-import { podeCriar, podeEditar } from "../dados/permissoes.js";
+import Insignia from "../../componentes/Insignia.jsx";
+import Modal from "../../componentes/Modal.jsx";
+import { turmas, cursos } from "../../dados/dadosMock.js";
+import { podeCriar, podeEditar } from "../../dados/permissoes.js";
 
 export default function TelaTurmas({ usuario }) {
   const [modalAberto, setModalAberto] = useState(false);

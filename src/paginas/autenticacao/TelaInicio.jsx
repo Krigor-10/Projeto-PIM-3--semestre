@@ -1,11 +1,11 @@
-import { cursos } from "../dados/dadosMock.js";
-import bannerHome from "../ativos/banner-home.png";
-import imgDevWeb     from "../ativos/curso-dev-web.png";
-import imgCiencia    from "../ativos/curso-ciencia-dados.png";
-import imgIA         from "../ativos/curso-ia.png";
-import imgCyber      from "../ativos/curso-cyber.png";
-import imgUxUi       from "../ativos/curso-ux-ui.png";
-import imgRobotica   from "../ativos/curso-robotica.png";
+import { cursos } from "../../dados/dadosMock.js";
+import bannerHome from "../../ativos/banner-home.png";
+import imgDevWeb     from "../../ativos/curso-dev-web.png";
+import imgCiencia    from "../../ativos/curso-ciencia-dados.png";
+import imgIA         from "../../ativos/curso-ia.png";
+import imgCyber      from "../../ativos/curso-cyber.png";
+import imgUxUi       from "../../ativos/curso-ux-ui.png";
+import imgRobotica   from "../../ativos/curso-robotica.png";
 
 /* Imagem de capa por título de curso */
 const IMAGEM_CURSO = {

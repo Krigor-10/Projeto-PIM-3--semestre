@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { perfisDemo } from "../dados/dadosMock.js";
+import { perfisDemo } from "../../dados/dadosMock.js";
 
 /* Apenas perfis de equipe (sem o aluno) */
 const perfisStaff = perfisDemo.filter((p) => p.chave !== "aluno");

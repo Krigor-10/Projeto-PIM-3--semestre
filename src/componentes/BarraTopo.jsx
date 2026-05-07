@@ -1,58 +1,62 @@
+/* Metadados de título e descrição indexados por seção —
+   permitem que a barra topo reflita o contexto da página atual */
 const metadadosPorSecao = {
   dashboard: {
     titulo: "Panorama",
-    descricao: "Resumo central do workspace React com dados mockados.",
+    descricao: "Resumo central do workspace com dados da plataforma.",
   },
   alunos: {
-    titulo: "Gestao de alunos",
-    descricao: "Consulta rapida da base academica para operacao e apoio.",
+    titulo: "Gestão de Alunos",
+    descricao: "Consulta rápida da base acadêmica para operação e apoio.",
   },
   professores: {
-    titulo: "Corpo docente",
-    descricao: "Professores disponiveis para cursos e turmas.",
+    titulo: "Corpo Docente",
+    descricao: "Professores disponíveis para cursos e turmas.",
   },
   coordenadores: {
     titulo: "Coordenadores",
-    descricao: "Supervisao academica dos cursos.",
+    descricao: "Supervisão acadêmica dos cursos.",
   },
   cursos: {
-    titulo: "Catalogo academico",
+    titulo: "Catálogo Acadêmico",
     descricao: "A mesma base alimenta a home, o cadastro e o painel.",
   },
   modulos: {
-    titulo: "Modulos por curso",
-    descricao: "Estrutura academica para conteudos, avaliacoes e progresso.",
+    titulo: "Módulos por Curso",
+    descricao: "Estrutura acadêmica para conteúdos, avaliações e progresso.",
   },
   turmas: {
-    titulo: "Mapa de turmas",
+    titulo: "Mapa de Turmas",
     descricao: "Turmas organizadas para acompanhamento da plataforma.",
   },
   matriculas: {
-    titulo: "Fluxo de matriculas",
-    descricao: "Solicitacoes e status academico simulados.",
+    titulo: "Fluxo de Matrículas",
+    descricao: "Solicitações e status acadêmico simulados.",
   },
   avaliacoes: {
-    titulo: "Avaliacoes",
-    descricao: "Provas, quizzes e exercicios por perfil.",
+    titulo: "Avaliações",
+    descricao: "Provas, quizzes e exercícios por perfil.",
   },
   conteudos: {
-    titulo: "Conteudos",
-    descricao: "Materiais publicados para a jornada academica.",
+    titulo: "Conteúdos",
+    descricao: "Materiais publicados para a jornada acadêmica.",
   },
   progresso: {
     titulo: "Meu Progresso",
     descricao: "Acompanhamento visual da trilha do aluno.",
   },
   usuarios: {
-    titulo: "Usuarios",
-    descricao: "Visao administrativa dos perfis do sistema.",
+    titulo: "Usuários",
+    descricao: "Visão administrativa dos perfis do sistema.",
   },
 };
 
 export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSidebar }) {
+  /* Usa os metadados da seção atual; fallback para dashboard se a seção não estiver mapeada */
   const meta = metadadosPorSecao[secaoAtual] || metadadosPorSecao.dashboard;
 
-  function iniciais(nome) {
+  /* Extrai até duas iniciais do nome completo para o avatar textual */
+  function gerarIniciais(nome) {
     return nome
       .split(" ")
       .slice(0, 2)
@@ -67,23 +71,27 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
         <button
           className="topbar__menu-mobile botao botao--fantasma botao--pequeno"
           onClick={onAbrirSidebar}
-          aria-label="Abrir menu de navegacao"
+          aria-label="Abrir menu de navegação"
           type="button"
         >
           Menu
         </button>
+
+        {/* Contexto dinâmico da seção atual — título e descrição mudam conforme a navegação */}
         <div className="topbar__contexto">
-          <span className="topbar__eyebrow">Workspace React</span>
+          <span className="topbar__eyebrow">CodeRyse Academy</span>
           <h1 className="topbar__titulo">{meta.titulo}</h1>
           <p className="topbar__descricao">{meta.descricao}</p>
         </div>
       </div>
 
       <div className="topbar__acoes">
-        <span className="insignia insignia--aviso">Modo demo</span>
-        <div className="topbar__perfil" role="group" aria-label="Perfil do usuario">
+        <span className="insignia insignia--aviso" role="status">Modo demo</span>
+
+        {/* Grupo de perfil agrupa avatar e informações do usuário logado */}
+        <div className="topbar__perfil" role="group" aria-label="Perfil do usuário logado">
           <div className="topbar__avatar" aria-hidden="true">
-            {iniciais(usuario.nome)}
+            {gerarIniciais(usuario.nome)}
           </div>
           <div className="topbar__info">
             <span className="topbar__nome">{usuario.nome.split(" ")[0]}</span>

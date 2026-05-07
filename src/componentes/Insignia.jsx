@@ -1,3 +1,5 @@
+/* Mapeamento automático de variante visual por texto de status —
+   evita que cada chamador precise informar a variante manualmente */
 const variantePorValor = {
   Aprovada: "sucesso",
   Ativa: "sucesso",
@@ -14,6 +16,7 @@ const variantePorValor = {
 };
 
 export default function Insignia({ texto, variante }) {
+  /* Usa variante explícita se fornecida; senão infere pelo texto; fallback para neutro */
   const varianteResolvida = variante || variantePorValor[texto] || "neutro";
 
   return (

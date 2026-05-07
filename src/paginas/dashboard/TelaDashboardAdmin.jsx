@@ -1,6 +1,6 @@
-import CartaoEstatistica from "../componentes/CartaoEstatistica.jsx";
-import Insignia from "../componentes/Insignia.jsx";
-import { usuarios, matriculas, estatisticasAdmin } from "../dados/dadosMock.js";
+import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
+import Insignia from "../../componentes/Insignia.jsx";
+import { usuarios, matriculas, estatisticasAdmin } from "../../dados/dadosMock.js";
 
 export default function TelaDashboardAdmin({ usuario, onMudarSecao }) {
   const ultimosUsuarios = usuarios.slice(-5).reverse();

@@ -1,6 +1,6 @@
-import CartaoEstatistica from "../componentes/CartaoEstatistica.jsx";
-import Insignia from "../componentes/Insignia.jsx";
-import { matriculas, turmas, estatisticasCoordenador } from "../dados/dadosMock.js";
+import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
+import Insignia from "../../componentes/Insignia.jsx";
+import { matriculas, turmas, estatisticasCoordenador } from "../../dados/dadosMock.js";
 
 export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
   const matriculasPendentes = matriculas.filter((m) => m.status === "Pendente");

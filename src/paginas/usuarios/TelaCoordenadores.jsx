@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Insignia from "../componentes/Insignia.jsx";
-import Modal from "../componentes/Modal.jsx";
-import ModalEdicaoUsuario from "../componentes/ModalEdicaoUsuario.jsx";
-import { usuarios } from "../dados/dadosMock.js";
-import { podeCriar, podeEditar } from "../dados/permissoes.js";
+import Insignia from "../../componentes/Insignia.jsx";
+import Modal from "../../componentes/Modal.jsx";
+import ModalEdicaoUsuario from "../../componentes/ModalEdicaoUsuario.jsx";
+import { usuarios } from "../../dados/dadosMock.js";
+import { podeCriar, podeEditar } from "../../dados/permissoes.js";
 
 export default function TelaCoordenadores({ usuario }) {
   const [filtroNome, setFiltroNome] = useState("");

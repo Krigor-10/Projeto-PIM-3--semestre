@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { questoesQuiz } from "../dados/questoesQuiz.js";
+import { questoesQuiz } from "../../dados/questoesQuiz.js";
 
 const TOTAL = questoesQuiz.length;
 

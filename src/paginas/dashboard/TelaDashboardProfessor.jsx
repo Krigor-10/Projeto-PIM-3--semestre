@@ -1,6 +1,6 @@
-import CartaoEstatistica from "../componentes/CartaoEstatistica.jsx";
-import Insignia from "../componentes/Insignia.jsx";
-import { turmas, avaliacoes, estatisticasProfessor } from "../dados/dadosMock.js";
+import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
+import Insignia from "../../componentes/Insignia.jsx";
+import { turmas, avaliacoes, estatisticasProfessor } from "../../dados/dadosMock.js";
 
 export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
   const minhasTurmas = turmas.filter((t) => t.professorNome === usuario.nome).slice(0, 3);

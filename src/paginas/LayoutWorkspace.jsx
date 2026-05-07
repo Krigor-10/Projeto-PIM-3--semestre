@@ -2,22 +2,22 @@ import { useState } from "react";
 import { temPermissao } from "../dados/permissoes.js";
 import BarraLateral from "../componentes/BarraLateral.jsx";
 import BarraTopo from "../componentes/BarraTopo.jsx";
-import TelaDashboardAluno from "./TelaDashboardAluno.jsx";
-import TelaDashboardProfessor from "./TelaDashboardProfessor.jsx";
-import TelaDashboardCoordenador from "./TelaDashboardCoordenador.jsx";
-import TelaDashboardAdmin from "./TelaDashboardAdmin.jsx";
-import TelaCursos from "./TelaCursos.jsx";
-import TelaModulos from "./TelaModulos.jsx";
-import TelaTurmas from "./TelaTurmas.jsx";
-import TelaMatriculas from "./TelaMatriculas.jsx";
-import TelaAvaliacoes from "./TelaAvaliacoes.jsx";
-import TelaConteudos from "./TelaConteudos.jsx";
-import TelaProgresso from "./TelaProgresso.jsx";
-import TelaUsuarios from "./TelaUsuarios.jsx";
-import TelaAlunos from "./TelaAlunos.jsx";
-import TelaProfessores from "./TelaProfessores.jsx";
-import TelaCoordenadores from "./TelaCoordenadores.jsx";
-import TelaQuiz from "./TelaQuiz.jsx";
+import TelaDashboardAluno from "./dashboard/TelaDashboardAluno.jsx";
+import TelaDashboardProfessor from "./dashboard/TelaDashboardProfessor.jsx";
+import TelaDashboardCoordenador from "./dashboard/TelaDashboardCoordenador.jsx";
+import TelaDashboardAdmin from "./dashboard/TelaDashboardAdmin.jsx";
+import TelaCursos from "./academico/TelaCursos.jsx";
+import TelaModulos from "./academico/TelaModulos.jsx";
+import TelaTurmas from "./academico/TelaTurmas.jsx";
+import TelaMatriculas from "./academico/TelaMatriculas.jsx";
+import TelaAvaliacoes from "./academico/TelaAvaliacoes.jsx";
+import TelaConteudos from "./academico/TelaConteudos.jsx";
+import TelaProgresso from "./aprendizado/TelaProgresso.jsx";
+import TelaUsuarios from "./usuarios/TelaUsuarios.jsx";
+import TelaAlunos from "./usuarios/TelaAlunos.jsx";
+import TelaProfessores from "./usuarios/TelaProfessores.jsx";
+import TelaCoordenadores from "./usuarios/TelaCoordenadores.jsx";
+import TelaQuiz from "./aprendizado/TelaQuiz.jsx";
 
 function resolverDashboard(tipo) {
   const dashboards = {
@@ -56,6 +56,14 @@ function TelaAcessoNegado() {
 
 export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onLogout }) {
   const [sidebarAberta, setSidebarAberta] = useState(false);
+  /* Estado global de progresso — compartilhado entre TelaConteudos, TelaAvaliacoes e TelaProgresso */
+  const [quizzesAprovados, setQuizzesAprovados] = useState(() => new Set());
+  const [avaliacaoAprovada, setAvaliacaoAprovada] = useState(false);
+  const [conteudoConcluido, setConteudoConcluido] = useState(false);
+
+  function registrarQuizAprovado(moduloId) {
+    setQuizzesAprovados((prev) => new Set(prev).add(moduloId));
+  }
 
   function resolverTela() {
     if (secaoAtual === "dashboard") return resolverDashboard(usuario.tipo);
@@ -88,7 +96,16 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
         />
 
         <main className="layout-principal" id="conteudo-principal" tabIndex={-1}>
-          <ComponenteTela usuario={usuario} onMudarSecao={onMudarSecao} />
+          <ComponenteTela
+            usuario={usuario}
+            onMudarSecao={onMudarSecao}
+            quizzesAprovados={quizzesAprovados}
+            onQuizAprovado={registrarQuizAprovado}
+            avaliacaoAprovada={avaliacaoAprovada}
+            onAvaliacaoAprovada={() => setAvaliacaoAprovada(true)}
+            conteudoConcluido={conteudoConcluido}
+            onConteudoConcluido={setConteudoConcluido}
+          />
         </main>
       </div>
     </div>

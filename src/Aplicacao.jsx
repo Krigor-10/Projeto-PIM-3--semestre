@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { usuariosPorPerfil } from "./dados/dadosMock.js";
-import TelaInicio from "./paginas/TelaInicio.jsx";
-import TelaLoginAluno from "./paginas/TelaLoginAluno.jsx";
-import TelaLoginStaff from "./paginas/TelaLoginStaff.jsx";
-import TelaCadastro from "./paginas/TelaCadastro.jsx";
+import TelaInicio from "./paginas/autenticacao/TelaInicio.jsx";
+import TelaLoginAluno from "./paginas/autenticacao/TelaLoginAluno.jsx";
+import TelaLoginStaff from "./paginas/autenticacao/TelaLoginStaff.jsx";
+import TelaCadastro from "./paginas/autenticacao/TelaCadastro.jsx";
 import LayoutWorkspace from "./paginas/LayoutWorkspace.jsx";
 
 export default function Aplicacao() {

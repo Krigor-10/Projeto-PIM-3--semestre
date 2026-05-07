@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cursos } from "../dados/dadosMock.js";
+import { cursos } from "../../dados/dadosMock.js";
 
 /* Apenas cursos ativos aparecem na seleção */
 const cursosAtivos = cursos.filter((c) => c.ativo);
