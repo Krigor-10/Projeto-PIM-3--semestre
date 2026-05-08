@@ -1285,3 +1285,138 @@ select.campo__entrada {
     display: none;
   }
 }
+
+/* ── Atalho certificados ─────────────────────────────────────── */
+.topbar__atalho-certificados {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--raio-md);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  color: var(--cor-texto-secundario);
+  transition: background var(--transicao-rapida), border-color var(--transicao-rapida), color var(--transicao-rapida);
+}
+.topbar__atalho-certificados:hover {
+  background: var(--cor-fundo-hover);
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-primario);
+}
+.topbar__atalho-certificados--ativo {
+  background: var(--cor-primaria-suave);
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+/* ── Popup de perfil ─────────────────────────────────────────── */
+.topbar__perfil-wrapper {
+  position: relative;
+}
+
+.topbar__perfil {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+@keyframes popup-surgir {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.popup-perfil {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 290px;
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-lg);
+  padding: var(--espaco-lg);
+  z-index: 300;
+  box-shadow: var(--sombra-lg);
+  animation: popup-surgir var(--transicao-normal) ease;
+}
+
+.popup-perfil__cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding-bottom: var(--espaco-md);
+  margin-bottom: var(--espaco-md);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.popup-perfil__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--raio-circular);
+  background: linear-gradient(135deg, var(--cor-marca-profunda), var(--cor-marca));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  border: 2px solid rgba(185, 153, 255, 0.25);
+}
+
+.popup-perfil__identidade {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.popup-perfil__nome {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-perfil__dados {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+}
+
+.popup-perfil__linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-md);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--cor-borda);
+  font-size: 0.83rem;
+}
+
+.popup-perfil__linha:last-child {
+  border-bottom: none;
+}
+
+.popup-perfil__chave {
+  color: var(--cor-texto-mudo);
+  flex-shrink: 0;
+}
+
+.popup-perfil__valor {
+  color: var(--cor-texto-forte);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

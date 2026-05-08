@@ -7,12 +7,13 @@ import { podeCriar } from "../../dados/permissoes.js";
 export default function TelaModulos({ usuario }) {
   const [filtroId, setFiltroId] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
+  const [listaModulos, setListaModulos] = useState(modulos);
 
   const tipo = usuario?.tipo;
 
   const modulosFiltrados = filtroId
-    ? modulos.filter((m) => m.cursoId === Number(filtroId))
-    : modulos;
+    ? listaModulos.filter((m) => m.cursoId === Number(filtroId))
+    : listaModulos;
 
   const colunas = [
     { chave: "codigoRegistro", rotulo: "Código" },
@@ -31,7 +32,7 @@ export default function TelaModulos({ usuario }) {
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Módulos</h2>
-          <p className="cabecalho-pagina__subtitulo">{modulos.length} módulos cadastrados</p>
+          <p className="cabecalho-pagina__subtitulo">{listaModulos.length} módulos cadastrados</p>
         </div>
         {podeCriar(tipo, "modulos") && (
           <button className="botao botao--primario" onClick={() => setModalAberto(true)} type="button">
@@ -71,7 +72,24 @@ export default function TelaModulos({ usuario }) {
 
       {modalAberto && (
         <Modal titulo="Novo Módulo" onFechar={() => setModalAberto(false)}>
-          <form className="formulario-modal" onSubmit={(e) => { e.preventDefault(); setModalAberto(false); }}>
+          <form
+            className="formulario-modal"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const f = e.target;
+              const cursoId = Number(f["curso-modulo"].value);
+              const ordemModulo = Number(f["ordem-modulo"].value) || 1;
+              setListaModulos((prev) => [...prev, {
+                id: Date.now(),
+                cursoId,
+                codigoRegistro: `MOD-${String(prev.length + 1).padStart(3, "0")}`,
+                titulo: f["titulo-modulo"].value,
+                ordem: ordemModulo,
+                totalConteudos: 0,
+              }]);
+              setModalAberto(false);
+            }}
+          >
             <div className="campo">
               <label className="campo__rotulo" htmlFor="titulo-modulo">Título *</label>
               <input id="titulo-modulo" className="campo__entrada" type="text" placeholder="Ex: Fundamentos de React" required />

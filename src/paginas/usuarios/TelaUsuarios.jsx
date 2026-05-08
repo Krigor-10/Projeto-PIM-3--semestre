@@ -142,7 +142,22 @@ export default function TelaUsuarios({ usuario }) {
 
       {modalAberto && (
         <Modal titulo="Novo Usuário" onFechar={() => setModalAberto(false)}>
-          <form className="formulario-modal" onSubmit={(e) => { e.preventDefault(); setModalAberto(false); }}>
+          <form
+            className="formulario-modal"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const f = e.target;
+              setLista((prev) => [...prev, {
+                id: Date.now(),
+                nome: f["nome-usr"].value,
+                email: f["email-usr"].value,
+                tipo: f["tipo-usr"].value,
+                ativo: true,
+                dataCadastro: new Date().toISOString().slice(0, 10),
+              }]);
+              setModalAberto(false);
+            }}
+          >
             <div className="campo">
               <label className="campo__rotulo" htmlFor="nome-usr">Nome completo *</label>
               <input id="nome-usr" className="campo__entrada" type="text" required />

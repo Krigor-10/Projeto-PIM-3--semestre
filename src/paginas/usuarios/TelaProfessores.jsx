@@ -109,7 +109,22 @@ export default function TelaProfessores({ usuario }) {
 
       {modalNovoAberto && (
         <Modal titulo="Novo Professor" onFechar={() => setModalNovoAberto(false)}>
-          <form className="formulario-modal" onSubmit={(e) => { e.preventDefault(); setModalNovoAberto(false); }}>
+          <form
+            className="formulario-modal"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const f = e.target;
+              setLista((prev) => [...prev, {
+                id: Date.now(),
+                nome: f["nome-prof"].value,
+                email: f["email-prof"].value,
+                tipo: "Professor",
+                ativo: true,
+                dataCadastro: new Date().toISOString().slice(0, 10),
+              }]);
+              setModalNovoAberto(false);
+            }}
+          >
             <div className="campo">
               <label className="campo__rotulo" htmlFor="nome-prof">Nome completo *</label>
               <input id="nome-prof" className="campo__entrada" type="text" required />

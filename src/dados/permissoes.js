@@ -80,6 +80,12 @@ export const SECOES = [
     icone: "PG",
     perfis: ["Professor", "Aluno"],
   },
+  {
+    chave: "certificados",
+    rotulo: "Certificados",
+    icone: "CR",
+    perfis: ["Aluno"],
+  },
 ];
 
 /* ── Permissões de ação por seção ────────────────────────────── */

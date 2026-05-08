@@ -1,4 +1,35 @@
+import {
+  TbLayoutDashboard,
+  TbUsers,
+  TbSchool,
+  TbChalkboard,
+  TbUserCog,
+  TbBook,
+  TbStack2,
+  TbUsersGroup,
+  TbClipboardList,
+  TbClipboardCheck,
+  TbFileText,
+  TbChartBar,
+  TbCertificate,
+} from "react-icons/tb";
 import { obterSecoesPermitidas } from "../dados/permissoes.js";
+
+const ICONES_SECAO = {
+  dashboard:     <TbLayoutDashboard size={18} />,
+  usuarios:      <TbUsers size={18} />,
+  alunos:        <TbSchool size={18} />,
+  professores:   <TbChalkboard size={18} />,
+  coordenadores: <TbUserCog size={18} />,
+  cursos:        <TbBook size={18} />,
+  modulos:       <TbStack2 size={18} />,
+  turmas:        <TbUsersGroup size={18} />,
+  matriculas:    <TbClipboardList size={18} />,
+  avaliacoes:    <TbClipboardCheck size={18} />,
+  conteudos:     <TbFileText size={18} />,
+  progresso:     <TbChartBar size={18} />,
+  certificados:  <TbCertificate size={18} />,
+};
 
 export default function BarraLateral({ usuario, secaoAtual, onMudarSecao, aberta, onFechar }) {
   /* Retorna apenas as seções que o papel do usuário tem permissão de acessar */
@@ -58,7 +89,7 @@ export default function BarraLateral({ usuario, secaoAtual, onMudarSecao, aberta
                   aria-current={secaoAtual === item.chave ? "page" : undefined}
                   type="button"
                 >
-                  <span className="sidebar__item-icone" aria-hidden="true">{item.icone}</span>
+                  <span className="sidebar__item-icone" aria-hidden="true">{ICONES_SECAO[item.chave]}</span>
                   <span>{item.rotulo}</span>
                 </button>
               </li>

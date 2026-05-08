@@ -8,17 +8,49 @@ export default function TelaCursos({ usuario }) {
   const [filtro, setFiltro] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [listaCursos, setListaCursos] = useState(cursos);
 
   const tipo = usuario?.tipo;
 
-  const cursosFiltrados = cursos.filter((c) =>
+  const cursosFiltrados = listaCursos.filter((c) =>
     c.titulo.toLowerCase().includes(filtro.toLowerCase()) ||
     c.nivel.toLowerCase().includes(filtro.toLowerCase())
   );
 
   function abrirDetalhe(curso) {
     setCursoSelecionado(curso);
+    setModoEdicao(false);
     setModalAberto(true);
+  }
+
+  function criarCurso(e) {
+    e.preventDefault();
+    const f = e.target;
+    setListaCursos((prev) => [...prev, {
+      id: Date.now(),
+      codigoRegistro: `CRS-${String(prev.length + 1).padStart(3, "0")}`,
+      titulo: f["titulo-curso"].value,
+      descricao: f["descricao-curso"].value,
+      nivel: f["nivel-curso"].value,
+      duracao: f["duracao-curso"].value || "—",
+      preco: 0,
+      totalModulos: 0,
+      totalAlunos: 0,
+      ativo: true,
+    }]);
+    setModalAberto(false);
+  }
+
+  function salvarEdicaoCurso(e) {
+    e.preventDefault();
+    const f = e.target;
+    setListaCursos((prev) => prev.map((c) =>
+      c.id === cursoSelecionado.id
+        ? { ...c, titulo: f["edit-titulo-curso"].value, descricao: f["edit-descricao-curso"].value, nivel: f["edit-nivel-curso"].value, duracao: f["edit-duracao-curso"].value }
+        : c
+    ));
+    setModalAberto(false);
   }
 
   return (
@@ -26,13 +58,13 @@ export default function TelaCursos({ usuario }) {
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Cursos</h2>
-          <p className="cabecalho-pagina__subtitulo">{cursos.length} cursos cadastrados na plataforma</p>
+          <p className="cabecalho-pagina__subtitulo">{listaCursos.length} cursos cadastrados na plataforma</p>
         </div>
         {/* Admin e Coordenador podem criar cursos; Professor apenas visualiza */}
         {podeCriar(tipo, "cursos") && (
           <button
             className="botao botao--primario"
-            onClick={() => { setCursoSelecionado(null); setModalAberto(true); }}
+            onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setModalAberto(true); }}
             type="button"
           >
             + Novo Curso
@@ -97,10 +129,10 @@ export default function TelaCursos({ usuario }) {
 
       {modalAberto && (
         <Modal
-          titulo={cursoSelecionado ? "Detalhes do Curso" : "Novo Curso"}
+          titulo={cursoSelecionado ? (modoEdicao ? "Editar Curso" : "Detalhes do Curso") : "Novo Curso"}
           onFechar={() => setModalAberto(false)}
         >
-          {cursoSelecionado ? (
+          {cursoSelecionado && !modoEdicao && (
             <>
               <dl className="lista-detalhes">
                 <div className="lista-detalhes__item"><dt>Título</dt><dd>{cursoSelecionado.titulo}</dd></div>
@@ -116,12 +148,45 @@ export default function TelaCursos({ usuario }) {
               <div className="modal-rodape">
                 <button className="botao botao--fantasma" onClick={() => setModalAberto(false)} type="button">Fechar</button>
                 {podeEditar(tipo, "cursos") && (
-                  <button className="botao botao--primario" type="button">Editar Curso</button>
+                  <button className="botao botao--primario" type="button" onClick={() => setModoEdicao(true)}>Editar Curso</button>
                 )}
               </div>
             </>
-          ) : (
-            <form className="formulario-modal" onSubmit={(e) => { e.preventDefault(); setModalAberto(false); }}>
+          )}
+
+          {cursoSelecionado && modoEdicao && (
+            <form className="formulario-modal" onSubmit={salvarEdicaoCurso}>
+              <div className="campo">
+                <label className="campo__rotulo" htmlFor="edit-titulo-curso">Título *</label>
+                <input id="edit-titulo-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.titulo} required />
+              </div>
+              <div className="campo">
+                <label className="campo__rotulo" htmlFor="edit-descricao-curso">Descrição</label>
+                <textarea id="edit-descricao-curso" className="campo__entrada" rows={3} defaultValue={cursoSelecionado.descricao} />
+              </div>
+              <div className="grade-2">
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
+                  <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
+                    <option>Iniciante</option>
+                    <option>Intermediário</option>
+                    <option>Avançado</option>
+                  </select>
+                </div>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="edit-duracao-curso">Duração</label>
+                  <input id="edit-duracao-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.duracao} />
+                </div>
+              </div>
+              <div className="modal-rodape">
+                <button type="button" className="botao botao--fantasma" onClick={() => setModoEdicao(false)}>Cancelar</button>
+                <button type="submit" className="botao botao--primario">Salvar alterações</button>
+              </div>
+            </form>
+          )}
+
+          {!cursoSelecionado && (
+            <form className="formulario-modal" onSubmit={criarCurso}>
               <div className="campo">
                 <label className="campo__rotulo" htmlFor="titulo-curso">Título *</label>
                 <input id="titulo-curso" className="campo__entrada" type="text" required />

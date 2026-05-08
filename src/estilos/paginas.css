@@ -4597,4 +4597,165 @@
   .certificado { border: 2px solid #333; background: white; color: black; }
   .certificado__nome { -webkit-text-fill-color: #1a1a1a; }
   .certificado .botao { display: none; }
+  .certificado-modal { display: block !important; box-shadow: none; }
+}
+
+/* ============================================================
+   TELA DE CERTIFICADOS
+   ============================================================ */
+
+.tela-certificados { display: flex; flex-direction: column; gap: var(--espaco-xl); }
+
+/* ── Lista de certificados ─────────────────────────────────── */
+.lista-certificados {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item-certificado {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  padding: var(--espaco-md) var(--espaco-lg);
+  transition: border-color var(--transicao-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.item-certificado--desbloqueado {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.04), var(--cor-cartao));
+}
+
+.item-certificado--desbloqueado:hover {
+  border-color: rgba(34, 197, 94, 0.55);
+}
+
+.item-certificado__faixa {
+  width: 4px;
+  align-self: stretch;
+  border-radius: var(--raio-circular);
+  background: var(--cor-borda);
+  flex-shrink: 0;
+}
+
+.item-certificado--desbloqueado .item-certificado__faixa {
+  background: linear-gradient(180deg, var(--cor-sucesso), #16a34a);
+}
+
+.item-certificado__curso {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.item-certificado__titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-certificado__meta {
+  font-size: 0.82rem;
+  color: var(--cor-texto-suave);
+  margin: 0;
+}
+
+.item-certificado__codigo {
+  font-size: 0.75rem;
+  color: var(--cor-texto-mudo);
+  font-family: var(--fonte-mono);
+  margin: 0;
+}
+
+.item-certificado__status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.item-certificado__nota {
+  font-size: 0.82rem;
+  color: var(--cor-sucesso);
+  font-weight: 600;
+}
+
+.item-certificado__progresso {
+  width: 120px;
+}
+
+.item-certificado__acoes {
+  display: flex;
+  gap: var(--espaco-sm);
+  flex-shrink: 0;
+}
+
+.item-certificado__bloqueado {
+  font-size: 0.82rem;
+  color: var(--cor-texto-mudo);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Certificado modal ─────────────────────────────────────── */
+.certificado-modal {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--espaco-md);
+  border-radius: var(--raio-lg);
+  overflow: hidden;
+  border: 1px solid var(--cor-borda-forte);
+  line-height: 0;
+}
+
+.certificado-modal__imagem {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: fill;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.tela-certificados .modal-caixa {
+  max-width: min(860px, 92vw);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .item-certificado {
+    flex-wrap: wrap;
+    gap: var(--espaco-md);
+  }
+
+  .item-certificado__status {
+    min-width: unset;
+    align-items: flex-start;
+  }
+
+  .certificado-modal__meta {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--espaco-md);
+  }
+
+  .certificado-modal__nome {
+    font-size: 1.3rem;
+  }
 }

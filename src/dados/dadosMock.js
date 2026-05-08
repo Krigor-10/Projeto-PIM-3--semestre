@@ -192,7 +192,8 @@ export const turmas = [
 
 /* ── Matrículas ──────────────────────────────────────────────── */
 export const matriculas = [
-  { id: 1, alunoId: 1,  alunoNome: "Maria Isabela Branco", cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-001", status: "Aprovada",  dataSolicitacao: "2024-02-10" },
+  { id: 1,  alunoId: 1,  alunoNome: "Maria Isabela Branco", cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-001", status: "Aprovada",  dataSolicitacao: "2024-02-10" },
+  { id: 20, alunoId: 1,  alunoNome: "Maria Isabela Branco", cursoId: 5, cursoTitulo: "UX e UI Design",       turmaId: 5, turmaNome: "UX-2024-A",    codigoMatricula: "MAT-2023-020", status: "Aprovada",  dataSolicitacao: "2023-09-05" },
   { id: 2, alunoId: 8,  alunoNome: "João Pedro Alves",     cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-002", status: "Aprovada",  dataSolicitacao: "2024-02-11" },
   { id: 3, alunoId: 9,  alunoNome: "Lucas Ferreira",       cursoId: 2, cursoTitulo: "Ciência de Dados",    turmaId: 3, turmaNome: "DATA-2024-A",  codigoMatricula: "MAT-2024-003", status: "Pendente",  dataSolicitacao: "2024-03-15" },
   { id: 4, alunoId: 10, alunoNome: "Camila Rodrigues",     cursoId: 4, cursoTitulo: "Cybersegurança",      turmaId: 4, turmaNome: "CYBER-2024-A", codigoMatricula: "MAT-2024-004", status: "Pendente",  dataSolicitacao: "2024-03-18" },
@@ -281,4 +282,10 @@ export const estatisticasCoordenador = {
   totalTurmas: 6,
   matriculasPendentes: 3,
   totalAlunos: 210,
+};
+
+/* ── Certificados desbloqueados (demo) ───────────────────────── */
+/* Chave = cursoId; representa cursos já concluídos com avaliação aprovada */
+export const certificadosDemo = {
+  5: { nota: 9.2, porcentagem: 92, notaMaxima: 10, dataConclusao: "10/06/2024" },
 };

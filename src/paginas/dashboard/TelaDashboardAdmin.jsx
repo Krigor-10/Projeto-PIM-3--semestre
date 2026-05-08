@@ -1,10 +1,21 @@
+import { useState } from "react";
 import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
 import Insignia from "../../componentes/Insignia.jsx";
 import { usuarios, matriculas, estatisticasAdmin } from "../../dados/dadosMock.js";
 
 export default function TelaDashboardAdmin({ usuario, onMudarSecao }) {
+  const [listaMatriculas, setListaMatriculas] = useState(matriculas);
+
   const ultimosUsuarios = usuarios.slice(-5).reverse();
-  const matriculasPendentes = matriculas.filter((m) => m.status === "Pendente");
+  const matriculasPendentes = listaMatriculas.filter((m) => m.status === "Pendente");
+
+  function aprovar(id) {
+    setListaMatriculas((prev) => prev.map((m) => m.id === id ? { ...m, status: "Aprovada" } : m));
+  }
+
+  function rejeitar(id) {
+    setListaMatriculas((prev) => prev.map((m) => m.id === id ? { ...m, status: "Rejeitada" } : m));
+  }
 
   return (
     <div className="dashboard-admin">
@@ -87,8 +98,8 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao }) {
                       <span>{mat.cursoTitulo}</span>
                     </div>
                     <div className="item-matricula__acoes">
-                      <button className="botao botao--sucesso botao--pequeno">Aprovar</button>
-                      <button className="botao botao--perigo botao--pequeno" aria-label={`Rejeitar matricula de ${mat.alunoNome}`}>
+                      <button className="botao botao--sucesso botao--pequeno" onClick={() => aprovar(mat.id)} type="button">Aprovar</button>
+                      <button className="botao botao--perigo botao--pequeno" onClick={() => rejeitar(mat.id)} type="button" aria-label={`Rejeitar matricula de ${mat.alunoNome}`}>
                         X
                       </button>
                     </div>

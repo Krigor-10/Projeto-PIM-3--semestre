@@ -18,6 +18,7 @@ import TelaAlunos from "./usuarios/TelaAlunos.jsx";
 import TelaProfessores from "./usuarios/TelaProfessores.jsx";
 import TelaCoordenadores from "./usuarios/TelaCoordenadores.jsx";
 import TelaQuiz from "./aprendizado/TelaQuiz.jsx";
+import TelaCertificados from "./aprendizado/TelaCertificados.jsx";
 
 function resolverDashboard(tipo) {
   const dashboards = {
@@ -42,6 +43,7 @@ const mapaTelas = {
   professores: TelaProfessores,
   coordenadores: TelaCoordenadores,
   quiz: TelaQuiz,
+  certificados: TelaCertificados,
 };
 
 function TelaAcessoNegado() {
@@ -97,6 +99,7 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
           secaoAtual={secaoAtual}
           onLogout={onLogout}
           onAbrirSidebar={() => setSidebarAberta(true)}
+          onMudarSecao={onMudarSecao}
         />
 
         <main className="layout-principal" id="conteudo-principal" tabIndex={-1}>
