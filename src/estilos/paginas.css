@@ -3931,6 +3931,205 @@
   color: var(--cor-texto-mudo);
 }
 
+/* Aproveitamento por módulo (TelaProgresso) */
+.lista-aproveitamento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  list-style: none;
+  margin-bottom: var(--espaco-md);
+}
+
+.item-aproveitamento {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  transition: border-color var(--transicao-rapida);
+}
+
+.item-aproveitamento:hover {
+  border-color: var(--cor-borda-forte);
+}
+
+.item-aproveitamento__num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(123, 47, 247, 0.12);
+  border: 1px solid rgba(123, 47, 247, 0.25);
+  color: var(--cor-marca-clara);
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.item-aproveitamento__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.item-aproveitamento__titulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-aproveitamento__barra {
+  max-width: 240px;
+}
+
+.item-aproveitamento__badges {
+  display: flex;
+  gap: var(--espaco-sm);
+  align-items: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Cartão de resultado da avaliação final */
+.cartao-avaliacao-resultado {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  margin-top: var(--espaco-md);
+}
+
+.cartao-avaliacao-resultado--aprovado {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.cartao-avaliacao-resultado__icone {
+  font-size: 1.4rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--cor-texto-mudo);
+}
+
+.cartao-avaliacao-resultado--aprovado .cartao-avaliacao-resultado__icone {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+
+.cartao-avaliacao-resultado__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cartao-avaliacao-resultado__titulo {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+}
+
+.cartao-avaliacao-resultado__detalhe {
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+/* Certificado bloqueado */
+.certificado-bloqueado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-xl);
+  background: var(--cor-cartao);
+  border: 1px dashed var(--cor-borda-forte);
+  border-radius: var(--raio-xl);
+  text-align: center;
+}
+
+.certificado-bloqueado__icone {
+  font-size: 2.5rem;
+  color: var(--cor-texto-mudo);
+  opacity: 0.5;
+}
+
+.certificado-bloqueado__titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  margin: 0;
+}
+
+.certificado-bloqueado__desc {
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+  max-width: 380px;
+  margin: 0;
+}
+
+.certificado-bloqueado__requisitos {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  width: 100%;
+  max-width: 420px;
+  text-align: left;
+}
+
+.requisito {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+
+.requisito--ok {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.05);
+  color: var(--cor-texto);
+}
+
+.requisito__icone {
+  font-size: 0.9rem;
+  color: var(--cor-texto-mudo);
+  flex-shrink: 0;
+  min-width: 16px;
+}
+
+.requisito--ok .requisito__icone {
+  color: #22c55e;
+}
+
+.requisito > span:nth-child(2) {
+  flex: 1;
+}
+
 /* Vista administrativa — lista de alunos */
 .lista-progresso-alunos {
   display: flex;
@@ -4033,6 +4232,23 @@
   .cartao-progresso-aluno__badges {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  .item-aproveitamento {
+    flex-wrap: wrap;
+  }
+
+  .item-aproveitamento__badges {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .item-aproveitamento__barra {
+    max-width: 100%;
+  }
+
+  .cartao-avaliacao-resultado {
+    flex-wrap: wrap;
   }
 }
 

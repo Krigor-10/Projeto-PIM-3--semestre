@@ -58,11 +58,15 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
   const [sidebarAberta, setSidebarAberta] = useState(false);
   /* Estado global de progresso — compartilhado entre TelaConteudos, TelaAvaliacoes e TelaProgresso */
   const [quizzesAprovados, setQuizzesAprovados] = useState(() => new Set());
-  const [avaliacaoAprovada, setAvaliacaoAprovada] = useState(false);
+  /* Percentual de acerto por módulo: { [moduloId]: número } */
+  const [resultadosQuizzes, setResultadosQuizzes] = useState({});
+  /* null enquanto não aprovada; objeto { porcentagem, nota, notaMaxima } após aprovação */
+  const [avaliacaoAprovada, setAvaliacaoAprovada] = useState(null);
   const [conteudoConcluido, setConteudoConcluido] = useState(false);
 
-  function registrarQuizAprovado(moduloId) {
+  function registrarQuizAprovado(moduloId, percentual) {
     setQuizzesAprovados((prev) => new Set(prev).add(moduloId));
+    setResultadosQuizzes((prev) => ({ ...prev, [moduloId]: percentual }));
   }
 
   function resolverTela() {
@@ -101,8 +105,9 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
             onMudarSecao={onMudarSecao}
             quizzesAprovados={quizzesAprovados}
             onQuizAprovado={registrarQuizAprovado}
+            resultadosQuizzes={resultadosQuizzes}
             avaliacaoAprovada={avaliacaoAprovada}
-            onAvaliacaoAprovada={() => setAvaliacaoAprovada(true)}
+            onAvaliacaoAprovada={(resultado) => setAvaliacaoAprovada(resultado)}
             conteudoConcluido={conteudoConcluido}
             onConteudoConcluido={setConteudoConcluido}
           />

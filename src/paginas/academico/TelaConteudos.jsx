@@ -88,8 +88,8 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
   function avancar() {
     if (!respostaSelecionada) return;
     if (ehUltima) {
-      /* Notifica o pai se o módulo foi aprovado antes de exibir o resultado */
-      if (aprovado) onAprovado?.();
+      /* Notifica o pai com o percentual de acerto para exibir no progresso */
+      if (aprovado) onAprovado?.(percentualAcerto);
       setConcluido(true);
     } else {
       setIndice((i) => i + 1);
@@ -98,8 +98,10 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
 
   /* Conta quantas respostas batem com o gabarito */
   const acertos = questoes.filter((q) => respostas[q.id] === q.gabarito).length;
+  /* Percentual de acerto = acertos / total × 100, arredondado para inteiro */
+  const percentualAcerto = Math.round((acertos / totalQuestoes) * 100);
   /* Aprovado quando ≥ 70% das questões estão corretas */
-  const aprovado = Math.round((acertos / totalQuestoes) * 100) >= 70;
+  const aprovado = percentualAcerto >= 70;
 
   /* ── Tela de resultado ── */
   if (concluido) {
@@ -491,7 +493,7 @@ function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onM
           modulo={quizModulo.modulo}
           questoes={quizModulo.questoes}
           onFechar={() => setQuizModulo(null)}
-          onAprovado={() => onQuizAprovado?.(quizModulo.modulo.id)}
+          onAprovado={(percentual) => onQuizAprovado?.(quizModulo.modulo.id, percentual)}
         />
       )}
     </div>

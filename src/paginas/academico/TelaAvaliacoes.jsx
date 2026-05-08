@@ -863,8 +863,12 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             [avaliacaoAtiva.id]: (prev[avaliacaoAtiva.id] || 0) + 1,
           }));
           setResultadoAtual(resultado);
-          /* Libera o certificado quando a avaliação final é aprovada com ≥ 70% */
-          if (resultado.porcentagem >= 70) onAvaliacaoAprovada?.();
+          /* Libera o certificado passando nota e aproveitamento para exibição no progresso */
+          if (resultado.porcentagem >= 70) onAvaliacaoAprovada?.({
+            porcentagem: resultado.porcentagem,
+            nota: resultado.nota,
+            notaMaxima: avaliacaoAtiva.notaMaxima,
+          });
           setModo("resultado");
         }}
       />

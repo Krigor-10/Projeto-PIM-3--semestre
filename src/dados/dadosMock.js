@@ -219,12 +219,12 @@ export const conteudos = [
   { id: 2,  moduloId: 1, titulo: "Estrutura semântica",               tipo: "Video",    duracao: "22min", concluido: true  },
   { id: 3,  moduloId: 1, titulo: "Formulários e inputs",              tipo: "Texto",    duracao: "15min", concluido: true  },
   { id: 4,  moduloId: 2, titulo: "Flexbox na prática",                tipo: "Video",    duracao: "30min", concluido: true  },
-  { id: 5,  moduloId: 2, titulo: "CSS Grid",                          tipo: "Video",    duracao: "28min", concluido: false },
-  { id: 6,  moduloId: 2, titulo: "Media Queries e responsividade",    tipo: "Documento", duracao: "20min", concluido: false },
-  { id: 7,  moduloId: 3, titulo: "Arrow functions e destructuring",   tipo: "Video",    duracao: "25min", concluido: false },
-  { id: 8,  moduloId: 3, titulo: "Promises e Async/Await",            tipo: "Video",    duracao: "35min", concluido: false },
-  { id: 9,  moduloId: 4, titulo: "Introdução ao React",               tipo: "Video",    duracao: "20min", concluido: false },
-  { id: 10, moduloId: 4, titulo: "Componentes e Props",               tipo: "Video",    duracao: "32min", concluido: false },
+  { id: 5,  moduloId: 2, titulo: "CSS Grid",                          tipo: "Video",    duracao: "28min", concluido: true  },
+  { id: 6,  moduloId: 2, titulo: "Media Queries e responsividade",    tipo: "Documento", duracao: "20min", concluido: true  },
+  { id: 7,  moduloId: 3, titulo: "Arrow functions e destructuring",   tipo: "Video",    duracao: "25min", concluido: true  },
+  { id: 8,  moduloId: 3, titulo: "Promises e Async/Await",            tipo: "Video",    duracao: "35min", concluido: true  },
+  { id: 9,  moduloId: 4, titulo: "Introdução ao React",               tipo: "Video",    duracao: "20min", concluido: true  },
+  { id: 10, moduloId: 4, titulo: "Componentes e Props",               tipo: "Video",    duracao: "32min", concluido: true  },
 ];
 
 /* ── Progresso da aluna demo (Maria Isabela) ────────────────── */
