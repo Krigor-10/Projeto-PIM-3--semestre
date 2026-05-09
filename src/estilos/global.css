@@ -469,6 +469,12 @@ select.campo__entrada {
   animation: deslizar-cima var(--transicao-normal) ease;
 }
 
+.modal-caixa--quiz {
+  width: fit-content;
+  min-width: min(640px, 100%);
+  max-width: min(720px, 100%);
+}
+
 .modal-cabecalho {
   display: flex;
   align-items: center;
@@ -1025,6 +1031,10 @@ select.campo__entrada {
 
   .cabecalho-pagina__titulo {
     font-size: 1.3rem;
+  }
+
+  .modal-caixa {
+    padding: var(--espaco-md);
   }
 }
 

@@ -1,74 +1,173 @@
 import { useState } from "react";
-import TabelaDados from "../../componentes/TabelaDados.jsx";
 import Modal from "../../componentes/Modal.jsx";
-import { modulos, cursos } from "../../dados/dadosMock.js";
+import BarraProgresso from "../../componentes/BarraProgresso.jsx";
+import { modulos, cursos, turmas } from "../../dados/dadosMock.js";
 import { podeCriar } from "../../dados/permissoes.js";
 
+/* Percentual médio de desempenho dos alunos por módulo (simulado) */
+const DESEMPENHO_MODULO = {
+  1: 78, 2: 65, 3: 42, 4: 55, 5: 30,
+  6: 70, 7: 58,
+  8: 62, 9: 45,
+  10: 71, 11: 53,
+  12: 80, 13: 67,
+  14: 50, 15: 38,
+};
+
 export default function TelaModulos({ usuario }) {
-  const [filtroId, setFiltroId] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [listaModulos, setListaModulos] = useState(modulos);
 
   const tipo = usuario?.tipo;
+  const ehProfessor = tipo === "Professor";
 
-  const modulosFiltrados = filtroId
-    ? listaModulos.filter((m) => m.cursoId === Number(filtroId))
+  const cursosIdsProfessor = ehProfessor
+    ? new Set(turmas.filter((t) => t.professorId === usuario?.id).map((t) => t.cursoId))
+    : null;
+
+  const cursosDisponiveis = ehProfessor
+    ? cursos.filter((c) => cursosIdsProfessor.has(c.id))
+    : cursos;
+
+  const modulosBase = ehProfessor
+    ? listaModulos.filter((m) => cursosIdsProfessor.has(m.cursoId))
     : listaModulos;
 
-  const colunas = [
-    { chave: "codigoRegistro", rotulo: "Código" },
-    { chave: "titulo", rotulo: "Título" },
-    {
-      chave: "cursoId",
-      rotulo: "Curso",
-      renderizar: (m) => cursos.find((c) => c.id === m.cursoId)?.titulo ?? "—",
-    },
-    { chave: "ordem", rotulo: "Ordem" },
-    { chave: "totalConteudos", rotulo: "Conteúdos" },
-  ];
+  /* Acordeão: todos os cursos abertos por padrão */
+  const [cursosAbertos, setCursosAbertos] = useState(
+    () => new Set(cursosDisponiveis.map((c) => c.id))
+  );
+
+  function alternarCurso(cursoId) {
+    setCursosAbertos((prev) => {
+      const copia = new Set(prev);
+      copia.has(cursoId) ? copia.delete(cursoId) : copia.add(cursoId);
+      return copia;
+    });
+  }
+
+  /* Agrupa módulos por curso */
+  const grupos = cursosDisponiveis.map((curso) => ({
+    curso,
+    itens: modulosBase
+      .filter((m) => m.cursoId === curso.id)
+      .sort((a, b) => a.ordem - b.ordem),
+  }));
 
   return (
     <div className="tela-modulos">
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Módulos</h2>
-          <p className="cabecalho-pagina__subtitulo">{listaModulos.length} módulos cadastrados</p>
+          <p className="cabecalho-pagina__subtitulo">
+            {modulosBase.length} módulo{modulosBase.length !== 1 ? "s" : ""}{" "}
+            {ehProfessor ? "nos seus cursos" : "cadastrados"}
+          </p>
         </div>
         {podeCriar(tipo, "modulos") && (
-          <button className="botao botao--primario" onClick={() => setModalAberto(true)} type="button">
+          <button
+            className="botao botao--primario"
+            onClick={() => setModalAberto(true)}
+            type="button"
+          >
             + Novo Módulo
           </button>
         )}
       </header>
 
-      <div className="barra-filtros">
-        <label htmlFor="filtro-curso-modulo" className="visualmente-oculto">Filtrar por curso</label>
-        <select
-          id="filtro-curso-modulo"
-          className="campo__entrada barra-filtros__select"
-          value={filtroId}
-          onChange={(e) => setFiltroId(e.target.value)}
-          aria-label="Filtrar módulos por curso"
-        >
-          <option value="">Todos os cursos</option>
-          {cursos.map((c) => (
-            <option key={c.id} value={c.id}>{c.titulo}</option>
-          ))}
-        </select>
-      </div>
+      {grupos.map(({ curso, itens }) => {
+        const aberto = cursosAbertos.has(curso.id);
+        const mediaDesempenho = itens.length > 0
+          ? Math.round(itens.reduce((acc, m) => acc + (DESEMPENHO_MODULO[m.id] ?? 0), 0) / itens.length)
+          : 0;
 
-      <section className="painel-secao" aria-labelledby="titulo-tabela-modulos">
-        <header className="painel-secao__cabecalho">
-          <h2 className="painel-secao__titulo" id="titulo-tabela-modulos">
-            {filtroId ? `Módulos — ${cursos.find((c) => c.id === Number(filtroId))?.titulo}` : "Todos os Módulos"}
-          </h2>
-        </header>
-        <TabelaDados
-          colunas={colunas}
-          linhas={modulosFiltrados}
-          semDadosTexto="Nenhum módulo encontrado."
-        />
-      </section>
+        return (
+          <section
+            key={curso.id}
+            className="painel-secao"
+            aria-labelledby={`curso-modulo-${curso.id}`}
+            style={{ marginBottom: "var(--espaco-lg)" }}
+          >
+            <header className="painel-secao__cabecalho">
+              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                <h3
+                  className="painel-secao__titulo"
+                  id={`curso-modulo-${curso.id}`}
+                >
+                  {curso.titulo}
+                </h3>
+                <p style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)" }}>
+                  {itens.length} módulo{itens.length !== 1 ? "s" : ""} · média {mediaDesempenho}%
+                </p>
+              </div>
+              <button
+                className="botao botao--fantasma botao--pequeno"
+                onClick={() => alternarCurso(curso.id)}
+                aria-expanded={aberto}
+                aria-controls={`modulos-curso-${curso.id}`}
+                type="button"
+              >
+                {aberto ? "Recolher ▲" : "Expandir ▼"}
+              </button>
+            </header>
+
+            {aberto && (
+              <div
+                className="painel-secao__conteudo"
+                id={`modulos-curso-${curso.id}`}
+              >
+                {itens.length === 0 ? (
+                  <p className="texto-vazio" role="status">
+                    Nenhum módulo cadastrado neste curso.
+                  </p>
+                ) : (
+                  <ul className="lista-aproveitamento" role="list" aria-label={`Módulos de ${curso.titulo}`}>
+                    {itens.map((mod) => {
+                      const pct = DESEMPENHO_MODULO[mod.id] ?? 0;
+                      return (
+                        <li key={mod.id} className="item-aproveitamento">
+                          <span
+                            className="item-aproveitamento__num"
+                            aria-label={`Módulo ${mod.ordem}`}
+                            aria-hidden="true"
+                          >
+                            {mod.ordem}
+                          </span>
+                          <div className="item-aproveitamento__info">
+                            <span className="item-aproveitamento__titulo">
+                              {mod.titulo}
+                              <span style={{ fontSize: "0.78rem", color: "var(--cor-texto-mudo)", marginLeft: "0.5rem" }}>
+                                {mod.codigoRegistro}
+                              </span>
+                            </span>
+                            <div className="item-aproveitamento__barra" aria-hidden="true">
+                              <BarraProgresso percentual={pct} mostrarTexto={false} />
+                            </div>
+                          </div>
+                          <div className="item-aproveitamento__badges">
+                            <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
+                              {mod.totalConteudos} conteúdo{mod.totalConteudos !== 1 ? "s" : ""}
+                            </span>
+                            <span style={{ fontSize: "0.82rem", fontWeight: 700, color: pct >= 70 ? "var(--cor-sucesso)" : pct >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)", whiteSpace: "nowrap" }}>
+                              {pct}%
+                            </span>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            )}
+          </section>
+        );
+      })}
+
+      {modulosBase.length === 0 && (
+        <p className="texto-vazio texto-vazio--central" role="status">
+          Nenhum módulo encontrado.
+        </p>
+      )}
 
       {modalAberto && (
         <Modal titulo="Novo Módulo" onFechar={() => setModalAberto(false)}>
@@ -98,7 +197,7 @@ export default function TelaModulos({ usuario }) {
               <label className="campo__rotulo" htmlFor="curso-modulo">Curso *</label>
               <select id="curso-modulo" className="campo__entrada" required>
                 <option value="">Selecione um curso</option>
-                {cursos.map((c) => (
+                {cursosDisponiveis.map((c) => (
                   <option key={c.id} value={c.id}>{c.titulo}</option>
                 ))}
               </select>
@@ -107,10 +206,10 @@ export default function TelaModulos({ usuario }) {
               <label className="campo__rotulo" htmlFor="ordem-modulo">Ordem</label>
               <input id="ordem-modulo" className="campo__entrada" type="number" min="1" defaultValue="1" />
             </div>
-            <div className="modal-rodape">
+            <footer className="modal-rodape">
               <button type="button" className="botao botao--fantasma" onClick={() => setModalAberto(false)}>Cancelar</button>
               <button type="submit" className="botao botao--primario">Criar Módulo</button>
-            </div>
+            </footer>
           </form>
         </Modal>
       )}

@@ -13,10 +13,13 @@ export default function TelaTurmas({ usuario }) {
 
   const tipo = usuario?.tipo;
 
-  const turmasFiltradas = listaTurmas.filter((t) =>
-    t.nomeTurma.toLowerCase().includes(filtro.toLowerCase()) ||
-    t.cursoTitulo.toLowerCase().includes(filtro.toLowerCase())
-  );
+  const turmasFiltradas = listaTurmas.filter((t) => {
+    if (tipo === "Professor" && t.professorId !== usuario?.id) return false;
+    return (
+      t.nomeTurma.toLowerCase().includes(filtro.toLowerCase()) ||
+      t.cursoTitulo.toLowerCase().includes(filtro.toLowerCase())
+    );
+  });
 
   function criarTurma(e) {
     e.preventDefault();
@@ -52,7 +55,9 @@ export default function TelaTurmas({ usuario }) {
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Turmas</h2>
-          <p className="cabecalho-pagina__subtitulo">{listaTurmas.length} turmas cadastradas</p>
+          <p className="cabecalho-pagina__subtitulo">
+            {tipo === "Professor" ? `${turmasFiltradas.length} turma(s) sob sua responsabilidade` : `${listaTurmas.length} turmas cadastradas`}
+          </p>
         </div>
         {podeCriar(tipo, "turmas") && (
           <button className="botao botao--primario" onClick={() => setModalAberto(true)} type="button">
@@ -92,14 +97,16 @@ export default function TelaTurmas({ usuario }) {
               </div>
             </dl>
             <footer className="cartao-turma__rodape">
-              <button
-                className="botao botao--fantasma botao--pequeno"
-                type="button"
-                onClick={() => setTurmaAlunos(turma)}
-                aria-label={`Ver alunos da turma ${turma.nomeTurma}`}
-              >
-                Ver alunos
-              </button>
+              {tipo !== "Professor" && (
+                <button
+                  className="botao botao--fantasma botao--pequeno"
+                  type="button"
+                  onClick={() => setTurmaAlunos(turma)}
+                  aria-label={`Ver alunos da turma ${turma.nomeTurma}`}
+                >
+                  Ver alunos
+                </button>
+              )}
               {podeEditar(tipo, "turmas") && (
                 <button
                   className="botao botao--secundario botao--pequeno"

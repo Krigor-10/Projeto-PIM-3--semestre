@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
-import { avaliacoes, cursos, modulos, matriculas } from "../../dados/dadosMock.js";
+import { avaliacoes, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
 import { questoesQuiz } from "../../dados/questoesQuiz.js";
 
 const LETRAS_GABARITO = ["A", "B", "C", "D", "E"];
@@ -359,7 +359,7 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
           </p>
           <button
             className="botao botao--primario botao--grande celebracao-certificado__botao"
-            onClick={() => onMudarSecao?.("progresso")}
+            onClick={() => onMudarSecao?.("certificados")}
             type="button"
           >
             <span aria-hidden="true">◈</span> Ver meu Certificado
@@ -458,7 +458,7 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
 
 /* ── Formulário de criação (professores e admins) ────────────── */
 
-function FormularioCriarAvaliacao({ onCancelar, onSalvar }) {
+function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
   const [form, setForm] = useState(formVazio);
 
   function atualizarMeta(campo, valor) {
@@ -555,7 +555,7 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar }) {
                 required
               >
                 <option value="">Selecione um curso</option>
-                {cursos.map((c) => (
+                {cursosDisponiveis.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.titulo}
                   </option>
@@ -823,7 +823,18 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   /* Conta quantas tentativas o aluno usou por avaliação na sessão */
   const [tentativas, setTentativas] = useState({});
 
-  const ehAluno = usuario?.tipo === "Aluno";
+  const ehAluno    = usuario?.tipo === "Aluno";
+  const ehProfessor = usuario?.tipo === "Professor";
+
+  /* Cursos nos quais o professor ministra aulas (via turmas) */
+  const cursosIdsProfessor = ehProfessor
+    ? new Set(turmas.filter((t) => t.professorId === usuario.id).map((t) => t.cursoId))
+    : null;
+
+  /* Lista de cursos filtrada para o professor usar no form e no filtro */
+  const cursosDisponiveis = ehProfessor
+    ? cursos.filter((c) => cursosIdsProfessor.has(c.id))
+    : cursos;
 
   /* Busca a matrícula aprovada do aluno para filtrar avaliações do seu curso */
   const matriculaAluno = ehAluno
@@ -847,6 +858,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
       <FormularioCriarAvaliacao
         onCancelar={() => setModo("lista")}
         onSalvar={() => setModo("lista")}
+        cursosDisponiveis={cursosDisponiveis}
       />
     );
   }
@@ -897,8 +909,9 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   const avaliacoesFiltradas = avaliacoes.filter((a) => {
     /* Aluno só vê avaliações publicadas do seu curso matriculado */
     if (ehAluno && a.status !== "Publicada") return false;
-    if (ehAluno && matriculaAluno && a.cursoId !== matriculaAluno.cursoId)
-      return false;
+    if (ehAluno && matriculaAluno && a.cursoId !== matriculaAluno.cursoId) return false;
+    /* Professor só vê avaliações dos cursos em que ministra aulas */
+    if (ehProfessor && !cursosIdsProfessor.has(a.cursoId)) return false;
     if (filtroStatus && a.status !== filtroStatus) return false;
     if (filtroCurso && String(a.cursoId) !== filtroCurso) return false;
     return true;
@@ -962,7 +975,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             onChange={(e) => setFiltroCurso(e.target.value)}
           >
             <option value="">Todos os cursos</option>
-            {cursos.map((c) => (
+            {cursosDisponiveis.map((c) => (
               <option key={c.id} value={String(c.id)}>
                 {c.titulo}
               </option>

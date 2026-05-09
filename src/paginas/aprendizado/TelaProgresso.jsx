@@ -1,6 +1,6 @@
 import BarraProgresso from "../../componentes/BarraProgresso.jsx";
 import Insignia from "../../componentes/Insignia.jsx";
-import { conteudos, cursos, modulos, matriculas } from "../../dados/dadosMock.js";
+import { conteudos, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
 
 /* Percentuais simulados por id de matrícula para a vista administrativa */
 const PROGRESSO_MOCK = { 1: 42, 2: 15, 6: 68 };
@@ -276,6 +276,103 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} 
   );
 }
 
+/* ── Vista do Professor ──────────────────────────────────────── */
+
+function VistaProfessor({ usuario }) {
+  const minhasTurmas = turmas.filter((t) => t.professorId === usuario.id);
+  const minhasTurmaIds = new Set(minhasTurmas.map((t) => t.id));
+
+  const matriculasMinhasTurmas = matriculas.filter(
+    (m) => minhasTurmaIds.has(m.turmaId) && m.status === "Aprovada"
+  );
+
+  const totalAlunos = matriculasMinhasTurmas.length;
+  const mediaGeral = totalAlunos > 0
+    ? Math.round(
+        matriculasMinhasTurmas.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) /
+        totalAlunos
+      )
+    : 0;
+
+  return (
+    <div className="tela-progresso">
+      <header className="cabecalho-pagina">
+        <div>
+          <h2 className="cabecalho-pagina__titulo">Progresso dos Alunos</h2>
+          <p className="cabecalho-pagina__subtitulo">
+            {minhasTurmas.length} turma(s) · {totalAlunos} aluno(s) com matrícula ativa — média geral: {mediaGeral}%
+          </p>
+        </div>
+      </header>
+
+      {minhasTurmas.length === 0 && (
+        <p className="texto-vazio" role="status">Você não possui turmas atribuídas.</p>
+      )}
+
+      {minhasTurmas.map((turma) => {
+        const alunosDaTurma = matriculasMinhasTurmas.filter((m) => m.turmaId === turma.id);
+
+        return (
+          <section
+            key={turma.id}
+            className="painel-secao"
+            aria-labelledby={`titulo-turma-${turma.id}`}
+            style={{ marginBottom: "var(--espaco-xl)" }}
+          >
+            <header className="painel-secao__cabecalho">
+              <div>
+                <h3 className="painel-secao__titulo" id={`titulo-turma-${turma.id}`}>
+                  {turma.nomeTurma}
+                </h3>
+                <p style={{ fontSize: "0.85rem", color: "var(--cor-texto-suave)", marginTop: "4px" }}>
+                  {turma.cursoTitulo} · {alunosDaTurma.length} aluno(s)
+                </p>
+              </div>
+              <Insignia
+                texto={turma.status}
+                variante={turma.status === "Ativa" ? "sucesso" : "neutro"}
+              />
+            </header>
+
+            <div className="painel-secao__conteudo">
+              {alunosDaTurma.length === 0 ? (
+                <p className="texto-vazio" role="status">Nenhum aluno com matrícula aprovada nesta turma.</p>
+              ) : (
+                <ul className="lista-progresso-alunos" role="list" aria-label={`Alunos da turma ${turma.nomeTurma}`}>
+                  {alunosDaTurma.map((mat) => {
+                    const percentual = PROGRESSO_MOCK[mat.id] ?? 0;
+                    const { texto: statusTexto, variante: statusVariante } =
+                      resolverStatusModulo(percentual, 100);
+
+                    return (
+                      <li key={mat.id} className="cartao-progresso-aluno">
+                        <div className="cartao-progresso-aluno__avatar" aria-hidden="true">
+                          {mat.alunoNome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
+                        </div>
+                        <div className="cartao-progresso-aluno__info">
+                          <strong className="cartao-progresso-aluno__nome">{mat.alunoNome}</strong>
+                          <p className="cartao-progresso-aluno__meta">{mat.codigoMatricula}</p>
+                          <div className="cartao-progresso-aluno__barra">
+                            <BarraProgresso percentual={percentual} mostrarTexto={false} />
+                          </div>
+                        </div>
+                        <div className="cartao-progresso-aluno__badges">
+                          <Insignia texto={`${percentual}%`} variante="neutro" />
+                          <Insignia texto={statusTexto} variante={statusVariante} />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ── Vista administrativa ────────────────────────────────────── */
 
 function VistaAdmin() {
@@ -341,6 +438,9 @@ export default function TelaProgresso({ usuario, avaliacaoAprovada, resultadosQu
         resultadosQuizzes={resultadosQuizzes}
       />
     );
+  }
+  if (usuario?.tipo === "Professor") {
+    return <VistaProfessor usuario={usuario} />;
   }
   return <VistaAdmin />;
 }

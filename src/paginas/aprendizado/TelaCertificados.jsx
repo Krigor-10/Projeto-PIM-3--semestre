@@ -137,6 +137,8 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
               src={fundoCertificado}
               alt={`Certificado de conclusão — ${certificadoAberto.mat.cursoTitulo}`}
               className="certificado-modal__imagem"
+              width="860"
+              height="609"
             />
           </figure>
 

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { TbTrophy } from "react-icons/tb";
 import Insignia from "./Insignia.jsx";
+import Modal from "./Modal.jsx";
 
 const metadadosPorSecao = {
   dashboard:    { titulo: "Panorama",           descricao: "Resumo central do workspace com dados da plataforma."         },
@@ -22,6 +23,7 @@ const variantePorTipo = { Aluno: "marca", Professor: "info", Coordenador: "aviso
 
 export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSidebar, onMudarSecao }) {
   const [popupAberto, setPopupAberto] = useState(false);
+  const [confirmarSaida, setConfirmarSaida] = useState(false);
   const refWrapper = useRef(null);
 
   const meta = metadadosPorSecao[secaoAtual] || metadadosPorSecao.dashboard;
@@ -42,7 +44,8 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
   }
 
   return (
-    <header className="topbar" role="banner">
+    <>
+    <header className="topbar">
       <div className="topbar__esquerda">
         <button
           className="topbar__menu-mobile botao botao--fantasma botao--pequeno"
@@ -139,7 +142,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
 
         <button
           className="botao botao--fantasma botao--pequeno"
-          onClick={onLogout}
+          onClick={() => setConfirmarSaida(true)}
           aria-label="Sair da conta"
           type="button"
         >
@@ -147,5 +150,30 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
         </button>
       </div>
     </header>
+
+    {confirmarSaida && (
+      <Modal titulo="Sair da conta" onFechar={() => setConfirmarSaida(false)}>
+        <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+          Tem certeza que deseja sair? Você precisará fazer login novamente para acessar a plataforma.
+        </p>
+        <footer style={{ display: "flex", gap: "var(--espaco-md)", justifyContent: "flex-end" }}>
+          <button
+            className="botao botao--fantasma"
+            onClick={() => setConfirmarSaida(false)}
+            type="button"
+          >
+            Cancelar
+          </button>
+          <button
+            className="botao botao--perigo"
+            onClick={onLogout}
+            type="button"
+          >
+            Confirmar saída
+          </button>
+        </footer>
+      </Modal>
+    )}
+    </>
   );
 }

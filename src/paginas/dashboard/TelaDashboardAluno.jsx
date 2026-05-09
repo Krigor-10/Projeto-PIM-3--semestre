@@ -23,7 +23,7 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
   }
 
   return (
-    <div className="dashboard-aluno">
+    <main className="dashboard-aluno">
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h2>
@@ -174,6 +174,6 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
           </section>
         )}
       </div>
-    </div>
+    </main>
   );
 }

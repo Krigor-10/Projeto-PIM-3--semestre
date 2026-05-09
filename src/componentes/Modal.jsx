@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function Modal({ titulo, onFechar, children }) {
+export default function Modal({ titulo, onFechar, children, className }) {
   useEffect(() => {
     /* Fecha o modal ao pressionar ESC — comportamento esperado de acessibilidade */
     function fecharComEsc(evento) {
@@ -21,7 +21,7 @@ export default function Modal({ titulo, onFechar, children }) {
       /* Fecha ao clicar no fundo escuro, mas não ao clicar dentro da caixa */
       onClick={(e) => { if (e.target === e.currentTarget) onFechar(); }}
     >
-      <article className="modal-caixa">
+      <article className={`modal-caixa${className ? ` ${className}` : ""}`}>
         <header className="modal-cabecalho">
           <h2 className="modal-titulo" id="modal-titulo">{titulo}</h2>
           <button
