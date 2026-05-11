@@ -2,6 +2,7 @@ import { useState } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
 import BarraProgresso from "../../componentes/BarraProgresso.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { matriculas, cursos, certificadosDemo } from "../../dados/dadosMock.js";
 import fundoCertificado from "../../ativos/certificado-fundo.png";
 
@@ -97,22 +98,22 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
                 <div className="item-certificado__acoes">
                   {desbloqueado ? (
                     <>
-                      <button
-                        className="botao botao--fantasma botao--pequeno"
+                      <Botao
+                        variante="fantasma"
+                        tamanho="pequeno"
                         onClick={() => setCertificadoAberto({ mat, cert, curso })}
-                        type="button"
                         aria-label={`Visualizar certificado de ${mat.cursoTitulo}`}
                       >
                         Visualizar
-                      </button>
-                      <button
-                        className="botao botao--primario botao--pequeno"
+                      </Botao>
+                      <Botao
+                        variante="primario"
+                        tamanho="pequeno"
                         onClick={() => { setCertificadoAberto({ mat, cert, curso }); setTimeout(imprimirCertificado, 300); }}
-                        type="button"
                         aria-label={`Baixar certificado de ${mat.cursoTitulo}`}
                       >
                         Baixar
-                      </button>
+                      </Botao>
                     </>
                   ) : (
                     <span className="item-certificado__bloqueado" aria-label="Certificado bloqueado">
@@ -143,20 +144,18 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
           </figure>
 
           <footer className="modal-rodape">
-            <button
-              className="botao botao--fantasma"
+            <Botao
+              variante="fantasma"
               onClick={() => setCertificadoAberto(null)}
-              type="button"
             >
               Fechar
-            </button>
-            <button
-              className="botao botao--primario"
+            </Botao>
+            <Botao
+              variante="primario"
               onClick={imprimirCertificado}
-              type="button"
             >
               Baixar / Imprimir
-            </button>
+            </Botao>
           </footer>
         </Modal>
       )}

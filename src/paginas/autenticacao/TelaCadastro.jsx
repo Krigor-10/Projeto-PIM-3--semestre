@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Botao from "../../componentes/Botao.jsx";
 import { cursos } from "../../dados/dadosMock.js";
 
 /* Apenas cursos ativos aparecem na seleção */
@@ -125,20 +126,19 @@ export default function TelaCadastro({ onNavegar }) {
             Em breve você receberá um e-mail de confirmação em <strong>{form.email}</strong>.
           </p>
           <div className="cadastro-confirmacao__acoes">
-            <button
-              className="botao botao--primario botao--grande"
+            <Botao
+              variante="primario"
+              tamanho="grande"
               onClick={() => onNavegar("login")}
-              type="button"
             >
               Acessar a plataforma
-            </button>
-            <button
-              className="botao botao--fantasma"
+            </Botao>
+            <Botao
+              variante="fantasma"
               onClick={() => onNavegar("inicio")}
-              type="button"
             >
               Voltar à página inicial
-            </button>
+            </Botao>
           </div>
         </div>
       </div>
@@ -446,16 +446,15 @@ export default function TelaCadastro({ onNavegar }) {
 
             {/* Rodapé do formulário */}
             <div className="formulario-cadastro__rodape">
-              <button
-                className="botao botao--fantasma"
-                type="button"
+              <Botao
+                variante="fantasma"
                 onClick={() => onNavegar("inicio")}
               >
                 Cancelar
-              </button>
-              <button className="botao botao--primario botao--grande" type="submit">
+              </Botao>
+              <Botao variante="primario" tamanho="grande" type="submit">
                 Criar conta
-              </button>
+              </Botao>
             </div>
           </form>
         </div>

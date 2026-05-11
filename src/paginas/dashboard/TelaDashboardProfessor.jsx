@@ -1,5 +1,6 @@
 import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
 import Insignia from "../../componentes/Insignia.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { turmas, avaliacoes, estatisticasProfessor } from "../../dados/dadosMock.js";
 
 export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
@@ -10,9 +11,9 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
     <div className="dashboard-professor">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Ola, Prof. {usuario.nome.split(" ")[0]}</h2>
+          <h2 className="cabecalho-pagina__titulo">Olá, Prof. {usuario.nome.split(" ")[0]}</h2>
           <p className="cabecalho-pagina__subtitulo">
-            Gerencie suas turmas, avaliacoes e conteudos didaticos.
+            Gerencie suas turmas, avaliações e conteúdos didáticos.
           </p>
         </div>
         <Insignia texto="Professor" variante="info" />
@@ -32,9 +33,9 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
         <section className="painel-secao" aria-labelledby="titulo-minhas-turmas">
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-minhas-turmas">Minhas Turmas</h2>
-            <button className="botao botao--fantasma botao--pequeno" onClick={() => onMudarSecao("turmas")}>
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => onMudarSecao("turmas")}>
               Ver todas
-            </button>
+            </Botao>
           </header>
           <div className="painel-secao__conteudo">
             {minhasTurmas.length > 0 ? (
@@ -61,9 +62,9 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
         <section className="painel-secao" aria-labelledby="titulo-minhas-avaliacoes">
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-minhas-avaliacoes">Avaliacoes</h2>
-            <button className="botao botao--primario botao--pequeno" onClick={() => onMudarSecao("avaliacoes")}>
+            <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao("avaliacoes")}>
               + Nova
-            </button>
+            </Botao>
           </header>
           <div className="painel-secao__conteudo">
             <ul className="lista-avaliacoes" role="list">
@@ -72,7 +73,7 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
                   <div className="item-avaliacao__info">
                     <span className="item-avaliacao__titulo">{av.titulo}</span>
                     <span className="item-avaliacao__meta">
-                      {av.totalQuestoes} questoes - {av.tempoLimiteMinutos}min
+                      {av.totalQuestoes} questões · {av.tempoLimiteMinutos} min
                     </span>
                   </div>
                   <Insignia texto={av.status} />

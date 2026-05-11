@@ -1,5 +1,6 @@
 import BarraProgresso from "../../componentes/BarraProgresso.jsx";
 import Insignia from "../../componentes/Insignia.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { conteudos, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
 
 /* Percentuais simulados por id de matrícula para a vista administrativa */
@@ -232,13 +233,12 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} 
                 <dd>CR-{matricula.codigoMatricula}-{new Date().getFullYear()}</dd>
               </div>
             </dl>
-            <button
-              className="botao botao--primario"
+            <Botao
+              variante="primario"
               onClick={() => window.print()}
-              type="button"
             >
               Imprimir certificado
-            </button>
+            </Botao>
           </div>
         ) : (
           <div className="certificado-bloqueado" aria-label="Certificado bloqueado">

@@ -1,3 +1,4 @@
+import Botao from "../../componentes/Botao.jsx";
 import { cursos } from "../../dados/dadosMock.js";
 import bannerHome from "../../ativos/banner-home.png";
 import imgDevWeb     from "../../ativos/curso-dev-web.png";
@@ -57,27 +58,28 @@ export default function TelaInicio({ onNavegar }) {
             <a href="#cursos" className="botao botao--secundario botao--pequeno cabecalho-publico__link">
               Cursos
             </a>
-            <button
-              className="botao botao--secundario botao--pequeno cabecalho-publico__acao-admin"
+            <Botao
+              variante="secundario"
+              tamanho="pequeno"
+              className="cabecalho-publico__acao-admin"
               onClick={() => onNavegar("login-staff")}
-              type="button"
             >
               Acesso administrativo
-            </button>
-            <button
-              className="botao botao--secundario botao--pequeno"
+            </Botao>
+            <Botao
+              variante="secundario"
+              tamanho="pequeno"
               onClick={() => onNavegar("login-aluno")}
-              type="button"
             >
               Entrar
-            </button>
-            <button
-              className="botao botao--sucesso botao--pequeno"
+            </Botao>
+            <Botao
+              variante="sucesso"
+              tamanho="pequeno"
               onClick={() => onNavegar("cadastro")}
-              type="button"
             >
               Criar conta
-            </button>
+            </Botao>
           </nav>
         </div>
       </header>
@@ -99,13 +101,13 @@ export default function TelaInicio({ onNavegar }) {
               Escolha uma trilha, solicite sua matrícula e acompanhe tudo em um painel acadêmico integrado.
             </p>
             <div className="secao-hero__acoes">
-              <button
-                className="botao botao--sucesso botao--grande"
+              <Botao
+                variante="sucesso"
+                tamanho="grande"
                 onClick={() => onNavegar("cadastro")}
-                type="button"
               >
                 Solicitar matrícula
-              </button>
+              </Botao>
               <a href="#cursos" className="botao botao--fantasma botao--grande">
                 Ver cursos
               </a>
@@ -184,14 +186,14 @@ export default function TelaInicio({ onNavegar }) {
                         <strong className="cartao-curso__preco">
                           R$ {curso.preco.toFixed(2).replace(".", ",")}
                         </strong>
-                        <button
-                          className="botao botao--secundario botao--pequeno"
+                        <Botao
+                          variante="secundario"
+                          tamanho="pequeno"
                           onClick={() => onNavegar("login")}
                           aria-label={`Matricular-se em ${curso.titulo}`}
-                          type="button"
                         >
                           Matricular-se
-                        </button>
+                        </Botao>
                       </footer>
                     </article>
                   </li>

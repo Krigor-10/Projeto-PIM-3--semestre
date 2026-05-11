@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Botao from "../../componentes/Botao.jsx";
 import { perfisDemo } from "../../dados/dadosMock.js";
 
 /* Apenas perfis de equipe (sem o aluno) */
@@ -39,14 +40,15 @@ export default function TelaLoginStaff({ onLogin, onNavegar }) {
       {/* Formulário de acesso */}
       <main className="tela-login__formulario" id="conteudo-login-staff">
         <header className="tela-login__cabecalho">
-          <button
-            className="botao botao--fantasma botao--pequeno tela-login__voltar"
+          <Botao
+            variante="fantasma"
+            tamanho="pequeno"
+            className="tela-login__voltar"
             onClick={() => onNavegar("inicio")}
             aria-label="Voltar para a página inicial"
-            type="button"
           >
             Voltar
-          </button>
+          </Botao>
           <a href="#" className="tela-login__logo" aria-label="CodeRyse Academy">
             <span className="tela-login__logo-marca" aria-hidden="true">
               <span>Code</span><span>Ryse</span>
@@ -86,17 +88,18 @@ export default function TelaLoginStaff({ onLogin, onNavegar }) {
             ))}
           </fieldset>
 
-          <button
-            className="botao botao--primario botao--grande botao--bloco"
+          <Botao
+            variante="primario"
+            tamanho="grande"
+            className="botao--bloco"
             onClick={handleEntrar}
             disabled={!selecionado || carregando}
-            type="button"
           >
             {carregando
               ? <><span className="icone-carregando" aria-hidden="true" /> Entrando...</>
               : "Acessar o painel"
             }
-          </button>
+          </Botao>
 
           <div className="tela-login__divisor">
             <span>ou</span>

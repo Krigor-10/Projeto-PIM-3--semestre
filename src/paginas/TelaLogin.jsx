@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Botao from "../componentes/Botao.jsx";
 import { perfisDemo } from "../dados/dadosMock.js";
 
 export default function TelaLogin({ onLogin, onNavegar }) {
@@ -34,14 +35,15 @@ export default function TelaLogin({ onLogin, onNavegar }) {
 
       <main className="tela-login__formulario" id="conteudo-login">
         <header className="tela-login__cabecalho">
-          <button
-            className="botao botao--fantasma botao--pequeno tela-login__voltar"
+          <Botao
+            variante="fantasma"
+            tamanho="pequeno"
+            className="tela-login__voltar"
             onClick={() => onNavegar("inicio")}
             aria-label="Voltar para a pagina inicial"
-            type="button"
           >
             Voltar
-          </button>
+          </Botao>
           <a href="#" className="tela-login__logo" aria-label="CodeRyse Academy">
             <span className="tela-login__logo-marca" aria-hidden="true">
               <span>Code</span>
@@ -78,18 +80,19 @@ export default function TelaLogin({ onLogin, onNavegar }) {
             ))}
           </fieldset>
 
-          <button
-            className="botao botao--primario botao--grande botao--bloco"
+          <Botao
+            variante="primario"
+            tamanho="grande"
+            className="botao--bloco"
             onClick={handleEntrar}
             disabled={!selecionado || carregando}
-            type="button"
           >
             {carregando ? (
               <><span className="icone-carregando" aria-hidden="true" /> Entrando...</>
             ) : (
               "Entrar na plataforma"
             )}
-          </button>
+          </Botao>
         </section>
       </main>
     </div>

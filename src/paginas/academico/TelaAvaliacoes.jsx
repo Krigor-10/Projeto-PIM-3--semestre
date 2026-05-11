@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { avaliacoes, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
 import { questoesQuiz } from "../../dados/questoesQuiz.js";
 
@@ -278,14 +279,14 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
 
         {!confirmada && (
           <div className="quiz-acoes">
-            <button
-              className="botao botao--primario botao--grande"
+            <Botao
+              variante="primario"
+              tamanho="grande"
               onClick={confirmarResposta}
               disabled={!selecionada}
-              type="button"
             >
               Confirmar resposta
-            </button>
+            </Botao>
           </div>
         )}
 
@@ -320,15 +321,15 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
               ))}
             </div>
             <div className="quiz-acoes">
-              <button
-                className="botao botao--primario botao--grande"
+              <Botao
+                variante="primario"
+                tamanho="grande"
                 onClick={avancarQuestao}
-                type="button"
               >
                 {indice + 1 < totalQuestoes
                   ? "Próxima questão"
                   : "Ver resultado"}
-              </button>
+              </Botao>
             </div>
           </section>
         )}
@@ -357,13 +358,14 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
           <p className="celebracao-certificado__desc">
             Você concluiu o curso com <strong>{resultado.porcentagem}%</strong> de aproveitamento.
           </p>
-          <button
-            className="botao botao--primario botao--grande celebracao-certificado__botao"
+          <Botao
+            variante="primario"
+            tamanho="grande"
+            className="celebracao-certificado__botao"
             onClick={() => onMudarSecao?.("certificados")}
-            type="button"
           >
             <span aria-hidden="true">◈</span> Ver meu Certificado
-          </button>
+          </Botao>
         </div>
       )}
 
@@ -419,33 +421,30 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
       </dl>
 
       <footer className="quiz-resultado__acoes">
-        <button
-          className="botao botao--fantasma"
+        <Botao
+          variante="fantasma"
           onClick={onVoltar}
-          type="button"
         >
           Voltar às avaliações
-        </button>
+        </Botao>
         {/* Exibe contador de tentativas e botão de refazer se ainda houver saldo */}
         <span className="resultado-tentativas">
           {tentativasUsadas} / {LIMITE_TENTATIVAS} tentativas usadas
         </span>
         {aprovado ? (
-          <button
-            className="botao botao--primario"
+          <Botao
+            variante="primario"
             onClick={() => onMudarSecao?.("progresso")}
-            type="button"
           >
             Ver Certificado
-          </button>
+          </Botao>
         ) : podeRefazer ? (
-          <button
-            className="botao botao--secundario"
+          <Botao
+            variante="secundario"
             onClick={onRefazer}
-            type="button"
           >
             Refazer avaliação
-          </button>
+          </Botao>
         ) : (
           <span className="resultado-tentativas resultado-tentativas--esgotadas">
             Limite de tentativas atingido
@@ -515,13 +514,12 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
             Preencha os dados e as questões da prova
           </p>
         </div>
-        <button
-          className="botao botao--fantasma"
+        <Botao
+          variante="fantasma"
           onClick={onCancelar}
-          type="button"
         >
           Cancelar
-        </button>
+        </Botao>
       </header>
 
       <form onSubmit={(e) => salvarAvaliacao(e, "Publicada")} noValidate>
@@ -623,13 +621,13 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
                 {form.questoes.length}
               </span>
             </h3>
-            <button
-              className="botao botao--secundario botao--pequeno"
+            <Botao
+              variante="secundario"
+              tamanho="pequeno"
               onClick={adicionarQuestao}
-              type="button"
             >
               + Adicionar questão
-            </button>
+            </Botao>
           </div>
 
           <div className="criar-avaliacao__questoes">
@@ -780,24 +778,22 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
         </section>
 
         <footer className="criar-avaliacao__rodape">
-          <button
-            className="botao botao--fantasma"
+          <Botao
+            variante="fantasma"
             onClick={onCancelar}
-            type="button"
           >
             Cancelar
-          </button>
+          </Botao>
           <div className="criar-avaliacao__rodape-direita">
-            <button
-              className="botao botao--secundario"
-              type="button"
+            <Botao
+              variante="secundario"
               onClick={(e) => salvarAvaliacao(e, "Rascunho")}
             >
               Salvar rascunho
-            </button>
-            <button className="botao botao--primario" type="submit">
+            </Botao>
+            <Botao variante="primario" type="submit">
               Publicar avaliação
-            </button>
+            </Botao>
           </div>
         </footer>
       </form>
@@ -952,13 +948,12 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
           </p>
         </div>
         {!ehAluno && (
-          <button
-            className="botao botao--primario"
+          <Botao
+            variante="primario"
             onClick={() => setModo("criar")}
-            type="button"
           >
             + Nova Avaliação
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -1083,14 +1078,14 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                     </dl>
 
                     <footer className="cartao-avaliacao__rodape">
-                      <button
-                        className="botao botao--fantasma botao--pequeno"
+                      <Botao
+                        variante="fantasma"
+                        tamanho="pequeno"
                         onClick={() => abrirDetalhes(av)}
-                        type="button"
                         aria-label={`Ver detalhes de ${av.titulo}`}
                       >
                         Detalhes
-                      </button>
+                      </Botao>
                       {ehAluno && (
                         !avaliacaoLiberada ? (
                           <span className="resultado-tentativas resultado-tentativas--esgotadas">
@@ -1102,16 +1097,16 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                             {LIMITE_TENTATIVAS}/{LIMITE_TENTATIVAS} tentativas
                           </span>
                         ) : (
-                          <button
-                            className={`botao botao--pequeno ${jaRealizada ? "botao--secundario" : "botao--primario"}`}
+                          <Botao
+                            variante={jaRealizada ? "secundario" : "primario"}
+                            tamanho="pequeno"
                             onClick={() => iniciarAvaliacao(av)}
-                            type="button"
                             aria-label={`${jaRealizada ? "Refazer" : "Iniciar"} ${av.titulo} — tentativa ${tentativasUsadas + 1} de ${LIMITE_TENTATIVAS}`}
                           >
                             {jaRealizada
                               ? `Refazer (${tentativasUsadas}/${LIMITE_TENTATIVAS})`
                               : "Iniciar"}
-                          </button>
+                          </Botao>
                         )
                       )}
                     </footer>
@@ -1172,29 +1167,27 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             )}
           </dl>
           <footer className="modal-rodape">
-            <button
-              className="botao botao--fantasma"
+            <Botao
+              variante="fantasma"
               onClick={() => setModalAberto(false)}
-              type="button"
             >
               Fechar
-            </button>
+            </Botao>
             {ehAluno && avaliacaoLiberada && (
-              <button
-                className="botao botao--primario"
+              <Botao
+                variante="primario"
                 onClick={() => {
                   setModalAberto(false);
                   iniciarAvaliacao(avaliacaoAtiva);
                 }}
-                type="button"
               >
                 {resultados[avaliacaoAtiva.id] ? "Refazer" : "Iniciar avaliação"}
-              </button>
+              </Botao>
             )}
             {!ehAluno && (
-              <button className="botao botao--primario" type="button">
+              <Botao variante="primario">
                 Editar
-              </button>
+              </Botao>
             )}
           </footer>
         </Modal>

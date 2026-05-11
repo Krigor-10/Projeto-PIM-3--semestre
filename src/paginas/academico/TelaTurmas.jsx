@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { turmas, cursos, matriculas } from "../../dados/dadosMock.js";
 import { podeCriar, podeEditar } from "../../dados/permissoes.js";
 
@@ -60,9 +61,9 @@ export default function TelaTurmas({ usuario }) {
           </p>
         </div>
         {podeCriar(tipo, "turmas") && (
-          <button className="botao botao--primario" onClick={() => setModalAberto(true)} type="button">
+          <Botao variante="primario" onClick={() => setModalAberto(true)}>
             + Nova Turma
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -98,24 +99,24 @@ export default function TelaTurmas({ usuario }) {
             </dl>
             <footer className="cartao-turma__rodape">
               {tipo !== "Professor" && (
-                <button
-                  className="botao botao--fantasma botao--pequeno"
-                  type="button"
+                <Botao
+                  variante="fantasma"
+                  tamanho="pequeno"
                   onClick={() => setTurmaAlunos(turma)}
                   aria-label={`Ver alunos da turma ${turma.nomeTurma}`}
                 >
                   Ver alunos
-                </button>
+                </Botao>
               )}
               {podeEditar(tipo, "turmas") && (
-                <button
-                  className="botao botao--secundario botao--pequeno"
-                  type="button"
+                <Botao
+                  variante="secundario"
+                  tamanho="pequeno"
                   onClick={() => setTurmaEditando(turma)}
                   aria-label={`Editar turma ${turma.nomeTurma}`}
                 >
                   Editar
-                </button>
+                </Botao>
               )}
             </footer>
           </li>
@@ -145,8 +146,8 @@ export default function TelaTurmas({ usuario }) {
               </select>
             </div>
             <div className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setModalAberto(false)}>Cancelar</button>
-              <button type="submit" className="botao botao--primario">Criar Turma</button>
+              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Criar Turma</Botao>
             </div>
           </form>
         </Modal>
@@ -175,7 +176,7 @@ export default function TelaTurmas({ usuario }) {
             );
           })()}
           <div className="modal-rodape">
-            <button className="botao botao--fantasma" onClick={() => setTurmaAlunos(null)} type="button">Fechar</button>
+            <Botao variante="fantasma" onClick={() => setTurmaAlunos(null)}>Fechar</Botao>
           </div>
         </Modal>
       )}
@@ -196,8 +197,8 @@ export default function TelaTurmas({ usuario }) {
               </select>
             </div>
             <div className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setTurmaEditando(null)}>Cancelar</button>
-              <button type="submit" className="botao botao--primario">Salvar alterações</button>
+              <Botao variante="fantasma" onClick={() => setTurmaEditando(null)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Salvar alterações</Botao>
             </div>
           </form>
         </Modal>

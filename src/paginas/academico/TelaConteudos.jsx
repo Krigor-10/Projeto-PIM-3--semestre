@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import BarraProgresso from "../../componentes/BarraProgresso.jsx";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { conteudos, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
 import { questoesQuiz } from "../../dados/questoesQuiz.js";
 import { podeCriar, podeEditar } from "../../dados/permissoes.js";
@@ -143,9 +144,9 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
           </ul>
 
           <footer className="modal-rodape">
-            <button className="botao botao--primario" onClick={onFechar} type="button">
+            <Botao variante="primario" onClick={onFechar}>
               Fechar
-            </button>
+            </Botao>
           </footer>
         </div>
       </Modal>
@@ -205,14 +206,13 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
         </fieldset>
 
         <footer className="modal-rodape">
-          <button
-            type="button"
-            className="botao botao--primario"
+          <Botao
+            variante="primario"
             onClick={avancar}
             disabled={!respostaSelecionada}
           >
             {ehUltima ? "Ver resultado" : "Próxima →"}
-          </button>
+          </Botao>
         </footer>
       </div>
     </Modal>
@@ -362,9 +362,9 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
             <strong className="banner-continuar__titulo">{proximoConteudo.titulo}</strong>
             <p className="banner-continuar__modulo">{moduloProximo?.titulo}</p>
           </div>
-          <button className="botao botao--primario botao--pequeno" onClick={continuarConteudo} type="button">
+          <Botao variante="primario" tamanho="pequeno" onClick={continuarConteudo}>
             Continuar →
-          </button>
+          </Botao>
         </div>
       ) : null}
 
@@ -441,15 +441,15 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                       <div className="cartao-conteudo__meta">
                         <Insignia texto={cont.tipo} variante="marca" />
                       </div>
-                      <button
-                        className={`botao botao--pequeno ${estaConcluido ? "botao--sucesso" : "botao--fantasma"}`}
+                      <Botao
+                        variante={estaConcluido ? "sucesso" : "fantasma"}
+                        tamanho="pequeno"
                         onClick={() => alternarConclusao(cont.id)}
                         aria-pressed={estaConcluido}
                         aria-label={`${estaConcluido ? "Desmarcar" : "Marcar"} "${cont.titulo}" como concluído`}
-                        type="button"
                       >
                         {estaConcluido ? "✓ Concluído" : "Marcar como feito"}
-                      </button>
+                      </Botao>
                     </li>
                   );
                 })}
@@ -486,6 +486,254 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
           onFechar={() => setQuizModulo(null)}
           onAprovado={(percentual) => onQuizAprovado?.(quizModulo.modulo.id, percentual)}
         />,
+        document.body
+      )}
+    </div>
+  );
+}
+
+/* ── Slide de uma turma (visão do professor) ─────────────────── */
+
+function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
+  const [modulosAbertos, setModulosAbertos] = useState(() => new Set());
+
+  const modulosDoCurso = modulos
+    .filter((m) => m.cursoId === turma.cursoId)
+    .sort((a, b) => a.ordem - b.ordem);
+
+  const conteudosDoCurso = conteudos.filter((c) =>
+    modulosDoCurso.some((m) => m.id === c.moduloId)
+  );
+
+  function alternarModulo(id) {
+    setModulosAbertos((prev) => {
+      const copia = new Set(prev);
+      copia.has(id) ? copia.delete(id) : copia.add(id);
+      return copia;
+    });
+  }
+
+  return (
+    <div className="conteudos-aluno">
+      <header className="conteudos-aluno__cabecalho">
+        <div className="conteudos-aluno__curso-info">
+          <p className="conteudos-aluno__turma">{turma.nomeTurma}</p>
+          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
+          <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
+          <p className="conteudos-aluno__curso-meta">
+            {turma.totalAlunos} aluno{turma.totalAlunos !== 1 ? "s" : ""} · {conteudosDoCurso.length} conteúdo{conteudosDoCurso.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+        {podeCriar(tipo, "conteudos") && (
+          <Botao
+            variante="primario"
+            tamanho="pequeno"
+            onClick={onNovoConteudo}
+          >
+            + Novo Conteúdo
+          </Botao>
+        )}
+      </header>
+
+      {modulosDoCurso.map((modulo) => {
+        const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
+        if (itens.length === 0) return null;
+
+        const estaAberto = modulosAbertos.has(modulo.id);
+
+        return (
+          <section key={modulo.id} className="conteudos-modulo">
+            <header className="conteudos-modulo__cabecalho">
+              <h3 className="conteudos-modulo__cabecalho-wrapper">
+                <button
+                  className="conteudos-modulo__toggle"
+                  onClick={() => alternarModulo(modulo.id)}
+                  aria-expanded={estaAberto}
+                  type="button"
+                >
+                  <div className="conteudos-modulo__info">
+                    <span className="conteudos-modulo__titulo">{modulo.ordem}. {modulo.titulo}</span>
+                    <span className="conteudos-modulo__contagem">
+                      {itens.length} conteúdo{itens.length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <span
+                    className={`conteudos-modulo__chevron ${estaAberto ? "conteudos-modulo__chevron--aberto" : ""}`}
+                    aria-hidden="true"
+                  >▾</span>
+                </button>
+              </h3>
+            </header>
+
+            {estaAberto && (
+              <ul className="lista-conteudos-completa conteudos-modulo__lista" role="list">
+                {itens.map((cont) => {
+                  const config = TIPO_CONFIG[cont.tipo] || { icone: "◈", rotulo: cont.tipo };
+                  return (
+                    <li key={cont.id} className="cartao-conteudo">
+                      <span className="cartao-conteudo__icone" aria-hidden="true" title={config.rotulo}>
+                        {config.icone}
+                      </span>
+                      <div className="cartao-conteudo__info">
+                        <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
+                        <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
+                      </div>
+                      <div className="cartao-conteudo__meta">
+                        <Insignia texto={cont.tipo} variante="marca" />
+                      </div>
+                      {podeEditar(tipo, "conteudos") && (
+                        <div className="cartao-conteudo__acoes">
+                          <Botao
+                            variante="fantasma"
+                            tamanho="pequeno"
+                            aria-label={`Editar conteúdo ${cont.titulo}`}
+                          >
+                            Editar
+                          </Botao>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Vista do professor — carrossel de turmas ────────────────── */
+
+function VistaProfessor({ usuario }) {
+  const [slideAtual, setSlideAtual] = useState(0);
+  const [modalAberto, setModalAberto] = useState(false);
+
+  const minhasTurmas = turmas.filter((t) => t.professorId === usuario?.id);
+
+  if (minhasTurmas.length === 0) {
+    return (
+      <p className="texto-vazio texto-vazio--central" role="status">
+        Você não possui turmas atribuídas.
+      </p>
+    );
+  }
+
+  const total     = minhasTurmas.length;
+  const temAnterior = slideAtual > 0;
+  const temProximo  = slideAtual < total - 1;
+
+  /* Módulos apenas da turma visível no carrossel — usados no select do modal */
+  const modulosDaTurmaAtual = modulos.filter(
+    (m) => m.cursoId === minhasTurmas[slideAtual].cursoId
+  );
+
+  return (
+    <div className="carrossel-cursos">
+
+      {total > 1 && (
+        <nav className="carrossel-cursos__nav" aria-label="Navegação entre turmas">
+          <button
+            className="carrossel-cursos__seta"
+            onClick={() => setSlideAtual((i) => i - 1)}
+            disabled={!temAnterior}
+            aria-label="Turma anterior"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <div className="carrossel-cursos__indicadores" role="tablist" aria-label="Turmas do professor">
+            {minhasTurmas.map((turma, idx) => (
+              <button
+                key={turma.id}
+                className={`carrossel-cursos__bolinha ${idx === slideAtual ? "carrossel-cursos__bolinha--ativa" : ""}`}
+                onClick={() => setSlideAtual(idx)}
+                role="tab"
+                aria-selected={idx === slideAtual}
+                aria-label={`Turma ${idx + 1}: ${turma.nomeTurma}`}
+                type="button"
+              />
+            ))}
+          </div>
+
+          <button
+            className="carrossel-cursos__seta"
+            onClick={() => setSlideAtual((i) => i + 1)}
+            disabled={!temProximo}
+            aria-label="Próxima turma"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </nav>
+      )}
+
+      <div className="carrossel-cursos__janela">
+        <div
+          className="carrossel-cursos__trilha"
+          style={{ transform: `translateX(-${slideAtual * 100}%)` }}
+        >
+          {minhasTurmas.map((turma, idx) => (
+            <div key={turma.id} className="carrossel-cursos__slide" aria-hidden={idx !== slideAtual}>
+              <SlideCursoProfessor
+                turma={turma}
+                tipo={usuario?.tipo}
+                onNovoConteudo={() => setModalAberto(true)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Portal para modal — evita conflito de stacking context com o transform do carrossel */}
+      {modalAberto && createPortal(
+        <Modal
+          titulo={`Novo Conteúdo — ${minhasTurmas[slideAtual].nomeTurma}`}
+          onFechar={() => setModalAberto(false)}
+        >
+          <form
+            className="formulario-modal"
+            onSubmit={(e) => { e.preventDefault(); setModalAberto(false); }}
+            noValidate
+          >
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="titulo-cont-prof">Título *</label>
+              <input id="titulo-cont-prof" className="campo__entrada" type="text" required />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="modulo-cont-prof">Módulo *</label>
+              <select id="modulo-cont-prof" className="campo__entrada" required>
+                <option value="">Selecione um módulo</option>
+                {modulosDaTurmaAtual.map((m) => (
+                  <option key={m.id} value={m.id}>{m.titulo}</option>
+                ))}
+              </select>
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="tipo-cont-prof">Tipo *</label>
+              <select id="tipo-cont-prof" className="campo__entrada" required>
+                <option value="">Selecione o tipo</option>
+                <option value="Video">Vídeo</option>
+                <option value="Texto">Texto</option>
+                <option value="Documento">Documento</option>
+              </select>
+            </div>
+            <footer className="modal-rodape">
+              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>
+                Cancelar
+              </Botao>
+              <Botao variante="primario" type="submit">
+                Criar Conteúdo
+              </Botao>
+            </footer>
+          </form>
+        </Modal>,
         document.body
       )}
     </div>
@@ -586,35 +834,17 @@ function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onM
   );
 }
 
-/* ── Vista de gestão (admin, professor, coordenador) ─────────── */
+/* ── Vista de gestão (admin, coordenador) ────────────────────── */
 
 function VistaGestao({ usuario }) {
   const [modalAberto, setModalAberto] = useState(false);
   const [filtroModulo, setFiltroModulo] = useState("");
 
   const tipo = usuario?.tipo;
-  const ehProfessor = tipo === "Professor";
-
-  /* Cursos e módulos restritos ao professor — outros perfis veem tudo */
-  const cursosIdsProfessor = ehProfessor
-    ? new Set(turmas.filter((t) => t.professorId === usuario?.id).map((t) => t.cursoId))
-    : null;
-
-  const modulosDisponiveis = ehProfessor
-    ? modulos.filter((m) => cursosIdsProfessor.has(m.cursoId))
-    : modulos;
-
-  const modulosIds = ehProfessor
-    ? new Set(modulosDisponiveis.map((m) => m.id))
-    : null;
-
-  const conteudosBase = ehProfessor
-    ? conteudos.filter((c) => modulosIds.has(c.moduloId))
-    : conteudos;
 
   const conteudosFiltrados = filtroModulo
-    ? conteudosBase.filter((c) => c.moduloId === Number(filtroModulo))
-    : conteudosBase;
+    ? conteudos.filter((c) => c.moduloId === Number(filtroModulo))
+    : conteudos;
 
   return (
     <div className="tela-conteudos">
@@ -622,17 +852,16 @@ function VistaGestao({ usuario }) {
         <div>
           <h2 className="cabecalho-pagina__titulo">Conteúdos Didáticos</h2>
           <p className="cabecalho-pagina__subtitulo">
-            {conteudosBase.length} conteúdo{conteudosBase.length !== 1 ? "s" : ""} {ehProfessor ? "nos seus cursos" : "cadastrados na plataforma"}
+            {conteudos.length} conteúdo{conteudos.length !== 1 ? "s" : ""} cadastrados na plataforma
           </p>
         </div>
         {podeCriar(tipo, "conteudos") && (
-          <button
-            className="botao botao--primario"
+          <Botao
+            variante="primario"
             onClick={() => setModalAberto(true)}
-            type="button"
           >
             + Novo Conteúdo
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -647,7 +876,7 @@ function VistaGestao({ usuario }) {
           onChange={(e) => setFiltroModulo(e.target.value)}
         >
           <option value="">Todos os módulos</option>
-          {modulosDisponiveis.map((m) => (
+          {modulos.map((m) => (
             <option key={m.id} value={m.id}>
               {m.titulo}
             </option>
@@ -690,13 +919,13 @@ function VistaGestao({ usuario }) {
                 </div>
                 {podeEditar(tipo, "conteudos") && (
                   <div className="cartao-conteudo__acoes">
-                    <button
-                      className="botao botao--fantasma botao--pequeno"
-                      type="button"
+                    <Botao
+                      variante="fantasma"
+                      tamanho="pequeno"
                       aria-label={`Editar conteúdo ${cont.titulo}`}
                     >
                       Editar
-                    </button>
+                    </Botao>
                   </div>
                 )}
               </li>
@@ -723,7 +952,7 @@ function VistaGestao({ usuario }) {
               <label className="campo__rotulo" htmlFor="modulo-cont">Módulo *</label>
               <select id="modulo-cont" className="campo__entrada" required>
                 <option value="">Selecione um módulo</option>
-                {modulosDisponiveis.map((m) => (
+                {modulos.map((m) => (
                   <option key={m.id} value={m.id}>{m.titulo}</option>
                 ))}
               </select>
@@ -747,12 +976,12 @@ function VistaGestao({ usuario }) {
               />
             </div>
             <footer className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setModalAberto(false)}>
+              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>
                 Cancelar
-              </button>
-              <button type="submit" className="botao botao--primario">
+              </Botao>
+              <Botao variante="primario" type="submit">
                 Criar Conteúdo
-              </button>
+              </Botao>
             </footer>
           </form>
         </Modal>
@@ -774,6 +1003,9 @@ export default function TelaConteudos({ usuario, quizzesAprovados, onQuizAprovad
         onConteudoConcluido={onConteudoConcluido}
       />
     );
+  }
+  if (usuario?.tipo === "Professor") {
+    return <VistaProfessor usuario={usuario} />;
   }
   return <VistaGestao usuario={usuario} />;
 }

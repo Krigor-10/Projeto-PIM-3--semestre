@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Modal from "../../componentes/Modal.jsx";
 import BarraProgresso from "../../componentes/BarraProgresso.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { modulos, cursos, turmas } from "../../dados/dadosMock.js";
 import { podeCriar } from "../../dados/permissoes.js";
 
@@ -65,13 +66,12 @@ export default function TelaModulos({ usuario }) {
           </p>
         </div>
         {podeCriar(tipo, "modulos") && (
-          <button
-            className="botao botao--primario"
+          <Botao
+            variante="primario"
             onClick={() => setModalAberto(true)}
-            type="button"
           >
             + Novo Módulo
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -100,15 +100,15 @@ export default function TelaModulos({ usuario }) {
                   {itens.length} módulo{itens.length !== 1 ? "s" : ""} · média {mediaDesempenho}%
                 </p>
               </div>
-              <button
-                className="botao botao--fantasma botao--pequeno"
+              <Botao
+                variante="fantasma"
+                tamanho="pequeno"
                 onClick={() => alternarCurso(curso.id)}
                 aria-expanded={aberto}
                 aria-controls={`modulos-curso-${curso.id}`}
-                type="button"
               >
                 {aberto ? "Recolher ▲" : "Expandir ▼"}
-              </button>
+              </Botao>
             </header>
 
             {aberto && (
@@ -207,8 +207,8 @@ export default function TelaModulos({ usuario }) {
               <input id="ordem-modulo" className="campo__entrada" type="number" min="1" defaultValue="1" />
             </div>
             <footer className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setModalAberto(false)}>Cancelar</button>
-              <button type="submit" className="botao botao--primario">Criar Módulo</button>
+              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Criar Módulo</Botao>
             </footer>
           </form>
         </Modal>

@@ -1,7 +1,29 @@
 import { useState, useRef, useEffect } from "react";
-import { TbTrophy } from "react-icons/tb";
+import {
+  TbTrophy, TbSun, TbMoon,
+  TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
+  TbBooks, TbStack, TbSchool, TbClipboardList,
+  TbFileCheck, TbFileText, TbChartBar, TbUsersGroup,
+} from "react-icons/tb";
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
+import Botao from "./Botao.jsx";
+
+const iconesPorSecao = {
+  dashboard:    TbLayoutDashboard,
+  alunos:       TbUsers,
+  professores:  TbChalkboard,
+  coordenadores:TbUserShield,
+  cursos:       TbBooks,
+  modulos:      TbStack,
+  turmas:       TbSchool,
+  matriculas:   TbClipboardList,
+  avaliacoes:   TbFileCheck,
+  conteudos:    TbFileText,
+  progresso:    TbChartBar,
+  certificados: TbTrophy,
+  usuarios:     TbUsersGroup,
+};
 
 const metadadosPorSecao = {
   dashboard:    { titulo: "Panorama",           descricao: "Resumo central do workspace com dados da plataforma."         },
@@ -24,9 +46,18 @@ const variantePorTipo = { Aluno: "marca", Professor: "info", Coordenador: "aviso
 export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSidebar, onMudarSecao }) {
   const [popupAberto, setPopupAberto] = useState(false);
   const [confirmarSaida, setConfirmarSaida] = useState(false);
+  const [temaClaro, setTemaClaro] = useState(
+    () => localStorage.getItem("coderyse-tema") === "claro"
+  );
   const refWrapper = useRef(null);
 
+  useEffect(() => {
+    document.documentElement.dataset.tema = temaClaro ? "claro" : "escuro";
+    localStorage.setItem("coderyse-tema", temaClaro ? "claro" : "escuro");
+  }, [temaClaro]);
+
   const meta = metadadosPorSecao[secaoAtual] || metadadosPorSecao.dashboard;
+  const IconeSecao = iconesPorSecao[secaoAtual] || TbLayoutDashboard;
 
   /* Fecha o popup ao clicar fora dele */
   useEffect(() => {
@@ -47,17 +78,25 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
     <>
     <header className="topbar">
       <div className="topbar__esquerda">
-        <button
-          className="topbar__menu-mobile botao botao--fantasma botao--pequeno"
+        <Botao
+          variante="fantasma"
+          tamanho="pequeno"
+          className="topbar__menu-mobile"
           onClick={onAbrirSidebar}
           aria-label="Abrir menu de navegação"
-          type="button"
         >
           Menu
-        </button>
+        </Botao>
 
         <div className="topbar__contexto">
-          <span className="topbar__eyebrow">CodeRyse Academy</span>
+          <nav className="topbar__breadcrumb" aria-label="Localização atual">
+            <span className="topbar__breadcrumb-raiz">CodeRyse Academy</span>
+            <span className="topbar__breadcrumb-sep" aria-hidden="true">›</span>
+            <span className="topbar__breadcrumb-secao">
+              <IconeSecao size={13} aria-hidden="true" />
+              {meta.titulo}
+            </span>
+          </nav>
           <h1 className="topbar__titulo">{meta.titulo}</h1>
           <p className="topbar__descricao">{meta.descricao}</p>
         </div>
@@ -76,6 +115,15 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
       )}
 
       <div className="topbar__acoes">
+        <button
+          className="topbar__toggle-tema"
+          onClick={() => setTemaClaro((v) => !v)}
+          aria-label={temaClaro ? "Ativar tema escuro" : "Ativar tema claro"}
+          title={temaClaro ? "Tema escuro" : "Tema claro"}
+          type="button"
+        >
+          {temaClaro ? <TbMoon size={18} aria-hidden="true" /> : <TbSun size={18} aria-hidden="true" />}
+        </button>
         {/* Wrapper relativo para posicionar o popup abaixo do perfil */}
         <div className="topbar__perfil-wrapper" ref={refWrapper}>
           <button
@@ -136,18 +184,20 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
                   </div>
                 )}
               </dl>
+
+              <div className="popup-perfil__rodape">
+                <Botao
+                  variante="perigo"
+                  className="popup-perfil__sair"
+                  onClick={() => { setConfirmarSaida(true); setPopupAberto(false); }}
+                >
+                  Sair da conta
+                </Botao>
+              </div>
             </div>
           )}
         </div>
 
-        <button
-          className="botao botao--fantasma botao--pequeno"
-          onClick={() => setConfirmarSaida(true)}
-          aria-label="Sair da conta"
-          type="button"
-        >
-          Sair
-        </button>
       </div>
     </header>
 
@@ -157,20 +207,12 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
           Tem certeza que deseja sair? Você precisará fazer login novamente para acessar a plataforma.
         </p>
         <footer style={{ display: "flex", gap: "var(--espaco-md)", justifyContent: "flex-end" }}>
-          <button
-            className="botao botao--fantasma"
-            onClick={() => setConfirmarSaida(false)}
-            type="button"
-          >
+          <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>
             Cancelar
-          </button>
-          <button
-            className="botao botao--perigo"
-            onClick={onLogout}
-            type="button"
-          >
+          </Botao>
+          <Botao variante="perigo" onClick={onLogout}>
             Confirmar saída
-          </button>
+          </Botao>
         </footer>
       </Modal>
     )}

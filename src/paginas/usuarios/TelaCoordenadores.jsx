@@ -2,6 +2,7 @@ import { useState } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
 import ModalEdicaoUsuario from "../../componentes/ModalEdicaoUsuario.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { usuarios } from "../../dados/dadosMock.js";
 import { podeCriar, podeEditar } from "../../dados/permissoes.js";
 
@@ -41,9 +42,9 @@ export default function TelaCoordenadores({ usuario }) {
           </p>
         </div>
         {podeCriar(tipo, "coordenadores") && (
-          <button className="botao botao--primario" onClick={() => setModalNovoAberto(true)} type="button">
+          <Botao variante="primario" onClick={() => setModalNovoAberto(true)}>
             + Novo Coordenador
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -77,24 +78,24 @@ export default function TelaCoordenadores({ usuario }) {
             </div>
             <div className="cartao-usuario__acoes">
               {podeEditar(tipo, "coordenadores") && (
-                <button
-                  className={`botao botao--pequeno ${coord.ativo ? "botao--perigo" : "botao--sucesso"}`}
+                <Botao
+                  variante={coord.ativo ? "perigo" : "sucesso"}
+                  tamanho="pequeno"
                   onClick={() => alternarAtivo(coord.id)}
-                  type="button"
                   aria-label={`${coord.ativo ? "Desativar" : "Ativar"} coordenador ${coord.nome}`}
                 >
                   {coord.ativo ? "Desativar" : "Ativar"}
-                </button>
+                </Botao>
               )}
               {podeEditar(tipo, "coordenadores") && (
-                <button
-                  className="botao botao--fantasma botao--pequeno"
+                <Botao
+                  variante="fantasma"
+                  tamanho="pequeno"
                   onClick={() => setUsuarioEditando(coord)}
-                  type="button"
                   aria-label={`Editar coordenador ${coord.nome}`}
                 >
                   Editar
-                </button>
+                </Botao>
               )}
             </div>
           </li>
@@ -138,8 +139,8 @@ export default function TelaCoordenadores({ usuario }) {
               <input id="cpf-coord" className="campo__entrada" type="text" placeholder="000.000.000-00" required />
             </div>
             <div className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setModalNovoAberto(false)}>Cancelar</button>
-              <button type="submit" className="botao botao--primario">Cadastrar Coordenador</button>
+              <Botao variante="fantasma" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Cadastrar Coordenador</Botao>
             </div>
           </form>
         </Modal>

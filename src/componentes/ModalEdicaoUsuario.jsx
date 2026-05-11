@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "./Modal.jsx";
+import Botao from "./Botao.jsx";
 
 export default function ModalEdicaoUsuario({ usuario, onSalvar, onFechar }) {
   /* Inicializa o formulário com os dados atuais do usuário recebido por prop */
@@ -136,12 +137,12 @@ export default function ModalEdicaoUsuario({ usuario, onSalvar, onFechar }) {
         </fieldset>
 
         <footer className="modal-rodape">
-          <button type="button" className="botao botao--fantasma" onClick={onFechar}>
+          <Botao variante="fantasma" onClick={onFechar}>
             Cancelar
-          </button>
-          <button type="submit" className="botao botao--primario">
+          </Botao>
+          <Botao variante="primario" type="submit">
             Salvar alterações
-          </button>
+          </Botao>
         </footer>
       </form>
     </Modal>

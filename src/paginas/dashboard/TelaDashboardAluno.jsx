@@ -1,6 +1,7 @@
 import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
 import BarraProgresso from "../../componentes/BarraProgresso.jsx";
 import Insignia from "../../componentes/Insignia.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { progressoAluno, conteudos, matriculas } from "../../dados/dadosMock.js";
 
 export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
@@ -68,13 +69,13 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
         >
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-progresso-curso">Curso em Andamento</h2>
-            <button
-              className="botao botao--fantasma botao--pequeno"
+            <Botao
+              variante="fantasma"
+              tamanho="pequeno"
               onClick={() => onMudarSecao("progresso")}
-              type="button"
             >
               Ver progresso completo
-            </button>
+            </Botao>
           </header>
           <div className="painel-secao__conteudo">
             <div className="cartao-curso-ativo">
@@ -109,13 +110,13 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
         <section className="painel-secao" aria-labelledby="titulo-proximos-conteudos">
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-proximos-conteudos">Próximos Conteúdos</h2>
-            <button
-              className="botao botao--fantasma botao--pequeno"
+            <Botao
+              variante="fantasma"
+              tamanho="pequeno"
               onClick={() => onMudarSecao("conteudos")}
-              type="button"
             >
               Ver todos
-            </button>
+            </Botao>
           </header>
           <div className="painel-secao__conteudo">
             <ul className="lista-conteudos" role="list">
@@ -139,13 +140,13 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
           <section className="painel-secao" aria-labelledby="titulo-matricula-aluno">
             <header className="painel-secao__cabecalho">
               <h2 className="painel-secao__titulo" id="titulo-matricula-aluno">Minha Matrícula</h2>
-              <button
-                className="botao botao--fantasma botao--pequeno"
+              <Botao
+                variante="fantasma"
+                tamanho="pequeno"
                 onClick={() => onMudarSecao("matriculas")}
-                type="button"
               >
                 Ver detalhes
-              </button>
+              </Botao>
             </header>
             <div className="painel-secao__conteudo">
               <dl className="lista-detalhes">

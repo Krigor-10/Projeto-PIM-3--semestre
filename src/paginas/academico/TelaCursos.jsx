@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { cursos } from "../../dados/dadosMock.js";
 import { podeCriar, podeEditar } from "../../dados/permissoes.js";
 
@@ -62,13 +63,12 @@ export default function TelaCursos({ usuario }) {
         </div>
         {/* Admin e Coordenador podem criar cursos; Professor apenas visualiza */}
         {podeCriar(tipo, "cursos") && (
-          <button
-            className="botao botao--primario"
+          <Botao
+            variante="primario"
             onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setModalAberto(true); }}
-            type="button"
           >
             + Novo Curso
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -146,9 +146,9 @@ export default function TelaCursos({ usuario }) {
                 <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={cursoSelecionado.ativo ? "Ativo" : "Inativo"} /></dd></div>
               </dl>
               <div className="modal-rodape">
-                <button className="botao botao--fantasma" onClick={() => setModalAberto(false)} type="button">Fechar</button>
+                <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Fechar</Botao>
                 {podeEditar(tipo, "cursos") && (
-                  <button className="botao botao--primario" type="button" onClick={() => setModoEdicao(true)}>Editar Curso</button>
+                  <Botao variante="primario" onClick={() => setModoEdicao(true)}>Editar Curso</Botao>
                 )}
               </div>
             </>
@@ -179,8 +179,8 @@ export default function TelaCursos({ usuario }) {
                 </div>
               </div>
               <div className="modal-rodape">
-                <button type="button" className="botao botao--fantasma" onClick={() => setModoEdicao(false)}>Cancelar</button>
-                <button type="submit" className="botao botao--primario">Salvar alterações</button>
+                <Botao variante="fantasma" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
+                <Botao variante="primario" type="submit">Salvar alterações</Botao>
               </div>
             </form>
           )}
@@ -210,8 +210,8 @@ export default function TelaCursos({ usuario }) {
                 </div>
               </div>
               <div className="modal-rodape">
-                <button type="button" className="botao botao--fantasma" onClick={() => setModalAberto(false)}>Cancelar</button>
-                <button type="submit" className="botao botao--primario">Criar Curso</button>
+                <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+                <Botao variante="primario" type="submit">Criar Curso</Botao>
               </div>
             </form>
           )}

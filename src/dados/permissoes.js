@@ -42,7 +42,7 @@ export const SECOES = [
     chave: "cursos",
     rotulo: "Cursos",
     icone: "CU",
-    perfis: ["Admin", "Coordenador", "Professor"],
+    perfis: ["Admin", "Coordenador"],
   },
   {
     chave: "modulos",

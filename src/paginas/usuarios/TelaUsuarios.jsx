@@ -2,6 +2,7 @@ import { useState } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
 import ModalEdicaoUsuario from "../../componentes/ModalEdicaoUsuario.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { usuarios } from "../../dados/dadosMock.js";
 import { podeCriar, podeEditar } from "../../dados/permissoes.js";
 
@@ -52,9 +53,9 @@ export default function TelaUsuarios({ usuario }) {
           </p>
         </div>
         {podeCriar(tipo, "usuarios") && (
-          <button className="botao botao--primario" onClick={() => setModalAberto(true)} type="button">
+          <Botao variante="primario" onClick={() => setModalAberto(true)}>
             + Novo Usuário
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -102,24 +103,24 @@ export default function TelaUsuarios({ usuario }) {
             </div>
             <div className="cartao-usuario__acoes">
               {podeEditar(tipo, "usuarios") && (
-                <button
-                  className={`botao botao--pequeno ${usr.ativo ? "botao--perigo" : "botao--sucesso"}`}
+                <Botao
+                  variante={usr.ativo ? "perigo" : "sucesso"}
+                  tamanho="pequeno"
                   onClick={() => alternarAtivo(usr.id)}
-                  type="button"
                   aria-label={`${usr.ativo ? "Desativar" : "Ativar"} usuário ${usr.nome}`}
                 >
                   {usr.ativo ? "Desativar" : "Ativar"}
-                </button>
+                </Botao>
               )}
               {podeEditar(tipo, "usuarios") && (
-                <button
-                  className="botao botao--fantasma botao--pequeno"
+                <Botao
+                  variante="fantasma"
+                  tamanho="pequeno"
                   onClick={() => setUsuarioEditando(usr)}
-                  type="button"
                   aria-label={`Editar usuário ${usr.nome}`}
                 >
                   Editar
-                </button>
+                </Botao>
               )}
             </div>
           </li>
@@ -181,8 +182,8 @@ export default function TelaUsuarios({ usuario }) {
               <input id="telefone-usr" className="campo__entrada" type="tel" placeholder="(11) 99999-9999" />
             </div>
             <div className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setModalAberto(false)}>Cancelar</button>
-              <button type="submit" className="botao botao--primario">Criar Usuário</button>
+              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Criar Usuário</Botao>
             </div>
           </form>
         </Modal>

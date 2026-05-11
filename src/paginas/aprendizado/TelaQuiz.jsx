@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Botao from "../../componentes/Botao.jsx";
 import { questoesQuiz } from "../../dados/questoesQuiz.js";
 
 const TOTAL = questoesQuiz.length;
@@ -59,20 +60,19 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
             <li><span className="quiz-inicio__info-rotulo">Feedback</span><strong>Imediato</strong></li>
           </ul>
           <div className="quiz-inicio__acoes">
-            <button
-              className="botao botao--fantasma"
+            <Botao
+              variante="fantasma"
               onClick={() => onMudarSecao("avaliacoes")}
-              type="button"
             >
               Voltar
-            </button>
-            <button
-              className="botao botao--primario botao--grande"
+            </Botao>
+            <Botao
+              variante="primario"
+              tamanho="grande"
               onClick={iniciar}
-              type="button"
             >
               Iniciar Quiz
-            </button>
+            </Botao>
           </div>
         </div>
       </div>
@@ -121,20 +121,18 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
           </ul>
 
           <div className="quiz-resultado__acoes">
-            <button
-              className="botao botao--fantasma"
+            <Botao
+              variante="fantasma"
               onClick={() => onMudarSecao("avaliacoes")}
-              type="button"
             >
               Voltar às avaliações
-            </button>
-            <button
-              className="botao botao--primario"
+            </Botao>
+            <Botao
+              variante="primario"
               onClick={iniciar}
-              type="button"
             >
               Refazer quiz
-            </button>
+            </Botao>
           </div>
         </div>
       </div>
@@ -220,14 +218,14 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
 
         {!confirmada && (
           <div className="quiz-acoes">
-            <button
-              className="botao botao--primario botao--grande"
+            <Botao
+              variante="primario"
+              tamanho="grande"
               onClick={confirmar}
               disabled={!selecionada}
-              type="button"
             >
               Confirmar resposta
-            </button>
+            </Botao>
           </div>
         )}
 
@@ -252,13 +250,13 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
               ))}
             </div>
             <div className="quiz-acoes">
-              <button
-                className="botao botao--primario botao--grande"
+              <Botao
+                variante="primario"
+                tamanho="grande"
                 onClick={avancar}
-                type="button"
               >
                 {indice + 1 < TOTAL ? "Próxima questão" : "Ver resultado"}
-              </button>
+              </Botao>
             </div>
           </section>
         )}

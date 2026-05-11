@@ -19,6 +19,7 @@ import TelaProfessores from "./usuarios/TelaProfessores.jsx";
 import TelaCoordenadores from "./usuarios/TelaCoordenadores.jsx";
 import TelaQuiz from "./aprendizado/TelaQuiz.jsx";
 import TelaCertificados from "./aprendizado/TelaCertificados.jsx";
+import Toast from "../componentes/Toast.jsx";
 
 function resolverDashboard(tipo) {
   const dashboards = {
@@ -48,11 +49,11 @@ const mapaTelas = {
 
 function TelaAcessoNegado() {
   return (
-    <div className="tela-acesso-negado">
-      <span aria-hidden="true">!</span>
-      <h2>Acesso nao autorizado</h2>
-      <p>Voce nao tem permissao para acessar esta secao.</p>
-    </div>
+    <section className="tela-acesso-negado" aria-labelledby="titulo-acesso-negado">
+      <span className="tela-acesso-negado__icone" aria-hidden="true">⊘</span>
+      <h2 className="tela-acesso-negado__titulo" id="titulo-acesso-negado">Acesso não autorizado</h2>
+      <p className="tela-acesso-negado__descricao">Você não tem permissão para acessar esta seção.</p>
+    </section>
   );
 }
 
@@ -65,6 +66,13 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
   /* null enquanto não aprovada; objeto { porcentagem, nota, notaMaxima } após aprovação */
   const [avaliacaoAprovada, setAvaliacaoAprovada] = useState(null);
   const [conteudoConcluido, setConteudoConcluido] = useState(false);
+  const [toasts, setToasts] = useState([]);
+
+  function mostrarToast(mensagem, tipo = "sucesso") {
+    const id = Date.now();
+    setToasts((prev) => [...prev.slice(-2), { id, mensagem, tipo }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3500);
+  }
 
   function registrarQuizAprovado(moduloId, percentual) {
     setQuizzesAprovados((prev) => new Set(prev).add(moduloId));
@@ -103,19 +111,26 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
         />
 
         <main className="layout-principal" id="conteudo-principal" tabIndex={-1}>
-          <ComponenteTela
-            usuario={usuario}
-            onMudarSecao={onMudarSecao}
-            quizzesAprovados={quizzesAprovados}
-            onQuizAprovado={registrarQuizAprovado}
-            resultadosQuizzes={resultadosQuizzes}
-            avaliacaoAprovada={avaliacaoAprovada}
-            onAvaliacaoAprovada={(resultado) => setAvaliacaoAprovada(resultado)}
-            conteudoConcluido={conteudoConcluido}
-            onConteudoConcluido={setConteudoConcluido}
-          />
+          <div key={secaoAtual} className="tela-animada">
+            <ComponenteTela
+              usuario={usuario}
+              onMudarSecao={onMudarSecao}
+              quizzesAprovados={quizzesAprovados}
+              onQuizAprovado={registrarQuizAprovado}
+              resultadosQuizzes={resultadosQuizzes}
+              avaliacaoAprovada={avaliacaoAprovada}
+              onAvaliacaoAprovada={(resultado) => setAvaliacaoAprovada(resultado)}
+              conteudoConcluido={conteudoConcluido}
+              onConteudoConcluido={setConteudoConcluido}
+              onToast={mostrarToast}
+            />
+          </div>
         </main>
       </div>
+      <Toast
+        toasts={toasts}
+        onFechar={(id) => setToasts((prev) => prev.filter((t) => t.id !== id))}
+      />
     </div>
   );
 }

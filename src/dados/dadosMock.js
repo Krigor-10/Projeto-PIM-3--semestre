@@ -204,8 +204,8 @@ export const matriculas = [
 
 /* ── Avaliações ──────────────────────────────────────────────── */
 export const avaliacoes = [
-  { id: 1, titulo: "Prova 1 — HTML e CSS",              cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 2,  tentativasPermitidas: 2, tempoLimiteMinutos: 60,  notaMaxima: 10, totalQuestoes: 10, status: "Publicada" },
-  { id: 2, titulo: "Prova 2 — JavaScript Avançado",     cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 3,  tentativasPermitidas: 1, tempoLimiteMinutos: 90,  notaMaxima: 10, totalQuestoes: 15, status: "Publicada" },
+  { id: 1, titulo: "Prova 1 — HTML e CSS",              cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 2,  tentativasPermitidas: 2, tempoLimiteMinutos: 60,  notaMaxima: 10, totalQuestoes: 10, status: "Publicada", novo: true },
+  { id: 2, titulo: "Prova 2 — JavaScript Avançado",     cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 3,  tentativasPermitidas: 1, tempoLimiteMinutos: 90,  notaMaxima: 10, totalQuestoes: 15, status: "Publicada", novo: true },
   { id: 3, titulo: "Prova Final — React",               cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 5,  tentativasPermitidas: 1, tempoLimiteMinutos: 120, notaMaxima: 10, totalQuestoes: 20, status: "Rascunho"  },
   { id: 4, titulo: "Avaliação — Python e Pandas",       cursoId: 2, cursoTitulo: "Ciência de Dados",       moduloId: 6,  tentativasPermitidas: 3, tempoLimiteMinutos: 45,  notaMaxima: 10, totalQuestoes: 8,  status: "Publicada" },
   { id: 5, titulo: "Quiz — Fundamentos de IA",          cursoId: 3, cursoTitulo: "Inteligência Artificial", moduloId: 8,  tentativasPermitidas: 2, tempoLimiteMinutos: 30,  notaMaxima: 10, totalQuestoes: 5,  status: "Publicada" },
@@ -223,9 +223,9 @@ export const conteudos = [
   { id: 5,  moduloId: 2, titulo: "CSS Grid",                          tipo: "Video",     duracao: "28min", concluido: false },
   { id: 6,  moduloId: 2, titulo: "Media Queries e responsividade",    tipo: "Documento", duracao: "20min", concluido: false },
   { id: 7,  moduloId: 3, titulo: "Arrow functions e destructuring",   tipo: "Video",     duracao: "25min", concluido: false },
-  { id: 8,  moduloId: 3, titulo: "Promises e Async/Await",            tipo: "Video",     duracao: "35min", concluido: false },
-  { id: 9,  moduloId: 4, titulo: "Introdução ao React",               tipo: "Video",     duracao: "20min", concluido: false },
-  { id: 10, moduloId: 4, titulo: "Componentes e Props",               tipo: "Video",     duracao: "32min", concluido: false },
+  { id: 8,  moduloId: 3, titulo: "Promises e Async/Await",            tipo: "Video",     duracao: "35min", concluido: false, novo: true },
+  { id: 9,  moduloId: 4, titulo: "Introdução ao React",               tipo: "Video",     duracao: "20min", concluido: false, novo: true },
+  { id: 10, moduloId: 4, titulo: "Componentes e Props",               tipo: "Video",     duracao: "32min", concluido: false, novo: true },
 ];
 
 /* ── Progresso da aluna demo (Maria Isabela) ────────────────── */
@@ -256,6 +256,14 @@ export const usuarios = [
   { id: 11, nome: "Rafael Souza",           email: "rafael.souza@coderyse.com",    tipo: "Aluno",       ativo: false, dataCadastro: "2024-01-05" },
   { id: 12, nome: "Juliana Castro",         email: "juliana.castro@coderyse.com",  tipo: "Aluno",       ativo: true,  dataCadastro: "2024-02-28" },
   { id: 13, nome: "Felipe Oliveira",        email: "felipe.oliveira@coderyse.com", tipo: "Aluno",       ativo: true,  dataCadastro: "2024-03-18" },
+  { id: 14, nome: "Beatriz Mendonça",      email: "beatriz.mendonca@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-03-22" },
+  { id: 15, nome: "Thiago Carvalho",       email: "thiago.carvalho@coderyse.com",  tipo: "Aluno",      ativo: false, dataCadastro: "2024-01-30" },
+  { id: 16, nome: "Larissa Monteiro",      email: "larissa.monteiro@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-02" },
+  { id: 17, nome: "Gabriel Santos",        email: "gabriel.santos@coderyse.com",   tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-05" },
+  { id: 18, nome: "Natália Freitas",       email: "natalia.freitas@coderyse.com",  tipo: "Aluno",      ativo: false, dataCadastro: "2024-02-14" },
+  { id: 19, nome: "Diego Nascimento",      email: "diego.nascimento@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-10" },
+  { id: 20, nome: "Isabela Teixeira",      email: "isabela.teixeira@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-12" },
+  { id: 21, nome: "Vitor Hugo Lima",       email: "vitor.lima@coderyse.com",       tipo: "Aluno",      ativo: false, dataCadastro: "2024-03-05" },
 ];
 
 /* ── Estatísticas por perfil ─────────────────────────────────── */

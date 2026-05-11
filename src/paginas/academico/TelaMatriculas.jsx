@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
+import Botao from "../../componentes/Botao.jsx";
 import { matriculas } from "../../dados/dadosMock.js";
 import { podeEditar } from "../../dados/permissoes.js";
 
@@ -126,9 +127,9 @@ export default function TelaMatriculas({ usuario }) {
           </p>
         </div>
         {podeAgir && selecionados.size > 0 && (
-          <button className="botao botao--sucesso" onClick={aprovarSelecionados} type="button">
+          <Botao variante="sucesso" onClick={aprovarSelecionados}>
             Aprovar selecionados ({selecionados.size})
-          </button>
+          </Botao>
         )}
       </header>
 
@@ -208,22 +209,22 @@ export default function TelaMatriculas({ usuario }) {
                   {podeAgir && (
                     <td>
                       <div className="acoes-tabela">
-                        <button
-                          className="botao botao--sucesso botao--pequeno"
+                        <Botao
+                          variante="sucesso"
+                          tamanho="pequeno"
                           onClick={() => aprovar(mat.id)}
-                          type="button"
                           aria-label={`Aprovar ${mat.alunoNome}`}
                         >
                           Aprovar
-                        </button>
-                        <button
-                          className="botao botao--perigo botao--pequeno"
+                        </Botao>
+                        <Botao
+                          variante="perigo"
+                          tamanho="pequeno"
                           onClick={() => rejeitar(mat.id)}
-                          type="button"
                           aria-label={`Rejeitar ${mat.alunoNome}`}
                         >
                           Rejeitar
-                        </button>
+                        </Botao>
                       </div>
                     </td>
                   )}
@@ -268,14 +269,14 @@ export default function TelaMatriculas({ usuario }) {
                   <td>{new Date(mat.dataSolicitacao).toLocaleDateString("pt-BR")}</td>
                   {podeAgir && (
                     <td>
-                      <button
-                        className="botao botao--secundario botao--pequeno"
+                      <Botao
+                        variante="secundario"
+                        tamanho="pequeno"
                         onClick={() => reativar(mat.id)}
-                        type="button"
                         aria-label={`Reativar matrícula de ${mat.alunoNome}`}
                       >
                         Reativar
-                      </button>
+                      </Botao>
                     </td>
                   )}
                 </tr>
