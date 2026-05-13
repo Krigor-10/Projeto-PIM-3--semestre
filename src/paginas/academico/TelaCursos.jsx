@@ -2,10 +2,179 @@ import { useState } from "react";
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
 import Botao from "../../componentes/Botao.jsx";
-import { cursos } from "../../dados/dadosMock.js";
+import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
+import { cursos, turmas, modulos } from "../../dados/dadosMock.js";
 import { podeCriar, podeEditar } from "../../dados/permissoes.js";
 
+/* ── Vista gerencial do coordenador ─────────────────────────────── */
+
+function VistaGerencialCoordenador({ usuario }) {
+  const [cursoSelecionado, setCursoSelecionado] = useState(null);
+  const [modoEdicao, setModoEdicao]             = useState(false);
+  const [listaCursos, setListaCursos]           = useState(
+    cursos.filter((c) => c.coordenadorId === usuario.id)
+  );
+
+  const turmasTotal   = turmas.filter((t) => listaCursos.some((c) => c.id === t.cursoId));
+  const alunosTotal   = turmasTotal.reduce((acc, t) => acc + (t.totalAlunos ?? 0), 0);
+  const profsUnicos   = new Set(turmasTotal.map((t) => t.professorId)).size;
+
+  function salvarEdicao(e) {
+    e.preventDefault();
+    const f = e.target;
+    setListaCursos((prev) => prev.map((c) =>
+      c.id === cursoSelecionado.id
+        ? { ...c,
+            titulo:  f["edit-titulo-curso"].value,
+            descricao: f["edit-descricao-curso"].value,
+            nivel:   f["edit-nivel-curso"].value,
+            duracao: f["edit-duracao-curso"].value,
+          }
+        : c
+    ));
+    setCursoSelecionado(null);
+  }
+
+  return (
+    <div className="tela-cursos">
+      <header className="cabecalho-pagina">
+        <div>
+          <h2 className="cabecalho-pagina__titulo">Cursos</h2>
+          <p className="cabecalho-pagina__subtitulo">
+            Cursos sob sua coordenação
+          </p>
+        </div>
+      </header>
+
+      {/* KPIs */}
+      <div className="grade-estatisticas" style={{ marginBottom: "var(--espaco-xl)" }}>
+        <CartaoEstatistica icone="CU" valor={listaCursos.length}  rotulo="Cursos coordenados" />
+        <CartaoEstatistica icone="TU" valor={turmasTotal.length}  rotulo="Turmas ativas" corBorda="var(--cor-sucesso)" />
+        <CartaoEstatistica icone="AL" valor={alunosTotal}         rotulo="Alunos matriculados" corBorda="var(--cor-info)" />
+        <CartaoEstatistica icone="PR" valor={profsUnicos}         rotulo="Professores envolvidos" corBorda="var(--cor-aviso)" />
+      </div>
+
+      {/* Lista de cursos */}
+      <ul className="gerencial-cursos__lista" role="list">
+        {listaCursos.map((curso) => {
+          const turmasCurso  = turmas.filter((t) => t.cursoId === curso.id);
+          const modulosCurso = modulos.filter((m) => m.cursoId === curso.id);
+          const alunosCurso  = turmasCurso.reduce((acc, t) => acc + (t.totalAlunos ?? 0), 0);
+
+          return (
+            <li key={curso.id} className="gerencial-curso-item">
+              <div className="gerencial-curso-item__topo">
+                <div className="gerencial-curso-item__identidade">
+                  <h3 className="gerencial-curso-item__titulo">{curso.titulo}</h3>
+                  <span className="gerencial-curso-item__codigo">{curso.codigoRegistro}</span>
+                </div>
+                <div className="gerencial-curso-item__badges">
+                  <Insignia texto={curso.nivel} variante="info" />
+                  <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "erro"} />
+                </div>
+              </div>
+
+              <p className="gerencial-curso-item__descricao">{curso.descricao}</p>
+
+              <div className="gerencial-curso-item__stats">
+                <span><strong>{modulosCurso.length}</strong> módulos</span>
+                <span><strong>{turmasCurso.length}</strong> turma{turmasCurso.length !== 1 ? "s" : ""}</span>
+                <span><strong>{alunosCurso}</strong> alunos</span>
+                <span><strong>{curso.duracao}</strong></span>
+              </div>
+
+              {turmasCurso.length > 0 && (
+                <div className="gerencial-curso-item__turmas">
+                  {turmasCurso.map((t) => (
+                    <div key={t.id} className="gerencial-turma-pill">
+                      <span className="gerencial-turma-pill__nome">{t.nomeTurma}</span>
+                      <span className="gerencial-turma-pill__prof">{t.professorNome}</span>
+                      <Insignia texto={t.status} variante={t.status === "Ativa" ? "sucesso" : "neutro"} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="gerencial-curso-item__rodape">
+                <Botao
+                  variante="fantasma"
+                  tamanho="pequeno"
+                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); }}
+                >
+                  Ver detalhes
+                </Botao>
+                <Botao
+                  variante="primario"
+                  tamanho="pequeno"
+                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(true); }}
+                >
+                  Editar
+                </Botao>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Modal detalhes / edição */}
+      {cursoSelecionado && !modoEdicao && (
+        <Modal titulo="Detalhes do Curso" onFechar={() => setCursoSelecionado(null)}>
+          <dl className="lista-detalhes">
+            <div className="lista-detalhes__item"><dt>Título</dt><dd>{cursoSelecionado.titulo}</dd></div>
+            <div className="lista-detalhes__item"><dt>Código</dt><dd>{cursoSelecionado.codigoRegistro}</dd></div>
+            <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoSelecionado.descricao}</dd></div>
+            <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoSelecionado.nivel}</dd></div>
+            <div className="lista-detalhes__item"><dt>Duração</dt><dd>{cursoSelecionado.duracao}</dd></div>
+            <div className="lista-detalhes__item"><dt>Módulos</dt><dd>{modulos.filter((m) => m.cursoId === cursoSelecionado.id).length}</dd></div>
+            <div className="lista-detalhes__item"><dt>Alunos matriculados</dt><dd>{turmas.filter((t) => t.cursoId === cursoSelecionado.id).reduce((a, t) => a + (t.totalAlunos ?? 0), 0)}</dd></div>
+            <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={cursoSelecionado.ativo ? "Ativo" : "Inativo"} /></dd></div>
+          </dl>
+          <div className="modal-rodape">
+            <Botao variante="fantasma" onClick={() => setCursoSelecionado(null)}>Fechar</Botao>
+            <Botao variante="primario" onClick={() => setModoEdicao(true)}>Editar Curso</Botao>
+          </div>
+        </Modal>
+      )}
+
+      {cursoSelecionado && modoEdicao && (
+        <Modal titulo="Editar Curso" onFechar={() => setCursoSelecionado(null)}>
+          <form className="formulario-modal" onSubmit={salvarEdicao}>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-titulo-curso">Título *</label>
+              <input id="edit-titulo-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.titulo} required />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-descricao-curso">Descrição</label>
+              <textarea id="edit-descricao-curso" className="campo__entrada" rows={3} defaultValue={cursoSelecionado.descricao} />
+            </div>
+            <div className="grade-2">
+              <div className="campo">
+                <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
+                <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
+                  <option>Iniciante</option>
+                  <option>Intermediário</option>
+                  <option>Avançado</option>
+                </select>
+              </div>
+              <div className="campo">
+                <label className="campo__rotulo" htmlFor="edit-duracao-curso">Duração</label>
+                <input id="edit-duracao-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.duracao} />
+              </div>
+            </div>
+            <footer className="modal-rodape">
+              <Botao variante="fantasma" type="button" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Salvar</Botao>
+            </footer>
+          </form>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
 export default function TelaCursos({ usuario }) {
+  if (usuario?.tipo === "Coordenador") return <VistaGerencialCoordenador usuario={usuario} />;
+
   const [filtro, setFiltro] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
@@ -115,9 +284,11 @@ export default function TelaCursos({ usuario }) {
                 </ul>
               </div>
               <div className="cartao-curso__rodape">
-                <strong className="cartao-curso__preco">
-                  R$ {curso.preco.toFixed(2).replace(".", ",")}
-                </strong>
+                {tipo !== "Coordenador" && (
+                  <strong className="cartao-curso__preco">
+                    R$ {curso.preco.toFixed(2).replace(".", ",")}
+                  </strong>
+                )}
                 <span className="cartao-curso__codigo">{curso.codigoRegistro}</span>
               </div>
             </article>
@@ -144,7 +315,9 @@ export default function TelaCursos({ usuario }) {
                 <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoSelecionado.descricao}</dd></div>
                 <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoSelecionado.nivel}</dd></div>
                 <div className="lista-detalhes__item"><dt>Duração</dt><dd>{cursoSelecionado.duracao}</dd></div>
-                <div className="lista-detalhes__item"><dt>Preço</dt><dd>R$ {cursoSelecionado.preco.toFixed(2).replace(".", ",")}</dd></div>
+                {tipo !== "Coordenador" && (
+                  <div className="lista-detalhes__item"><dt>Preço</dt><dd>R$ {cursoSelecionado.preco.toFixed(2).replace(".", ",")}</dd></div>
+                )}
                 <div className="lista-detalhes__item"><dt>Módulos</dt><dd>{cursoSelecionado.totalModulos}</dd></div>
                 <div className="lista-detalhes__item"><dt>Alunos matriculados</dt><dd>{cursoSelecionado.totalAlunos}</dd></div>
                 <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={cursoSelecionado.ativo ? "Ativo" : "Inativo"} /></dd></div>
