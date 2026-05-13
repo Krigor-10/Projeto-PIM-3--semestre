@@ -10,7 +10,11 @@ export default function TelaCursos({ usuario }) {
   const [modalAberto, setModalAberto] = useState(false);
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [listaCursos, setListaCursos] = useState(cursos);
+  const cursosBase = usuario?.tipo === "Coordenador"
+    ? cursos.filter((c) => c.coordenadorId === usuario.id)
+    : cursos;
+
+  const [listaCursos, setListaCursos] = useState(cursosBase);
 
   const tipo = usuario?.tipo;
 

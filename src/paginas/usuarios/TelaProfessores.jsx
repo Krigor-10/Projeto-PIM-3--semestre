@@ -17,21 +17,14 @@ function IconeOrdenacao({ campo, ordenacao }) {
 }
 
 function CelulaTurmas({ professorId, turmasLista }) {
-  const lista     = turmasLista.filter((t) => t.professorId === professorId);
-  const principal = lista[0] ?? null;
-  const extra     = lista.length - 1;
-  if (!principal) return <span className="tabela-matricula__vazio">—</span>;
+  const lista = turmasLista.filter((t) => t.professorId === professorId);
+  if (lista.length === 0) return <span className="tabela-matricula__vazio">—</span>;
   return (
-    <div className="tabela-matricula">
-      <div className="tabela-matricula__topo">
-        <Insignia
-          texto={principal.status}
-          variante={principal.status === "Ativa" ? "sucesso" : "neutro"}
-        />
-        {extra > 0 && <span className="tabela-matricula__extra">+{extra}</span>}
-      </div>
-      <span className="tabela-matricula__curso">{principal.cursoTitulo}</span>
-      <span className="tabela-matricula__turma">{principal.nomeTurma}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <span style={{ fontWeight: 600, color: "var(--cor-texto-forte)" }}>{lista.length}</span>
+      <span style={{ fontSize: "0.8rem", color: "var(--cor-texto-mudo)" }}>
+        turma{lista.length !== 1 ? "s" : ""}
+      </span>
     </div>
   );
 }

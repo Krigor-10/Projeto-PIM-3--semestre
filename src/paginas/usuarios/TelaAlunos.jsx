@@ -4,9 +4,187 @@ import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical } from "react-ic
 import Insignia from "../../componentes/Insignia.jsx";
 import Modal from "../../componentes/Modal.jsx";
 import Botao from "../../componentes/Botao.jsx";
-import { usuarios, matriculas } from "../../dados/dadosMock.js";
+import { usuarios, matriculas, turmas } from "../../dados/dadosMock.js";
 
 const VARIANTE_MATRICULA = { Aprovada: "sucesso", Pendente: "aviso", Rejeitada: "erro" };
+
+function gerarIniciais(nome) {
+  return (nome ?? "").split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+}
+
+/* ── Vista professor — carrossel de alunos por turma ─────────── */
+
+function SlideAlunosTurma({ turma, alunos }) {
+  return (
+    <div className="slide-alunos">
+      <header className="slide-alunos__cabecalho">
+        <div>
+          <h3 className="slide-alunos__turma-nome">{turma.nomeTurma}</h3>
+          <span className="slide-alunos__curso">{turma.cursoTitulo}</span>
+        </div>
+        <div className="slide-alunos__meta">
+          <span className="slide-alunos__total">{alunos.length} aluno{alunos.length !== 1 ? "s" : ""} matriculado{alunos.length !== 1 ? "s" : ""}</span>
+          <Insignia texto={turma.status} />
+        </div>
+      </header>
+
+      {alunos.length === 0 ? (
+        <p className="texto-vazio">Nenhum aluno matriculado nesta turma.</p>
+      ) : (
+        <ul className="slide-alunos__lista" role="list">
+          {alunos.map((aluno) => (
+            <li key={aluno.matriculaId} className="slide-alunos__linha">
+              <div className="topbar__avatar" aria-hidden="true" style={{ flexShrink: 0 }}>
+                {gerarIniciais(aluno.nome)}
+              </div>
+              <div className="slide-alunos__linha-info">
+                <strong className="slide-alunos__linha-nome">{aluno.nome}</strong>
+                <span className="slide-alunos__linha-email">{aluno.email}</span>
+              </div>
+              <Insignia
+                texto={aluno.statusMatricula}
+                variante={VARIANTE_MATRICULA[aluno.statusMatricula] ?? "neutro"}
+              />
+              <button
+                className="kebab-btn"
+                type="button"
+                aria-label={`Ações para ${aluno.nome}`}
+                aria-haspopup="menu"
+              >
+                <TbDotsVertical size={16} aria-hidden="true" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function montarAlunos(turma) {
+  return matriculas
+    .filter((m) => m.turmaId === turma.id)
+    .map((m) => {
+      const u = usuarios.find((usr) => usr.id === m.alunoId);
+      return {
+        matriculaId: m.id,
+        alunoId: m.alunoId,
+        nome: m.alunoNome,
+        email: u?.email ?? "—",
+        statusMatricula: m.status,
+      };
+    });
+}
+
+function VistaCarrosselAlunos({ turmasList, subtitulo, mensagemVazia }) {
+  const [slideAtual, setSlideAtual] = useState(0);
+  const total = turmasList.length;
+
+  if (total === 0) {
+    return (
+      <div className="tela-alunos">
+        <header className="cabecalho-pagina">
+          <div>
+            <h2 className="cabecalho-pagina__titulo">Alunos</h2>
+            <p className="cabecalho-pagina__subtitulo">{subtitulo}</p>
+          </div>
+        </header>
+        <p className="texto-vazio texto-vazio--central" role="status">{mensagemVazia}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="tela-alunos">
+      <header className="cabecalho-pagina">
+        <div>
+          <h2 className="cabecalho-pagina__titulo">Alunos</h2>
+          <p className="cabecalho-pagina__subtitulo">
+            {subtitulo} — {total} turma{total !== 1 ? "s" : ""}
+          </p>
+        </div>
+      </header>
+
+      <div className="carrossel-cursos">
+        {total > 1 && (
+          <nav className="carrossel-cursos__nav" aria-label="Navegação entre turmas">
+            <button
+              className="carrossel-cursos__seta"
+              onClick={() => setSlideAtual((i) => i - 1)}
+              disabled={slideAtual === 0}
+              aria-label="Turma anterior"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            <div className="carrossel-cursos__indicadores" role="tablist" aria-label="Turmas">
+              {turmasList.map((turma, idx) => (
+                <button
+                  key={turma.id}
+                  className={`carrossel-cursos__bolinha${idx === slideAtual ? " carrossel-cursos__bolinha--ativa" : ""}`}
+                  onClick={() => setSlideAtual(idx)}
+                  role="tab"
+                  aria-selected={idx === slideAtual}
+                  aria-label={`Turma ${idx + 1}: ${turma.nomeTurma}`}
+                  type="button"
+                />
+              ))}
+            </div>
+
+            <button
+              className="carrossel-cursos__seta"
+              onClick={() => setSlideAtual((i) => i + 1)}
+              disabled={slideAtual === total - 1}
+              aria-label="Próxima turma"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </nav>
+        )}
+
+        <div className="carrossel-cursos__janela">
+          <div
+            className="carrossel-cursos__trilha"
+            style={{ transform: `translateX(-${slideAtual * 100}%)` }}
+          >
+            {turmasList.map((turma, idx) => (
+              <div key={turma.id} className="carrossel-cursos__slide" aria-hidden={idx !== slideAtual}>
+                <SlideAlunosTurma turma={turma} alunos={montarAlunos(turma)} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VistaProfessorAlunos({ usuario }) {
+  const turmasList = turmas.filter((t) => t.professorId === usuario.id);
+  return (
+    <VistaCarrosselAlunos
+      turmasList={turmasList}
+      subtitulo="Seus alunos organizados por turma"
+      mensagemVazia="Você não possui turmas atribuídas."
+    />
+  );
+}
+
+function VistaCoordenadorAlunos() {
+  return (
+    <VistaCarrosselAlunos
+      turmasList={turmas}
+      subtitulo="Todos os alunos organizados por turma"
+      mensagemVazia="Nenhuma turma cadastrada."
+    />
+  );
+}
 const ITENS_POR_PAGINA   = 8;
 
 function IconeOrdenacao({ campo, ordenacao }) {
@@ -33,7 +211,13 @@ function CelulaMatricula({ alunoId }) {
   );
 }
 
-export default function TelaAlunos() {
+export default function TelaAlunos({ usuario }) {
+  if (usuario?.tipo === "Professor")   return <VistaProfessorAlunos usuario={usuario} />;
+  if (usuario?.tipo === "Coordenador") return <VistaCoordenadorAlunos />;
+  return <VistaGestorAlunos />;
+}
+
+function VistaGestorAlunos() {
   const [lista, setLista]               = useState(usuarios.filter((u) => u.tipo === "Aluno"));
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
@@ -161,10 +345,6 @@ export default function TelaAlunos() {
     if (checkboxHeaderRef.current)
       checkboxHeaderRef.current.indeterminate = algunsSelecionados;
   }, [algunsSelecionados]);
-
-  function gerarIniciais(nome) {
-    return nome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
-  }
 
   const colunas = [
     { chave: "nome",         rotulo: "Aluno"     },

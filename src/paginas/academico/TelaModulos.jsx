@@ -20,19 +20,28 @@ export default function TelaModulos({ usuario }) {
   const [listaModulos, setListaModulos] = useState(modulos);
 
   const tipo = usuario?.tipo;
-  const ehProfessor = tipo === "Professor";
+  const ehProfessor    = tipo === "Professor";
+  const ehCoordenador  = tipo === "Coordenador";
 
   const cursosIdsProfessor = ehProfessor
     ? new Set(turmas.filter((t) => t.professorId === usuario?.id).map((t) => t.cursoId))
     : null;
 
+  const cursosIdsCoordenador = ehCoordenador
+    ? new Set(cursos.filter((c) => c.coordenadorId === usuario?.id).map((c) => c.id))
+    : null;
+
   const cursosDisponiveis = ehProfessor
     ? cursos.filter((c) => cursosIdsProfessor.has(c.id))
-    : cursos;
+    : ehCoordenador
+      ? cursos.filter((c) => cursosIdsCoordenador.has(c.id))
+      : cursos;
 
   const modulosBase = ehProfessor
     ? listaModulos.filter((m) => cursosIdsProfessor.has(m.cursoId))
-    : listaModulos;
+    : ehCoordenador
+      ? listaModulos.filter((m) => cursosIdsCoordenador.has(m.cursoId))
+      : listaModulos;
 
   /* Acordeão: todos os cursos abertos por padrão */
   const [cursosAbertos, setCursosAbertos] = useState(

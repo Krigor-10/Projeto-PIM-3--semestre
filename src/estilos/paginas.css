@@ -4981,6 +4981,101 @@
 }
 
 /* ------------------------------------------------------------
+   CARROSSEL DE ALUNOS POR TURMA (vista professor)
+   ------------------------------------------------------------ */
+.slide-alunos {
+  padding: var(--espaco-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+  min-height: 300px;
+  background: var(--cor-fundo-elevado);
+}
+
+.slide-alunos__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-md);
+  padding-bottom: var(--espaco-md);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.slide-alunos__turma-nome {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  margin: 0;
+}
+
+.slide-alunos__curso {
+  font-size: 0.85rem;
+  color: var(--cor-texto-mudo);
+  display: block;
+  margin-top: 2px;
+}
+
+.slide-alunos__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--espaco-xs);
+  flex-shrink: 0;
+}
+
+.slide-alunos__total {
+  font-size: 0.8rem;
+  color: var(--cor-texto-mudo);
+}
+
+.slide-alunos__lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-alunos__linha {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: 0.7rem var(--espaco-md);
+  border-bottom: 1px solid var(--cor-borda);
+  transition: background var(--transicao-rapida);
+}
+
+.slide-alunos__linha:last-child {
+  border-bottom: none;
+}
+
+.slide-alunos__linha:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.slide-alunos__linha-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.slide-alunos__linha-nome {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slide-alunos__linha-email {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--cor-texto-mudo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ------------------------------------------------------------
    SEGMENTED CONTROL
    ------------------------------------------------------------ */
 .segmented-control {
