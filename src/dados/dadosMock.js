@@ -200,9 +200,9 @@ export const modulos = [
 
 /* ── Turmas ──────────────────────────────────────────────────── */
 export const turmas = [
-  { id: 1, nomeTurma: "WEB-2024-A",   cursoId: 1, cursoTitulo: "Desenvolvimento Web",    professorId: 2, professorNome: "Heitor Nadir",   totalAlunos: 32, status: "Ativa"     },
-  { id: 2, nomeTurma: "WEB-2024-B",   cursoId: 1, cursoTitulo: "Desenvolvimento Web",    professorId: 2, professorNome: "Heitor Nadir",   totalAlunos: 28, status: "Ativa"     },
+  { id: 1, nomeTurma: "WEB-2024-A",   cursoId: 1, cursoTitulo: "Desenvolvimento Web",    professorId: 2, professorNome: "Heitor Nadir",   totalAlunos: 60, status: "Ativa"     },
   { id: 3, nomeTurma: "DATA-2024-A",  cursoId: 2, cursoTitulo: "Ciência de Dados",       professorId: 5, professorNome: "Ana Carvalho",   totalAlunos: 25, status: "Ativa"     },
+  { id: 7, nomeTurma: "IA-2024-A",    cursoId: 3, cursoTitulo: "Inteligência Artificial", professorId: 5, professorNome: "Ana Carvalho",  totalAlunos: 20, status: "Ativa"     },
   { id: 4, nomeTurma: "CYBER-2024-A", cursoId: 4, cursoTitulo: "Cybersegurança",         professorId: 2, professorNome: "Heitor Nadir",   totalAlunos: 22, status: "Ativa"     },
   { id: 5, nomeTurma: "UX-2024-A",    cursoId: 5, cursoTitulo: "UX e UI Design",         professorId: 7, professorNome: "Fernanda Lima",  totalAlunos: 30, status: "Concluída" },
   { id: 6, nomeTurma: "ROB-2024-A",   cursoId: 6, cursoTitulo: "Robótica",               professorId: 6, professorNome: "Carlos Mendes",  totalAlunos: 18, status: "Ativa"     },
@@ -217,7 +217,7 @@ export const matriculas = [
   { id: 4, alunoId: 10, alunoNome: "Camila Rodrigues",     cursoId: 4, cursoTitulo: "Cybersegurança",      turmaId: 4, turmaNome: "CYBER-2024-A", codigoMatricula: "MAT-2024-004", status: "Pendente",  dataSolicitacao: "2024-03-18" },
   { id: 5, alunoId: 11, alunoNome: "Rafael Souza",         cursoId: 5, cursoTitulo: "UX e UI Design",      turmaId: 5, turmaNome: "UX-2024-A",    codigoMatricula: "MAT-2024-005", status: "Rejeitada", dataSolicitacao: "2024-01-20" },
   { id: 6, alunoId: 12, alunoNome: "Juliana Castro",       cursoId: 6, cursoTitulo: "Robótica",            turmaId: 6, turmaNome: "ROB-2024-A",   codigoMatricula: "MAT-2024-006", status: "Aprovada",  dataSolicitacao: "2024-03-01" },
-  { id: 7, alunoId: 13, alunoNome: "Felipe Oliveira",      cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 2, turmaNome: "WEB-2024-B",   codigoMatricula: "MAT-2024-007", status: "Pendente",  dataSolicitacao: "2024-03-20" },
+  { id: 7, alunoId: 13, alunoNome: "Felipe Oliveira",      cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-007", status: "Pendente",  dataSolicitacao: "2024-03-20" },
 ];
 
 /* ── Avaliações ──────────────────────────────────────────────── */

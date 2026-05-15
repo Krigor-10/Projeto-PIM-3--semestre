@@ -65,6 +65,14 @@
   padding-inline: 18px;
 }
 
+.cabecalho-publico__nav .botao--secundario {
+  color: rgba(243, 245, 255, 0.92);
+}
+
+.cabecalho-publico__nav .botao--secundario:hover:not(:disabled) {
+  color: #fff;
+}
+
 .cabecalho-publico__acao-admin {
   min-width: 210px;
   text-transform: uppercase;
@@ -142,6 +150,18 @@
 .secao-hero__acoes .botao {
   border-radius: var(--raio-circular);
   min-height: 44px;
+}
+
+.secao-hero__acoes .botao--fantasma {
+  background: #fff;
+  color: #0d0f18;
+  border-color: #fff;
+}
+
+.secao-hero__acoes .botao--fantasma:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.88);
+  color: #0d0f18;
 }
 
 .secao-pilares {

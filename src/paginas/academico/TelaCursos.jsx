@@ -13,7 +13,10 @@ function VistaGerencialCoordenador({ usuario }) {
   const [menuAberto, setMenuAberto]             = useState(null);
   const [cursoAtribuir, setCursoAtribuir]       = useState(null);
   const [listaCursos, setListaCursos]           = useState(
-    cursos.filter((c) => c.coordenadorId === usuario.id)
+    cursos.filter((c) => c.coordenadorId === usuario.id).map((c) => {
+      const turma = turmas.find((t) => t.cursoId === c.id);
+      return { ...c, professorId: turma?.professorId ?? null, professorNome: turma?.professorNome ?? null };
+    })
   );
 
   const professoresAtivos = usuarios.filter((u) => u.tipo === "Professor" && u.ativo);

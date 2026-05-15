@@ -7,7 +7,7 @@ import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMoc
 const PROGRESSO_MOCK = { 1: 42, 2: 15, 6: 68 };
 
 /* Média de notas simulada por id de turma (escala 0–10) */
-const NOTAS_MOCK = { 1: 7.8, 2: 6.9, 3: 8.2, 4: 7.1, 5: 9.0, 6: 6.5 };
+const NOTAS_MOCK = { 1: 7.8, 3: 8.2, 4: 7.1, 5: 9.0, 6: 6.5, 7: 8.5 };
 
 /* Retorna status e variante de badge a partir do progresso do módulo */
 function resolverStatusModulo(concluidosModulo, totalItens) {
