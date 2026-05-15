@@ -2209,6 +2209,21 @@
   background: var(--cor-marca-fundo, color-mix(in srgb, var(--cor-marca) 10%, transparent));
 }
 
+.atribuicao-turma-item--conflito {
+  border-color: var(--cor-aviso);
+  background: var(--cor-aviso-fundo);
+}
+
+.atribuicao-aviso-conflito {
+  font-size: 0.8rem;
+  color: var(--cor-aviso);
+  background: var(--cor-aviso-fundo);
+  border: 1px solid var(--cor-aviso);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-sm) var(--espaco-md);
+  margin-bottom: var(--espaco-lg);
+}
+
 .atribuicao-turma-item__label {
   display: flex;
   align-items: center;

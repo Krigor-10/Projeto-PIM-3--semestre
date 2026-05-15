@@ -87,8 +87,9 @@ export default function TelaTurmas({ usuario }) {
   const [slideAtual, setSlideAtual]   = useState(0);
   const [buscaAluno, setBuscaAluno]   = useState("");
   const [listaTurmas, setListaTurmas] = useState(turmas);
-  const [modalNova, setModalNova]     = useState(false);
+  const [modalNova, setModalNova]         = useState(false);
   const [turmaEditando, setTurmaEditando] = useState(null);
+  const [erroNovaTurma, setErroNovaTurma] = useState("");
 
   const tipo = usuario?.tipo;
 
@@ -115,6 +116,12 @@ export default function TelaTurmas({ usuario }) {
     e.preventDefault();
     const f = e.target;
     const cursoId = Number(f["curso-turma"].value);
+
+    if (listaTurmas.some((t) => t.cursoId === cursoId)) {
+      setErroNovaTurma("Este curso já possui uma turma cadastrada.");
+      return;
+    }
+
     const cursoObj = cursos.find((c) => c.id === cursoId);
     setListaTurmas((prev) => [...prev, {
       id: Date.now(),
@@ -152,7 +159,7 @@ export default function TelaTurmas({ usuario }) {
           </p>
         </div>
         {podeCriar(tipo, "turmas") && (
-          <Botao variante="primario" onClick={() => setModalNova(true)}>
+          <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }}>
             + Nova Turma
           </Botao>
         )}
@@ -187,7 +194,7 @@ export default function TelaTurmas({ usuario }) {
 
       {total === 0 ? (
         <p className="texto-vazio texto-vazio--central" role="status">
-          Nenhuma turma encontrada{filtro ? ` para "${filtro}"` : ""}.
+          Nenhuma turma encontrada.
         </p>
       ) : (
         <div className="carrossel-cursos">
@@ -256,12 +263,25 @@ export default function TelaTurmas({ usuario }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="curso-turma">Curso *</label>
-              <select id="curso-turma" className="campo__entrada" required>
+              <select
+                id="curso-turma"
+                className="campo__entrada"
+                required
+                onChange={() => setErroNovaTurma("")}
+              >
                 <option value="">Selecione um curso</option>
-                {cursos.map((c) => (
-                  <option key={c.id} value={c.id}>{c.titulo}</option>
-                ))}
+                {cursos.map((c) => {
+                  const jaTemTurma = listaTurmas.some((t) => t.cursoId === c.id);
+                  return (
+                    <option key={c.id} value={c.id} disabled={jaTemTurma}>
+                      {c.titulo}{jaTemTurma ? " (já tem turma)" : ""}
+                    </option>
+                  );
+                })}
               </select>
+              {erroNovaTurma && (
+                <span className="campo__erro" role="alert">{erroNovaTurma}</span>
+              )}
             </div>
             <div className="modal-rodape">
               <Botao variante="fantasma" type="button" onClick={() => setModalNova(false)}>Cancelar</Botao>

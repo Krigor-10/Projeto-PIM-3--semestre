@@ -627,53 +627,67 @@ export default function TelaProfessores({ usuario }) {
       )}
 
       {/* ── Modal atribuição de turmas ── */}
-      {atribuindoTurmas && (
-        <Modal titulo={`Turmas — ${atribuindoTurmas.nome.split(" ")[0]}`} onFechar={() => setAtribuindoTurmas(null)}>
-          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-lg)", fontSize: "0.875rem" }}>
-            Selecione as turmas que este professor irá lecionar. Turmas já atribuídas a outro professor serão reatribuídas.
-          </p>
-          <ul className="atribuicao-turmas-lista" role="list">
-            {turmasLista.map((t) => {
-              const marcada      = turmasSelecionadas.has(t.id);
-              const outroProfId  = t.professorId && t.professorId !== atribuindoTurmas.id ? t.professorId : null;
-              const outroProfNome = outroProfId
-                ? lista.find((p) => p.id === outroProfId)?.nome.split(" ")[0] ?? t.professorNome
-                : null;
-              return (
-                <li key={t.id} className={`atribuicao-turma-item${marcada ? " atribuicao-turma-item--selecionada" : ""}`}>
-                  <label className="atribuicao-turma-item__label">
-                    <input
-                      type="checkbox"
-                      className="tabela-checkbox"
-                      checked={marcada}
-                      onChange={() => toggleTurma(t.id)}
-                    />
-                    <div className="atribuicao-turma-item__info">
-                      <strong className="atribuicao-turma-item__nome">{t.nomeTurma}</strong>
-                      <span className="atribuicao-turma-item__curso">{t.cursoTitulo}</span>
-                      {outroProfNome && !marcada && (
-                        <span className="atribuicao-turma-item__atual">
-                          com {outroProfNome}
-                        </span>
-                      )}
-                    </div>
-                    <div className="atribuicao-turma-item__meta">
-                      <Insignia texto={t.status} variante={t.status === "Ativa" ? "sucesso" : "neutro"} />
-                      <span className="atribuicao-turma-item__alunos">{t.totalAlunos} alunos</span>
-                    </div>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-          <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
-            <button type="button" className="botao botao--fantasma" onClick={() => setAtribuindoTurmas(null)}>Cancelar</button>
-            <button type="button" className="botao botao--primario" onClick={salvarAtribuicao}>
-              Salvar atribuições
-            </button>
-          </footer>
-        </Modal>
-      )}
+      {atribuindoTurmas && (() => {
+        const cursosComConflito = new Set(
+          [...turmasSelecionadas]
+            .map((id) => turmasLista.find((t) => t.id === id)?.cursoId)
+            .filter(Boolean)
+            .filter((cursoId, _, arr) => arr.filter((c) => c === cursoId).length > 1)
+        );
+        const temConflito = cursosComConflito.size > 0;
+        return (
+          <Modal titulo={`Turmas — ${atribuindoTurmas.nome.split(" ")[0]}`} onFechar={() => setAtribuindoTurmas(null)}>
+            <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-lg)", fontSize: "0.875rem" }}>
+              Selecione a turma de cada curso. Cada curso deve ter no máximo uma turma por professor.
+            </p>
+            {temConflito && (
+              <div className="atribuicao-aviso-conflito" role="alert">
+                Um ou mais cursos têm duas turmas selecionadas — selecione apenas uma por curso.
+              </div>
+            )}
+            <ul className="atribuicao-turmas-lista" role="list">
+              {turmasLista.map((t) => {
+                const marcada       = turmasSelecionadas.has(t.id);
+                const conflito      = marcada && cursosComConflito.has(t.cursoId);
+                const outroProfId   = t.professorId && t.professorId !== atribuindoTurmas.id ? t.professorId : null;
+                const outroProfNome = outroProfId
+                  ? lista.find((p) => p.id === outroProfId)?.nome.split(" ")[0] ?? t.professorNome
+                  : null;
+                return (
+                  <li key={t.id} className={`atribuicao-turma-item${marcada ? " atribuicao-turma-item--selecionada" : ""}${conflito ? " atribuicao-turma-item--conflito" : ""}`}>
+                    <label className="atribuicao-turma-item__label">
+                      <input
+                        type="checkbox"
+                        className="tabela-checkbox"
+                        checked={marcada}
+                        onChange={() => toggleTurma(t.id)}
+                      />
+                      <div className="atribuicao-turma-item__info">
+                        <strong className="atribuicao-turma-item__nome">{t.nomeTurma}</strong>
+                        <span className="atribuicao-turma-item__curso">{t.cursoTitulo}</span>
+                        {outroProfNome && !marcada && (
+                          <span className="atribuicao-turma-item__atual">com {outroProfNome}</span>
+                        )}
+                      </div>
+                      <div className="atribuicao-turma-item__meta">
+                        {conflito && <Insignia texto="Conflito" variante="aviso" />}
+                        <Insignia texto={t.status} variante={t.status === "Ativa" ? "sucesso" : "neutro"} />
+                        <span className="atribuicao-turma-item__alunos">{t.totalAlunos} alunos</span>
+                      </div>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+            <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
+              <button type="button" className="botao botao--fantasma" onClick={() => setAtribuindoTurmas(null)}>Cancelar</button>
+              <button type="button" className="botao botao--primario" onClick={salvarAtribuicao} disabled={temConflito}>
+                Salvar atribuições
+              </button>
+            </footer>
+          </Modal>
+        );
+      })()}
 
       {/* ── Confirmação de remoção em massa ── */}
       {removendoEmMassa && (
