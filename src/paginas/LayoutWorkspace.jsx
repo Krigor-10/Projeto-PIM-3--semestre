@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { rotaPainelSecao } from "@/rotas.js";
 import { temPermissao } from "@/dados/permissoes.js";
+import { db } from "@/dados/db.js";
 import BarraLateral from "@/componentes/BarraLateral.jsx";
 import BarraTopo from "@/componentes/BarraTopo.jsx";
 import TelaDashboardAluno from "./dashboard/TelaDashboardAluno.jsx";
@@ -70,6 +71,9 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
     navigate(rotaPainelSecao(secao));
   }
   const [sidebarAberta, setSidebarAberta] = useState(false);
+  /* Lista de cursos compartilhada entre TelaCursos, TelaModulos e TelaTurmas */
+  const [listaCursos, setListaCursos] = useState(() => db.cursos.listar());
+  useEffect(() => { db.cursos.salvar(listaCursos); }, [listaCursos]);
   /* Estado global de progresso — compartilhado entre TelaConteudos, TelaAvaliacoes e TelaProgresso */
   const [quizzesAprovados, setQuizzesAprovados] = useState(() => new Set());
   /* Percentual de acerto por módulo: { [moduloId]: número } */
@@ -124,6 +128,8 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
             <ComponenteTela
               usuario={usuario}
               onMudarSecao={mudarSecao}
+              listaCursos={listaCursos}
+              onListaCursosChange={setListaCursos}
               quizzesAprovados={quizzesAprovados}
               onQuizAprovado={registrarQuizAprovado}
               resultadosQuizzes={resultadosQuizzes}

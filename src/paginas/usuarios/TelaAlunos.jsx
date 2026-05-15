@@ -4,7 +4,8 @@ import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical } from "react-ic
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { usuarios, matriculas } from "@/dados/dadosMock.js";
+import { matriculas } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
 import { podeEditar, podeExcluir } from "@/dados/permissoes.js";
 
 const VARIANTE_MATRICULA = { Aprovada: "sucesso", Pendente: "aviso", Rejeitada: "erro" };
@@ -41,7 +42,8 @@ export default function TelaAlunos({ usuario }) {
   const podeEditar_   = podeEditar(tipo, "alunos");
   const podeExcluir_  = podeExcluir(tipo, "alunos");
 
-  const [lista, setLista]               = useState(usuarios.filter((u) => u.tipo === "Aluno"));
+  const [lista, setLista]               = useState(() => db.usuarios.listar().filter((u) => u.tipo === "Aluno"));
+  useEffect(() => { db.usuarios.salvarPorTipo("Aluno", lista); }, [lista]);
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [ordenacao, setOrdenacao]       = useState({ campo: "nome", direcao: "asc" });

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { modulos, cursos, turmas } from "@/dados/dadosMock.js";
+import { turmas } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
 import { podeCriar } from "@/dados/permissoes.js";
 
 const DESEMPENHO_MODULO = {
@@ -75,10 +76,11 @@ function SlideCurso({ curso, itens }) {
   );
 }
 
-export default function TelaModulos({ usuario }) {
+export default function TelaModulos({ usuario, listaCursos }) {
   const [slideAtual, setSlideAtual] = useState(0);
   const [modalAberto, setModalAberto] = useState(false);
-  const [listaModulos, setListaModulos] = useState(modulos);
+  const [listaModulos, setListaModulos] = useState(() => db.modulos.listar());
+  useEffect(() => { db.modulos.salvar(listaModulos); }, [listaModulos]);
 
   const tipo          = usuario?.tipo;
   const ehProfessor   = tipo === "Professor";
@@ -89,14 +91,14 @@ export default function TelaModulos({ usuario }) {
     : null;
 
   const cursosIdsCoordenador = ehCoordenador
-    ? new Set(cursos.filter((c) => c.coordenadorId === usuario?.id).map((c) => c.id))
+    ? new Set(listaCursos.filter((c) => c.coordenadorId === usuario?.id).map((c) => c.id))
     : null;
 
   const cursosDisponiveis = ehProfessor
-    ? cursos.filter((c) => cursosIdsProfessor.has(c.id))
+    ? listaCursos.filter((c) => cursosIdsProfessor.has(c.id))
     : ehCoordenador
-      ? cursos.filter((c) => cursosIdsCoordenador.has(c.id))
-      : cursos;
+      ? listaCursos.filter((c) => cursosIdsCoordenador.has(c.id))
+      : listaCursos;
 
   const modulosBase = ehProfessor
     ? listaModulos.filter((m) => cursosIdsProfessor.has(m.cursoId))

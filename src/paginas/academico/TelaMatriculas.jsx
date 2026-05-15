@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { matriculas } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
 import { podeEditar } from "@/dados/permissoes.js";
 
 function TabelaSimples({ colunas, linhas, semDados }) {
@@ -25,7 +25,8 @@ function TabelaSimples({ colunas, linhas, semDados }) {
 
 export default function TelaMatriculas({ usuario }) {
   const tipo = usuario?.tipo;
-  const [listaMat, setListaMat] = useState(matriculas);
+  const [listaMat, setListaMat] = useState(() => db.matriculas.listar());
+  useEffect(() => { db.matriculas.salvar(listaMat); }, [listaMat]);
   const [selecionados, setSelecionados] = useState(new Set());
   const [abaAtiva, setAbaAtiva] = useState("pendentes");
 

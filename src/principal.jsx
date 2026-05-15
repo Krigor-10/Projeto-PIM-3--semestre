@@ -1,6 +1,9 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import Aplicacao from "./Aplicacao.jsx";
+import { inicializar } from "./dados/db.js";
+
+inicializar();
 import "./estilos/variaveis.css";
 import "./estilos/base.css";
 import "./estilos/componentes.css";

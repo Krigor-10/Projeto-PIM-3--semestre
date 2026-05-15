@@ -4,7 +4,7 @@ import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical } from "react-ic
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { usuarios, turmas as turmasIniciais } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
 import { podeCriar } from "@/dados/permissoes.js";
 
 const ITENS_POR_PAGINA = 8;
@@ -30,8 +30,10 @@ function CelulaTurmas({ professorId, turmasLista }) {
 }
 
 export default function TelaProfessores({ usuario }) {
-  const [lista, setLista]               = useState(usuarios.filter((u) => u.tipo === "Professor"));
-  const [turmasLista, setTurmasLista]   = useState(() => [...turmasIniciais]);
+  const [lista, setLista]               = useState(() => db.usuarios.listar().filter((u) => u.tipo === "Professor"));
+  const [turmasLista, setTurmasLista]   = useState(() => db.turmas.listar());
+  useEffect(() => { db.usuarios.salvarPorTipo("Professor", lista); }, [lista]);
+  useEffect(() => { db.turmas.salvar(turmasLista); }, [turmasLista]);
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [ordenacao, setOrdenacao]       = useState({ campo: "nome", direcao: "asc" });

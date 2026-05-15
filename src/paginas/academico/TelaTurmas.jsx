@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { turmas, cursos, matriculas, usuarios } from "@/dados/dadosMock.js";
+import { matriculas, usuarios } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 const VARIANTE_MAT = { Aprovada: "sucesso", Pendente: "aviso", Rejeitada: "erro" };
@@ -83,10 +84,11 @@ function montarAlunosTurma(turmaId) {
     });
 }
 
-export default function TelaTurmas({ usuario }) {
+export default function TelaTurmas({ usuario, listaCursos }) {
   const [slideAtual, setSlideAtual]   = useState(0);
   const [buscaAluno, setBuscaAluno]   = useState("");
-  const [listaTurmas, setListaTurmas] = useState(turmas);
+  const [listaTurmas, setListaTurmas] = useState(() => db.turmas.listar());
+  useEffect(() => { db.turmas.salvar(listaTurmas); }, [listaTurmas]);
   const [modalNova, setModalNova]         = useState(false);
   const [turmaEditando, setTurmaEditando] = useState(null);
   const [erroNovaTurma, setErroNovaTurma] = useState("");
@@ -122,7 +124,7 @@ export default function TelaTurmas({ usuario }) {
       return;
     }
 
-    const cursoObj = cursos.find((c) => c.id === cursoId);
+    const cursoObj = listaCursos.find((c) => c.id === cursoId);
     setListaTurmas((prev) => [...prev, {
       id: Date.now(),
       nomeTurma: f["nome-turma"].value,
@@ -270,7 +272,7 @@ export default function TelaTurmas({ usuario }) {
                 onChange={() => setErroNovaTurma("")}
               >
                 <option value="">Selecione um curso</option>
-                {cursos.map((c) => {
+                {listaCursos.map((c) => {
                   const jaTemTurma = listaTurmas.some((t) => t.cursoId === c.id);
                   return (
                     <option key={c.id} value={c.id} disabled={jaTemTurma}>
