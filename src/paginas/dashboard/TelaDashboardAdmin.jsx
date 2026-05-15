@@ -2,9 +2,16 @@ import { useState } from "react";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { usuarios, matriculas, estatisticasAdmin } from "@/dados/dadosMock.js";
+import { resetar } from "@/dados/db.js";
 
 export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
   const [listaMatriculas, setListaMatriculas] = useState(matriculas);
+  const [confirmandoReset, setConfirmandoReset] = useState(false);
+
+  function executarReset() {
+    resetar();
+    window.location.reload();
+  }
 
   const ultimosUsuarios = usuarios.slice(-5).reverse();
   const matriculasPendentes = listaMatriculas.filter((m) => m.status === "Pendente");
@@ -112,6 +119,38 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
           </div>
         </section>
       </div>
+
+      <section className="painel-secao painel-secao--perigo" style={{ marginTop: "var(--espaco-xl)" }} aria-labelledby="titulo-reset-dados">
+        <header className="painel-secao__cabecalho">
+          <h2 className="painel-secao__titulo" id="titulo-reset-dados">Dados de Demonstração</h2>
+        </header>
+        <div className="painel-secao__conteudo">
+          {!confirmandoReset ? (
+            <div className="reset-demo">
+              <p className="reset-demo__descricao">
+                Restaura todos os dados ao estado inicial do mock. Use antes de uma demonstração para garantir dados limpos.
+              </p>
+              <Botao variante="perigo" tamanho="pequeno" onClick={() => setConfirmandoReset(true)}>
+                Resetar dados
+              </Botao>
+            </div>
+          ) : (
+            <div className="reset-demo reset-demo--confirmando">
+              <p className="reset-demo__aviso">
+                Todos os dados criados ou editados serão perdidos. Esta ação não pode ser desfeita.
+              </p>
+              <div className="reset-demo__acoes">
+                <Botao variante="fantasma" tamanho="pequeno" onClick={() => setConfirmandoReset(false)}>
+                  Cancelar
+                </Botao>
+                <Botao variante="perigo" tamanho="pequeno" onClick={executarReset}>
+                  Confirmar reset
+                </Botao>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       <section className="painel-secao" style={{ marginTop: "var(--espaco-xl)" }} aria-labelledby="titulo-acesso-rapido">
         <header className="painel-secao__cabecalho">

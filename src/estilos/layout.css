@@ -265,6 +265,38 @@
   padding: var(--espaco-lg);
 }
 
+.painel-secao--perigo {
+  border-color: var(--cor-erro);
+}
+
+.painel-secao--perigo .painel-secao__titulo {
+  color: var(--cor-erro);
+}
+
+.reset-demo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-lg);
+  flex-wrap: wrap;
+}
+
+.reset-demo__descricao,
+.reset-demo__aviso {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+  flex: 1;
+}
+
+.reset-demo__aviso {
+  color: var(--cor-erro);
+}
+
+.reset-demo__acoes {
+  display: flex;
+  gap: var(--espaco-sm);
+}
+
 /* ------------------------------------------------------------
    GRADE DE CURSOS
    ------------------------------------------------------------ */
