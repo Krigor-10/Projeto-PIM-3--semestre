@@ -1,5 +1,4 @@
 import { useState } from "react";
-import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { usuarios, matriculas, estatisticasAdmin } from "@/dados/dadosMock.js";
@@ -34,16 +33,16 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
 
       <section aria-labelledby="titulo-stats-admin">
         <h2 className="visualmente-oculto" id="titulo-stats-admin">Métricas gerais da plataforma</h2>
-        <div className="grade-estatisticas">
-          <CartaoEstatistica icone="US" valor={estatisticasAdmin.totalUsuarios} rotulo="Total de usuários" />
-          <CartaoEstatistica icone="AL" valor={estatisticasAdmin.totalAlunos} rotulo="Alunos cadastrados" corBorda="var(--cor-sucesso)" />
-          <CartaoEstatistica icone="PR" valor={estatisticasAdmin.totalProfessores} rotulo="Professores ativos" corBorda="var(--cor-info)" />
-          <CartaoEstatistica icone="CO" valor={estatisticasAdmin.totalCoordenadores} rotulo="Coordenadores" corBorda="var(--cor-marca)" />
-          <CartaoEstatistica icone="CU" valor={estatisticasAdmin.totalCursos} rotulo="Cursos disponíveis" />
-          <CartaoEstatistica icone="TU" valor={estatisticasAdmin.totalTurmasAtivas} rotulo="Turmas ativas" corBorda="var(--cor-sucesso)" />
-          <CartaoEstatistica icone="MA" valor={estatisticasAdmin.matriculasPendentes} rotulo="Matrículas pendentes" corBorda="var(--cor-aviso)" />
-          <CartaoEstatistica icone="TX" valor={`${estatisticasAdmin.taxaConclusao}%`} rotulo="Taxa de conclusão" corBorda="var(--cor-info)" />
-        </div>
+        <dl className="gerencial-stats-barra" aria-label="Métricas gerais da plataforma">
+          <div><dt>Usuários</dt><dd>{estatisticasAdmin.totalUsuarios}</dd></div>
+          <div><dt>Alunos</dt><dd>{estatisticasAdmin.totalAlunos}</dd></div>
+          <div><dt>Professores</dt><dd>{estatisticasAdmin.totalProfessores}</dd></div>
+          <div><dt>Coordenadores</dt><dd>{estatisticasAdmin.totalCoordenadores}</dd></div>
+          <div><dt>Cursos</dt><dd>{estatisticasAdmin.totalCursos}</dd></div>
+          <div><dt>Turmas</dt><dd>{estatisticasAdmin.totalTurmasAtivas}</dd></div>
+          <div><dt>Matrículas pend.</dt><dd>{estatisticasAdmin.matriculasPendentes}</dd></div>
+          <div><dt>Conclusão</dt><dd>{estatisticasAdmin.taxaConclusao}%</dd></div>
+        </dl>
       </section>
 
       <div className="grade-2" style={{ marginTop: "var(--espaco-xl)" }}>

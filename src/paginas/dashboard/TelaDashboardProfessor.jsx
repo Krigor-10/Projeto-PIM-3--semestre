@@ -1,4 +1,3 @@
-import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { turmas, avaliacoes, estatisticasProfessor } from "@/dados/dadosMock.js";
@@ -21,12 +20,12 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
 
       <section aria-labelledby="titulo-stats-prof">
         <h2 className="visualmente-oculto" id="titulo-stats-prof">Resumo do professor</h2>
-        <div className="grade-estatisticas">
-          <CartaoEstatistica icone="TU" valor={estatisticasProfessor.totalTurmas} rotulo="Turmas ativas" />
-          <CartaoEstatistica icone="AL" valor={estatisticasProfessor.totalAlunos} rotulo="Alunos sob responsabilidade" corBorda="var(--cor-sucesso)" />
-          <CartaoEstatistica icone="AV" valor={estatisticasProfessor.avaliacoesPublicadas} rotulo="Avaliacoes publicadas" corBorda="var(--cor-aviso)" />
-          <CartaoEstatistica icone="MD" valor={estatisticasProfessor.mediaNotas} rotulo="Media geral das notas" corBorda="var(--cor-info)" />
-        </div>
+        <dl className="gerencial-stats-barra" aria-label="Resumo do professor">
+          <div><dt>Turmas ativas</dt><dd>{estatisticasProfessor.totalTurmas}</dd></div>
+          <div><dt>Alunos</dt><dd>{estatisticasProfessor.totalAlunos}</dd></div>
+          <div><dt>Avaliações</dt><dd>{estatisticasProfessor.avaliacoesPublicadas}</dd></div>
+          <div><dt>Média de notas</dt><dd>{estatisticasProfessor.mediaNotas}</dd></div>
+        </dl>
       </section>
 
       <div className="grade-2" style={{ marginTop: "var(--espaco-xl)" }}>

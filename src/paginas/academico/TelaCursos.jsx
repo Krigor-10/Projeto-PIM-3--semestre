@@ -2,7 +2,7 @@ import { useState } from "react";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { cursos, turmas, modulos } from "@/dados/dadosMock.js";
+import { cursos, turmas, modulos, usuarios } from "@/dados/dadosMock.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 /* ── Vista gerencial do coordenador ─────────────────────────────── */
@@ -10,13 +10,25 @@ import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 function VistaGerencialCoordenador({ usuario }) {
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
   const [modoEdicao, setModoEdicao]             = useState(false);
+  const [menuAberto, setMenuAberto]             = useState(null);
+  const [cursoAtribuir, setCursoAtribuir]       = useState(null);
   const [listaCursos, setListaCursos]           = useState(
     cursos.filter((c) => c.coordenadorId === usuario.id)
   );
 
-  const turmasTotal   = turmas.filter((t) => listaCursos.some((c) => c.id === t.cursoId));
-  const alunosTotal   = turmasTotal.reduce((acc, t) => acc + (t.totalAlunos ?? 0), 0);
-  const profsUnicos   = new Set(turmasTotal.map((t) => t.professorId)).size;
+  const professoresAtivos = usuarios.filter((u) => u.tipo === "Professor" && u.ativo);
+
+  function atribuirProfessor(e) {
+    e.preventDefault();
+    const professorId = Number(e.target["select-professor"].value);
+    const professor   = professoresAtivos.find((p) => p.id === professorId);
+    setListaCursos((prev) => prev.map((c) =>
+      c.id === cursoAtribuir.id
+        ? { ...c, professorId: professor.id, professorNome: professor.nome }
+        : c
+    ));
+    setCursoAtribuir(null);
+  }
 
   function salvarEdicao(e) {
     e.preventDefault();
@@ -45,13 +57,6 @@ function VistaGerencialCoordenador({ usuario }) {
         </div>
       </header>
 
-      <dl className="gerencial-stats-barra" aria-label="Resumo dos cursos">
-        <div><dt>Cursos</dt><dd>{listaCursos.length}</dd></div>
-        <div><dt>Turmas</dt><dd>{turmasTotal.length}</dd></div>
-        <div><dt>Alunos</dt><dd>{alunosTotal}</dd></div>
-        <div><dt>Professores</dt><dd>{profsUnicos}</dd></div>
-      </dl>
-
       {/* Lista de cursos */}
       <ul className="gerencial-cursos__lista" role="list">
         {listaCursos.map((curso) => {
@@ -61,38 +66,72 @@ function VistaGerencialCoordenador({ usuario }) {
 
           return (
             <li key={curso.id} className="gerencial-curso-item">
-              <div className="gerencial-curso-item__topo">
-                <div className="gerencial-curso-item__identidade">
-                  <h3 className="gerencial-curso-item__titulo">{curso.titulo}</h3>
-                  <span className="gerencial-curso-item__codigo">{curso.codigoRegistro}</span>
-                </div>
-                <div className="gerencial-curso-item__badges">
-                  <Insignia texto={curso.nivel} variante="info" />
-                  <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "erro"} />
-                </div>
+              <div className="gerencial-curso-item__identidade">
+                <h3 className="gerencial-curso-item__titulo">{curso.titulo}</h3>
+                <span className="gerencial-curso-item__codigo">{curso.codigoRegistro}</span>
+                <span className="gerencial-curso-item__professor">
+                  {curso.professorNome ?? "Sem professor atribuído"}
+                </span>
               </div>
 
-              <div className="gerencial-curso-item__stats">
-                <span>{modulosCurso.length} módulos</span>
-                <span>{turmasCurso.length} turma{turmasCurso.length !== 1 ? "s" : ""}</span>
-                <span>{alunosCurso} alunos</span>
-                <span>{curso.duracao}</span>
-              </div>
+              <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "erro"} />
 
-              <div className="gerencial-curso-item__rodape">
-                <Botao variante="fantasma" tamanho="pequeno"
-                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); }}>
-                  Detalhes
-                </Botao>
-                <Botao variante="fantasma" tamanho="pequeno"
-                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(true); }}>
-                  Editar
-                </Botao>
+              <div className="menu-contexto">
+                <button
+                  className="menu-contexto__botao"
+                  onClick={() => setMenuAberto(menuAberto === curso.id ? null : curso.id)}
+                  aria-label={`Opções para ${curso.titulo}`}
+                  aria-expanded={menuAberto === curso.id}
+                  type="button"
+                >
+                  ···
+                </button>
+                {menuAberto === curso.id && (
+                  <ul className="menu-contexto__lista" role="menu">
+                    <li><button role="menuitem" onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); setMenuAberto(null); }}>Detalhes</button></li>
+                    <li><button role="menuitem" onClick={() => { setCursoSelecionado(curso); setModoEdicao(true); setMenuAberto(null); }}>Editar</button></li>
+                    <li><button role="menuitem" onClick={() => { setCursoAtribuir(curso); setMenuAberto(null); }}>Atribuir Professor</button></li>
+                  </ul>
+                )}
               </div>
             </li>
           );
         })}
       </ul>
+
+      {/* Overlay para fechar menu de contexto */}
+      {menuAberto && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 99 }} onClick={() => setMenuAberto(null)} aria-hidden="true" />
+      )}
+
+      {/* Modal atribuir professor */}
+      {cursoAtribuir && (
+        <Modal titulo="Atribuir Professor" onFechar={() => setCursoAtribuir(null)}>
+          <p style={{ fontSize: "0.875rem", color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-md)" }}>
+            Curso: <strong style={{ color: "var(--cor-texto-forte)" }}>{cursoAtribuir.titulo}</strong>
+          </p>
+          <form className="formulario-modal" onSubmit={atribuirProfessor}>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="select-professor">Professor *</label>
+              <select
+                id="select-professor"
+                className="campo__entrada"
+                defaultValue={cursoAtribuir.professorId ?? ""}
+                required
+              >
+                <option value="" disabled>Selecione um professor</option>
+                {professoresAtivos.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
+              </select>
+            </div>
+            <footer className="modal-rodape">
+              <Botao variante="fantasma" type="button" onClick={() => setCursoAtribuir(null)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Confirmar</Botao>
+            </footer>
+          </form>
+        </Modal>
+      )}
 
       {/* Modal detalhes / edição */}
       {cursoSelecionado && !modoEdicao && (

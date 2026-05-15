@@ -105,7 +105,7 @@ const ACOES = {
   alunos:       { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
   professores:  { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
   coordenadores:{ criar: ["Admin"],                          editar: ["Admin"],                          excluir: ["Admin"]                   },
-  cursos:       { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
+  cursos:       { criar: ["Admin"],                          editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
   modulos:      { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin", "Coordenador"]     },
   turmas:       { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
   matriculas:   { criar: ["Admin"],                          editar: ["Admin"],                          excluir: ["Admin"]                   },
