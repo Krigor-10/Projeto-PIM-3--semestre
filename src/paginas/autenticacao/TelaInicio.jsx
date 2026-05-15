@@ -171,9 +171,8 @@ export default function TelaInicio() {
 
                       <div className="cartao-curso__corpo">
                         <div className="cartao-curso__badges">
-                          <span className="cartao-curso__codigo">{curso.codigoRegistro}</span>
                           <span className="cartao-curso__nivel">{curso.nivel}</span>
-                          </div>
+                        </div>
 
                         <h3 className="cartao-curso__titulo" id={`curso-titulo-${curso.id}`}>
                           {curso.titulo}
@@ -181,7 +180,6 @@ export default function TelaInicio() {
                         <p className="cartao-curso__descricao">{curso.descricao}</p>
 
                         <ul className="cartao-curso__meta" aria-label="Detalhes do curso">
-                          <li>{curso.duracao}</li>
                           <li>{curso.totalModulos} módulos</li>
                           <li>{curso.totalAlunos} alunos</li>
                         </ul>
