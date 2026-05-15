@@ -1,0 +1,382 @@
+/* ============================================================
+   ESTILOS ESPECÍFICOS DE PÁGINAS
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   ACESSIBILIDADE
+   ------------------------------------------------------------ */
+.pular-para-conteudo {
+  position: absolute;
+  top: -100px;
+  left: var(--espaco-md);
+  background: var(--cor-marca);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: var(--raio-md);
+  z-index: 9999;
+  font-weight: 600;
+  transition: top var(--transicao-rapida);
+}
+
+.pular-para-conteudo:focus {
+  top: var(--espaco-md);
+}
+
+/* ------------------------------------------------------------
+   TELA INÍCIO (HOME PÚBLICA)
+   ------------------------------------------------------------ */
+.cabecalho-publico {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(25, 27, 33, 0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.cabecalho-publico__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--espaco-xl);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cabecalho-publico__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.cabecalho-publico__logo-texto {
+  font-family: var(--fonte-display);
+  background: linear-gradient(135deg, var(--cor-marca-clara), var(--cor-marca));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cabecalho-publico__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-lg);
+}
+
+.cabecalho-publico__link {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color var(--transicao-rapida);
+  text-decoration: none;
+}
+
+.cabecalho-publico__link:hover {
+  color: var(--cor-texto-forte);
+}
+
+/* HERO */
+.secao-hero {
+  isolation: isolate;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  padding: calc(64px + var(--espaco-2xl)) var(--espaco-xl) var(--espaco-2xl);
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: var(--espaco-2xl);
+  overflow: hidden;
+  position: relative;
+}
+
+.secao-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(25, 27, 33, 0.96) 0%, rgba(25, 27, 33, 0.78) 45%, rgba(25, 27, 33, 0.36) 100%),
+    linear-gradient(180deg, rgba(25, 27, 33, 0.1), rgba(25, 27, 33, 0.82));
+}
+
+.secao-hero__banner {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  width: 100%;
+  z-index: -2;
+}
+
+.secao-hero__conteudo {
+  flex: 1;
+  max-width: 600px;
+}
+
+.secao-hero__tag {
+  display: inline-block;
+  background: rgba(123, 47, 247, 0.15);
+  color: var(--cor-marca-clara);
+  border: 1px solid var(--cor-borda-forte);
+  padding: 0.3rem 0.9rem;
+  border-radius: var(--raio-circular);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: var(--espaco-lg);
+}
+
+.secao-hero__titulo {
+  font-family: var(--fonte-display);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: var(--espaco-lg);
+}
+
+.secao-hero__titulo--destaque {
+  background: linear-gradient(135deg, var(--cor-marca-clara), var(--cor-marca));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.secao-hero__descricao {
+  font-size: 1.1rem;
+  color: var(--cor-texto-suave);
+  line-height: 1.7;
+  margin-bottom: var(--espaco-xl);
+  max-width: 520px;
+}
+
+.secao-hero__acoes {
+  display: flex;
+  gap: var(--espaco-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--espaco-xl);
+}
+
+.secao-hero__numeros {
+  display: flex;
+  gap: var(--espaco-xl);
+  list-style: none;
+}
+
+.secao-hero__numeros li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.secao-hero__numeros strong {
+  font-family: var(--fonte-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--cor-marca-clara);
+}
+
+.secao-hero__numeros span {
+  font-size: 0.8rem;
+  color: var(--cor-texto-mudo);
+}
+
+.secao-hero__visual {
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-card {
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-xl);
+  padding: var(--espaco-xl);
+  width: 100%;
+  max-width: 340px;
+  box-shadow: var(--sombra-acento);
+}
+
+.hero-card__barra {
+  height: 8px;
+  background: linear-gradient(90deg, var(--cor-marca), var(--cor-acento), var(--cor-marca-clara));
+  border-radius: var(--raio-circular);
+  margin-bottom: var(--espaco-lg);
+}
+
+.hero-card__linha {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--raio-sm);
+  margin-bottom: var(--espaco-sm);
+}
+
+.hero-card__linha--curta {
+  width: 60%;
+}
+
+.hero-card__progresso {
+  margin-top: var(--espaco-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.hero-card__progresso span {
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+/* SEÇÕES */
+.secao-pilares,
+.secao-cursos,
+.secao-cta {
+  padding: var(--espaco-2xl) var(--espaco-xl);
+}
+
+.secao-pilares__inner,
+.secao-cursos__inner,
+.secao-cta__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.secao-cabecalho {
+  text-align: center;
+  margin-bottom: var(--espaco-2xl);
+}
+
+.secao-cabecalho__titulo {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 800;
+  margin-bottom: var(--espaco-sm);
+}
+
+.secao-cabecalho__subtitulo {
+  color: var(--cor-texto-suave);
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.grade-pilares {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--espaco-lg);
+  list-style: none;
+}
+
+.cartao-pilar {
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  padding: var(--espaco-xl);
+  transition: border-color var(--transicao-normal), transform var(--transicao-normal);
+}
+
+.cartao-pilar:hover {
+  border-color: var(--cor-borda-forte);
+  transform: translateY(-2px);
+}
+
+.cartao-pilar__icone {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--espaco-md);
+}
+
+.cartao-pilar__titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: var(--espaco-sm);
+}
+
+.cartao-pilar__descricao {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+  line-height: 1.6;
+}
+
+.cartao-curso__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+  margin-bottom: var(--espaco-sm);
+}
+
+.cartao-curso__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  list-style: none;
+  margin-top: var(--espaco-sm);
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+.cartao-curso__preco {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cor-marca-clara);
+}
+
+.cartao-curso__codigo {
+  font-size: 0.75rem;
+  color: var(--cor-texto-mudo);
+}
+
+.secao-cta {
+  background: linear-gradient(135deg, rgba(123, 47, 247, 0.1), rgba(91, 25, 207, 0.05));
+  border-top: 1px solid var(--cor-borda);
+}
+
+.secao-cta__inner {
+  text-align: center;
+}
+
+.secao-cta__titulo {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  margin-bottom: var(--espaco-md);
+}
+
+.secao-cta__descricao {
+  color: var(--cor-texto-suave);
+  margin-bottom: var(--espaco-xl);
+  font-size: 1rem;
+}
+
+.rodape-publico {
+  background: var(--cor-fundo-alt);
+  border-top: 1px solid var(--cor-borda);
+  padding: var(--espaco-xl);
+}
+
+.rodape-publico__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-md);
+  flex-wrap: wrap;
+}
+
+.rodape-publico__marca {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.rodape-publico__direitos {
+  font-size: 0.82rem;
+  color: var(--cor-texto-mudo);
+}

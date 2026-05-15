@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Insignia from "../../componentes/Insignia.jsx";
-import Modal from "../../componentes/Modal.jsx";
-import BarraProgresso from "../../componentes/BarraProgresso.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { matriculas, cursos, certificadosDemo } from "../../dados/dadosMock.js";
-import fundoCertificado from "../../ativos/certificado-fundo.png";
+import Insignia from "@/componentes/Insignia.jsx";
+import Modal from "@/componentes/Modal.jsx";
+import BarraProgresso from "@/componentes/BarraProgresso.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { matriculas, cursos, certificadosDemo } from "@/dados/dadosMock.js";
+import fundoCertificado from "@/ativos/certificado-fundo.png";
 
 export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
   const [certificadoAberto, setCertificadoAberto] = useState(null);

@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import BarraProgresso from "../../componentes/BarraProgresso.jsx";
-import Insignia from "../../componentes/Insignia.jsx";
-import Modal from "../../componentes/Modal.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { conteudos, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
-import { questoesQuiz } from "../../dados/questoesQuiz.js";
-import { podeCriar, podeEditar } from "../../dados/permissoes.js";
+import BarraProgresso from "@/componentes/BarraProgresso.jsx";
+import Insignia from "@/componentes/Insignia.jsx";
+import Modal from "@/componentes/Modal.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
+import { questoesQuiz } from "@/dados/questoesQuiz.js";
+import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 /* Ícones e rótulos semânticos por tipo de conteúdo */
 const TIPO_CONFIG = {
@@ -675,20 +675,11 @@ function VistaProfessor({ usuario }) {
       )}
 
       <div className="carrossel-cursos__janela">
-        <div
-          className="carrossel-cursos__trilha"
-          style={{ transform: `translateX(-${slideAtual * 100}%)` }}
-        >
-          {minhasTurmas.map((turma, idx) => (
-            <div key={turma.id} className="carrossel-cursos__slide" aria-hidden={idx !== slideAtual}>
-              <SlideCursoProfessor
-                turma={turma}
-                tipo={usuario?.tipo}
-                onNovoConteudo={() => setModalAberto(true)}
-              />
-            </div>
-          ))}
-        </div>
+        <SlideCursoProfessor
+          turma={minhasTurmas[slideAtual]}
+          tipo={usuario?.tipo}
+          onNovoConteudo={() => setModalAberto(true)}
+        />
       </div>
 
       {/* Portal para modal — evita conflito de stacking context com o transform do carrossel */}
@@ -812,23 +803,14 @@ function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onM
 
       {/* Janela do carrossel */}
       <div className="carrossel-cursos__janela">
-        <div
-          className="carrossel-cursos__trilha"
-          style={{ transform: `translateX(-${slideAtual * 100}%)` }}
-        >
-          {matriculasAprovadas.map((mat, idx) => (
-            <div key={mat.id} className="carrossel-cursos__slide" aria-hidden={idx !== slideAtual}>
-              <SlideConteudoCurso
-                matricula={mat}
-                quizzesAprovados={quizzesAprovados}
-                onQuizAprovado={onQuizAprovado}
-                onMudarSecao={onMudarSecao}
-                onConteudoConcluido={onConteudoConcluido}
-                ativo={idx === slideAtual}
-              />
-            </div>
-          ))}
-        </div>
+        <SlideConteudoCurso
+          matricula={matriculasAprovadas[slideAtual]}
+          quizzesAprovados={quizzesAprovados}
+          onQuizAprovado={onQuizAprovado}
+          onMudarSecao={onMudarSecao}
+          onConteudoConcluido={onConteudoConcluido}
+          ativo={true}
+        />
       </div>
     </div>
   );

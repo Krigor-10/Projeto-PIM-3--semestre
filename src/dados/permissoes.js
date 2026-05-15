@@ -60,7 +60,7 @@ export const SECOES = [
     chave: "matriculas",
     rotulo: "Matrículas",
     icone: "MA",
-    perfis: ["Admin", "Coordenador", "Aluno"],
+    perfis: ["Admin", "Aluno"],
   },
   {
     chave: "avaliacoes",
@@ -78,13 +78,19 @@ export const SECOES = [
     chave: "progresso",
     rotulo: "Progresso",
     icone: "PG",
-    perfis: ["Professor", "Aluno"],
+    perfis: ["Coordenador", "Professor", "Aluno"],
   },
   {
     chave: "certificados",
     rotulo: "Certificados",
     icone: "CR",
     perfis: ["Aluno"],
+  },
+  {
+    chave: "catalogo",
+    rotulo: "Catálogo Público",
+    icone: "CL",
+    perfis: ["Admin"],
   },
 ];
 
@@ -102,10 +108,11 @@ const ACOES = {
   cursos:       { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
   modulos:      { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin", "Coordenador"]     },
   turmas:       { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
-  matriculas:   { criar: ["Admin", "Coordenador"],           editar: ["Admin", "Coordenador"],           excluir: ["Admin"]                   },
+  matriculas:   { criar: ["Admin"],                          editar: ["Admin"],                          excluir: ["Admin"]                   },
   avaliacoes:   { criar: ["Professor"],                      editar: ["Professor"],                      excluir: ["Professor"]               },
   conteudos:    { criar: ["Professor"],                      editar: ["Professor"],                      excluir: ["Professor"]               },
   progresso:    { criar: [],                                 editar: [],                                 excluir: []                          },
+  catalogo:     { criar: [],                                 editar: ["Admin"],                          excluir: ["Admin"]                   },
 };
 
 /* ── Funções auxiliares ──────────────────────────────────────── */

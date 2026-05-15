@@ -1,8 +1,8 @@
 import { useState } from "react";
-import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
-import Insignia from "../../componentes/Insignia.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { usuarios, matriculas, estatisticasAdmin } from "../../dados/dadosMock.js";
+import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
+import Insignia from "@/componentes/Insignia.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { usuarios, matriculas, estatisticasAdmin } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
   const [listaMatriculas, setListaMatriculas] = useState(matriculas);

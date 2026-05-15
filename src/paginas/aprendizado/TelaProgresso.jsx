@@ -1,10 +1,13 @@
-import BarraProgresso from "../../componentes/BarraProgresso.jsx";
-import Insignia from "../../componentes/Insignia.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { conteudos, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
+import BarraProgresso from "@/componentes/BarraProgresso.jsx";
+import Insignia from "@/componentes/Insignia.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
 
 /* Percentuais simulados por id de matrícula para a vista administrativa */
 const PROGRESSO_MOCK = { 1: 42, 2: 15, 6: 68 };
+
+/* Média de notas simulada por id de turma (escala 0–10) */
+const NOTAS_MOCK = { 1: 7.8, 2: 6.9, 3: 8.2, 4: 7.1, 5: 9.0, 6: 6.5 };
 
 /* Retorna status e variante de badge a partir do progresso do módulo */
 function resolverStatusModulo(concluidosModulo, totalItens) {
@@ -280,17 +283,23 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} 
 
 function VistaProfessor({ usuario }) {
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario.id);
-  const minhasTurmaIds = new Set(minhasTurmas.map((t) => t.id));
 
-  const matriculasMinhasTurmas = matriculas.filter(
-    (m) => minhasTurmaIds.has(m.turmaId) && m.status === "Aprovada"
-  );
+  const turmasComProgresso = minhasTurmas.map((turma) => {
+    const alunosDaTurma = matriculas.filter(
+      (m) => m.turmaId === turma.id && m.status === "Aprovada"
+    );
+    const total = alunosDaTurma.length;
+    const media = total > 0
+      ? Math.round(alunosDaTurma.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) / total)
+      : 0;
+    const mediaNota = NOTAS_MOCK[turma.id] ?? 0;
+    return { turma, totalAlunos: total, media, mediaNota };
+  });
 
-  const totalAlunos = matriculasMinhasTurmas.length;
-  const mediaGeral = totalAlunos > 0
+  const totalAlunos = turmasComProgresso.reduce((acc, t) => acc + t.totalAlunos, 0);
+  const mediaGeral  = totalAlunos > 0
     ? Math.round(
-        matriculasMinhasTurmas.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) /
-        totalAlunos
+        turmasComProgresso.reduce((acc, t) => acc + t.media * t.totalAlunos, 0) / totalAlunos
       )
     : 0;
 
@@ -300,75 +309,152 @@ function VistaProfessor({ usuario }) {
         <div>
           <h2 className="cabecalho-pagina__titulo">Progresso dos Alunos</h2>
           <p className="cabecalho-pagina__subtitulo">
-            {minhasTurmas.length} turma(s) · {totalAlunos} aluno(s) com matrícula ativa — média geral: {mediaGeral}%
+            {minhasTurmas.length} turma{minhasTurmas.length !== 1 ? "s" : ""} ·{" "}
+            {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} com matrícula ativa · média geral: {mediaGeral}%
           </p>
         </div>
       </header>
 
-      {minhasTurmas.length === 0 && (
+      {minhasTurmas.length === 0 ? (
         <p className="texto-vazio" role="status">Você não possui turmas atribuídas.</p>
+      ) : (
+        <section className="painel-secao" aria-labelledby="titulo-progresso-turmas">
+          <header className="painel-secao__cabecalho">
+            <h3 className="painel-secao__titulo" id="titulo-progresso-turmas">
+              Progresso por Turma
+            </h3>
+          </header>
+          <div className="painel-secao__conteudo">
+            <ul className="lista-aproveitamento" role="list" aria-label="Progresso por turma">
+              {turmasComProgresso.map(({ turma, totalAlunos: total, media, mediaNota }) => {
+                const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+                const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+                return (
+                  <li key={turma.id} className="item-aproveitamento">
+                    <div className="item-aproveitamento__info">
+                      <span className="item-aproveitamento__titulo">
+                        {turma.nomeTurma}
+                        <span style={{ fontSize: "0.78rem", color: "var(--cor-texto-mudo)", marginLeft: "0.5rem" }}>
+                          {turma.cursoTitulo}
+                        </span>
+                      </span>
+                      <div className="item-aproveitamento__barra" aria-hidden="true">
+                        <BarraProgresso percentual={media} mostrarTexto={false} />
+                      </div>
+                    </div>
+                    <div className="item-aproveitamento__badges">
+                      <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
+                        {total} aluno{total !== 1 ? "s" : ""}
+                      </span>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corPct, whiteSpace: "nowrap" }}>
+                        {media}%
+                      </span>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corNota, whiteSpace: "nowrap" }} title="Média de notas">
+                        ★ {mediaNota.toFixed(1)}
+                      </span>
+                      <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
       )}
+    </div>
+  );
+}
 
-      {minhasTurmas.map((turma) => {
-        const alunosDaTurma = matriculasMinhasTurmas.filter((m) => m.turmaId === turma.id);
+/* ── Vista do Coordenador ────────────────────────────────────── */
 
-        return (
-          <section
-            key={turma.id}
-            className="painel-secao"
-            aria-labelledby={`titulo-turma-${turma.id}`}
-            style={{ marginBottom: "var(--espaco-xl)" }}
-          >
-            <header className="painel-secao__cabecalho">
-              <div>
-                <h3 className="painel-secao__titulo" id={`titulo-turma-${turma.id}`}>
-                  {turma.nomeTurma}
-                </h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--cor-texto-suave)", marginTop: "4px" }}>
-                  {turma.cursoTitulo} · {alunosDaTurma.length} aluno(s)
-                </p>
-              </div>
-              <Insignia
-                texto={turma.status}
-                variante={turma.status === "Ativa" ? "sucesso" : "neutro"}
-              />
-            </header>
+function VistaCoordenador({ usuario }) {
+  const meusCursos = cursos.filter((c) => c.coordenadorId === usuario.id);
 
-            <div className="painel-secao__conteudo">
-              {alunosDaTurma.length === 0 ? (
-                <p className="texto-vazio" role="status">Nenhum aluno com matrícula aprovada nesta turma.</p>
-              ) : (
-                <ul className="lista-progresso-alunos" role="list" aria-label={`Alunos da turma ${turma.nomeTurma}`}>
-                  {alunosDaTurma.map((mat) => {
-                    const percentual = PROGRESSO_MOCK[mat.id] ?? 0;
-                    const { texto: statusTexto, variante: statusVariante } =
-                      resolverStatusModulo(percentual, 100);
+  const cursosComProgresso = meusCursos.map((curso) => {
+    const turmasDoCurso = turmas.filter((t) => t.cursoId === curso.id);
+    const alunosDoCurso = matriculas.filter(
+      (m) => turmasDoCurso.some((t) => t.id === m.turmaId) && m.status === "Aprovada"
+    );
+    const total = alunosDoCurso.length;
+    const media = total > 0
+      ? Math.round(alunosDoCurso.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) / total)
+      : 0;
+    const mediaNota = turmasDoCurso.length > 0
+      ? Math.round(
+          turmasDoCurso.reduce((acc, t) => acc + (NOTAS_MOCK[t.id] ?? 0), 0) /
+          turmasDoCurso.length * 10
+        ) / 10
+      : 0;
+    return { curso, totalTurmas: turmasDoCurso.length, totalAlunos: total, media, mediaNota };
+  });
 
-                    return (
-                      <li key={mat.id} className="cartao-progresso-aluno">
-                        <div className="cartao-progresso-aluno__avatar" aria-hidden="true">
-                          {mat.alunoNome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
-                        </div>
-                        <div className="cartao-progresso-aluno__info">
-                          <strong className="cartao-progresso-aluno__nome">{mat.alunoNome}</strong>
-                          <p className="cartao-progresso-aluno__meta">{mat.codigoMatricula}</p>
-                          <div className="cartao-progresso-aluno__barra">
-                            <BarraProgresso percentual={percentual} mostrarTexto={false} />
-                          </div>
-                        </div>
-                        <div className="cartao-progresso-aluno__badges">
-                          <Insignia texto={`${percentual}%`} variante="neutro" />
-                          <Insignia texto={statusTexto} variante={statusVariante} />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-          </section>
-        );
-      })}
+  const totalAlunos = cursosComProgresso.reduce((acc, c) => acc + c.totalAlunos, 0);
+  const mediaGeral  = totalAlunos > 0
+    ? Math.round(
+        cursosComProgresso.reduce((acc, c) => acc + c.media * c.totalAlunos, 0) / totalAlunos
+      )
+    : 0;
+
+  return (
+    <div className="tela-progresso">
+      <header className="cabecalho-pagina">
+        <div>
+          <h2 className="cabecalho-pagina__titulo">Progresso por Curso</h2>
+          <p className="cabecalho-pagina__subtitulo">
+            {meusCursos.length} curso{meusCursos.length !== 1 ? "s" : ""} ·{" "}
+            {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} com matrícula ativa · média geral: {mediaGeral}%
+          </p>
+        </div>
+      </header>
+
+      {meusCursos.length === 0 ? (
+        <p className="texto-vazio" role="status">Nenhum curso sob sua coordenação.</p>
+      ) : (
+        <section className="painel-secao" aria-labelledby="titulo-progresso-cursos">
+          <header className="painel-secao__cabecalho">
+            <h3 className="painel-secao__titulo" id="titulo-progresso-cursos">
+              Progresso por Curso
+            </h3>
+          </header>
+          <div className="painel-secao__conteudo">
+            <ul className="lista-aproveitamento" role="list" aria-label="Progresso por curso">
+              {cursosComProgresso.map(({ curso, totalTurmas, totalAlunos: total, media, mediaNota }) => {
+                const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+                const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+                return (
+                  <li key={curso.id} className="item-aproveitamento">
+                    <div className="item-aproveitamento__info">
+                      <span className="item-aproveitamento__titulo">
+                        {curso.titulo}
+                        <span style={{ fontSize: "0.78rem", color: "var(--cor-texto-mudo)", marginLeft: "0.5rem" }}>
+                          {curso.codigoRegistro}
+                        </span>
+                      </span>
+                      <div className="item-aproveitamento__barra" aria-hidden="true">
+                        <BarraProgresso percentual={media} mostrarTexto={false} />
+                      </div>
+                    </div>
+                    <div className="item-aproveitamento__badges">
+                      <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
+                        {totalTurmas} turma{totalTurmas !== 1 ? "s" : ""}
+                      </span>
+                      <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
+                        {total} aluno{total !== 1 ? "s" : ""}
+                      </span>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corPct, whiteSpace: "nowrap" }}>
+                        {media}%
+                      </span>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corNota, whiteSpace: "nowrap" }} title="Média de notas">
+                        ★ {mediaNota.toFixed(1)}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -439,8 +525,7 @@ export default function TelaProgresso({ usuario, avaliacaoAprovada, resultadosQu
       />
     );
   }
-  if (usuario?.tipo === "Professor") {
-    return <VistaProfessor usuario={usuario} />;
-  }
+  if (usuario?.tipo === "Professor")   return <VistaProfessor   usuario={usuario} />;
+  if (usuario?.tipo === "Coordenador") return <VistaCoordenador usuario={usuario} />;
   return <VistaAdmin />;
 }

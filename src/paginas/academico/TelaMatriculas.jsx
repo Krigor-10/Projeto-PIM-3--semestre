@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Insignia from "../../componentes/Insignia.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { matriculas } from "../../dados/dadosMock.js";
-import { podeEditar } from "../../dados/permissoes.js";
+import Insignia from "@/componentes/Insignia.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { matriculas } from "@/dados/dadosMock.js";
+import { podeEditar } from "@/dados/permissoes.js";
 
 function TabelaSimples({ colunas, linhas, semDados }) {
   return (

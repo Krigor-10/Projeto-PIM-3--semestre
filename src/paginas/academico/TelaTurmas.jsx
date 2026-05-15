@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { createPortal } from "react-dom";
-import Insignia from "../../componentes/Insignia.jsx";
-import Modal from "../../componentes/Modal.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { turmas, cursos, matriculas, usuarios } from "../../dados/dadosMock.js";
-import { podeCriar, podeEditar } from "../../dados/permissoes.js";
+import Insignia from "@/componentes/Insignia.jsx";
+import Modal from "@/componentes/Modal.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { turmas, cursos, matriculas, usuarios } from "@/dados/dadosMock.js";
+import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 const VARIANTE_MAT = { Aprovada: "sucesso", Pendente: "aviso", Rejeitada: "erro" };
 
@@ -235,24 +234,14 @@ export default function TelaTurmas({ usuario }) {
             </nav>
           )}
 
-          {/* Janela deslizante */}
           <div className="carrossel-cursos__janela">
-            <div
-              className="carrossel-cursos__trilha"
-              style={{ transform: `translateX(-${slideSeguro * 100}%)` }}
-            >
-              {turmasFiltradas.map((turma, idx) => (
-                <div key={turma.id} className="carrossel-cursos__slide" aria-hidden={idx !== slideSeguro}>
-                  <SlideTurma
-                    turma={turma}
-                    alunos={montarAlunosTurma(turma.id)}
-                    busca={idx === slideSeguro ? buscaAluno : ""}
-                    tipo={tipo}
-                    onEditar={() => setTurmaEditando(turma)}
-                  />
-                </div>
-              ))}
-            </div>
+            <SlideTurma
+              turma={turmasFiltradas[slideSeguro]}
+              alunos={montarAlunosTurma(turmasFiltradas[slideSeguro].id)}
+              busca={buscaAluno}
+              tipo={tipo}
+              onEditar={() => setTurmaEditando(turmasFiltradas[slideSeguro])}
+            />
           </div>
         </div>
       )}

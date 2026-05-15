@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Botao from "../../componentes/Botao.jsx";
-import { questoesQuiz } from "../../dados/questoesQuiz.js";
+import Botao from "@/componentes/Botao.jsx";
+import { questoesQuiz } from "@/dados/questoesQuiz.js";
 
 const TOTAL = questoesQuiz.length;
 

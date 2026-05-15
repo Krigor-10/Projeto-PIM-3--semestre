@@ -1,0 +1,290 @@
+/* ------------------------------------------------------------
+   USUÁRIOS
+   ------------------------------------------------------------ */
+.lista-usuarios-completa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  list-style: none;
+}
+
+.cartao-usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  transition: border-color var(--transicao-rapida);
+}
+
+.cartao-usuario:hover {
+  border-color: var(--cor-borda-forte);
+}
+
+.cartao-usuario__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cor-marca), var(--cor-acento));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.cartao-usuario__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cartao-usuario__nome {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cartao-usuario__email {
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+.cartao-usuario__data {
+  font-size: 0.75rem;
+  color: var(--cor-texto-mudo);
+}
+
+.cartao-usuario__badges {
+  display: flex;
+  gap: var(--espaco-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cartao-usuario__acoes {
+  display: flex;
+  gap: var(--espaco-sm);
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   TABELA DE DADOS CONTAINER
+   ------------------------------------------------------------ */
+.tabela-dados-container {
+  overflow-x: auto;
+}
+
+/* ------------------------------------------------------------
+   MODAL RODAPÉ
+   ------------------------------------------------------------ */
+.modal-rodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-sm);
+  margin-top: var(--espaco-lg);
+}
+
+.formulario-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-md);
+}
+
+/* ------------------------------------------------------------
+   LISTA DE DETALHES
+   ------------------------------------------------------------ */
+.lista-detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.lista-detalhes__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--espaco-sm);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.lista-detalhes__item:last-child {
+  border-bottom: none;
+}
+
+.lista-detalhes__item dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cor-texto-mudo);
+  font-weight: 600;
+}
+
+.lista-detalhes__item dd {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   ACESSO RÁPIDO (ADMIN)
+   ------------------------------------------------------------ */
+.grade-acesso-rapido {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  list-style: none;
+}
+
+.botao-acesso-rapido {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: 0.6rem 1rem;
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transicao-rapida);
+}
+
+.botao-acesso-rapido:hover {
+  background: rgba(123, 47, 247, 0.1);
+  border-color: var(--cor-borda-forte);
+  color: var(--cor-texto-forte);
+}
+
+/* ------------------------------------------------------------
+   ACÕES NA TABELA
+   ------------------------------------------------------------ */
+.acoes-tabela {
+  display: flex;
+  gap: var(--espaco-sm);
+  align-items: center;
+}
+
+/* ------------------------------------------------------------
+   TEXTOS VAZIOS
+   ------------------------------------------------------------ */
+.texto-vazio {
+  font-size: 0.875rem;
+  color: var(--cor-texto-mudo);
+  padding: var(--espaco-md) 0;
+}
+
+.texto-vazio--central {
+  text-align: center;
+  padding: var(--espaco-2xl);
+}
+
+.texto-mudo {
+  color: var(--cor-texto-mudo);
+}
+
+/* ------------------------------------------------------------
+   ITEM USUARIO NO DASHBOARD ADMIN
+   ------------------------------------------------------------ */
+.item-usuario__avatar {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0.8rem !important;
+}
+
+.item-usuario__meta {
+  display: flex;
+  gap: var(--espaco-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVIDADE
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  .cartao-usuario {
+    flex-wrap: wrap;
+  }
+
+  .cartao-usuario__acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .tabela-dados th:nth-child(n+4),
+  .tabela-dados td:nth-child(n+4) {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   MODAL EDIÇÃO USUÁRIO
+   ------------------------------------------------------------ */
+.modal-edicao__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cor-marca), var(--cor-acento));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 auto var(--espaco-lg);
+}
+
+.campo--inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.campo__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--cor-marca);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.campo__rotulo--inline {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------
+   ACESSO NEGADO
+   ------------------------------------------------------------ */
+.tela-acesso-negado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40dvh;
+  gap: var(--espaco-md);
+  text-align: center;
+}
+
+.tela-acesso-negado span {
+  font-size: 3rem;
+}
+
+.tela-acesso-negado h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.tela-acesso-negado p {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}
+
+

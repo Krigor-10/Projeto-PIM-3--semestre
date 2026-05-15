@@ -1,11 +1,14 @@
 import { useState } from "react";
-import Botao from "../../componentes/Botao.jsx";
-import { perfisDemo } from "../../dados/dadosMock.js";
+import { useNavigate } from "react-router-dom";
+import Botao from "@/componentes/Botao.jsx";
+import { perfisDemo } from "@/dados/dadosMock.js";
+import { ROTAS } from "@/rotas.js";
 
 /* Somente o perfil de aluno é exibido nesta tela */
 const perfilAluno = perfisDemo.find((p) => p.chave === "aluno");
 
-export default function TelaLoginAluno({ onLogin, onNavegar }) {
+export default function TelaLoginAluno({ onLogin }) {
+  const navigate = useNavigate();
   const [carregando, setCarregando] = useState(false);
 
   function handleEntrar() {
@@ -42,7 +45,7 @@ export default function TelaLoginAluno({ onLogin, onNavegar }) {
             variante="fantasma"
             tamanho="pequeno"
             className="tela-login__voltar"
-            onClick={() => onNavegar("inicio")}
+            onClick={() => navigate(ROTAS.INICIO)}
             aria-label="Voltar para a página inicial"
           >
             Voltar
@@ -89,7 +92,7 @@ export default function TelaLoginAluno({ onLogin, onNavegar }) {
             Não tem uma conta?{" "}
             <button
               className="link-botao"
-              onClick={() => onNavegar("cadastro")}
+              onClick={() => navigate(ROTAS.CADASTRO)}
               type="button"
             >
               Criar conta
@@ -104,7 +107,7 @@ export default function TelaLoginAluno({ onLogin, onNavegar }) {
             É educador ou administrador?{" "}
             <button
               className="link-botao"
-              onClick={() => onNavegar("login-staff")}
+              onClick={() => navigate(ROTAS.LOGIN_STAFF)}
               type="button"
             >
               Acesso da equipe

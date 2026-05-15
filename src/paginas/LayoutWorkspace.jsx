@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { temPermissao } from "../dados/permissoes.js";
-import BarraLateral from "../componentes/BarraLateral.jsx";
-import BarraTopo from "../componentes/BarraTopo.jsx";
+import { useParams, useNavigate } from "react-router-dom";
+import { rotaPainelSecao } from "@/rotas.js";
+import { temPermissao } from "@/dados/permissoes.js";
+import BarraLateral from "@/componentes/BarraLateral.jsx";
+import BarraTopo from "@/componentes/BarraTopo.jsx";
 import TelaDashboardAluno from "./dashboard/TelaDashboardAluno.jsx";
 import TelaDashboardProfessor from "./dashboard/TelaDashboardProfessor.jsx";
 import TelaDashboardCoordenador from "./dashboard/TelaDashboardCoordenador.jsx";
@@ -19,7 +21,8 @@ import TelaProfessores from "./usuarios/TelaProfessores.jsx";
 import TelaCoordenadores from "./usuarios/TelaCoordenadores.jsx";
 import TelaQuiz from "./aprendizado/TelaQuiz.jsx";
 import TelaCertificados from "./aprendizado/TelaCertificados.jsx";
-import Toast from "../componentes/Toast.jsx";
+import TelaCatalogo from "./admin/TelaCatalogo.jsx";
+import Toast from "@/componentes/Toast.jsx";
 
 function resolverDashboard(tipo) {
   const dashboards = {
@@ -45,6 +48,7 @@ const mapaTelas = {
   coordenadores: TelaCoordenadores,
   quiz: TelaQuiz,
   certificados: TelaCertificados,
+  catalogo: TelaCatalogo,
 };
 
 function TelaAcessoNegado() {
@@ -57,7 +61,14 @@ function TelaAcessoNegado() {
   );
 }
 
-export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onLogout }) {
+export default function LayoutWorkspace({ usuario, onLogout }) {
+  const { "*": secaoPath = "" } = useParams();
+  const secaoAtual = secaoPath || "dashboard";
+  const navigate = useNavigate();
+
+  function mudarSecao(secao) {
+    navigate(rotaPainelSecao(secao));
+  }
   const [sidebarAberta, setSidebarAberta] = useState(false);
   /* Estado global de progresso — compartilhado entre TelaConteudos, TelaAvaliacoes e TelaProgresso */
   const [quizzesAprovados, setQuizzesAprovados] = useState(() => new Set());
@@ -96,7 +107,6 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
       <BarraLateral
         usuario={usuario}
         secaoAtual={secaoAtual}
-        onMudarSecao={onMudarSecao}
         aberta={sidebarAberta}
         onFechar={() => setSidebarAberta(false)}
       />
@@ -107,14 +117,13 @@ export default function LayoutWorkspace({ usuario, secaoAtual, onMudarSecao, onL
           secaoAtual={secaoAtual}
           onLogout={onLogout}
           onAbrirSidebar={() => setSidebarAberta(true)}
-          onMudarSecao={onMudarSecao}
         />
 
         <main className="layout-principal" id="conteudo-principal" tabIndex={-1}>
           <div key={secaoAtual} className="tela-animada">
             <ComponenteTela
               usuario={usuario}
-              onMudarSecao={onMudarSecao}
+              onMudarSecao={mudarSecao}
               quizzesAprovados={quizzesAprovados}
               onQuizAprovado={registrarQuizAprovado}
               resultadosQuizzes={resultadosQuizzes}

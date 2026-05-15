@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical } from "react-icons/tb";
-import Insignia from "../../componentes/Insignia.jsx";
-import Modal from "../../componentes/Modal.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { usuarios, turmas as turmasIniciais } from "../../dados/dadosMock.js";
-import { podeCriar } from "../../dados/permissoes.js";
+import Insignia from "@/componentes/Insignia.jsx";
+import Modal from "@/componentes/Modal.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { usuarios, turmas as turmasIniciais } from "@/dados/dadosMock.js";
+import { podeCriar } from "@/dados/permissoes.js";
 
 const ITENS_POR_PAGINA = 8;
 

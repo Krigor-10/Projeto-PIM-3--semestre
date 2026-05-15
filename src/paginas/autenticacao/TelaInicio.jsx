@@ -1,12 +1,14 @@
-import Botao from "../../componentes/Botao.jsx";
-import { cursos } from "../../dados/dadosMock.js";
-import bannerHome from "../../ativos/banner-home.png";
-import imgDevWeb     from "../../ativos/curso-dev-web.png";
-import imgCiencia    from "../../ativos/curso-ciencia-dados.png";
-import imgIA         from "../../ativos/curso-ia.png";
-import imgCyber      from "../../ativos/curso-cyber.png";
-import imgUxUi       from "../../ativos/curso-ux-ui.png";
-import imgRobotica   from "../../ativos/curso-robotica.png";
+import { useNavigate } from "react-router-dom";
+import Botao from "@/componentes/Botao.jsx";
+import { cursos } from "@/dados/dadosMock.js";
+import { ROTAS } from "@/rotas.js";
+import bannerHome from "@/ativos/banner-home.png";
+import imgDevWeb     from "@/ativos/curso-dev-web.png";
+import imgCiencia    from "@/ativos/curso-ciencia-dados.png";
+import imgIA         from "@/ativos/curso-ia.png";
+import imgCyber      from "@/ativos/curso-cyber.png";
+import imgUxUi       from "@/ativos/curso-ux-ui.png";
+import imgRobotica   from "@/ativos/curso-robotica.png";
 
 /* Imagem de capa por título de curso */
 const IMAGEM_CURSO = {
@@ -33,10 +35,13 @@ const pilares = [
   },
 ];
 
-/* Todos os cursos ativos */
-const cursosAtivos = cursos.filter((curso) => curso.ativo);
+/* Cursos visíveis no catálogo público, destaques primeiro */
+const cursosVisiveis = cursos
+  .filter((c) => c.ativo && c.visivelCatalogo)
+  .sort((a, b) => (b.destaque ? 1 : 0) - (a.destaque ? 1 : 0));
 
-export default function TelaInicio({ onNavegar }) {
+export default function TelaInicio() {
+  const navigate = useNavigate();
   return (
     <>
       <a href="#conteudo-principal" className="pular-para-conteudo">
@@ -62,21 +67,21 @@ export default function TelaInicio({ onNavegar }) {
               variante="secundario"
               tamanho="pequeno"
               className="cabecalho-publico__acao-admin"
-              onClick={() => onNavegar("login-staff")}
+              onClick={() => navigate(ROTAS.LOGIN_STAFF)}
             >
               Acesso administrativo
             </Botao>
             <Botao
               variante="secundario"
               tamanho="pequeno"
-              onClick={() => onNavegar("login-aluno")}
+              onClick={() => navigate(ROTAS.LOGIN)}
             >
               Entrar
             </Botao>
             <Botao
               variante="sucesso"
               tamanho="pequeno"
-              onClick={() => onNavegar("cadastro")}
+              onClick={() => navigate(ROTAS.CADASTRO)}
             >
               Criar conta
             </Botao>
@@ -104,7 +109,7 @@ export default function TelaInicio({ onNavegar }) {
               <Botao
                 variante="sucesso"
                 tamanho="grande"
-                onClick={() => onNavegar("cadastro")}
+                onClick={() => navigate(ROTAS.CADASTRO)}
               >
                 Solicitar matrícula
               </Botao>
@@ -141,12 +146,12 @@ export default function TelaInicio({ onNavegar }) {
                 Escolha uma trilha e comece pela matrícula
               </h2>
               <p className="secao-cabecalho__subtitulo">
-                {cursosAtivos.length} cursos disponíveis — do iniciante ao avançado.
+                {cursosVisiveis.length} cursos disponíveis — do iniciante ao avançado.
               </p>
             </header>
 
             <ul className="grade-cursos" role="list" aria-label="Cursos disponíveis">
-              {cursosAtivos.map((curso) => {
+              {cursosVisiveis.map((curso) => {
                 const imagem = IMAGEM_CURSO[curso.titulo];
                 return (
                   <li key={curso.id}>
@@ -168,6 +173,11 @@ export default function TelaInicio({ onNavegar }) {
                         <div className="cartao-curso__badges">
                           <span className="cartao-curso__codigo">{curso.codigoRegistro}</span>
                           <span className="cartao-curso__nivel">{curso.nivel}</span>
+                          {curso.destaque && (
+                            <span className="cartao-curso__destaque" aria-label="Curso em destaque">
+                              ★ Destaque
+                            </span>
+                          )}
                         </div>
 
                         <h3 className="cartao-curso__titulo" id={`curso-titulo-${curso.id}`}>
@@ -189,7 +199,7 @@ export default function TelaInicio({ onNavegar }) {
                         <Botao
                           variante="secundario"
                           tamanho="pequeno"
-                          onClick={() => onNavegar("login")}
+                          onClick={() => navigate(ROTAS.LOGIN)}
                           aria-label={`Matricular-se em ${curso.titulo}`}
                         >
                           Matricular-se

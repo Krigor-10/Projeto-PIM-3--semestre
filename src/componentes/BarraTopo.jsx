@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { ROTAS } from "@/rotas.js";
 import {
   TbTrophy, TbSun, TbMoon,
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
-  TbFileCheck, TbFileText, TbChartBar, TbUsersGroup,
+  TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
 } from "react-icons/tb";
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
@@ -23,6 +25,7 @@ const iconesPorSecao = {
   progresso:    TbChartBar,
   certificados: TbTrophy,
   usuarios:     TbUsersGroup,
+  catalogo:     TbWorld,
 };
 
 const metadadosPorSecao = {
@@ -39,11 +42,13 @@ const metadadosPorSecao = {
   progresso:    { titulo: "Meu Progresso",       descricao: "Acompanhamento visual da trilha do aluno."                  },
   certificados: { titulo: "Meus Certificados",   descricao: "Cursos concluídos e certificados disponíveis para download." },
   usuarios:     { titulo: "Usuários",            descricao: "Visão administrativa dos perfis do sistema."                },
+  catalogo:     { titulo: "Catálogo Público",    descricao: "Gerencie a visibilidade dos cursos na homepage."             },
 };
 
 const variantePorTipo = { Aluno: "marca", Professor: "info", Coordenador: "aviso", Admin: "erro" };
 
-export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSidebar, onMudarSecao }) {
+export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSidebar }) {
+  const navigate = useNavigate();
   const [popupAberto, setPopupAberto] = useState(false);
   const [confirmarSaida, setConfirmarSaida] = useState(false);
   const [temaClaro, setTemaClaro] = useState(
@@ -105,7 +110,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
       {usuario.tipo === "Aluno" && (
         <button
           className={`topbar__atalho-certificados${secaoAtual === "certificados" ? " topbar__atalho-certificados--ativo" : ""}`}
-          onClick={() => onMudarSecao?.("certificados")}
+          onClick={() => navigate(ROTAS.PAINEL_CERTIFICADOS)}
           aria-label="Ir para Meus Certificados"
           title="Meus Certificados"
           type="button"

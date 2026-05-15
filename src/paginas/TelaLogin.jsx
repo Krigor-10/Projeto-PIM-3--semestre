@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Botao from "../componentes/Botao.jsx";
-import { perfisDemo } from "../dados/dadosMock.js";
+import Botao from "@/componentes/Botao.jsx";
+import { perfisDemo } from "@/dados/dadosMock.js";
 
 export default function TelaLogin({ onLogin, onNavegar }) {
   const [selecionado, setSelecionado] = useState(null);

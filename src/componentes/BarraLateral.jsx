@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { rotaPainelSecao } from "@/rotas.js";
 import {
   TbLayoutDashboard,
   TbUsers,
@@ -13,12 +15,13 @@ import {
   TbFileText,
   TbChartBar,
   TbCertificate,
+  TbWorld,
   TbChevronsLeft,
   TbChevronsRight,
   TbChevronRight,
 } from "react-icons/tb";
-import { obterSecoesPermitidas, PERFIS_GESTORES } from "../dados/permissoes.js";
-import { matriculas, conteudos, avaliacoes } from "../dados/dadosMock.js";
+import { obterSecoesPermitidas } from "@/dados/permissoes.js";
+import { matriculas, conteudos, avaliacoes } from "@/dados/dadosMock.js";
 
 const ICONES_SECAO = {
   dashboard:     <TbLayoutDashboard size={18} />,
@@ -34,6 +37,7 @@ const ICONES_SECAO = {
   conteudos:     <TbFileText size={18} />,
   progresso:     <TbChartBar size={18} />,
   certificados:  <TbCertificate size={18} />,
+  catalogo:      <TbWorld size={18} />,
 };
 
 /* Definição dos grupos accordion */
@@ -59,7 +63,12 @@ const FILHO_PARA_GRUPO = {
   turmas:        "academico",
 };
 
-export default function BarraLateral({ usuario, secaoAtual, onMudarSecao, aberta, onFechar }) {
+export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) {
+  const navigate = useNavigate();
+
+  function irPara(secao) {
+    navigate(rotaPainelSecao(secao));
+  }
   const [recolhida, setRecolhida] = useState(
     () => localStorage.getItem("coderyse-sidebar") === "recolhida"
   );
@@ -92,7 +101,7 @@ export default function BarraLateral({ usuario, secaoAtual, onMudarSecao, aberta
 
   const itensMenu = obterSecoesPermitidas(usuario.tipo);
 
-  const pendentes = PERFIS_GESTORES.has(usuario.tipo)
+  const pendentes = usuario.tipo === "Admin"
     ? matriculas.filter((m) => m.status === "Pendente").length
     : 0;
 
@@ -230,7 +239,7 @@ export default function BarraLateral({ usuario, secaoAtual, onMudarSecao, aberta
                           <li key={filho.chave}>
                             <button
                               className={`sidebar__item sidebar__item--filho${secaoAtual === filho.chave ? " sidebar__item--ativo" : ""}`}
-                              onClick={() => { onMudarSecao(filho.chave); onFechar?.(); }}
+                              onClick={() => { irPara(filho.chave); onFechar?.(); }}
                               aria-current={secaoAtual === filho.chave ? "page" : undefined}
                               title={filho.rotulo}
                               type="button"
@@ -254,7 +263,7 @@ export default function BarraLateral({ usuario, secaoAtual, onMudarSecao, aberta
                 <li key={item.chave}>
                   <button
                     className={`sidebar__item${secaoAtual === item.chave ? " sidebar__item--ativo" : ""}`}
-                    onClick={() => { onMudarSecao(item.chave); onFechar?.(); }}
+                    onClick={() => { irPara(item.chave); onFechar?.(); }}
                     aria-current={secaoAtual === item.chave ? "page" : undefined}
                     title={item.rotulo}
                     type="button"

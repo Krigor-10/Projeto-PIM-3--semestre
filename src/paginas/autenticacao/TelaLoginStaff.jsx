@@ -1,11 +1,14 @@
 import { useState } from "react";
-import Botao from "../../componentes/Botao.jsx";
-import { perfisDemo } from "../../dados/dadosMock.js";
+import { useNavigate } from "react-router-dom";
+import Botao from "@/componentes/Botao.jsx";
+import { perfisDemo } from "@/dados/dadosMock.js";
+import { ROTAS } from "@/rotas.js";
 
 /* Apenas perfis de equipe (sem o aluno) */
 const perfisStaff = perfisDemo.filter((p) => p.chave !== "aluno");
 
-export default function TelaLoginStaff({ onLogin, onNavegar }) {
+export default function TelaLoginStaff({ onLogin }) {
+  const navigate = useNavigate();
   const [selecionado, setSelecionado] = useState(null);
   const [carregando, setCarregando] = useState(false);
 
@@ -44,7 +47,7 @@ export default function TelaLoginStaff({ onLogin, onNavegar }) {
             variante="fantasma"
             tamanho="pequeno"
             className="tela-login__voltar"
-            onClick={() => onNavegar("inicio")}
+            onClick={() => navigate(ROTAS.INICIO)}
             aria-label="Voltar para a página inicial"
           >
             Voltar
@@ -109,7 +112,7 @@ export default function TelaLoginStaff({ onLogin, onNavegar }) {
             É aluno?{" "}
             <button
               className="link-botao"
-              onClick={() => onNavegar("login-aluno")}
+              onClick={() => navigate(ROTAS.LOGIN)}
               type="button"
             >
               Acesso do aluno

@@ -1,10 +1,9 @@
 import { useState } from "react";
-import Insignia from "../../componentes/Insignia.jsx";
-import Modal from "../../componentes/Modal.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import CartaoEstatistica from "../../componentes/CartaoEstatistica.jsx";
-import { cursos, turmas, modulos } from "../../dados/dadosMock.js";
-import { podeCriar, podeEditar } from "../../dados/permissoes.js";
+import Insignia from "@/componentes/Insignia.jsx";
+import Modal from "@/componentes/Modal.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { cursos, turmas, modulos } from "@/dados/dadosMock.js";
+import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 /* ── Vista gerencial do coordenador ─────────────────────────────── */
 
@@ -46,13 +45,12 @@ function VistaGerencialCoordenador({ usuario }) {
         </div>
       </header>
 
-      {/* KPIs */}
-      <div className="grade-estatisticas" style={{ marginBottom: "var(--espaco-xl)" }}>
-        <CartaoEstatistica icone="CU" valor={listaCursos.length}  rotulo="Cursos coordenados" />
-        <CartaoEstatistica icone="TU" valor={turmasTotal.length}  rotulo="Turmas ativas" corBorda="var(--cor-sucesso)" />
-        <CartaoEstatistica icone="AL" valor={alunosTotal}         rotulo="Alunos matriculados" corBorda="var(--cor-info)" />
-        <CartaoEstatistica icone="PR" valor={profsUnicos}         rotulo="Professores envolvidos" corBorda="var(--cor-aviso)" />
-      </div>
+      <dl className="gerencial-stats-barra" aria-label="Resumo dos cursos">
+        <div><dt>Cursos</dt><dd>{listaCursos.length}</dd></div>
+        <div><dt>Turmas</dt><dd>{turmasTotal.length}</dd></div>
+        <div><dt>Alunos</dt><dd>{alunosTotal}</dd></div>
+        <div><dt>Professores</dt><dd>{profsUnicos}</dd></div>
+      </dl>
 
       {/* Lista de cursos */}
       <ul className="gerencial-cursos__lista" role="list">
@@ -74,40 +72,20 @@ function VistaGerencialCoordenador({ usuario }) {
                 </div>
               </div>
 
-              <p className="gerencial-curso-item__descricao">{curso.descricao}</p>
-
               <div className="gerencial-curso-item__stats">
-                <span><strong>{modulosCurso.length}</strong> módulos</span>
-                <span><strong>{turmasCurso.length}</strong> turma{turmasCurso.length !== 1 ? "s" : ""}</span>
-                <span><strong>{alunosCurso}</strong> alunos</span>
-                <span><strong>{curso.duracao}</strong></span>
+                <span>{modulosCurso.length} módulos</span>
+                <span>{turmasCurso.length} turma{turmasCurso.length !== 1 ? "s" : ""}</span>
+                <span>{alunosCurso} alunos</span>
+                <span>{curso.duracao}</span>
               </div>
 
-              {turmasCurso.length > 0 && (
-                <div className="gerencial-curso-item__turmas">
-                  {turmasCurso.map((t) => (
-                    <div key={t.id} className="gerencial-turma-pill">
-                      <span className="gerencial-turma-pill__nome">{t.nomeTurma}</span>
-                      <span className="gerencial-turma-pill__prof">{t.professorNome}</span>
-                      <Insignia texto={t.status} variante={t.status === "Ativa" ? "sucesso" : "neutro"} />
-                    </div>
-                  ))}
-                </div>
-              )}
-
               <div className="gerencial-curso-item__rodape">
-                <Botao
-                  variante="fantasma"
-                  tamanho="pequeno"
-                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); }}
-                >
-                  Ver detalhes
+                <Botao variante="fantasma" tamanho="pequeno"
+                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); }}>
+                  Detalhes
                 </Botao>
-                <Botao
-                  variante="primario"
-                  tamanho="pequeno"
-                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(true); }}
-                >
+                <Botao variante="fantasma" tamanho="pequeno"
+                  onClick={() => { setCursoSelecionado(curso); setModoEdicao(true); }}>
                   Editar
                 </Botao>
               </div>

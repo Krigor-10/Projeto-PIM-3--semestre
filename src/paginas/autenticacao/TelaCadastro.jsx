@@ -1,6 +1,8 @@
 import { useState } from "react";
-import Botao from "../../componentes/Botao.jsx";
-import { cursos } from "../../dados/dadosMock.js";
+import { useNavigate } from "react-router-dom";
+import Botao from "@/componentes/Botao.jsx";
+import { cursos } from "@/dados/dadosMock.js";
+import { ROTAS } from "@/rotas.js";
 
 /* Apenas cursos ativos aparecem na seleção */
 const cursosAtivos = cursos.filter((c) => c.ativo);
@@ -44,7 +46,8 @@ function campoVazio() {
   };
 }
 
-export default function TelaCadastro({ onNavegar }) {
+export default function TelaCadastro() {
+  const navigate = useNavigate();
   const [form, setForm] = useState(campoVazio);
   const [erros, setErros] = useState({});
   const [enviado, setEnviado] = useState(false);
@@ -129,13 +132,13 @@ export default function TelaCadastro({ onNavegar }) {
             <Botao
               variante="primario"
               tamanho="grande"
-              onClick={() => onNavegar("login")}
+              onClick={() => navigate(ROTAS.LOGIN)}
             >
               Acessar a plataforma
             </Botao>
             <Botao
               variante="fantasma"
-              onClick={() => onNavegar("inicio")}
+              onClick={() => navigate(ROTAS.INICIO)}
             >
               Voltar à página inicial
             </Botao>
@@ -154,7 +157,7 @@ export default function TelaCadastro({ onNavegar }) {
       {/* Cabeçalho */}
       <header className="cadastro-cabecalho" role="banner">
         <div className="cadastro-cabecalho__inner">
-          <a href="#" className="cabecalho-publico__logo" onClick={() => onNavegar("inicio")} aria-label="CodeRyse Academy — página inicial">
+          <a href="#" className="cabecalho-publico__logo" onClick={() => navigate(ROTAS.INICIO)} aria-label="CodeRyse Academy — página inicial">
             <span className="cabecalho-publico__logo-marca" aria-hidden="true">
               <span>Code</span><span>Ryse</span>
             </span>
@@ -162,7 +165,7 @@ export default function TelaCadastro({ onNavegar }) {
           </a>
           <p className="cadastro-cabecalho__legenda">
             Já tem uma conta?{" "}
-            <button className="link-botao" onClick={() => onNavegar("login")} type="button">
+            <button className="link-botao" onClick={() => navigate(ROTAS.LOGIN)} type="button">
               Entrar
             </button>
           </p>
@@ -448,7 +451,7 @@ export default function TelaCadastro({ onNavegar }) {
             <div className="formulario-cadastro__rodape">
               <Botao
                 variante="fantasma"
-                onClick={() => onNavegar("inicio")}
+                onClick={() => navigate(ROTAS.INICIO)}
               >
                 Cancelar
               </Botao>

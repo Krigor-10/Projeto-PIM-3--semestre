@@ -1,0 +1,101 @@
+
+/* ------------------------------------------------------------
+   RESET & BASE
+   ------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--fonte-principal);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--cor-texto-forte);
+  background-color: var(--cor-fundo);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fonte-display);
+  line-height: 1.2;
+  color: var(--cor-texto-forte);
+}
+
+/* ------------------------------------------------------------
+   FOCO — ACESSIBILIDADE
+   ------------------------------------------------------------ */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(123, 47, 247, 0.5);
+  border-radius: var(--raio-sm);
+}
+
+/* ------------------------------------------------------------
+   SCROLLBAR PERSONALIZADA
+   ------------------------------------------------------------ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--cor-borda-forte);
+  border-radius: var(--raio-circular);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cor-marca);
+}
+
+/* ------------------------------------------------------------
+   UTILITÁRIOS GLOBAIS
+   ------------------------------------------------------------ */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+

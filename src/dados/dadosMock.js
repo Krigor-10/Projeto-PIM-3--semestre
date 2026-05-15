@@ -87,6 +87,8 @@ export const cursos = [
     duracao: "6 meses",
     nivel: "Iniciante",
     ativo: true,
+    visivelCatalogo: true,
+    destaque: true,
     coordenadorId: 3,
   },
   {
@@ -100,6 +102,8 @@ export const cursos = [
     duracao: "8 meses",
     nivel: "Intermediário",
     ativo: true,
+    visivelCatalogo: true,
+    destaque: false,
     coordenadorId: 3,
   },
   {
@@ -113,6 +117,8 @@ export const cursos = [
     duracao: "9 meses",
     nivel: "Avançado",
     ativo: true,
+    visivelCatalogo: true,
+    destaque: true,
     coordenadorId: 3,
   },
   {
@@ -126,6 +132,8 @@ export const cursos = [
     duracao: "7 meses",
     nivel: "Avançado",
     ativo: true,
+    visivelCatalogo: true,
+    destaque: false,
     coordenadorId: 3,
   },
   {
@@ -139,6 +147,8 @@ export const cursos = [
     duracao: "4 meses",
     nivel: "Iniciante",
     ativo: true,
+    visivelCatalogo: true,
+    destaque: false,
     coordenadorId: null,
   },
   {
@@ -152,6 +162,8 @@ export const cursos = [
     duracao: "10 meses",
     nivel: "Intermediário",
     ativo: true,
+    visivelCatalogo: true,
+    destaque: false,
     coordenadorId: null,
   },
 ];

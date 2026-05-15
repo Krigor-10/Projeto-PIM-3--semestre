@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import Insignia from "../../componentes/Insignia.jsx";
-import Modal from "../../componentes/Modal.jsx";
-import Botao from "../../componentes/Botao.jsx";
-import { avaliacoes, cursos, modulos, matriculas, turmas } from "../../dados/dadosMock.js";
-import { questoesQuiz } from "../../dados/questoesQuiz.js";
+import Insignia from "@/componentes/Insignia.jsx";
+import Modal from "@/componentes/Modal.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import { avaliacoes, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
+import { questoesQuiz } from "@/dados/questoesQuiz.js";
 
 const LETRAS_GABARITO = ["A", "B", "C", "D", "E"];
 
