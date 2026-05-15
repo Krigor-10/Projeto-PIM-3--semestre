@@ -173,6 +173,22 @@
   max-width: 1280px;
 }
 
+.secao-cursos__inner .grade-cursos {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 900px) {
+  .secao-cursos__inner .grade-cursos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .secao-cursos__inner .grade-cursos {
+    grid-template-columns: 1fr;
+  }
+}
+
 .grade-pilares--publica {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
