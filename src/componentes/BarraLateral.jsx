@@ -116,7 +116,20 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
     });
   }
 
-  const itensMenu = obterSecoesPermitidas(usuario.tipo);
+  const ORDEM_ALUNO = ["matriculas", "certificados", "dashboard", "conteudos", "avaliacoes", "progresso"];
+
+  const itensMenu = (() => {
+    const base = obterSecoesPermitidas(usuario.tipo);
+    if (usuario.tipo !== "Aluno") return base;
+    return [...base].sort((a, b) => {
+      const ia = ORDEM_ALUNO.indexOf(a.chave);
+      const ib = ORDEM_ALUNO.indexOf(b.chave);
+      if (ia === -1 && ib === -1) return 0;
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+  })();
 
   const pendentes = usuario.tipo === "Admin"
     ? matriculas.filter((m) => m.status === "Pendente").length

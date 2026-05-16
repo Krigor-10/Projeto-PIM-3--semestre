@@ -152,7 +152,7 @@
   gap: 4px;
   padding: 0.2rem 0.6rem;
   border-radius: var(--raio-circular);
-  font-size: 0.75rem;
+  font-size: var(--texto-xs);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -234,7 +234,7 @@
 }
 
 .campo__rotulo {
-  font-size: 0.85rem;
+  font-size: var(--texto-md);
   font-weight: 500;
   color: var(--cor-texto-suave);
 }
@@ -299,7 +299,7 @@ select.campo__entrada option {
 .tabela-dados th {
   text-align: left;
   padding: 0.75rem 1rem;
-  font-size: 0.78rem;
+  font-size: var(--texto-sm);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -448,7 +448,7 @@ select.campo__entrada option {
   gap: var(--espaco-sm);
   padding: 0.75rem 1rem;
   border-radius: var(--raio-md);
-  font-size: 0.875rem;
+  font-size: var(--texto-md);
 }
 
 .mensagem--sucesso {
@@ -572,7 +572,7 @@ select.campo__entrada option {
   border: none;
   cursor: pointer;
   color: var(--cor-texto-forte);
-  font-size: 0.875rem;
+  font-size: var(--texto-md);
   font-family: inherit;
   text-align: left;
   transition: background var(--transicao-rapida);
@@ -662,7 +662,7 @@ select.campo__entrada option {
   border: none;
   cursor: pointer;
   color: var(--cor-texto-forte);
-  font-size: 0.875rem;
+  font-size: var(--texto-md);
   font-family: inherit;
   text-align: left;
   transition: background var(--transicao-rapida);

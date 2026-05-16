@@ -6,11 +6,17 @@
    FONT STACK & VARIÁVEIS TIPOGRÁFICAS
    ------------------------------------------------------------ */
 :root {
-  --fonte-principal: "Aptos", "Segoe UI Variable Text", "Segoe UI", system-ui,
-    -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  --fonte-display: "Aptos Display", "Bahnschrift", "Segoe UI Variable Display",
-    "Segoe UI", system-ui, sans-serif;
+  --fonte-principal: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --fonte-display: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
   --fonte-mono: "Cascadia Code", "Consolas", "Courier New", monospace;
+
+  /* Escala tipográfica — sugestão 2 */
+  --texto-xs: 0.75rem;    /* 12px — muted, timestamps */
+  --texto-sm: 0.8125rem;  /* 13px — secondary, badges  */
+  --texto-md: 0.875rem;   /* 14px — UI padrão          */
+  --texto-lg: 1rem;       /* 16px — body / destaque     */
 
   /* ------------------------------------------------------------
      PALETA DE CORES

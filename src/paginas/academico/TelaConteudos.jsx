@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { FiPlusCircle } from "react-icons/fi";
-import { TbDotsVertical } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile } from "react-icons/tb";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -13,10 +13,11 @@ import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 /* Ícones e rótulos semânticos por tipo de conteúdo */
 const TIPO_CONFIG = {
-  Video:     { icone: "▶", rotulo: "Vídeo"     },
-  Texto:     { icone: "✦", rotulo: "Texto"      },
-  Documento: { icone: "⬡", rotulo: "Documento"  },
+  Video:     { icone: "▶", Icone: TbPlayerPlay,      rotulo: "Vídeo"      },
+  Texto:     { icone: "✦", Icone: TbAlignLeft,       rotulo: "Texto"       },
+  Documento: { icone: "⬡", Icone: TbFileDescription, rotulo: "Documento"   },
 };
+const IconePadrao = TbFile;
 
 const QUESTOES_POR_MODULO = 3;
 
@@ -235,6 +236,12 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
     modulosDoCurso.some((m) => m.id === c.moduloId)
   );
 
+  const totalPorTipoAluno = {};
+  for (const c of conteudosDoCurso) {
+    totalPorTipoAluno[c.tipo] = (totalPorTipoAluno[c.tipo] ?? 0) + 1;
+  }
+  const resumoTiposAluno = ["Video", "Texto", "Documento"].filter((t) => totalPorTipoAluno[t]);
+
   const [concluidos, setConcluidos] = useState(
     () => new Set(conteudosDoCurso.filter((c) => c.concluido).map((c) => c.id))
   );
@@ -337,8 +344,24 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
           <p className="conteudos-aluno__turma">{matricula.turmaNome}</p>
           <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
           <h2 className="conteudos-aluno__curso-titulo">{curso?.titulo}</h2>
-          <p className="conteudos-aluno__curso-meta">
+          <p className="conteudos-aluno__curso-meta" style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
             {totalConcluidos} de {totalConteudos} conteúdos concluídos
+            {resumoTiposAluno.length > 0 && (
+              <>
+                <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>
+                {resumoTiposAluno.map((t, i) => {
+                  const { Icone, rotulo } = TIPO_CONFIG[t];
+                  const n = totalPorTipoAluno[t];
+                  return (
+                    <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                      {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
+                      <Icone size={14} aria-hidden="true" />
+                      {n} {rotulo.toLowerCase()}{n !== 1 ? "s" : ""}
+                    </span>
+                  );
+                })}
+              </>
+            )}
           </p>
         </div>
         <div className="conteudos-aluno__progresso-geral">
@@ -358,7 +381,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
       ) : proximoConteudo ? (
         <div className="banner-continuar" role="complementary" aria-label="Próximo conteúdo sugerido">
           <span className="banner-continuar__icone" aria-hidden="true">
-            {TIPO_CONFIG[proximoConteudo.tipo]?.icone ?? "◈"}
+            {(() => { const Ic = TIPO_CONFIG[proximoConteudo.tipo]?.Icone ?? IconePadrao; return <Ic size={20} />; })()}
           </span>
           <div className="banner-continuar__texto">
             <p className="banner-continuar__rotulo">Continue de onde parou</p>
@@ -381,6 +404,10 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
         const concluidosModulo = itens.filter((c) => concluidos.has(c.id)).length;
         const percentualModulo = Math.round((concluidosModulo / itens.length) * 100);
 
+        const contagemTiposMod = {};
+        for (const c of itens) { contagemTiposMod[c.tipo] = (contagemTiposMod[c.tipo] ?? 0) + 1; }
+        const resumoTiposMod = ["Video", "Texto", "Documento"].filter((t) => contagemTiposMod[t]);
+
         return (
           <section
             key={modulo.id}
@@ -400,7 +427,24 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                     <span className="conteudos-modulo__titulo">{modulo.ordem}. {modulo.titulo}</span>
                     {bloqueado
                       ? <span className="conteudos-modulo__aviso-bloqueado">Conclua o módulo anterior e o quiz</span>
-                      : <span className="conteudos-modulo__contagem">{concluidosModulo}/{itens.length} concluídos</span>
+                      : <span className="conteudos-modulo__contagem" style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                          {concluidosModulo}/{itens.length} concluídos
+                          {resumoTiposMod.length > 0 && (
+                            <>
+                              <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>
+                              {resumoTiposMod.map((t, i) => {
+                                const { Icone } = TIPO_CONFIG[t];
+                                return (
+                                  <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
+                                    {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
+                                    <Icone size={14} aria-hidden="true" />
+                                    {contagemTiposMod[t]}
+                                  </span>
+                                );
+                              })}
+                            </>
+                          )}
+                        </span>
                     }
                   </div>
                   {!bloqueado && (
@@ -516,6 +560,12 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
     modulosDoCurso.some((m) => m.id === c.moduloId)
   );
 
+  const totalPorTipoProf = {};
+  for (const c of conteudosDoCurso) {
+    totalPorTipoProf[c.tipo] = (totalPorTipoProf[c.tipo] ?? 0) + 1;
+  }
+  const resumoTiposProf = ["Video", "Texto", "Documento"].filter((t) => totalPorTipoProf[t]);
+
   function alternarModulo(id) {
     setModulosAbertos((prev) => {
       const copia = new Set(prev);
@@ -531,8 +581,24 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
           <p className="conteudos-aluno__turma">{turma.nomeTurma}</p>
           <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
           <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
-          <p className="conteudos-aluno__curso-meta">
+          <p className="conteudos-aluno__curso-meta" style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
             {turma.totalAlunos} aluno{turma.totalAlunos !== 1 ? "s" : ""} · {conteudosDoCurso.length} conteúdo{conteudosDoCurso.length !== 1 ? "s" : ""}
+            {resumoTiposProf.length > 0 && (
+              <>
+                <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>
+                {resumoTiposProf.map((t, i) => {
+                  const { Icone, rotulo } = TIPO_CONFIG[t];
+                  const n = totalPorTipoProf[t];
+                  return (
+                    <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                      {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
+                      <Icone size={14} aria-hidden="true" />
+                      {n} {rotulo.toLowerCase()}{n !== 1 ? "s" : ""}
+                    </span>
+                  );
+                })}
+              </>
+            )}
           </p>
         </div>
         {podeCriar(tipo, "conteudos") && (
@@ -554,6 +620,10 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
 
         const estaAberto = modulosAbertos.has(modulo.id);
 
+        const contagemTiposModProf = {};
+        for (const c of itens) { contagemTiposModProf[c.tipo] = (contagemTiposModProf[c.tipo] ?? 0) + 1; }
+        const resumoTiposModProf = ["Video", "Texto", "Documento"].filter((t) => contagemTiposModProf[t]);
+
         return (
           <section key={modulo.id} className="conteudos-modulo">
             <header className="conteudos-modulo__cabecalho">
@@ -566,8 +636,17 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                 >
                   <div className="conteudos-modulo__info">
                     <span className="conteudos-modulo__titulo">{modulo.ordem}. {modulo.titulo}</span>
-                    <span className="conteudos-modulo__contagem">
-                      {itens.length} conteúdo{itens.length !== 1 ? "s" : ""}
+                    <span className="conteudos-modulo__contagem" style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                      {resumoTiposModProf.map((t, i) => {
+                        const { Icone } = TIPO_CONFIG[t];
+                        return (
+                          <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
+                            {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
+                            <Icone size={14} aria-hidden="true" />
+                            {contagemTiposModProf[t]}
+                          </span>
+                        );
+                      })}
                     </span>
                   </div>
                   <span
@@ -858,19 +937,185 @@ function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onM
   );
 }
 
+/* ── Slide de um curso (visão da gestão) ─────────────────────── */
+
+function SlideCursoGestao({ curso, tipo }) {
+  const [modulosAbertos, setModulosAbertos]         = useState(() => new Set());
+  const [menuConteudoAberto, setMenuConteudoAberto] = useState(null);
+
+  useEffect(() => {
+    if (!menuConteudoAberto) return;
+    function fechar() { setMenuConteudoAberto(null); }
+    document.addEventListener("click", fechar);
+    return () => document.removeEventListener("click", fechar);
+  }, [menuConteudoAberto]);
+
+  const modulosDoCurso = modulos
+    .filter((m) => m.cursoId === curso.id)
+    .sort((a, b) => a.ordem - b.ordem);
+
+  const totalAlunos = turmas
+    .filter((t) => t.cursoId === curso.id)
+    .reduce((soma, t) => soma + t.totalAlunos, 0);
+
+  const conteudosDoCurso = conteudos.filter((c) =>
+    modulosDoCurso.some((m) => m.id === c.moduloId)
+  );
+
+  /* Sugestão 2 — resumo de tipos para o cabeçalho do curso */
+  const totalPorTipo = {};
+  for (const c of conteudosDoCurso) {
+    totalPorTipo[c.tipo] = (totalPorTipo[c.tipo] ?? 0) + 1;
+  }
+  const resumoCursoItens = ["Video", "Texto", "Documento"].filter((t) => totalPorTipo[t]);
+
+  function alternarModulo(id) {
+    setModulosAbertos((prev) => {
+      const copia = new Set(prev);
+      copia.has(id) ? copia.delete(id) : copia.add(id);
+      return copia;
+    });
+  }
+
+  return (
+    <div className="conteudos-aluno">
+      <header className="conteudos-aluno__cabecalho">
+        <div className="conteudos-aluno__curso-info">
+          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
+          <h2 className="conteudos-aluno__curso-titulo">{curso.titulo}</h2>
+          <p className="conteudos-aluno__curso-meta" style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+            {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} · {conteudosDoCurso.length} conteúdo{conteudosDoCurso.length !== 1 ? "s" : ""}
+            {resumoCursoItens.length > 0 && (
+              <>
+                <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>
+                {resumoCursoItens.map((t, i) => {
+                  const { Icone, rotulo } = TIPO_CONFIG[t];
+                  const n = totalPorTipo[t];
+                  return (
+                    <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                      {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
+                      <Icone size={14} aria-hidden="true" />
+                      {n} {rotulo.toLowerCase()}{n !== 1 ? "s" : ""}
+                    </span>
+                  );
+                })}
+              </>
+            )}
+          </p>
+        </div>
+      </header>
+
+      {modulosDoCurso.length === 0 ? (
+        <p className="texto-vazio" role="status">Nenhum módulo cadastrado neste curso.</p>
+      ) : modulosDoCurso.map((modulo) => {
+        const itens      = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
+        const estaAberto = modulosAbertos.has(modulo.id);
+        const vazio      = itens.length === 0;
+
+        /* Sugestão 1 — contagem de tipos por módulo */
+        const contagemTipos = {};
+        for (const c of itens) {
+          contagemTipos[c.tipo] = (contagemTipos[c.tipo] ?? 0) + 1;
+        }
+        const resumoModuloItens = ["Video", "Texto", "Documento"].filter((t) => contagemTipos[t]);
+
+        return (
+          /* Sugestão 3 — módulo sempre visível; apagado quando vazio */
+          <section
+            key={modulo.id}
+            className="conteudos-modulo"
+            style={vazio ? { opacity: 0.5 } : undefined}
+          >
+            <header className="conteudos-modulo__cabecalho">
+              <h3 className="conteudos-modulo__cabecalho-wrapper">
+                <button
+                  className="conteudos-modulo__toggle"
+                  onClick={() => !vazio && alternarModulo(modulo.id)}
+                  aria-expanded={vazio ? undefined : estaAberto}
+                  style={vazio ? { cursor: "default" } : undefined}
+                  type="button"
+                >
+                  <div className="conteudos-modulo__info">
+                    <span className="conteudos-modulo__titulo">{modulo.ordem}. {modulo.titulo}</span>
+                    {/* Sugestão 1 — resumo de tipos ou badge "Sem conteúdo" */}
+                    <span className="conteudos-modulo__contagem" style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                      {vazio ? "Sem conteúdo" : resumoModuloItens.map((t, i) => {
+                        const { Icone } = TIPO_CONFIG[t];
+                        return (
+                          <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
+                            {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
+                            <Icone size={16} aria-hidden="true" />
+                            {contagemTipos[t]}
+                          </span>
+                        );
+                      })}
+                    </span>
+                  </div>
+                  {!vazio && (
+                    <span
+                      className={`conteudos-modulo__chevron ${estaAberto ? "conteudos-modulo__chevron--aberto" : ""}`}
+                      aria-hidden="true"
+                    >▾</span>
+                  )}
+                </button>
+              </h3>
+            </header>
+
+            {!vazio && estaAberto && (
+              <ul className="lista-conteudos-completa conteudos-modulo__lista" role="list">
+                {itens.map((cont) => {
+                  const config = TIPO_CONFIG[cont.tipo] || { icone: "◈", rotulo: cont.tipo };
+                  return (
+                    <li key={cont.id} className="cartao-conteudo">
+                      <span className="cartao-conteudo__icone" aria-hidden="true" title={config.rotulo}>
+                        {config.icone}
+                      </span>
+                      <div className="cartao-conteudo__info">
+                        <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
+                        <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
+                      </div>
+                      <div className="cartao-conteudo__meta">
+                        <Insignia texto={cont.tipo} variante="marca" />
+                      </div>
+                      {podeEditar(tipo, "conteudos") && (
+                        <div className="menu-contexto">
+                          <button
+                            className="menu-contexto__botao"
+                            type="button"
+                            aria-label={`Opções para ${cont.titulo}`}
+                            onClick={(e) => { e.stopPropagation(); setMenuConteudoAberto(menuConteudoAberto === cont.id ? null : cont.id); }}
+                          >
+                            <TbDotsVertical size={18} aria-hidden="true" />
+                          </button>
+                          {menuConteudoAberto === cont.id && (
+                            <ul className="menu-contexto__lista" role="menu">
+                              <li><button type="button" onClick={() => setMenuConteudoAberto(null)}>Editar</button></li>
+                              <li><button type="button" style={{ color: "var(--cor-erro)" }} onClick={() => setMenuConteudoAberto(null)}>Excluir</button></li>
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ── Vista de gestão (admin, coordenador) ────────────────────── */
 
 function VistaGestao({ usuario }) {
-  const [modalAberto, setModalAberto]   = useState(false);
-  const [filtroModulo, setFiltroModulo] = useState("");
-  const [moduloContId, setModuloContId] = useState(null);
-  const [tipoContId, setTipoContId]     = useState(null);
+  const [slideAtual, setSlideAtual] = useState(0);
 
-  const tipo = usuario?.tipo;
-
-  const conteudosFiltrados = filtroModulo
-    ? conteudos.filter((c) => c.moduloId === Number(filtroModulo))
-    : conteudos;
+  const tipo  = usuario?.tipo;
+  const total = cursos.length;
+  const slide = Math.min(slideAtual, Math.max(0, total - 1));
+  const cursoAtual = cursos[slide];
 
   return (
     <div className="tela-conteudos">
@@ -881,147 +1126,70 @@ function VistaGestao({ usuario }) {
             {conteudos.length} conteúdo{conteudos.length !== 1 ? "s" : ""} cadastrados na plataforma
           </p>
         </div>
-        {podeCriar(tipo, "conteudos") && (
-          <Botao
-            variante="primario"
-            onClick={() => setModalAberto(true)}
-            style={{ display: "flex", alignItems: "center", gap: "6px" }}
-          >
-            <FiPlusCircle size={20} />
-            Novo Conteúdo
-          </Botao>
-        )}
       </header>
 
-      <div className="barra-filtros" role="search" aria-label="Filtros de conteúdo">
-        <label htmlFor="filtro-modulo-cont" className="visualmente-oculto">
-          Filtrar por módulo
-        </label>
-        <select
-          id="filtro-modulo-cont"
-          className="campo__entrada barra-filtros__select"
-          value={filtroModulo}
-          onChange={(e) => setFiltroModulo(e.target.value)}
-        >
-          <option value="">Todos os módulos</option>
-          {modulos.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.titulo}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {conteudosFiltrados.length === 0 ? (
-        <p className="texto-vazio texto-vazio--central" role="status">
-          Nenhum conteúdo encontrado.
-        </p>
-      ) : (
-        <ul
-          className="lista-conteudos-completa"
-          role="list"
-          aria-label="Lista de conteúdos didáticos"
-        >
-          {conteudosFiltrados.map((cont) => {
-            const modulo = modulos.find((m) => m.id === cont.moduloId);
-            const config = TIPO_CONFIG[cont.tipo] || { icone: "◈", rotulo: cont.tipo };
-
-            return (
-              <li key={cont.id} className="cartao-conteudo">
-                <span className="cartao-conteudo__icone" aria-hidden="true">
-                  {config.icone}
-                </span>
-                <div className="cartao-conteudo__info">
-                  <h3 className="cartao-conteudo__titulo">{cont.titulo}</h3>
-                  <p className="cartao-conteudo__modulo">
-                    {modulo?.titulo ?? "Módulo desconhecido"}
-                  </p>
-                </div>
-                <div className="cartao-conteudo__meta">
-                  <span className="cartao-conteudo__duracao">{cont.duracao}</span>
-                  <Insignia texto={cont.tipo} variante="marca" />
-                  <Insignia
-                    texto={cont.concluido ? "Concluído" : "Pendente"}
-                    variante={cont.concluido ? "sucesso" : "neutro"}
-                  />
-                </div>
-                {podeEditar(tipo, "conteudos") && (
-                  <div className="cartao-conteudo__acoes">
-                    <Botao
-                      variante="fantasma"
-                      tamanho="pequeno"
-                      aria-label={`Editar conteúdo ${cont.titulo}`}
-                    >
-                      Editar
-                    </Botao>
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-
-      {modalAberto && (
-        <Modal
-          titulo="Novo Conteúdo Didático"
-          onFechar={() => setModalAberto(false)}
-        >
-          <form
-            className="formulario-modal"
-            onSubmit={(e) => { e.preventDefault(); setModalAberto(false); }}
-            noValidate
+      <div className="carrossel-cursos">
+        <div className="barra-filtros" style={{ marginBottom: "var(--espaco-md)" }}>
+          <label htmlFor="filtro-curso-cont" className="visualmente-oculto">Selecionar curso</label>
+          <select
+            id="filtro-curso-cont"
+            className="campo__entrada barra-filtros__select"
+            value={slide}
+            onChange={(e) => setSlideAtual(Number(e.target.value))}
+            aria-label="Navegar para curso"
           >
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="titulo-cont">Título *</label>
-              <input id="titulo-cont" className="campo__entrada" type="text" required />
+            {cursos.map((c, idx) => (
+              <option key={c.id} value={idx}>{c.titulo}</option>
+            ))}
+          </select>
+        </div>
+
+        {total > 1 && (
+          <nav className="carrossel-cursos__nav" aria-label="Navegação entre cursos">
+            <button
+              className="carrossel-cursos__seta"
+              onClick={() => setSlideAtual((i) => i - 1)}
+              disabled={slide === 0}
+              aria-label="Curso anterior"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            <div className="carrossel-cursos__indicadores" role="tablist" aria-label="Cursos">
+              {cursos.map((c, idx) => (
+                <button
+                  key={c.id}
+                  className={`carrossel-cursos__bolinha${idx === slide ? " carrossel-cursos__bolinha--ativa" : ""}`}
+                  onClick={() => setSlideAtual(idx)}
+                  role="tab"
+                  aria-selected={idx === slide}
+                  aria-label={`Curso ${idx + 1}: ${c.titulo}`}
+                  type="button"
+                />
+              ))}
             </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="modulo-cont">Módulo *</label>
-              <SelectSimples
-                id="modulo-cont"
-                value={moduloContId ?? ""}
-                opcoes={modulos.map((m) => ({ valor: m.id, rotulo: m.titulo }))}
-                onChange={(val) => setModuloContId(Number(val))}
-                placeholder="Selecione um módulo"
-                required
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="tipo-cont">Tipo *</label>
-              <SelectSimples
-                id="tipo-cont"
-                value={tipoContId ?? ""}
-                opcoes={[
-                  { valor: "Video", rotulo: "Vídeo" },
-                  { valor: "Texto", rotulo: "Texto" },
-                  { valor: "Documento", rotulo: "Documento" },
-                ]}
-                onChange={setTipoContId}
-                placeholder="Selecione o tipo"
-                required
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="duracao-cont">Duração</label>
-              <input
-                id="duracao-cont"
-                className="campo__entrada"
-                type="text"
-                placeholder="Ex: 20min"
-              />
-            </div>
-            <footer className="modal-rodape">
-              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>
-                Cancelar
-              </Botao>
-              <Botao variante="primario" type="submit">
-                Criar Conteúdo
-              </Botao>
-            </footer>
-          </form>
-        </Modal>
-      )}
+
+            <button
+              className="carrossel-cursos__seta"
+              onClick={() => setSlideAtual((i) => i + 1)}
+              disabled={slide === total - 1}
+              aria-label="Próximo curso"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </nav>
+        )}
+
+        <div className="carrossel-cursos__janela">
+          <SlideCursoGestao curso={cursoAtual} tipo={tipo} />
+        </div>
+      </div>
     </div>
   );
 }

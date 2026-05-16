@@ -57,6 +57,15 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--cor-texto-forte);
 }
 
+/* Sugestão 3 — letter-spacing refinado por nível */
+h1 { letter-spacing: -0.03em; }
+h2 { letter-spacing: -0.02em; }
+h3 { letter-spacing: -0.015em; }
+h4 { letter-spacing: -0.01em; }
+
+/* Sugestão 4 — dígitos tabulares em toda a UI */
+body { font-variant-numeric: tabular-nums; }
+
 /* ------------------------------------------------------------
    FOCO — ACESSIBILIDADE
    ------------------------------------------------------------ */

@@ -1014,6 +1014,138 @@
 
 .tela-certificados { display: flex; flex-direction: column; gap: var(--espaco-xl); }
 
+/* ── Banner hero de certificados ──────────────────────────── */
+.banner-certificados {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--cor-marca-profunda) 0%, var(--cor-marca) 55%, var(--cor-acento) 100%);
+  border-radius: var(--raio-xl);
+  padding: var(--espaco-xl) var(--espaco-2xl);
+  box-shadow: var(--sombra-acento);
+  color: #fff;
+}
+
+.banner-certificados::before,
+.banner-certificados::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+.banner-certificados::before {
+  width: 320px;
+  height: 320px;
+  right: -60px;
+  top: -120px;
+}
+.banner-certificados::after {
+  width: 180px;
+  height: 180px;
+  right: 140px;
+  bottom: -90px;
+}
+
+.banner-certificados__deco {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  right: 280px;
+  top: -40px;
+  pointer-events: none;
+}
+
+.banner-certificados__conteudo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-xl);
+  flex-wrap: wrap;
+}
+
+.banner-certificados__icone-area {
+  width: 76px;
+  height: 76px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--raio-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(6px);
+}
+
+.banner-certificados__texto {
+  flex: 1;
+  min-width: 180px;
+}
+
+.banner-certificados__titulo {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.banner-certificados__subtitulo {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: var(--texto-md);
+  margin-top: var(--espaco-xs);
+}
+
+.banner-certificados__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-lg);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--raio-lg);
+  padding: var(--espaco-md) var(--espaco-xl);
+  backdrop-filter: blur(6px);
+  flex-shrink: 0;
+}
+
+.banner-certificados__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.banner-certificados__stat-valor {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.banner-certificados__stat-valor--bloqueado {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 1.2rem;
+}
+
+.banner-certificados__stat-rotulo {
+  font-size: var(--texto-xs);
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.banner-certificados__sep {
+  width: 1px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
 /* ── Lista de certificados ─────────────────────────────────── */
 .lista-certificados {
   display: flex;
@@ -1623,6 +1755,15 @@
 .menu-contexto__lista button:hover {
   background: rgba(123, 47, 247, 0.08);
   color: var(--cor-texto-forte);
+}
+
+/* Últimos itens abrem o dropdown para cima para não sair da área visível */
+.conteudos-modulo__lista .cartao-conteudo:last-child .menu-contexto__lista,
+.conteudos-modulo__lista .cartao-conteudo:nth-last-child(2) .menu-contexto__lista,
+.lista-aproveitamento .item-aproveitamento:last-child .menu-contexto__lista,
+.lista-aproveitamento .item-aproveitamento:nth-last-child(2) .menu-contexto__lista {
+  top: auto;
+  bottom: calc(100% + 6px);
 }
 
 /* ------------------------------------------------------------
