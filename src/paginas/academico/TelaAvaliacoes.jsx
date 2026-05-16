@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import { FiPlusCircle } from "react-icons/fi";
+import { TbDotsVertical } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { avaliacoes, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
 
@@ -545,20 +548,14 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
               <label className="campo__rotulo" htmlFor="av-curso">
                 Curso *
               </label>
-              <select
+              <SelectSimples
                 id="av-curso"
-                className="campo__entrada"
                 value={form.cursoId}
-                onChange={(e) => atualizarMeta("cursoId", e.target.value)}
+                opcoes={cursosDisponiveis.map((c) => ({ valor: c.id, rotulo: c.titulo }))}
+                onChange={(val) => atualizarMeta("cursoId", val)}
+                placeholder="Selecione um curso"
                 required
-              >
-                <option value="">Selecione um curso</option>
-                {cursosDisponiveis.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.titulo}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className="grade-3">
@@ -801,6 +798,142 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
   );
 }
 
+/* ── Slide de avaliações de uma turma (visão do professor) ──── */
+
+function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes }) {
+  const [menuAberto, setMenuAberto] = useState(null);
+  const avaliacoesDoCurso = avaliacoes.filter((a) => a.cursoId === turma.cursoId);
+
+  useEffect(() => {
+    if (!menuAberto) return;
+    function fechar() { setMenuAberto(null); }
+    document.addEventListener("click", fechar);
+    return () => document.removeEventListener("click", fechar);
+  }, [menuAberto]);
+
+  return (
+    <div className="conteudos-aluno">
+      <header className="conteudos-aluno__cabecalho">
+        <div className="conteudos-aluno__curso-info">
+          <p className="conteudos-aluno__turma">{turma.nomeTurma}</p>
+          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
+          <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
+          <p className="conteudos-aluno__curso-meta">
+            {avaliacoesDoCurso.length} avaliação{avaliacoesDoCurso.length !== 1 ? "ões" : ""} cadastrada{avaliacoesDoCurso.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+        <Botao variante="primario" tamanho="pequeno" onClick={onCriar} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <FiPlusCircle size={22} />
+          Nova Avaliação
+        </Botao>
+      </header>
+
+      {avaliacoesDoCurso.length === 0 ? (
+        <p className="texto-vazio">Nenhuma avaliação cadastrada para este curso.</p>
+      ) : (
+        <ul className="lista-conteudos-completa" role="list">
+          {avaliacoesDoCurso.map((av) => (
+            <li key={av.id} className="cartao-conteudo">
+              <span className="cartao-conteudo__icone" aria-hidden="true">◈</span>
+              <div className="cartao-conteudo__info">
+                <h4 className="cartao-conteudo__titulo">{av.titulo}</h4>
+                <p className="cartao-conteudo__modulo">
+                  {av.totalQuestoes} questão{av.totalQuestoes !== 1 ? "ões" : ""} · {av.tempoLimiteMinutos}min · nota máx. {av.notaMaxima}
+                </p>
+              </div>
+              <div className="cartao-conteudo__meta">
+                <Insignia texto={av.status} variante={av.status === "Publicada" ? "sucesso" : "neutro"} />
+              </div>
+              <div className="menu-contexto">
+                <button
+                  className="menu-contexto__botao"
+                  type="button"
+                  aria-label={`Opções para ${av.titulo}`}
+                  onClick={(e) => { e.stopPropagation(); setMenuAberto(menuAberto === av.id ? null : av.id); }}
+                ><TbDotsVertical size={18} aria-hidden="true" /></button>
+                {menuAberto === av.id && (
+                  <ul className="menu-contexto__lista" role="menu">
+                    <li><button type="button" onClick={() => { setMenuAberto(null); onVerDetalhes(av); }}>Detalhes</button></li>
+                    <li><button type="button" onClick={() => setMenuAberto(null)}>Editar</button></li>
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/* ── Vista do professor — carrossel de turmas (avaliações) ───── */
+
+function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes }) {
+  const [slideAtual, setSlideAtual] = useState(0);
+  const minhasTurmas = turmas.filter((t) => t.professorId === usuario?.id);
+
+  if (minhasTurmas.length === 0) {
+    return (
+      <p className="texto-vazio texto-vazio--central" role="status">
+        Você não possui turmas atribuídas.
+      </p>
+    );
+  }
+
+  const total = minhasTurmas.length;
+
+  return (
+    <div className="carrossel-cursos">
+      {total > 1 && (
+        <nav className="carrossel-cursos__nav" aria-label="Navegação entre turmas">
+          <button
+            className="carrossel-cursos__seta"
+            onClick={() => setSlideAtual((i) => i - 1)}
+            disabled={slideAtual === 0}
+            aria-label="Turma anterior"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <div className="carrossel-cursos__indicadores" role="tablist" aria-label="Turmas do professor">
+            {minhasTurmas.map((turma, idx) => (
+              <button
+                key={turma.id}
+                className={`carrossel-cursos__bolinha ${idx === slideAtual ? "carrossel-cursos__bolinha--ativa" : ""}`}
+                onClick={() => setSlideAtual(idx)}
+                role="tab"
+                aria-selected={idx === slideAtual}
+                aria-label={`Turma ${idx + 1}: ${turma.nomeTurma}`}
+                type="button"
+              />
+            ))}
+          </div>
+          <button
+            className="carrossel-cursos__seta"
+            onClick={() => setSlideAtual((i) => i + 1)}
+            disabled={slideAtual === total - 1}
+            aria-label="Próxima turma"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </nav>
+      )}
+      <div className="carrossel-cursos__janela">
+        <SlideAvaliacoesProfessor
+          turma={minhasTurmas[slideAtual]}
+          onCriar={onCriar}
+          onVerDetalhes={onVerDetalhes}
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ── Componente principal ────────────────────────────────────── */
 
 export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados = new Set(), onAvaliacaoAprovada, conteudoConcluido = false }) {
@@ -933,6 +1066,42 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
       <Insignia texto={`Aprovado ${resultado.porcentagem}%`} variante="sucesso" />
     ) : (
       <Insignia texto={`Reprovado ${resultado.porcentagem}%`} variante="erro" />
+    );
+  }
+
+  /* ── Vista do professor: carrossel de turmas ── */
+  if (ehProfessor) {
+    return (
+      <div className="tela-avaliacoes">
+        <header className="cabecalho-pagina">
+          <div>
+            <h2 className="cabecalho-pagina__titulo">Avaliações</h2>
+            <p className="cabecalho-pagina__subtitulo">Gerencie as avaliações das suas turmas</p>
+          </div>
+        </header>
+        <VistaProfessorAvaliacoes
+          usuario={usuario}
+          onCriar={() => setModo("criar")}
+          onVerDetalhes={(av) => { setAvaliacaoAtiva(av); setModalAberto(true); }}
+        />
+        {modalAberto && avaliacaoAtiva && (
+          <Modal titulo="Detalhes da Avaliação" onFechar={() => setModalAberto(false)}>
+            <dl className="lista-detalhes">
+              <div className="lista-detalhes__item"><dt>Título</dt><dd>{avaliacaoAtiva.titulo}</dd></div>
+              <div className="lista-detalhes__item"><dt>Curso</dt><dd>{avaliacaoAtiva.cursoTitulo}</dd></div>
+              <div className="lista-detalhes__item"><dt>Total de questões</dt><dd>{avaliacaoAtiva.totalQuestoes}</dd></div>
+              <div className="lista-detalhes__item"><dt>Tentativas permitidas</dt><dd>{avaliacaoAtiva.tentativasPermitidas}</dd></div>
+              <div className="lista-detalhes__item"><dt>Tempo limite</dt><dd>{avaliacaoAtiva.tempoLimiteMinutos} minutos</dd></div>
+              <div className="lista-detalhes__item"><dt>Nota máxima</dt><dd>{avaliacaoAtiva.notaMaxima}</dd></div>
+              <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={avaliacaoAtiva.status} /></dd></div>
+            </dl>
+            <footer className="modal-rodape">
+              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Fechar</Botao>
+              <Botao variante="primario">Editar</Botao>
+            </footer>
+          </Modal>
+        )}
+      </div>
     );
   }
 

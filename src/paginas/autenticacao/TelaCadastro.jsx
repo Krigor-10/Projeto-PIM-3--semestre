@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Botao from "@/componentes/Botao.jsx";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { cursos } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
 
@@ -366,19 +367,13 @@ export default function TelaCadastro() {
 
                 <div className={`campo ${erros.estado ? "campo--erro" : ""}`}>
                   <label className="campo__rotulo" htmlFor="cad-estado">Estado *</label>
-                  <select
+                  <SelectSimples
                     id="cad-estado"
-                    className="campo__entrada"
-                    autoComplete="address-level1"
                     value={form.estado}
-                    onChange={(e) => set("estado", e.target.value)}
-                    aria-invalid={!!erros.estado}
-                  >
-                    <option value="">UF</option>
-                    {estadosBR.map((uf) => (
-                      <option key={uf} value={uf}>{uf}</option>
-                    ))}
-                  </select>
+                    opcoes={estadosBR}
+                    onChange={(val) => set("estado", val)}
+                    placeholder="UF"
+                  />
                   {erros.estado && <span className="campo__erro" role="alert">{erros.estado}</span>}
                 </div>
               </div>
@@ -390,21 +385,14 @@ export default function TelaCadastro() {
 
               <div className={`campo ${erros.cursoId ? "campo--erro" : ""}`}>
                 <label className="campo__rotulo" htmlFor="cad-curso">Curso *</label>
-                <select
+                <SelectSimples
                   id="cad-curso"
-                  className="campo__entrada"
                   value={form.cursoId}
-                  onChange={(e) => set("cursoId", e.target.value)}
-                  aria-describedby={erros.cursoId ? "erro-curso" : undefined}
-                  aria-invalid={!!erros.cursoId}
-                >
-                  <option value="">Selecione um curso</option>
-                  {cursosAtivos.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.titulo} — {c.nivel}
-                    </option>
-                  ))}
-                </select>
+                  opcoes={cursosAtivos.map((c) => ({ valor: c.id, rotulo: `${c.titulo} — ${c.nivel}` }))}
+                  onChange={(val) => set("cursoId", val)}
+                  placeholder="Selecione um curso"
+                  required
+                />
                 {erros.cursoId && <span id="erro-curso" className="campo__erro" role="alert">{erros.cursoId}</span>}
               </div>
             </fieldset>

@@ -3,6 +3,7 @@ import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 
 export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
   const lista    = listaCursos;
@@ -11,6 +12,7 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
   const [filtroNivel, setFiltroNivel] = useState("");
   const [filtroVisivel, setFiltroVisivel] = useState("");
   const [cursoEditando, setCursoEditando] = useState(null);
+  const [nivelEditando, setNivelEditando] = useState("Iniciante");
 
   const totalVisiveis = lista.filter((c) => c.visivelCatalogo).length;
   const totalDestaque = lista.filter((c) => c.destaque).length;
@@ -48,7 +50,7 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
               ...c,
               descricao: f["cat-descricao"].value,
               preco:     parseFloat(f["cat-preco"].value) || c.preco,
-              nivel:     f["cat-nivel"].value,
+              nivel:     nivelEditando,
 
             }
           : c
@@ -164,7 +166,7 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
               <Botao
                 variante="fantasma"
                 tamanho="pequeno"
-                onClick={() => setCursoEditando({ ...curso })}
+                onClick={() => { setCursoEditando({ ...curso }); setNivelEditando(curso.nivel ?? "Iniciante"); }}
               >
                 Editar
               </Botao>
@@ -204,11 +206,12 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="cat-nivel">Nível</label>
-              <select id="cat-nivel" className="campo__entrada" defaultValue={cursoEditando.nivel}>
-                <option>Iniciante</option>
-                <option>Intermediário</option>
-                <option>Avançado</option>
-              </select>
+              <SelectSimples
+                id="cat-nivel"
+                value={nivelEditando}
+                opcoes={["Iniciante", "Intermediário", "Avançado"]}
+                onChange={setNivelEditando}
+              />
             </div>
             <footer className="modal-rodape">
               <Botao variante="fantasma" type="button" onClick={() => setCursoEditando(null)}>

@@ -1,17 +1,21 @@
 import { useState } from "react";
+import { FiPlusCircle } from "react-icons/fi";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import ModalEdicaoUsuario from "@/componentes/ModalEdicaoUsuario.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { usuarios } from "@/dados/dadosMock.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 export default function TelaUsuarios({ usuario }) {
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroNome, setFiltroNome] = useState("");
-  const [modalAberto, setModalAberto] = useState(false);
+  const [modalAberto, setModalAberto]     = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
-  const [lista, setLista] = useState(usuarios);
+  const [lista, setLista]                 = useState(usuarios);
+  const [tipoUsrModal, setTipoUsrModal]   = useState("");
+  const [erroTipoUsr, setErroTipoUsr]     = useState("");
 
   const tipo = usuario?.tipo;
 
@@ -53,8 +57,9 @@ export default function TelaUsuarios({ usuario }) {
           </p>
         </div>
         {podeCriar(tipo, "usuarios") && (
-          <Botao variante="primario" onClick={() => setModalAberto(true)}>
-            + Novo Usuário
+          <Botao variante="primario" onClick={() => setModalAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <FiPlusCircle size={20} />
+            Novo Usuário
           </Botao>
         )}
       </header>
@@ -147,15 +152,18 @@ export default function TelaUsuarios({ usuario }) {
             className="formulario-modal"
             onSubmit={(e) => {
               e.preventDefault();
+              if (!tipoUsrModal) { setErroTipoUsr("Selecione o tipo de usuário."); return; }
               const f = e.target;
               setLista((prev) => [...prev, {
                 id: Date.now(),
                 nome: f["nome-usr"].value,
                 email: f["email-usr"].value,
-                tipo: f["tipo-usr"].value,
+                tipo: tipoUsrModal,
                 ativo: true,
                 dataCadastro: new Date().toISOString().slice(0, 10),
               }]);
+              setTipoUsrModal("");
+              setErroTipoUsr("");
               setModalAberto(false);
             }}
           >
@@ -169,13 +177,16 @@ export default function TelaUsuarios({ usuario }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="tipo-usr">Tipo *</label>
-              <select id="tipo-usr" className="campo__entrada" required>
-                <option value="">Selecione o tipo</option>
-                <option value="Aluno">Aluno</option>
-                <option value="Professor">Professor</option>
-                <option value="Coordenador">Coordenador</option>
-                <option value="Admin">Admin</option>
-              </select>
+              <SelectSimples
+                id="tipo-usr"
+                value={tipoUsrModal}
+                opcoes={["Aluno", "Professor", "Coordenador", "Admin"]}
+                onChange={(val) => { setTipoUsrModal(val); setErroTipoUsr(""); }}
+                placeholder="Selecione o tipo"
+                required
+                erro={erroTipoUsr}
+              />
+              {erroTipoUsr && <span className="campo__mensagem-erro" role="alert">{erroTipoUsr}</span>}
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="telefone-usr">Telefone</label>

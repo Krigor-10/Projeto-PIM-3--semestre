@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
+import { FiPlusCircle, FiEdit2 } from "react-icons/fi";
+import { TbDotsVertical } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { cursos, turmas, modulos, usuarios, avaliacoes } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
 import { podeCriar, podeEditar, podeExcluir } from "@/dados/permissoes.js";
+import SelectUsuario from "@/componentes/SelectUsuario.jsx";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 
 /* ── Vista gerencial do coordenador ─────────────────────────────── */
 
@@ -21,8 +25,13 @@ function VistaGerencialCoordenador({ usuario }) {
         return { ...c, professorId: turma?.professorId ?? null, professorNome: turma?.professorNome ?? null };
       })
   );
+  const [profAtribuidoId, setProfAtribuidoId]   = useState(null);
 
-  useEffect(() => { setFormSujo(false); setConfirmarSaida(false); }, [cursoSelecionado]);
+  useEffect(() => {
+    setFormSujo(false);
+    setConfirmarSaida(false);
+    setProfAtribuidoId(cursoSelecionado?.professorId ?? null);
+  }, [cursoSelecionado]);
 
   const professoresAtivos = usuarios.filter((u) => u.tipo === "Professor" && u.ativo);
 
@@ -38,11 +47,10 @@ function VistaGerencialCoordenador({ usuario }) {
 
   function salvarAlteracoes(e) {
     e.preventDefault();
-    const profId    = Number(e.target["coord-professor"].value) || null;
-    const professor = professoresAtivos.find((p) => p.id === profId);
+    const professor = professoresAtivos.find((p) => p.id === profAtribuidoId);
     setListaCursos((prev) => prev.map((c) =>
       c.id === cursoSelecionado.id
-        ? { ...c, professorId: profId, professorNome: professor?.nome ?? null }
+        ? { ...c, professorId: profAtribuidoId, professorNome: professor?.nome ?? null }
         : c
     ));
     setCursoSelecionado(null);
@@ -145,7 +153,7 @@ function VistaGerencialCoordenador({ usuario }) {
                   aria-label={`Opções para ${curso.titulo}`}
                   aria-expanded={menuAberto === curso.id}
                   type="button"
-                >···</button>
+                ><TbDotsVertical size={18} aria-hidden="true" /></button>
                 {menuAberto === curso.id && (
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
@@ -186,12 +194,13 @@ function VistaGerencialCoordenador({ usuario }) {
             <div className="detalhe-atribuicoes" style={{ gridTemplateColumns: "1fr" }}>
               <div className="campo">
                 <label className="campo__rotulo" htmlFor="coord-professor">Professor</label>
-                <select id="coord-professor" className="campo__entrada" defaultValue={cursoSelecionado.professorId ?? ""} onChange={() => setFormSujo(true)}>
-                  <option value="">Sem professor</option>
-                  {professoresAtivos.map((p) => (
-                    <option key={p.id} value={p.id}>{p.nome}</option>
-                  ))}
-                </select>
+                <SelectUsuario
+                  id="coord-professor"
+                  value={profAtribuidoId}
+                  opcoes={professoresAtivos}
+                  onChange={(id) => { setProfAtribuidoId(id); setFormSujo(true); }}
+                  placeholder="Sem professor"
+                />
               </div>
             </div>
 
@@ -231,8 +240,20 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
   const [cursoDetalhe, setCursoDetalhe]         = useState(null);
   const [formSujo, setFormSujo]                 = useState(false);
   const [confirmarSaida, setConfirmarSaida]     = useState(false);
+  const [nivelModal, setNivelModal]               = useState("Iniciante");
+  const [campoEditando, setCampoEditando]         = useState(null);
+  const [valoresEdit, setValoresEdit]             = useState({});
+  const [profSelecionadoId, setProfSelecionadoId] = useState(null);
+  const [coordSelecionadoId, setCoordSelecionadoId] = useState(null);
 
-  useEffect(() => { setFormSujo(false); setConfirmarSaida(false); }, [cursoDetalhe]);
+  useEffect(() => {
+    setFormSujo(false);
+    setConfirmarSaida(false);
+    setCampoEditando(null);
+    setValoresEdit({});
+    setProfSelecionadoId(cursoDetalhe?.professorId ?? null);
+    setCoordSelecionadoId(cursoDetalhe?.coordenadorId ?? null);
+  }, [cursoDetalhe]);
 
   const tipo = usuario?.tipo;
   const professoresAtivos    = db.usuarios.listar().filter((u) => u.tipo === "Professor"    && u.ativo);
@@ -253,6 +274,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
   function abrirEdicao(curso) {
     setCursoSelecionado(curso);
     setModoEdicao(true);
+    setNivelModal(curso.nivel ?? "Iniciante");
     setModalAberto(true);
   }
 
@@ -262,20 +284,19 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
 
   function salvarAlteracoes(e) {
     e.preventDefault();
-    const profId  = Number(e.target["det-professor"].value)  || null;
-    const coordId = Number(e.target["det-coordenador"].value) || null;
-    const prof  = professoresAtivos.find((p) => p.id === profId);
-    const coord = coordenadoresAtivos.find((c) => c.id === coordId);
+    const prof  = professoresAtivos.find((p) => p.id === profSelecionadoId);
+    const coord = coordenadoresAtivos.find((c) => c.id === coordSelecionadoId);
     onListaCursosChange((prev) =>
       prev.map((c) =>
         c.id === cursoDetalhe.id
           ? { ...c,
-              professorId:    profId,  professorNome:    prof?.nome  ?? null,
-              coordenadorId:  coordId, coordenadorNome:  coord?.nome ?? null }
+              ...valoresEdit,
+              professorId:    profSelecionadoId,  professorNome:    prof?.nome  ?? null,
+              coordenadorId:  coordSelecionadoId, coordenadorNome:  coord?.nome ?? null }
           : c
       )
     );
-    onToast?.("Atribuições salvas.", "sucesso");
+    onToast?.("Alterações salvas.", "sucesso");
     setCursoDetalhe(null);
   }
 
@@ -299,7 +320,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
       codigoRegistro: `CRS-${String(prev.length + 1).padStart(3, "0")}`,
       titulo:   f["titulo-curso"].value,
       descricao: f["descricao-curso"].value,
-      nivel:    f["nivel-curso"].value,
+      nivel:    nivelModal,
       preco: 0, totalModulos: 0, totalAlunos: 0, ativo: true,
       visivelCatalogo: false, destaque: false,
     }]);
@@ -312,7 +333,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
     const f = e.target;
     onListaCursosChange((prev) => prev.map((c) =>
       c.id === cursoSelecionado.id
-        ? { ...c, titulo: f["edit-titulo-curso"].value, descricao: f["edit-descricao-curso"].value, nivel: f["edit-nivel-curso"].value }
+        ? { ...c, titulo: f["edit-titulo-curso"].value, descricao: f["edit-descricao-curso"].value, nivel: nivelModal }
         : c
     ));
     setModalAberto(false);
@@ -327,8 +348,9 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
           <p className="cabecalho-pagina__subtitulo">{totalAtivos} cursos ativos na plataforma</p>
         </div>
         {podeCriar(tipo, "cursos") && (
-          <Botao variante="primario" onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setModalAberto(true); }}>
-            + Novo Curso
+          <Botao variante="primario" onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setNivelModal("Iniciante"); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <FiPlusCircle size={20} />
+            Novo Curso
           </Botao>
         )}
       </header>
@@ -439,7 +461,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                   aria-label={`Opções para ${curso.titulo}`}
                   aria-expanded={menuAberto === curso.id}
                   type="button"
-                >···</button>
+                ><TbDotsVertical size={18} aria-hidden="true" /></button>
                 {menuAberto === curso.id && (
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
@@ -478,10 +500,57 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
         <Modal titulo="Detalhes do Curso" onFechar={tentarFecharDetalhe} className="modal-caixa--largo">
           <form onSubmit={salvarAlteracoes}>
             <dl className="lista-detalhes">
-              <div className="lista-detalhes__item"><dt>Título</dt><dd>{cursoDetalhe.titulo}</dd></div>
+              <div className="lista-detalhes__item">
+                <dt>Título</dt>
+                {campoEditando === "titulo" ? (
+                  <input
+                    className="campo__entrada campo__entrada--inline"
+                    defaultValue={valoresEdit.titulo ?? cursoDetalhe.titulo}
+                    autoFocus
+                    onBlur={(e) => { setValoresEdit((v) => ({ ...v, titulo: e.target.value })); setCampoEditando(null); setFormSujo(true); }}
+                    onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
+                  />
+                ) : (
+                  <dd>{valoresEdit.titulo ?? cursoDetalhe.titulo}</dd>
+                )}
+                {podeEditar(tipo, "cursos") && (
+                  <button className="btn-editar-linha" type="button" title="Editar título" onClick={() => setCampoEditando("titulo")}><FiEdit2 size={17} /></button>
+                )}
+              </div>
+
               <div className="lista-detalhes__item"><dt>Código</dt><dd>{cursoDetalhe.codigoRegistro}</dd></div>
-              <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoDetalhe.nivel}</dd></div>
-              <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoDetalhe.descricao || "—"}</dd></div>
+
+              <div className="lista-detalhes__item">
+                <dt>Nível</dt>
+                {podeEditar(tipo, "cursos") ? (
+                  <SelectSimples
+                    value={valoresEdit.nivel ?? cursoDetalhe.nivel}
+                    opcoes={["Básico", "Intermediário", "Avançado"]}
+                    onChange={(val) => { setValoresEdit((v) => ({ ...v, nivel: val })); setFormSujo(true); }}
+                  />
+                ) : (
+                  <dd>{cursoDetalhe.nivel}</dd>
+                )}
+              </div>
+
+              <div className="lista-detalhes__item">
+                <dt>Descrição</dt>
+                {campoEditando === "descricao" ? (
+                  <textarea
+                    className="campo__entrada campo__entrada--inline"
+                    defaultValue={valoresEdit.descricao ?? cursoDetalhe.descricao}
+                    rows={3}
+                    autoFocus
+                    onBlur={(e) => { setValoresEdit((v) => ({ ...v, descricao: e.target.value })); setCampoEditando(null); setFormSujo(true); }}
+                  />
+                ) : (
+                  <dd>{(valoresEdit.descricao ?? cursoDetalhe.descricao) || "—"}</dd>
+                )}
+                {podeEditar(tipo, "cursos") && (
+                  <button className="btn-editar-linha" type="button" title="Editar descrição" onClick={() => setCampoEditando("descricao")}><FiEdit2 size={17} /></button>
+                )}
+              </div>
+
               <div className="lista-detalhes__item"><dt>Catálogo</dt><dd>{cursoDetalhe.visivelCatalogo ? "Visível" : "Oculto"}</dd></div>
             </dl>
 
@@ -489,30 +558,29 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
               <div className="detalhe-atribuicoes">
                 <div className="campo">
                   <label className="campo__rotulo" htmlFor="det-professor">Professor</label>
-                  <select id="det-professor" className="campo__entrada" defaultValue={cursoDetalhe.professorId ?? ""} onChange={() => setFormSujo(true)}>
-                    <option value="">Sem professor</option>
-                    {professoresAtivos.map((p) => (
-                      <option key={p.id} value={p.id}>{p.nome}</option>
-                    ))}
-                  </select>
+                  <SelectUsuario
+                    id="det-professor"
+                    value={profSelecionadoId}
+                    opcoes={professoresAtivos}
+                    onChange={(id) => { setProfSelecionadoId(id); setFormSujo(true); }}
+                    placeholder="Sem professor"
+                  />
                 </div>
                 <div className="campo">
                   <label className="campo__rotulo" htmlFor="det-coordenador">Coordenador</label>
-                  <select id="det-coordenador" className="campo__entrada" defaultValue={cursoDetalhe.coordenadorId ?? ""} onChange={() => setFormSujo(true)}>
-                    <option value="">Sem coordenador</option>
-                    {coordenadoresAtivos.map((c) => (
-                      <option key={c.id} value={c.id}>{c.nome}</option>
-                    ))}
-                  </select>
+                  <SelectUsuario
+                    id="det-coordenador"
+                    value={coordSelecionadoId}
+                    opcoes={coordenadoresAtivos}
+                    onChange={(id) => { setCoordSelecionadoId(id); setFormSujo(true); }}
+                    placeholder="Sem coordenador"
+                  />
                 </div>
               </div>
             )}
 
             <div className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto" }}>Fechar</Botao>
-              {podeEditar(tipo, "cursos") && (
-                <Botao variante="secundario" type="button" onClick={() => { abrirEdicao(cursoDetalhe); setCursoDetalhe(null); }}>Editar curso</Botao>
-              )}
               {podeEditar(tipo, "cursos") && (
                 <Botao variante="primario" type="submit">Salvar alterações</Botao>
               )}
@@ -549,11 +617,12 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
-              <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
-                <option>Iniciante</option>
-                <option>Intermediário</option>
-                <option>Avançado</option>
-              </select>
+              <SelectSimples
+                id="edit-nivel-curso"
+                value={nivelModal}
+                opcoes={["Iniciante", "Intermediário", "Avançado"]}
+                onChange={setNivelModal}
+              />
             </div>
             <div className="modal-rodape">
               <Botao variante="fantasma" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
@@ -577,11 +646,12 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="nivel-curso">Nível</label>
-              <select id="nivel-curso" className="campo__entrada">
-                <option>Iniciante</option>
-                <option>Intermediário</option>
-                <option>Avançado</option>
-              </select>
+              <SelectSimples
+                id="nivel-curso"
+                value={nivelModal}
+                opcoes={["Iniciante", "Intermediário", "Avançado"]}
+                onChange={setNivelModal}
+              />
             </div>
             <div className="modal-rodape">
               <Botao variante="fantasma" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>

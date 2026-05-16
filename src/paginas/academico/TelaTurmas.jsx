@@ -1,18 +1,29 @@
 import { useState, useEffect } from "react";
+import { FiPlusCircle } from "react-icons/fi";
+import { TbDotsVertical } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { matriculas, usuarios } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 
-const VARIANTE_MAT = { Aprovada: "sucesso", Pendente: "aviso", Rejeitada: "erro" };
 
 function gerarIniciais(nome) {
   return (nome ?? "").split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
 }
 
 function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
+  const [menuAberto, setMenuAberto] = useState(false);
+
+  useEffect(() => {
+    if (!menuAberto) return;
+    function fechar() { setMenuAberto(false); }
+    document.addEventListener("click", fechar);
+    return () => document.removeEventListener("click", fechar);
+  }, [menuAberto]);
+
   const alunosFiltrados = busca.trim()
     ? alunos.filter((a) => a.nome.toLowerCase().includes(busca.toLowerCase()))
     : alunos;
@@ -29,9 +40,19 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
           <span className="slide-turma__professor">{turma.professorNome}</span>
           <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
           {podeEditar(tipo, "turmas") && (
-            <Botao variante="fantasma" tamanho="pequeno" onClick={onEditar}>
-              Editar
-            </Botao>
+            <div className="menu-contexto">
+              <button
+                className="menu-contexto__botao"
+                type="button"
+                aria-label="Opções da turma"
+                onClick={(e) => { e.stopPropagation(); setMenuAberto((v) => !v); }}
+              ><TbDotsVertical size={18} aria-hidden="true" /></button>
+              {menuAberto && (
+                <ul className="menu-contexto__lista" role="menu">
+                  <li><button type="button" onClick={() => { setMenuAberto(false); onEditar(); }}>Editar</button></li>
+                </ul>
+              )}
+            </div>
           )}
         </div>
       </header>
@@ -58,16 +79,29 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
                 <strong className="slide-alunos__linha-nome">{aluno.nome}</strong>
                 <span className="slide-alunos__linha-email">{aluno.email}</span>
               </div>
-              <Insignia
-                texto={aluno.statusMatricula}
-                variante={VARIANTE_MAT[aluno.statusMatricula] ?? "neutro"}
-              />
+              <span
+                className="slide-alunos__media"
+                style={{ color: corMedia(aluno.media) }}
+                title={`Média: ${aluno.media.toFixed(1)}`}
+              >
+                {aluno.media.toFixed(1)}
+              </span>
             </li>
           ))}
         </ul>
       )}
     </div>
   );
+}
+
+function mediaMock(alunoId) {
+  return (((alunoId * 17 + 43) % 45) + 55) / 10;
+}
+
+function corMedia(media) {
+  if (media >= 7) return "var(--cor-sucesso)";
+  if (media >= 5) return "var(--cor-aviso)";
+  return "var(--cor-erro)";
 }
 
 function montarAlunosTurma(turmaId) {
@@ -80,18 +114,23 @@ function montarAlunosTurma(turmaId) {
         nome: m.alunoNome,
         email: u?.email ?? "—",
         statusMatricula: m.status,
+        media: mediaMock(m.alunoId),
       };
     });
 }
 
-export default function TelaTurmas({ usuario, listaCursos }) {
+export default function TelaTurmas({ usuario, listaCursos, onToast }) {
   const [slideAtual, setSlideAtual]   = useState(0);
   const [buscaAluno, setBuscaAluno]   = useState("");
   const [listaTurmas, setListaTurmas] = useState(() => db.turmas.listar());
   useEffect(() => { db.turmas.salvar(listaTurmas); }, [listaTurmas]);
-  const [modalNova, setModalNova]         = useState(false);
-  const [turmaEditando, setTurmaEditando] = useState(null);
-  const [erroNovaTurma, setErroNovaTurma] = useState("");
+  const [modalNova, setModalNova]             = useState(false);
+  const [turmaEditando, setTurmaEditando]     = useState(null);
+  const [erroNovaTurma, setErroNovaTurma]     = useState("");
+  const [cursoIdNovaTurma, setCursoIdNovaTurma] = useState(null);
+  const [statusEditando, setStatusEditando]   = useState(null);
+
+  useEffect(() => { setStatusEditando(turmaEditando?.status ?? null); }, [turmaEditando]);
 
   const tipo = usuario?.tipo;
 
@@ -99,7 +138,7 @@ export default function TelaTurmas({ usuario, listaCursos }) {
     if (tipo === "Professor" && t.professorId !== usuario?.id) return false;
     if (tipo === "Coordenador") {
       const cursosDoCoordenador = new Set(
-        cursos.filter((c) => c.coordenadorId === usuario?.id).map((c) => c.id)
+        listaCursos.filter((c) => c.coordenadorId === usuario?.id).map((c) => c.id)
       );
       if (!cursosDoCoordenador.has(t.cursoId)) return false;
     }
@@ -117,24 +156,30 @@ export default function TelaTurmas({ usuario, listaCursos }) {
   function criarTurma(e) {
     e.preventDefault();
     const f = e.target;
-    const cursoId = Number(f["curso-turma"].value);
 
-    if (listaTurmas.some((t) => t.cursoId === cursoId)) {
+    if (!cursoIdNovaTurma) {
+      setErroNovaTurma("Selecione um curso.");
+      return;
+    }
+
+    if (listaTurmas.some((t) => t.cursoId === cursoIdNovaTurma)) {
       setErroNovaTurma("Este curso já possui uma turma cadastrada.");
       return;
     }
 
-    const cursoObj = listaCursos.find((c) => c.id === cursoId);
+    const cursoObj = listaCursos.find((c) => c.id === cursoIdNovaTurma);
     setListaTurmas((prev) => [...prev, {
       id: Date.now(),
       nomeTurma: f["nome-turma"].value,
-      cursoId,
+      cursoId: cursoIdNovaTurma,
       cursoTitulo: cursoObj?.titulo ?? "—",
       professorId: null,
       professorNome: "A definir",
       totalAlunos: 0,
       status: "Ativa",
     }]);
+    onToast?.(`Turma "${f["nome-turma"].value}" criada com sucesso.`, "sucesso");
+    setCursoIdNovaTurma(null);
     setModalNova(false);
   }
 
@@ -143,9 +188,10 @@ export default function TelaTurmas({ usuario, listaCursos }) {
     const f = e.target;
     setListaTurmas((prev) => prev.map((t) =>
       t.id === turmaEditando.id
-        ? { ...t, nomeTurma: f["edit-nome-turma"].value, status: f["edit-status-turma"].value }
+        ? { ...t, nomeTurma: f["edit-nome-turma"].value, status: statusEditando ?? turmaEditando.status }
         : t
     ));
+    onToast?.("Turma atualizada.", "sucesso");
     setTurmaEditando(null);
   }
 
@@ -161,8 +207,9 @@ export default function TelaTurmas({ usuario, listaCursos }) {
           </p>
         </div>
         {podeCriar(tipo, "turmas") && (
-          <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }}>
-            + Nova Turma
+          <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <FiPlusCircle size={20} />
+            Nova Turma
           </Botao>
         )}
       </header>
@@ -265,22 +312,17 @@ export default function TelaTurmas({ usuario, listaCursos }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="curso-turma">Curso *</label>
-              <select
+              <SelectSimples
                 id="curso-turma"
-                className="campo__entrada"
-                required
-                onChange={() => setErroNovaTurma("")}
-              >
-                <option value="">Selecione um curso</option>
-                {listaCursos.map((c) => {
+                value={cursoIdNovaTurma ?? ""}
+                opcoes={listaCursos.map((c) => {
                   const jaTemTurma = listaTurmas.some((t) => t.cursoId === c.id);
-                  return (
-                    <option key={c.id} value={c.id} disabled={jaTemTurma}>
-                      {c.titulo}{jaTemTurma ? " (já tem turma)" : ""}
-                    </option>
-                  );
+                  return { valor: c.id, rotulo: jaTemTurma ? `${c.titulo} (já tem turma)` : c.titulo, desabilitado: jaTemTurma };
                 })}
-              </select>
+                onChange={(val) => { setCursoIdNovaTurma(Number(val)); setErroNovaTurma(""); }}
+                placeholder="Selecione um curso"
+                required
+              />
               {erroNovaTurma && (
                 <span className="campo__erro" role="alert">{erroNovaTurma}</span>
               )}
@@ -303,11 +345,12 @@ export default function TelaTurmas({ usuario, listaCursos }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="edit-status-turma">Status</label>
-              <select id="edit-status-turma" className="campo__entrada" defaultValue={turmaEditando.status}>
-                <option value="Ativa">Ativa</option>
-                <option value="Concluída">Concluída</option>
-                <option value="Inativa">Inativa</option>
-              </select>
+              <SelectSimples
+                id="edit-status-turma"
+                value={statusEditando ?? turmaEditando.status}
+                opcoes={["Ativa", "Concluída", "Inativa"]}
+                onChange={setStatusEditando}
+              />
             </div>
             <div className="modal-rodape">
               <Botao variante="fantasma" type="button" onClick={() => setTurmaEditando(null)}>Cancelar</Botao>

@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from "react";
+import { FiPlusCircle } from "react-icons/fi";
+import { TbDotsVertical } from "react-icons/tb";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
@@ -496,6 +499,14 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
 
 function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
   const [modulosAbertos, setModulosAbertos] = useState(() => new Set());
+  const [menuConteudoAberto, setMenuConteudoAberto] = useState(null);
+
+  useEffect(() => {
+    if (!menuConteudoAberto) return;
+    function fechar() { setMenuConteudoAberto(null); }
+    document.addEventListener("click", fechar);
+    return () => document.removeEventListener("click", fechar);
+  }, [menuConteudoAberto]);
 
   const modulosDoCurso = modulos
     .filter((m) => m.cursoId === turma.cursoId)
@@ -529,8 +540,10 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
             variante="primario"
             tamanho="pequeno"
             onClick={onNovoConteudo}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            + Novo Conteúdo
+            <FiPlusCircle size={20} />
+            Novo Conteúdo
           </Botao>
         )}
       </header>
@@ -563,6 +576,17 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                   >▾</span>
                 </button>
               </h3>
+              {podeCriar(tipo, "conteudos") && (
+                <button
+                  className="modulo-btn-add"
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onNovoConteudo(modulo); }}
+                  aria-label={`Adicionar conteúdo em ${modulo.titulo}`}
+                  title="Adicionar conteúdo"
+                >
+                  <FiPlusCircle size={30} />
+                </button>
+              )}
             </header>
 
             {estaAberto && (
@@ -582,14 +606,19 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                         <Insignia texto={cont.tipo} variante="marca" />
                       </div>
                       {podeEditar(tipo, "conteudos") && (
-                        <div className="cartao-conteudo__acoes">
-                          <Botao
-                            variante="fantasma"
-                            tamanho="pequeno"
-                            aria-label={`Editar conteúdo ${cont.titulo}`}
-                          >
-                            Editar
-                          </Botao>
+                        <div className="menu-contexto">
+                          <button
+                            className="menu-contexto__botao"
+                            type="button"
+                            aria-label={`Opções para ${cont.titulo}`}
+                            onClick={(e) => { e.stopPropagation(); setMenuConteudoAberto(menuConteudoAberto === cont.id ? null : cont.id); }}
+                          ><TbDotsVertical size={18} aria-hidden="true" /></button>
+                          {menuConteudoAberto === cont.id && (
+                            <ul className="menu-contexto__lista" role="menu">
+                              <li><button type="button" onClick={() => setMenuConteudoAberto(null)}>Editar</button></li>
+                              <li><button type="button" style={{ color: "var(--cor-erro)" }} onClick={() => setMenuConteudoAberto(null)}>Excluir</button></li>
+                            </ul>
+                          )}
                         </div>
                       )}
                     </li>
@@ -607,8 +636,13 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
 /* ── Vista do professor — carrossel de turmas ────────────────── */
 
 function VistaProfessor({ usuario }) {
-  const [slideAtual, setSlideAtual] = useState(0);
-  const [modalAberto, setModalAberto] = useState(false);
+  const [slideAtual, setSlideAtual]       = useState(0);
+  const [modalAberto, setModalAberto]     = useState(false);
+  const [moduloModal, setModuloModal]     = useState(null);
+  const [moduloIdProf, setModuloIdProf]   = useState(null);
+  const [tipoContProf, setTipoContProf]   = useState(null);
+
+  useEffect(() => { setModuloIdProf(moduloModal?.id ?? null); setTipoContProf(null); }, [moduloModal]);
 
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario?.id);
 
@@ -678,19 +712,19 @@ function VistaProfessor({ usuario }) {
         <SlideCursoProfessor
           turma={minhasTurmas[slideAtual]}
           tipo={usuario?.tipo}
-          onNovoConteudo={() => setModalAberto(true)}
+          onNovoConteudo={(modulo = null) => { setModuloModal(modulo); setModalAberto(true); }}
         />
       </div>
 
       {/* Portal para modal — evita conflito de stacking context com o transform do carrossel */}
       {modalAberto && createPortal(
         <Modal
-          titulo={`Novo Conteúdo — ${minhasTurmas[slideAtual].nomeTurma}`}
-          onFechar={() => setModalAberto(false)}
+          titulo={moduloModal ? `Novo Conteúdo — ${moduloModal.titulo}` : `Novo Conteúdo — ${minhasTurmas[slideAtual].nomeTurma}`}
+          onFechar={() => { setModalAberto(false); setModuloModal(null); }}
         >
           <form
             className="formulario-modal"
-            onSubmit={(e) => { e.preventDefault(); setModalAberto(false); }}
+            onSubmit={(e) => { e.preventDefault(); setModalAberto(false); setModuloModal(null); }}
             noValidate
           >
             <div className="campo">
@@ -699,21 +733,29 @@ function VistaProfessor({ usuario }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="modulo-cont-prof">Módulo *</label>
-              <select id="modulo-cont-prof" className="campo__entrada" required>
-                <option value="">Selecione um módulo</option>
-                {modulosDaTurmaAtual.map((m) => (
-                  <option key={m.id} value={m.id}>{m.titulo}</option>
-                ))}
-              </select>
+              <SelectSimples
+                id="modulo-cont-prof"
+                value={moduloIdProf ?? ""}
+                opcoes={modulosDaTurmaAtual.map((m) => ({ valor: m.id, rotulo: m.titulo }))}
+                onChange={(val) => setModuloIdProf(Number(val))}
+                placeholder="Selecione um módulo"
+                required
+              />
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="tipo-cont-prof">Tipo *</label>
-              <select id="tipo-cont-prof" className="campo__entrada" required>
-                <option value="">Selecione o tipo</option>
-                <option value="Video">Vídeo</option>
-                <option value="Texto">Texto</option>
-                <option value="Documento">Documento</option>
-              </select>
+              <SelectSimples
+                id="tipo-cont-prof"
+                value={tipoContProf ?? ""}
+                opcoes={[
+                  { valor: "Video", rotulo: "Vídeo" },
+                  { valor: "Texto", rotulo: "Texto" },
+                  { valor: "Documento", rotulo: "Documento" },
+                ]}
+                onChange={setTipoContProf}
+                placeholder="Selecione o tipo"
+                required
+              />
             </div>
             <footer className="modal-rodape">
               <Botao variante="fantasma" onClick={() => setModalAberto(false)}>
@@ -819,8 +861,10 @@ function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onM
 /* ── Vista de gestão (admin, coordenador) ────────────────────── */
 
 function VistaGestao({ usuario }) {
-  const [modalAberto, setModalAberto] = useState(false);
+  const [modalAberto, setModalAberto]   = useState(false);
   const [filtroModulo, setFiltroModulo] = useState("");
+  const [moduloContId, setModuloContId] = useState(null);
+  const [tipoContId, setTipoContId]     = useState(null);
 
   const tipo = usuario?.tipo;
 
@@ -841,8 +885,10 @@ function VistaGestao({ usuario }) {
           <Botao
             variante="primario"
             onClick={() => setModalAberto(true)}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            + Novo Conteúdo
+            <FiPlusCircle size={20} />
+            Novo Conteúdo
           </Botao>
         )}
       </header>
@@ -932,21 +978,29 @@ function VistaGestao({ usuario }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="modulo-cont">Módulo *</label>
-              <select id="modulo-cont" className="campo__entrada" required>
-                <option value="">Selecione um módulo</option>
-                {modulos.map((m) => (
-                  <option key={m.id} value={m.id}>{m.titulo}</option>
-                ))}
-              </select>
+              <SelectSimples
+                id="modulo-cont"
+                value={moduloContId ?? ""}
+                opcoes={modulos.map((m) => ({ valor: m.id, rotulo: m.titulo }))}
+                onChange={(val) => setModuloContId(Number(val))}
+                placeholder="Selecione um módulo"
+                required
+              />
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="tipo-cont">Tipo *</label>
-              <select id="tipo-cont" className="campo__entrada" required>
-                <option value="">Selecione o tipo</option>
-                <option value="Video">Vídeo</option>
-                <option value="Texto">Texto</option>
-                <option value="Documento">Documento</option>
-              </select>
+              <SelectSimples
+                id="tipo-cont"
+                value={tipoContId ?? ""}
+                opcoes={[
+                  { valor: "Video", rotulo: "Vídeo" },
+                  { valor: "Texto", rotulo: "Texto" },
+                  { valor: "Documento", rotulo: "Documento" },
+                ]}
+                onChange={setTipoContId}
+                placeholder="Selecione o tipo"
+                required
+              />
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="duracao-cont">Duração</label>

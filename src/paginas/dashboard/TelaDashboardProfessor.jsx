@@ -1,3 +1,4 @@
+import { FiPlusCircle } from "react-icons/fi";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { turmas, avaliacoes, estatisticasProfessor } from "@/dados/dadosMock.js";
@@ -61,8 +62,9 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
         <section className="painel-secao" aria-labelledby="titulo-minhas-avaliacoes">
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-minhas-avaliacoes">Avaliacoes</h2>
-            <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao("avaliacoes")}>
-              + Nova
+            <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao("avaliacoes")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <FiPlusCircle size={18} />
+              Nova
             </Botao>
           </header>
           <div className="painel-secao__conteudo">

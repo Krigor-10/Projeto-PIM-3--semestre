@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { FiPlusCircle } from "react-icons/fi";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { turmas } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
 import { podeCriar } from "@/dados/permissoes.js";
@@ -76,9 +78,11 @@ function SlideCurso({ curso, itens }) {
   );
 }
 
-export default function TelaModulos({ usuario, listaCursos }) {
-  const [slideAtual, setSlideAtual] = useState(0);
-  const [modalAberto, setModalAberto] = useState(false);
+export default function TelaModulos({ usuario, listaCursos, onToast }) {
+  const [slideAtual, setSlideAtual]     = useState(0);
+  const [modalAberto, setModalAberto]   = useState(false);
+  const [cursoIdModal, setCursoIdModal] = useState(null);
+  const [erroCursoModal, setErroCursoModal] = useState("");
   const [listaModulos, setListaModulos] = useState(() => db.modulos.listar());
   useEffect(() => { db.modulos.salvar(listaModulos); }, [listaModulos]);
 
@@ -127,8 +131,9 @@ export default function TelaModulos({ usuario, listaCursos }) {
           </p>
         </div>
         {podeCriar(tipo, "modulos") && (
-          <Botao variante="primario" onClick={() => setModalAberto(true)}>
-            + Novo Módulo
+          <Botao variante="primario" onClick={() => setModalAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <FiPlusCircle size={20} />
+            Novo Módulo
           </Botao>
         )}
       </header>
@@ -209,16 +214,19 @@ export default function TelaModulos({ usuario, listaCursos }) {
             className="formulario-modal"
             onSubmit={(e) => {
               e.preventDefault();
+              if (!cursoIdModal) { setErroCursoModal("Selecione um curso."); return; }
               const f = e.target;
-              const cursoId = Number(f["curso-modulo"].value);
               setListaModulos((prev) => [...prev, {
                 id: Date.now(),
-                cursoId,
+                cursoId: cursoIdModal,
                 codigoRegistro: `MOD-${String(prev.length + 1).padStart(3, "0")}`,
                 titulo: f["titulo-modulo"].value,
                 ordem: Number(f["ordem-modulo"].value) || 1,
                 totalConteudos: 0,
               }]);
+              onToast?.("Módulo criado com sucesso.", "sucesso");
+              setCursoIdModal(null);
+              setErroCursoModal("");
               setModalAberto(false);
             }}
           >
@@ -228,12 +236,16 @@ export default function TelaModulos({ usuario, listaCursos }) {
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="curso-modulo">Curso *</label>
-              <select id="curso-modulo" className="campo__entrada" required>
-                <option value="">Selecione um curso</option>
-                {cursosDisponiveis.map((c) => (
-                  <option key={c.id} value={c.id}>{c.titulo}</option>
-                ))}
-              </select>
+              <SelectSimples
+                id="curso-modulo"
+                value={cursoIdModal ?? ""}
+                opcoes={cursosDisponiveis.map((c) => ({ valor: c.id, rotulo: c.titulo }))}
+                onChange={(val) => { setCursoIdModal(Number(val)); setErroCursoModal(""); }}
+                placeholder="Selecione um curso"
+                required
+                erro={erroCursoModal}
+              />
+              {erroCursoModal && <span className="campo__mensagem-erro" role="alert">{erroCursoModal}</span>}
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="ordem-modulo">Ordem</label>

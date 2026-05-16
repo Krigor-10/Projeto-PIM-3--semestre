@@ -1385,6 +1385,14 @@
   text-overflow: ellipsis;
 }
 
+.slide-alunos__media {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  min-width: 32px;
+  text-align: right;
+}
+
 /* ------------------------------------------------------------
    SLIDE DE TURMA (carrossel da aba Turmas)
    ------------------------------------------------------------ */
@@ -1570,10 +1578,8 @@
   border-radius: var(--raio-sm);
   border: 1px solid transparent;
   background: transparent;
-  color: var(--cor-texto-mudo);
+  color: var(--cor-texto-forte);
   cursor: pointer;
-  font-size: 1.1rem;
-  letter-spacing: 0.15em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1800,7 +1806,7 @@
   border-radius: var(--raio-md);
   border: none;
   background: none;
-  color: var(--cor-texto-mudo);
+  color: var(--cor-texto-forte);
   cursor: pointer;
   transition: background var(--transicao-rapida), color var(--transicao-rapida);
 }

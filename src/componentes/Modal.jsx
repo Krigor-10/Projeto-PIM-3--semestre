@@ -18,8 +18,7 @@ export default function Modal({ titulo, onFechar, children, className }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-titulo"
-      /* Fecha ao clicar no fundo escuro, mas não ao clicar dentro da caixa */
-      onClick={(e) => { if (e.target === e.currentTarget) onFechar(); }}
+      onClick={(e) => e.stopPropagation()}
     >
       <article className={`modal-caixa${className ? ` ${className}` : ""}`}>
         <header className="modal-cabecalho">
