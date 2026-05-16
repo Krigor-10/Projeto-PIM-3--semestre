@@ -5,6 +5,8 @@ import { temPermissao } from "@/dados/permissoes.js";
 import { db } from "@/dados/db.js";
 import BarraLateral from "@/componentes/BarraLateral.jsx";
 import BarraTopo from "@/componentes/BarraTopo.jsx";
+import { temNavGrupo } from "@/componentes/NavGrupo.jsx";
+import BarraNavMobile from "@/componentes/BarraNavMobile.jsx";
 import TelaDashboardAluno from "./dashboard/TelaDashboardAluno.jsx";
 import TelaDashboardProfessor from "./dashboard/TelaDashboardProfessor.jsx";
 import TelaDashboardCoordenador from "./dashboard/TelaDashboardCoordenador.jsx";
@@ -123,7 +125,11 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
           onAbrirSidebar={() => setSidebarAberta(true)}
         />
 
-        <main className="layout-principal" id="conteudo-principal" tabIndex={-1}>
+        <main
+          className={`layout-principal${temNavGrupo(usuario, secaoAtual) ? " layout-principal--com-tabs" : ""}`}
+          id="conteudo-principal"
+          tabIndex={-1}
+        >
           <div key={secaoAtual} className="tela-animada">
             <ComponenteTela
               usuario={usuario}
@@ -146,6 +152,8 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
         toasts={toasts}
         onFechar={(id) => setToasts((prev) => prev.filter((t) => t.id !== id))}
       />
+
+      <BarraNavMobile usuario={usuario} secaoAtual={secaoAtual} />
     </div>
   );
 }

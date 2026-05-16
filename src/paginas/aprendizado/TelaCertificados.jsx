@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TbCertificate, TbLock } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
@@ -36,15 +37,49 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
     (m) => obterCertificado(m.cursoId) !== null
   ).length;
 
+  const bloqueados = matriculasAluno.length - totalCertificados;
+
   return (
     <div className="tela-certificados">
-      <header className="cabecalho-pagina">
-        <div>
-          <h2 className="cabecalho-pagina__titulo">Meus Certificados</h2>
-          <p className="cabecalho-pagina__subtitulo">
-            {totalCertificados} certificado{totalCertificados !== 1 ? "s" : ""} desbloqueado{totalCertificados !== 1 ? "s" : ""} de {matriculasAluno.length} curso{matriculasAluno.length !== 1 ? "s" : ""}
-          </p>
+      <header className="banner-certificados" aria-label="Resumo de certificados">
+        <div className="banner-certificados__conteudo">
+          <div className="banner-certificados__icone-area" aria-hidden="true">
+            <TbCertificate size={44} />
+          </div>
+
+          <div className="banner-certificados__texto">
+            <h2 className="banner-certificados__titulo">Meus Certificados</h2>
+            <p className="banner-certificados__subtitulo">
+              Conclua seus cursos e conquiste seus diplomas digitais.
+            </p>
+          </div>
+
+          <div className="banner-certificados__stats" aria-label="Estatísticas de certificados">
+            <div className="banner-certificados__stat">
+              <span className="banner-certificados__stat-valor">{totalCertificados}</span>
+              <span className="banner-certificados__stat-rotulo">Desbloqueados</span>
+            </div>
+            <div className="banner-certificados__sep" aria-hidden="true" />
+            <div className="banner-certificados__stat">
+              <span className="banner-certificados__stat-valor">{matriculasAluno.length}</span>
+              <span className="banner-certificados__stat-rotulo">Cursos</span>
+            </div>
+            {bloqueados > 0 && (
+              <>
+                <div className="banner-certificados__sep" aria-hidden="true" />
+                <div className="banner-certificados__stat">
+                  <span className="banner-certificados__stat-valor banner-certificados__stat-valor--bloqueado">
+                    <TbLock size={18} style={{ display: "inline", verticalAlign: "middle" }} />
+                    {bloqueados}
+                  </span>
+                  <span className="banner-certificados__stat-rotulo">Bloqueados</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
+
+        <div className="banner-certificados__deco" aria-hidden="true" />
       </header>
 
       {matriculasAluno.length === 0 ? (

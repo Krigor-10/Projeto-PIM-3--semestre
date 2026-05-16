@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ROTAS } from "@/rotas.js";
+import { ROTAS, rotaPainelSecao } from "@/rotas.js";
 import {
-  TbTrophy, TbSun, TbMoon,
+  TbTrophy, TbSun, TbMoon, TbChevronDown,
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
@@ -10,6 +10,8 @@ import {
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
 import Botao from "./Botao.jsx";
+import NavGrupo from "./NavGrupo.jsx";
+import { temNavGrupo } from "./NavGrupo.jsx";
 
 const iconesPorSecao = {
   dashboard:    TbLayoutDashboard,
@@ -47,6 +49,13 @@ const metadadosPorSecao = {
 
 const variantePorTipo = { Aluno: "marca", Professor: "info", Coordenador: "aviso", Admin: "erro" };
 
+const corPorTipo = {
+  Aluno:       "#7b2ff7",
+  Professor:   "#3b82f6",
+  Coordenador: "#f59e0b",
+  Admin:       "#ef4444",
+};
+
 export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSidebar }) {
   const navigate = useNavigate();
   const [popupAberto, setPopupAberto] = useState(false);
@@ -79,9 +88,12 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
     return nome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
   }
 
+  const comTabs = temNavGrupo(usuario, secaoAtual);
+
   return (
     <>
-    <header className="topbar">
+    <header className={`topbar${comTabs ? " topbar--com-tabs" : ""}`}>
+      <div className="topbar__principal">
       <div className="topbar__esquerda">
         <Botao
           variante="fantasma"
@@ -98,36 +110,40 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             <span className="topbar__breadcrumb-raiz">CodeRyse Academy</span>
             <span className="topbar__breadcrumb-sep" aria-hidden="true">›</span>
             <span className="topbar__breadcrumb-secao">
-              <IconeSecao size={13} aria-hidden="true" />
+              <IconeSecao size={16} aria-hidden="true" />
               {meta.titulo}
             </span>
           </nav>
-          <h1 className="topbar__titulo">{meta.titulo}</h1>
-          <p className="topbar__descricao">{meta.descricao}</p>
         </div>
       </div>
 
-      {usuario.tipo === "Aluno" && (
-        <button
-          className={`topbar__atalho-certificados${secaoAtual === "certificados" ? " topbar__atalho-certificados--ativo" : ""}`}
-          onClick={() => navigate(ROTAS.PAINEL_CERTIFICADOS)}
-          aria-label="Ir para Meus Certificados"
-          title="Meus Certificados"
-          type="button"
-        >
-          <TbTrophy size={24} aria-hidden="true" />
-        </button>
-      )}
-
       <div className="topbar__acoes">
+        {usuario.tipo === "Aluno" && (
+          <>
+            <button
+              className={`topbar__atalho-certificados${secaoAtual === "certificados" ? " topbar__atalho-certificados--ativo" : ""}`}
+              onClick={() => navigate(ROTAS.PAINEL_CERTIFICADOS)}
+              aria-label="Ir para Meus Certificados"
+              title="Meus Certificados"
+              type="button"
+            >
+              <TbTrophy size={25} aria-hidden="true" />
+            </button>
+            <span className="topbar__separador" aria-hidden="true" />
+          </>
+        )}
         <button
-          className="topbar__toggle-tema"
+          role="switch"
+          aria-checked={temaClaro}
+          className={`switch-tema${temaClaro ? " switch-tema--claro" : ""}`}
           onClick={() => setTemaClaro((v) => !v)}
           aria-label={temaClaro ? "Ativar tema escuro" : "Ativar tema claro"}
           title={temaClaro ? "Tema escuro" : "Tema claro"}
           type="button"
         >
-          {temaClaro ? <TbMoon size={18} aria-hidden="true" /> : <TbSun size={18} aria-hidden="true" />}
+          <TbMoon size={12} className="switch-tema__lua" aria-hidden="true" />
+          <span className="switch-tema__thumb" aria-hidden="true" />
+          <TbSun  size={12} className="switch-tema__sol" aria-hidden="true" />
         </button>
         {/* Wrapper relativo para posicionar o popup abaixo do perfil */}
         <div className="topbar__perfil-wrapper" ref={refWrapper}>
@@ -138,6 +154,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             aria-expanded={popupAberto}
             aria-label="Abrir perfil do usuário"
             type="button"
+            style={{ "--cor-perfil": corPorTipo[usuario.tipo] ?? "#7b2ff7" }}
           >
             <div className="topbar__avatar" aria-hidden="true">
               {gerarIniciais(usuario.nome)}
@@ -146,6 +163,11 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
               <span className="topbar__nome">{usuario.nome.split(" ")[0]}</span>
               <span className="topbar__cargo">{usuario.tipo}</span>
             </div>
+            <TbChevronDown
+              size={14}
+              className={`topbar__perfil-chevron${popupAberto ? " topbar__perfil-chevron--aberto" : ""}`}
+              aria-hidden="true"
+            />
           </button>
 
           {popupAberto && (
@@ -204,6 +226,9 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
         </div>
 
       </div>
+      </div>
+
+      {comTabs && <NavGrupo usuario={usuario} secaoAtual={secaoAtual} />}
     </header>
 
     {confirmarSaida && (

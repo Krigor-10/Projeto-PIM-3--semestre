@@ -19,6 +19,8 @@ import {
   TbChevronsLeft,
   TbChevronsRight,
   TbChevronRight,
+  TbBooks,
+  TbUser,
 } from "react-icons/tb";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
 import { matriculas, conteudos, avaliacoes } from "@/dados/dadosMock.js";
@@ -41,7 +43,7 @@ const ICONES_SECAO = {
 };
 
 /* Definição dos grupos accordion */
-const GRUPOS_DEF = {
+export const GRUPOS_DEF = {
   pessoas: {
     rotulo: "Usuários",
     Icone:  TbUsersGroup,
@@ -52,15 +54,30 @@ const GRUPOS_DEF = {
     Icone:  TbBook,
     filhos: ["cursos", "modulos", "turmas"],
   },
+  aprendizado: {
+    rotulo: "Aprendizado",
+    Icone:  TbBooks,
+    filhos: ["conteudos", "avaliacoes", "progresso"],
+  },
+  conta: {
+    rotulo: "Minha Conta",
+    Icone:  TbUser,
+    filhos: ["matriculas", "certificados"],
+  },
 };
 
-const FILHO_PARA_GRUPO = {
+export const FILHO_PARA_GRUPO = {
   alunos:        "pessoas",
   professores:   "pessoas",
   coordenadores: "pessoas",
   cursos:        "academico",
   modulos:       "academico",
   turmas:        "academico",
+  conteudos:     "aprendizado",
+  avaliacoes:    "aprendizado",
+  progresso:     "aprendizado",
+  matriculas:    "conta",
+  certificados:  "conta",
 };
 
 export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) {

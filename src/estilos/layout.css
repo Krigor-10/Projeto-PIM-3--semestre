@@ -24,6 +24,10 @@
   margin: 0 auto;
 }
 
+.layout-principal--com-tabs {
+  padding-top: calc(var(--altura-topbar) + 44px + var(--espaco-xl));
+}
+
 /* ------------------------------------------------------------
    TOPBAR
    ------------------------------------------------------------ */
@@ -37,11 +41,26 @@
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--cor-borda);
   display: flex;
+  flex-direction: column;
+  z-index: 150;
+  transition: left var(--transicao-normal);
+}
+
+.topbar--com-tabs {
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+}
+
+.topbar__principal {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--espaco-xl);
-  z-index: 100;
-  transition: left var(--transicao-normal);
+  height: var(--altura-topbar);
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .topbar__titulo {
@@ -73,26 +92,47 @@
 }
 
 .topbar__avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--cor-marca), var(--cor-acento));
+  background: linear-gradient(135deg,
+    var(--cor-perfil, var(--cor-marca)),
+    color-mix(in srgb, var(--cor-perfil, var(--cor-marca)) 55%, #000)
+  );
+  box-shadow:
+    0 0 0 2px var(--cor-fundo-elevado),
+    0 0 0 3.5px var(--cor-perfil, var(--cor-marca)),
+    0 0 14px color-mix(in srgb, var(--cor-perfil, var(--cor-marca)) 60%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: var(--texto-sm);
+  font-weight: 800;
   color: #fff;
   flex-shrink: 0;
+  letter-spacing: 0.03em;
 }
 
 .topbar__nome {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--texto-md);
+  font-weight: 600;
+  color: var(--cor-texto-forte);
 }
 
 .topbar__cargo {
-  font-size: 0.75rem;
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+  font-weight: 500;
+}
+
+.topbar__perfil-chevron {
+  color: var(--cor-texto-mudo);
+  transition: transform var(--transicao-rapida), color var(--transicao-rapida);
+  flex-shrink: 0;
+}
+
+.topbar__perfil-chevron--aberto {
+  transform: rotate(180deg);
   color: var(--cor-texto-suave);
 }
 
@@ -564,11 +604,9 @@
 .topbar__breadcrumb {
   display: flex;
   align-items: center;
-  gap: 0.35em;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  gap: 0.45em;
+  font-size: 0.95rem;
+  font-weight: 500;
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -576,19 +614,21 @@
 }
 
 .topbar__breadcrumb-raiz {
-  color: var(--cor-texto-mudo);
+  color: var(--cor-texto-suave);
+  font-weight: 400;
 }
 
 .topbar__breadcrumb-sep {
   color: var(--cor-texto-mudo);
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .topbar__breadcrumb-secao {
   display: inline-flex;
   align-items: center;
-  gap: 0.3em;
-  color: var(--cor-marca-clara);
+  gap: 0.35em;
+  color: var(--cor-texto-forte);
+  font-weight: 700;
 }
 
 /* mantido para não quebrar refs antigas */
@@ -622,8 +662,7 @@
 }
 
 .topbar__avatar {
-  background: linear-gradient(135deg, rgba(123, 47, 247, 0.82), rgba(20, 184, 166, 0.62));
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: none;
 }
 
 .sidebar {
@@ -958,8 +997,7 @@
   }
 
   .topbar__descricao,
-  .topbar__eyebrow,
-  .topbar__breadcrumb {
+  .topbar__eyebrow {
     display: none;
   }
 
@@ -983,14 +1021,11 @@
 
 /* ── Atalho certificados ─────────────────────────────────────── */
 .topbar__atalho-certificados {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--raio-md);
   border: 1px solid transparent;
   background: transparent;
@@ -1009,32 +1044,85 @@
   color: var(--cor-primaria);
 }
 
-/* ── Toggle de tema ──────────────────────────────────────────── */
-.topbar__toggle-tema {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--raio-md);
-  background: var(--cor-fundo-elevado);
-  border: 1px solid var(--cor-borda-forte);
-  color: var(--cor-marca-clara);
-  cursor: pointer;
-  transition: background var(--transicao-rapida), border-color var(--transicao-rapida),
-    color var(--transicao-rapida), box-shadow var(--transicao-rapida);
+.topbar__separador {
+  display: block;
+  width: 1px;
+  height: 20px;
+  background: var(--cor-borda);
   flex-shrink: 0;
 }
 
-.topbar__toggle-tema:hover {
-  background: var(--cor-marca);
-  border-color: var(--cor-marca);
-  color: #fff;
-  box-shadow: 0 0 12px rgba(123, 47, 247, 0.45);
+/* ── Switch de tema ──────────────────────────────────────────── */
+.switch-tema {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 54px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: var(--raio-circular);
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda-forte);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transicao-normal), border-color var(--transicao-normal),
+    box-shadow var(--transicao-normal);
 }
 
-.topbar__toggle-tema:active {
-  transform: scale(0.93);
+.switch-tema:hover {
+  border-color: var(--cor-marca);
+  box-shadow: 0 0 10px rgba(123, 47, 247, 0.3);
+}
+
+.switch-tema--claro {
+  background: #f59e0b;
+  border-color: #d97706;
+}
+
+.switch-tema--claro:hover {
+  border-color: #b45309;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.switch-tema__thumb {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 4px;
+  transition: left var(--transicao-normal);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+.switch-tema--claro .switch-tema__thumb {
+  left: 30px;
+}
+
+.switch-tema__lua {
+  color: var(--cor-marca-clara);
+  position: relative;
+  z-index: 0;
+  flex-shrink: 0;
+}
+
+.switch-tema--claro .switch-tema__lua {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.switch-tema__sol {
+  color: rgba(255, 255, 255, 0.35);
+  position: relative;
+  z-index: 0;
+  flex-shrink: 0;
+}
+
+.switch-tema--claro .switch-tema__sol {
+  color: #fff;
 }
 
 /* ── Popup de perfil ─────────────────────────────────────────── */

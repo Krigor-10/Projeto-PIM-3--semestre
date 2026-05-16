@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { FiPlusCircle } from "react-icons/fi";
+import { TbDotsVertical } from "react-icons/tb";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
+import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
-import { turmas } from "@/dados/dadosMock.js";
+import { turmas, avaliacoes, conteudos } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
 import { podeCriar } from "@/dados/permissoes.js";
 
@@ -17,7 +19,85 @@ const DESEMPENHO_MODULO = {
   14: 50, 15: 38,
 };
 
-function SlideCurso({ curso, itens }) {
+function ModalDetalhesModulo({ modulo, curso, onFechar }) {
+  const conteudosMod  = conteudos.filter((c) => c.moduloId === modulo.id);
+  const avaliacoesMod = avaliacoes.filter((a) => a.moduloId === modulo.id);
+  const totalAlunos   = turmas
+    .filter((t) => t.cursoId === modulo.cursoId)
+    .reduce((soma, t) => soma + t.totalAlunos, 0);
+  const pct    = DESEMPENHO_MODULO[modulo.id] ?? 0;
+  const corPct = pct >= 70 ? "var(--cor-sucesso)" : pct >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+  const TIPO_ICONE = { Video: "▶", Texto: "✦", Documento: "⬡" };
+
+  return (
+    <Modal titulo={modulo.titulo} onFechar={onFechar}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--espaco-md)" }}>
+        <p style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", margin: 0 }}>
+          {modulo.codigoRegistro} · Módulo {modulo.ordem} · {curso?.titulo}
+        </p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--espaco-sm)" }}>
+          <div className="admin-kpi">
+            <span className="admin-kpi__valor">{modulo.totalConteudos}</span>
+            <span className="admin-kpi__rotulo">Conteúdos</span>
+          </div>
+          <div className="admin-kpi">
+            <span className="admin-kpi__valor">{totalAlunos}</span>
+            <span className="admin-kpi__rotulo">Alunos</span>
+          </div>
+          <div className="admin-kpi">
+            <span className="admin-kpi__valor" style={{ color: corPct }}>{pct}%</span>
+            <span className="admin-kpi__rotulo">Desempenho</span>
+          </div>
+        </div>
+
+        {avaliacoesMod.length > 0 && (
+          <section>
+            <h4 style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--cor-texto-suave)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 var(--espaco-sm)" }}>
+              Avaliações
+            </h4>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "6px" }}>
+              {avaliacoesMod.map((av) => (
+                <li key={av.id} style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", padding: "var(--espaco-sm) var(--espaco-md)", background: "var(--cor-cartao)", border: "1px solid var(--cor-borda)", borderRadius: "var(--raio-sm)", fontSize: "0.875rem" }}>
+                  <span aria-hidden="true" style={{ opacity: 0.7 }}>📋</span>
+                  <span style={{ flex: 1 }}>{av.titulo}</span>
+                  <Insignia texto={av.status} variante={av.status === "Publicada" ? "sucesso" : "neutro"} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <section>
+          <h4 style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--cor-texto-suave)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 var(--espaco-sm)" }}>
+            Conteúdos
+          </h4>
+          {conteudosMod.length === 0 ? (
+            <p style={{ fontSize: "0.875rem", color: "var(--cor-texto-mudo)", margin: 0 }}>
+              Nenhum conteúdo detalhado disponível.
+            </p>
+          ) : (
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "6px" }}>
+              {conteudosMod.map((c) => (
+                <li key={c.id} style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", padding: "var(--espaco-sm) var(--espaco-md)", background: "var(--cor-cartao)", border: "1px solid var(--cor-borda)", borderRadius: "var(--raio-sm)", fontSize: "0.875rem" }}>
+                  <span aria-hidden="true" style={{ color: "var(--cor-acento)", minWidth: "1rem", textAlign: "center" }}>{TIPO_ICONE[c.tipo] ?? "◈"}</span>
+                  <span style={{ flex: 1 }}>{c.titulo}</span>
+                  <span style={{ color: "var(--cor-texto-mudo)", fontSize: "0.78rem", whiteSpace: "nowrap" }}>{c.duracao}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <footer className="modal-rodape">
+          <Botao variante="primario" onClick={onFechar}>Fechar</Botao>
+        </footer>
+      </div>
+    </Modal>
+  );
+}
+
+function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhes }) {
   const media = itens.length > 0
     ? Math.round(itens.reduce((acc, m) => acc + (DESEMPENHO_MODULO[m.id] ?? 0), 0) / itens.length)
     : 0;
@@ -69,6 +149,28 @@ function SlideCurso({ curso, itens }) {
                     {pct}%
                   </span>
                 </div>
+                <div className="menu-contexto">
+                  <button
+                    className="menu-contexto__botao"
+                    type="button"
+                    aria-label={`Opções para ${mod.titulo}`}
+                    onClick={(e) => { e.stopPropagation(); onToggleMenu(mod.id); }}
+                  >
+                    <TbDotsVertical size={16} aria-hidden="true" />
+                  </button>
+                  {menuModuloAberto === mod.id && (
+                    <ul className="menu-contexto__lista" role="menu">
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => { onVerDetalhes(mod); onToggleMenu(null); }}
+                        >
+                          Ver Detalhes
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
               </li>
             );
           })}
@@ -79,12 +181,22 @@ function SlideCurso({ curso, itens }) {
 }
 
 export default function TelaModulos({ usuario, listaCursos, onToast }) {
-  const [slideAtual, setSlideAtual]     = useState(0);
-  const [modalAberto, setModalAberto]   = useState(false);
-  const [cursoIdModal, setCursoIdModal] = useState(null);
+  const [slideAtual, setSlideAtual]         = useState(0);
+  const [modalAberto, setModalAberto]       = useState(false);
+  const [cursoIdModal, setCursoIdModal]     = useState(null);
   const [erroCursoModal, setErroCursoModal] = useState("");
-  const [listaModulos, setListaModulos] = useState(() => db.modulos.listar());
+  const [listaModulos, setListaModulos]     = useState(() => db.modulos.listar());
+  const [menuModuloAberto, setMenuModuloAberto] = useState(null);
+  const [moduloDetalhe, setModuloDetalhe]   = useState(null);
+
   useEffect(() => { db.modulos.salvar(listaModulos); }, [listaModulos]);
+
+  useEffect(() => {
+    if (menuModuloAberto === null) return;
+    function fechar() { setMenuModuloAberto(null); }
+    document.addEventListener("click", fechar);
+    return () => document.removeEventListener("click", fechar);
+  }, [menuModuloAberto]);
 
   const tipo          = usuario?.tipo;
   const ehProfessor   = tipo === "Professor";
@@ -203,9 +315,20 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
             <SlideCurso
               curso={grupos[slide].curso}
               itens={grupos[slide].itens}
+              menuModuloAberto={menuModuloAberto}
+              onToggleMenu={(id) => setMenuModuloAberto((prev) => (prev === id ? null : id))}
+              onVerDetalhes={(mod) => setModuloDetalhe(mod)}
             />
           </div>
         </div>
+      )}
+
+      {moduloDetalhe && (
+        <ModalDetalhesModulo
+          modulo={moduloDetalhe}
+          curso={cursosDisponiveis.find((c) => c.id === moduloDetalhe.cursoId)}
+          onFechar={() => setModuloDetalhe(null)}
+        />
       )}
 
       {modalAberto && (
