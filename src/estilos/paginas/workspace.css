@@ -80,6 +80,99 @@
 }
 
 /* ------------------------------------------------------------
+   DASHBOARD ADMIN — KPI CARDS
+   ------------------------------------------------------------ */
+.admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espaco-md);
+  margin-top: var(--espaco-lg);
+}
+
+.admin-kpi {
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-top: 3px solid var(--cor-acento);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-kpi--destaque {
+  border-top-color: var(--cor-aviso, #f59e0b);
+}
+
+.admin-kpi__rotulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cor-texto-mudo);
+  order: 1;
+}
+
+.admin-kpi__valor {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--cor-texto-forte);
+  line-height: 1.1;
+  order: 2;
+}
+
+.admin-kpi--destaque .admin-kpi__valor {
+  color: var(--cor-aviso, #f59e0b);
+}
+
+.admin-kpi__detalhe {
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+  margin: 0;
+  order: 3;
+}
+
+.admin-lista-mais {
+  padding: var(--espaco-sm) 0;
+  list-style: none;
+}
+
+.admin-lista-mais button {
+  background: none;
+  border: none;
+  color: var(--cor-acento);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.admin-lista-mais button:hover {
+  text-decoration: underline;
+}
+
+.admin-grafico-subtitulo {
+  font-size: 0.78rem;
+  color: var(--cor-texto-mudo);
+}
+
+.admin-grafico-wrapper {
+  padding-top: var(--espaco-sm);
+}
+
+@media (max-width: 900px) {
+  .admin-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------
    LISTAS REUTILIZÁVEIS
    ------------------------------------------------------------ */
 .lista-turmas,
@@ -728,6 +821,309 @@
 @media (max-width: 480px) {
   .catalogo-grade {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------
+   CURSOS — VISTA DE DESEMPENHO (Admin)
+   ------------------------------------------------------------ */
+.cursos-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espaco-md);
+  list-style: none;
+  margin: 0 0 var(--espaco-lg);
+  padding: 0;
+}
+
+.cursos-kpi {
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cursos-kpi__valor {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--cor-marca-clara);
+  line-height: 1;
+}
+
+.cursos-kpi__rotulo {
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+}
+
+/* Cabeçalho da listagem de cursos */
+.desempenho-cursos-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-lg);
+  padding: 0 var(--espaco-lg);
+  margin-bottom: var(--espaco-xs);
+}
+
+.desempenho-cursos-cabecalho__col {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--cor-texto-suave);
+}
+
+.desempenho-cursos-cabecalho__col--identidade { flex: 2; min-width: 0; }
+.desempenho-cursos-cabecalho__col--turma      { flex: 1.5; min-width: 0; }
+.desempenho-cursos-cabecalho__col--alunos     { flex: 1.2; min-width: 100px; }
+.desempenho-cursos-cabecalho__col--metricas   { flex: 1; }
+.desempenho-cursos-cabecalho__col--acoes      { width: 36px; flex-shrink: 0; }
+
+/* Lista de desempenho */
+.desempenho-cursos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.desempenho-curso-item {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  transition: border-color var(--transicao-rapida);
+}
+
+.desempenho-curso-item:hover {
+  border-color: rgba(123, 47, 247, 0.35);
+}
+
+/* Identidade */
+.desempenho-curso-item__identidade {
+  flex: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.desempenho-curso-item__cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.desempenho-curso-item__titulo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.desempenho-curso-item__pendentes {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--raio-sm);
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.desempenho-curso-item__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.desempenho-curso-item__codigo {
+  font-size: 0.72rem;
+  color: var(--cor-texto-suave);
+  font-family: monospace;
+}
+
+.desempenho-curso-item__duracao {
+  font-size: 0.72rem;
+  color: var(--cor-texto-suave);
+}
+
+/* Turma */
+.desempenho-curso-item__turma {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.desempenho-curso-item__turma-nome {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+}
+
+.desempenho-curso-item__professor {
+  font-size: 0.75rem;
+  color: var(--cor-texto-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.desempenho-curso-item__sem-turma {
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+  font-style: italic;
+}
+
+/* Alunos + barra */
+.desempenho-curso-item__alunos {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 100px;
+}
+
+.desempenho-curso-item__alunos-num {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+}
+
+.desempenho-metrica__rotulo {
+  font-size: 0.7rem;
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.desempenho-barra {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.desempenho-barra__fill {
+  height: 100%;
+  background: var(--cor-marca-clara);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* Métricas */
+.desempenho-curso-item__metricas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desempenho-metrica {
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+}
+
+.desempenho-metrica strong {
+  color: var(--cor-texto-forte);
+  font-weight: 600;
+}
+
+/* Atribuições inline no modal de detalhes */
+.detalhe-atribuicoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espaco-md);
+  margin-top: var(--espaco-lg);
+  padding-top: var(--espaco-lg);
+  border-top: 1px solid var(--cor-borda);
+}
+
+@media (max-width: 500px) {
+  .detalhe-atribuicoes {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Modal de opções */
+.opcoes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+}
+
+.opcoes-item {
+  width: 100%;
+  text-align: left;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--cor-texto-forte);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--transicao-rapida), border-color var(--transicao-rapida);
+}
+
+.opcoes-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.opcoes-item--perigo {
+  color: #fca5a5;
+}
+
+.opcoes-item--perigo:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Item de menu perigoso */
+.menu-item--perigo {
+  color: #fca5a5 !important;
+}
+
+.menu-item--perigo:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #fecaca !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .cursos-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .desempenho-curso-item {
+    flex-wrap: wrap;
+    gap: var(--espaco-sm);
+  }
+
+  .desempenho-curso-item__identidade { flex: 1 1 100%; }
+  .desempenho-curso-item__turma      { flex: 1 1 45%; }
+  .desempenho-curso-item__alunos     { flex: 1 1 45%; }
+  .desempenho-curso-item__metricas   { flex: 1 1 45%; }
+}
+
+@media (max-width: 480px) {
+  .cursos-kpis {
+    grid-template-columns: 1fr 1fr;
   }
 }
 

@@ -86,8 +86,16 @@
 .modal-rodape {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: var(--espaco-sm);
   margin-top: var(--espaco-lg);
+}
+
+.texto-confirmacao-exclusao {
+  margin-right: auto;
+  font-size: 0.875rem;
+  color: #fca5a5;
+  align-self: center;
 }
 
 .formulario-modal {

@@ -1924,6 +1924,75 @@
   margin-bottom: var(--espaco-sm);
 }
 
+.coord-cursos-secao {
+  margin-top: var(--espaco-lg);
+  border-top: 1px solid var(--cor-borda);
+  padding-top: var(--espaco-lg);
+}
+
+.coord-cursos-secao__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cor-texto-mudo);
+  margin-bottom: var(--espaco-md);
+}
+
+.coord-cursos-secao__contagem {
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  color: var(--cor-texto-suave);
+}
+
+.coord-cursos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  list-style: none;
+}
+
+.coord-cursos-lista__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-md);
+  padding: var(--espaco-sm) 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.coord-cursos-lista__item:last-child {
+  border-bottom: none;
+}
+
+.coord-cursos-lista__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.coord-cursos-lista__titulo {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.coord-cursos-lista__codigo {
+  font-size: 0.75rem;
+  color: var(--cor-texto-mudo);
+}
+
 .detalhe-matriculas-lista {
   display: flex;
   flex-direction: column;

@@ -70,7 +70,7 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
                 <div className="item-certificado__curso">
                   <h3 className="item-certificado__titulo">{mat.cursoTitulo}</h3>
                   <p className="item-certificado__meta">
-                    {curso?.duracao ?? "—"} · {curso?.nivel ?? "—"} · {mat.turmaNome}
+                    {curso?.nivel ?? "—"} · {mat.turmaNome}
                   </p>
                   <p className="item-certificado__codigo">{mat.codigoMatricula}</p>
                 </div>

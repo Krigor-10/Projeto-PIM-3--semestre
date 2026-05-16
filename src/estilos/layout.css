@@ -927,6 +927,30 @@
   border-top-right-radius: 0;
 }
 
+/* ── Toolbar de ações em massa — matrículas ──────────────────── */
+.toolbar-massa-matriculas {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-bottom: none;
+  border-radius: var(--raio-md) var(--raio-md) 0 0;
+}
+
+.toolbar-massa-matriculas__contador {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+  margin-right: auto;
+}
+
+.toolbar-massa-matriculas__acoes {
+  display: flex;
+  gap: var(--espaco-sm);
+}
+
 @media (max-width: 768px) {
   :root {
     --altura-topbar: 76px;

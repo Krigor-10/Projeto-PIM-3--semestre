@@ -179,10 +179,7 @@ export default function TelaInicio() {
                         </h3>
                         <p className="cartao-curso__descricao">{curso.descricao}</p>
 
-                        <ul className="cartao-curso__meta" aria-label="Detalhes do curso">
-                          <li>{curso.totalModulos} módulos</li>
-                          <li>{curso.totalAlunos} alunos</li>
-                        </ul>
+
                       </div>
 
                       <footer className="cartao-curso__rodape">
@@ -194,6 +191,7 @@ export default function TelaInicio() {
                           tamanho="pequeno"
                           onClick={() => navigate(ROTAS.LOGIN)}
                           aria-label={`Matricular-se em ${curso.titulo}`}
+                          style={{ color: "#fff" }}
                         >
                           Matricular-se
                         </Botao>

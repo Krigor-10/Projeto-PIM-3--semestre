@@ -3,10 +3,10 @@ import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
-import { cursos as cursosIniciais } from "@/dados/dadosMock.js";
 
-export default function TelaCatalogo() {
-  const [lista, setLista] = useState(() => cursosIniciais.map((c) => ({ ...c })));
+export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
+  const lista    = listaCursos;
+  const setLista = onListaCursosChange;
   const [busca, setBusca] = useState("");
   const [filtroNivel, setFiltroNivel] = useState("");
   const [filtroVisivel, setFiltroVisivel] = useState("");
@@ -49,7 +49,7 @@ export default function TelaCatalogo() {
               descricao: f["cat-descricao"].value,
               preco:     parseFloat(f["cat-preco"].value) || c.preco,
               nivel:     f["cat-nivel"].value,
-              duracao:   f["cat-duracao"].value,
+
             }
           : c
       )
@@ -142,7 +142,7 @@ export default function TelaCatalogo() {
               <span className="catalogo-card__preco">
                 R$ {curso.preco.toFixed(2).replace(".", ",")}
               </span>
-              <span className="catalogo-card__duracao">{curso.duracao}</span>
+
             </div>
 
             <footer className="catalogo-card__rodape">
@@ -191,27 +191,16 @@ export default function TelaCatalogo() {
                 defaultValue={cursoEditando.descricao}
               />
             </div>
-            <div className="grade-2">
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="cat-preco">Preço (R$)</label>
-                <input
-                  id="cat-preco"
-                  className="campo__entrada"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  defaultValue={cursoEditando.preco}
-                />
-              </div>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="cat-duracao">Duração</label>
-                <input
-                  id="cat-duracao"
-                  className="campo__entrada"
-                  type="text"
-                  defaultValue={cursoEditando.duracao}
-                />
-              </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="cat-preco">Preço (R$)</label>
+              <input
+                id="cat-preco"
+                className="campo__entrada"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={cursoEditando.preco}
+              />
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="cat-nivel">Nível</label>

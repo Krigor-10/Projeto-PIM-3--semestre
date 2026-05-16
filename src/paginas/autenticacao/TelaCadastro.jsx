@@ -401,7 +401,7 @@ export default function TelaCadastro() {
                   <option value="">Selecione um curso</option>
                   {cursosAtivos.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.titulo} — {c.nivel} · {c.duracao}
+                      {c.titulo} — {c.nivel}
                     </option>
                   ))}
                 </select>

@@ -355,10 +355,28 @@ select.campo__entrada option {
   animation: deslizar-cima var(--transicao-normal) ease;
 }
 
+@media (max-width: 480px) {
+  .modal-fundo {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-caixa {
+    padding: var(--espaco-lg);
+    border-radius: var(--raio-xl) var(--raio-xl) 0 0;
+    max-width: 100%;
+    max-height: 85dvh;
+  }
+}
+
 .modal-caixa--quiz {
   width: fit-content;
   min-width: min(640px, 100%);
   max-width: min(720px, 100%);
+}
+
+.modal-caixa--largo {
+  max-width: 640px;
 }
 
 .modal-cabecalho {

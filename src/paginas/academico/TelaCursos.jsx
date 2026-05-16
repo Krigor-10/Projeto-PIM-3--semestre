@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { cursos, turmas, modulos, usuarios } from "@/dados/dadosMock.js";
-import { podeCriar, podeEditar } from "@/dados/permissoes.js";
+import { cursos, turmas, modulos, usuarios, avaliacoes } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
+import { podeCriar, podeEditar, podeExcluir } from "@/dados/permissoes.js";
 
 /* ── Vista gerencial do coordenador ─────────────────────────────── */
 
@@ -12,14 +13,22 @@ function VistaGerencialCoordenador({ usuario }) {
   const [modoEdicao, setModoEdicao]             = useState(false);
   const [menuAberto, setMenuAberto]             = useState(null);
   const [cursoAtribuir, setCursoAtribuir]       = useState(null);
-  const [listaCursos, setListaCursos]           = useState(
-    cursos.filter((c) => c.coordenadorId === usuario.id).map((c) => {
-      const turma = turmas.find((t) => t.cursoId === c.id);
-      return { ...c, professorId: turma?.professorId ?? null, professorNome: turma?.professorNome ?? null };
-    })
+  const [listaCursos, setListaCursos]           = useState(() =>
+    db.cursos.listar()
+      .filter((c) => c.coordenadorId === usuario.id)
+      .map((c) => {
+        const turma = turmas.find((t) => t.cursoId === c.id);
+        return { ...c, professorId: turma?.professorId ?? null, professorNome: turma?.professorNome ?? null };
+      })
   );
 
   const professoresAtivos = usuarios.filter((u) => u.tipo === "Professor" && u.ativo);
+
+  const totalAtivos     = listaCursos.filter((c) => c.ativo).length;
+  const totalAlunos     = listaCursos.filter((c) => c.ativo).reduce((acc, c) => {
+    return acc + turmas.filter((t) => t.cursoId === c.id).reduce((s, t) => s + (t.totalAlunos ?? 0), 0);
+  }, 0);
+  const qtdTurmasAtivas = turmas.filter((t) => t.status === "Ativa" && listaCursos.some((c) => c.id === t.cursoId)).length;
 
   function atribuirProfessor(e) {
     e.preventDefault();
@@ -39,10 +48,9 @@ function VistaGerencialCoordenador({ usuario }) {
     setListaCursos((prev) => prev.map((c) =>
       c.id === cursoSelecionado.id
         ? { ...c,
-            titulo:  f["edit-titulo-curso"].value,
+            titulo:    f["edit-titulo-curso"].value,
             descricao: f["edit-descricao-curso"].value,
-            nivel:   f["edit-nivel-curso"].value,
-            duracao: f["edit-duracao-curso"].value,
+            nivel:     f["edit-nivel-curso"].value,
           }
         : c
     ));
@@ -54,30 +62,90 @@ function VistaGerencialCoordenador({ usuario }) {
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Cursos</h2>
-          <p className="cabecalho-pagina__subtitulo">
-            Cursos sob sua coordenação
-          </p>
+          <p className="cabecalho-pagina__subtitulo">Cursos sob sua coordenação</p>
         </div>
       </header>
 
-      {/* Lista de cursos */}
-      <ul className="gerencial-cursos__lista" role="list">
-        {listaCursos.map((curso) => {
-          const turmasCurso  = turmas.filter((t) => t.cursoId === curso.id);
-          const modulosCurso = modulos.filter((m) => m.cursoId === curso.id);
-          const alunosCurso  = turmasCurso.reduce((acc, t) => acc + (t.totalAlunos ?? 0), 0);
+      {/* KPIs */}
+      <ul className="cursos-kpis" aria-label="Indicadores dos seus cursos">
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{totalAtivos}</span>
+          <span className="cursos-kpi__rotulo">Cursos ativos</span>
+        </li>
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{totalAlunos}</span>
+          <span className="cursos-kpi__rotulo">Alunos matriculados</span>
+        </li>
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{qtdTurmasAtivas}</span>
+          <span className="cursos-kpi__rotulo">Turmas em andamento</span>
+        </li>
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{listaCursos.length}</span>
+          <span className="cursos-kpi__rotulo">Sob coordenação</span>
+        </li>
+      </ul>
 
+      {/* Cabeçalho da listagem */}
+      <div className="desempenho-cursos-cabecalho" aria-hidden="true">
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--identidade">Curso</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--turma">Turma / Professor</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--alunos">Alunos</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--metricas">Módulos / Aval.</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--acoes" />
+      </div>
+
+      {/* Lista de desempenho */}
+      <ul className="desempenho-cursos" role="list" aria-label="Desempenho dos cursos">
+        {listaCursos.filter((c) => c.ativo).map((curso) => {
+          const turmasCurso   = turmas.filter((t) => t.cursoId === curso.id);
+          const modulosCurso  = modulos.filter((m) => m.cursoId === curso.id);
+          const avsPublicadas = avaliacoes.filter((a) => a.cursoId === curso.id && a.status === "Publicada");
+          const totalAlunos   = turmasCurso.reduce((s, t) => s + (t.totalAlunos ?? 0), 0);
+          const turmaAtiva    = turmasCurso.find((t) => t.status === "Ativa");
           return (
-            <li key={curso.id} className="gerencial-curso-item">
-              <div className="gerencial-curso-item__identidade">
-                <h3 className="gerencial-curso-item__titulo">{curso.titulo}</h3>
-                <span className="gerencial-curso-item__codigo">{curso.codigoRegistro}</span>
-                <span className="gerencial-curso-item__professor">
-                  {curso.professorNome ?? "Sem professor atribuído"}
-                </span>
+            <li key={curso.id} className="desempenho-curso-item">
+              <div className="desempenho-curso-item__identidade">
+                <div className="desempenho-curso-item__cabecalho">
+                  <h3 className="desempenho-curso-item__titulo">{curso.titulo}</h3>
+                </div>
+                <div className="desempenho-curso-item__meta">
+                  <span className="desempenho-curso-item__codigo">{curso.codigoRegistro}</span>
+                  <Insignia texto={curso.nivel} variante="neutro" />
+
+                </div>
               </div>
 
-              <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "erro"} />
+              <div className="desempenho-curso-item__turma">
+                {turmaAtiva ? (
+                  <>
+                    <span className="desempenho-curso-item__turma-nome">{turmaAtiva.nomeTurma}</span>
+                    <span className="desempenho-curso-item__professor">
+                      {turmaAtiva.professorNome ?? curso.professorNome ?? "Sem professor"}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="desempenho-curso-item__sem-turma">Sem turma ativa</span>
+                    {curso.professorNome && (
+                      <span className="desempenho-curso-item__professor">{curso.professorNome}</span>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <div className="desempenho-curso-item__alunos">
+                <span className="desempenho-curso-item__alunos-num">{totalAlunos}</span>
+              </div>
+
+              <div className="desempenho-curso-item__metricas">
+                <span className="desempenho-metrica">
+                  <strong>{modulosCurso.length}</strong> módulos
+                </span>
+                <span className="desempenho-metrica">
+                  <strong>{avsPublicadas.length}</strong> avaliações
+                </span>
+              </div>
 
               <div className="menu-contexto">
                 <button
@@ -86,14 +154,14 @@ function VistaGerencialCoordenador({ usuario }) {
                   aria-label={`Opções para ${curso.titulo}`}
                   aria-expanded={menuAberto === curso.id}
                   type="button"
-                >
-                  ···
-                </button>
+                >···</button>
                 {menuAberto === curso.id && (
                   <ul className="menu-contexto__lista" role="menu">
-                    <li><button role="menuitem" onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); setMenuAberto(null); }}>Detalhes</button></li>
-                    <li><button role="menuitem" onClick={() => { setCursoSelecionado(curso); setModoEdicao(true); setMenuAberto(null); }}>Editar</button></li>
-                    <li><button role="menuitem" onClick={() => { setCursoAtribuir(curso); setMenuAberto(null); }}>Atribuir Professor</button></li>
+                    <li>
+                      <button role="menuitem" onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); setMenuAberto(null); }}>
+                        Opções
+                      </button>
+                    </li>
                   </ul>
                 )}
               </div>
@@ -102,7 +170,11 @@ function VistaGerencialCoordenador({ usuario }) {
         })}
       </ul>
 
-      {/* Overlay para fechar menu de contexto */}
+      {listaCursos.filter((c) => c.ativo).length === 0 && (
+        <p className="texto-vazio texto-vazio--central" role="status">Nenhum curso ativo sob sua coordenação.</p>
+      )}
+
+      {/* Overlay dropdown */}
       {menuAberto && (
         <div style={{ position: "fixed", inset: 0, zIndex: 99 }} onClick={() => setMenuAberto(null)} aria-hidden="true" />
       )}
@@ -116,12 +188,7 @@ function VistaGerencialCoordenador({ usuario }) {
           <form className="formulario-modal" onSubmit={atribuirProfessor}>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="select-professor">Professor *</label>
-              <select
-                id="select-professor"
-                className="campo__entrada"
-                defaultValue={cursoAtribuir.professorId ?? ""}
-                required
-              >
+              <select id="select-professor" className="campo__entrada" defaultValue={cursoAtribuir.professorId ?? ""} required>
                 <option value="" disabled>Selecione um professor</option>
                 {professoresAtivos.map((p) => (
                   <option key={p.id} value={p.id}>{p.nome}</option>
@@ -136,7 +203,7 @@ function VistaGerencialCoordenador({ usuario }) {
         </Modal>
       )}
 
-      {/* Modal detalhes / edição */}
+      {/* Modal detalhes */}
       {cursoSelecionado && !modoEdicao && (
         <Modal titulo="Detalhes do Curso" onFechar={() => setCursoSelecionado(null)}>
           <dl className="lista-detalhes">
@@ -144,18 +211,20 @@ function VistaGerencialCoordenador({ usuario }) {
             <div className="lista-detalhes__item"><dt>Código</dt><dd>{cursoSelecionado.codigoRegistro}</dd></div>
             <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoSelecionado.descricao}</dd></div>
             <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoSelecionado.nivel}</dd></div>
-            <div className="lista-detalhes__item"><dt>Duração</dt><dd>{cursoSelecionado.duracao}</dd></div>
+
             <div className="lista-detalhes__item"><dt>Módulos</dt><dd>{modulos.filter((m) => m.cursoId === cursoSelecionado.id).length}</dd></div>
-            <div className="lista-detalhes__item"><dt>Alunos matriculados</dt><dd>{turmas.filter((t) => t.cursoId === cursoSelecionado.id).reduce((a, t) => a + (t.totalAlunos ?? 0), 0)}</dd></div>
+            <div className="lista-detalhes__item"><dt>Alunos</dt><dd>{turmas.filter((t) => t.cursoId === cursoSelecionado.id).reduce((a, t) => a + (t.totalAlunos ?? 0), 0)}</dd></div>
             <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={cursoSelecionado.ativo ? "Ativo" : "Inativo"} /></dd></div>
           </dl>
           <div className="modal-rodape">
             <Botao variante="fantasma" onClick={() => setCursoSelecionado(null)}>Fechar</Botao>
-            <Botao variante="primario" onClick={() => setModoEdicao(true)}>Editar Curso</Botao>
+            <Botao variante="secundario" tamanho="pequeno" onClick={() => { setCursoAtribuir(cursoSelecionado); setCursoSelecionado(null); }}>Atribuir Professor</Botao>
+            <Botao variante="primario" onClick={() => setModoEdicao(true)}>Editar</Botao>
           </div>
         </Modal>
       )}
 
+      {/* Modal editar */}
       {cursoSelecionado && modoEdicao && (
         <Modal titulo="Editar Curso" onFechar={() => setCursoSelecionado(null)}>
           <form className="formulario-modal" onSubmit={salvarEdicao}>
@@ -167,19 +236,13 @@ function VistaGerencialCoordenador({ usuario }) {
               <label className="campo__rotulo" htmlFor="edit-descricao-curso">Descrição</label>
               <textarea id="edit-descricao-curso" className="campo__entrada" rows={3} defaultValue={cursoSelecionado.descricao} />
             </div>
-            <div className="grade-2">
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
-                <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
-                  <option>Iniciante</option>
-                  <option>Intermediário</option>
-                  <option>Avançado</option>
-                </select>
-              </div>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="edit-duracao-curso">Duração</label>
-                <input id="edit-duracao-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.duracao} />
-              </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
+              <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
+                <option>Iniciante</option>
+                <option>Intermediário</option>
+                <option>Avançado</option>
+              </select>
             </div>
             <footer className="modal-rodape">
               <Botao variante="fantasma" type="button" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
@@ -192,59 +255,104 @@ function VistaGerencialCoordenador({ usuario }) {
   );
 }
 
-export default function TelaCursos({ usuario }) {
+export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, onToast }) {
   if (usuario?.tipo === "Coordenador") return <VistaGerencialCoordenador usuario={usuario} />;
 
-  const [filtro, setFiltro] = useState("");
-  const [modalAberto, setModalAberto] = useState(false);
+  const [filtro, setFiltro]                     = useState("");
+  const [modalAberto, setModalAberto]           = useState(false);
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
-  const [modoEdicao, setModoEdicao] = useState(false);
-  const cursosBase = usuario?.tipo === "Coordenador"
-    ? cursos.filter((c) => c.coordenadorId === usuario.id)
-    : cursos;
+  const [modoEdicao, setModoEdicao]             = useState(false);
+  const [popupExclusao, setPopupExclusao]       = useState(false);
+  const [menuAberto, setMenuAberto]             = useState(null);
+  const [cursoDetalhe, setCursoDetalhe]         = useState(null);
+  const [formSujo, setFormSujo]                 = useState(false);
+  const [confirmarSaida, setConfirmarSaida]     = useState(false);
 
-  const [listaCursos, setListaCursos] = useState(cursosBase);
+  useEffect(() => { setFormSujo(false); setConfirmarSaida(false); }, [cursoDetalhe]);
 
   const tipo = usuario?.tipo;
+  const professoresAtivos    = db.usuarios.listar().filter((u) => u.tipo === "Professor"    && u.ativo);
+  const coordenadoresAtivos  = db.usuarios.listar().filter((u) => u.tipo === "Coordenador"  && u.ativo);
 
-  const cursosFiltrados = listaCursos.filter((c) =>
-    c.titulo.toLowerCase().includes(filtro.toLowerCase()) ||
-    c.nivel.toLowerCase().includes(filtro.toLowerCase())
-  );
+  const cursosAtivos = listaCursos
+    .filter((c) => c.ativo)
+    .filter((c) =>
+      c.titulo.toLowerCase().includes(filtro.toLowerCase()) ||
+      c.nivel.toLowerCase().includes(filtro.toLowerCase())
+    );
 
-  function abrirDetalhe(curso) {
+  const totalAtivos      = listaCursos.filter((c) => c.ativo).length;
+  const totalAlunosSoma  = listaCursos.filter((c) => c.ativo).reduce((acc, c) => acc + (c.totalAlunos ?? 0), 0);
+  const qtdTurmasAtivas  = turmas.filter((t) => t.status === "Ativa").length;
+  const qtdAvalPublicadas = avaliacoes.filter((a) => a.status === "Publicada").length;
+
+  function abrirEdicao(curso) {
     setCursoSelecionado(curso);
-    setModoEdicao(false);
+    setModoEdicao(true);
     setModalAberto(true);
+  }
+
+  function tentarFecharDetalhe() {
+    if (formSujo) { setConfirmarSaida(true); } else { setCursoDetalhe(null); }
+  }
+
+  function salvarAlteracoes(e) {
+    e.preventDefault();
+    const profId  = Number(e.target["det-professor"].value)  || null;
+    const coordId = Number(e.target["det-coordenador"].value) || null;
+    const prof  = professoresAtivos.find((p) => p.id === profId);
+    const coord = coordenadoresAtivos.find((c) => c.id === coordId);
+    onListaCursosChange((prev) =>
+      prev.map((c) =>
+        c.id === cursoDetalhe.id
+          ? { ...c,
+              professorId:    profId,  professorNome:    prof?.nome  ?? null,
+              coordenadorId:  coordId, coordenadorNome:  coord?.nome ?? null }
+          : c
+      )
+    );
+    onToast?.("Atribuições salvas.", "sucesso");
+    setCursoDetalhe(null);
+  }
+
+  function abrirExclusao(curso) {
+    setCursoSelecionado(curso);
+    setPopupExclusao(true);
+  }
+
+  function excluirCurso() {
+    const titulo = cursoSelecionado.titulo;
+    onListaCursosChange((prev) => prev.filter((c) => c.id !== cursoSelecionado.id));
+    setPopupExclusao(false);
+    onToast?.(`Curso "${titulo}" excluído.`, "sucesso");
   }
 
   function criarCurso(e) {
     e.preventDefault();
     const f = e.target;
-    setListaCursos((prev) => [...prev, {
+    onListaCursosChange((prev) => [...prev, {
       id: Date.now(),
       codigoRegistro: `CRS-${String(prev.length + 1).padStart(3, "0")}`,
-      titulo: f["titulo-curso"].value,
+      titulo:   f["titulo-curso"].value,
       descricao: f["descricao-curso"].value,
-      nivel: f["nivel-curso"].value,
-      duracao: f["duracao-curso"].value || "—",
-      preco: 0,
-      totalModulos: 0,
-      totalAlunos: 0,
-      ativo: true,
+      nivel:    f["nivel-curso"].value,
+      preco: 0, totalModulos: 0, totalAlunos: 0, ativo: true,
+      visivelCatalogo: false, destaque: false,
     }]);
     setModalAberto(false);
+    onToast?.("Curso criado.", "sucesso");
   }
 
   function salvarEdicaoCurso(e) {
     e.preventDefault();
     const f = e.target;
-    setListaCursos((prev) => prev.map((c) =>
+    onListaCursosChange((prev) => prev.map((c) =>
       c.id === cursoSelecionado.id
-        ? { ...c, titulo: f["edit-titulo-curso"].value, descricao: f["edit-descricao-curso"].value, nivel: f["edit-nivel-curso"].value, duracao: f["edit-duracao-curso"].value }
+        ? { ...c, titulo: f["edit-titulo-curso"].value, descricao: f["edit-descricao-curso"].value, nivel: f["edit-nivel-curso"].value }
         : c
     ));
     setModalAberto(false);
+    onToast?.("Curso atualizado.", "sucesso");
   }
 
   return (
@@ -252,19 +360,36 @@ export default function TelaCursos({ usuario }) {
       <header className="cabecalho-pagina">
         <div>
           <h2 className="cabecalho-pagina__titulo">Cursos</h2>
-          <p className="cabecalho-pagina__subtitulo">{listaCursos.length} cursos cadastrados na plataforma</p>
+          <p className="cabecalho-pagina__subtitulo">{totalAtivos} cursos ativos na plataforma</p>
         </div>
-        {/* Admin e Coordenador podem criar cursos; Professor apenas visualiza */}
         {podeCriar(tipo, "cursos") && (
-          <Botao
-            variante="primario"
-            onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setModalAberto(true); }}
-          >
+          <Botao variante="primario" onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setModalAberto(true); }}>
             + Novo Curso
           </Botao>
         )}
       </header>
 
+      {/* KPIs */}
+      <ul className="cursos-kpis" aria-label="Indicadores gerais">
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{totalAtivos}</span>
+          <span className="cursos-kpi__rotulo">Cursos ativos</span>
+        </li>
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{totalAlunosSoma}</span>
+          <span className="cursos-kpi__rotulo">Alunos matriculados</span>
+        </li>
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{qtdTurmasAtivas}</span>
+          <span className="cursos-kpi__rotulo">Turmas em andamento</span>
+        </li>
+        <li className="cursos-kpi">
+          <span className="cursos-kpi__valor">{qtdAvalPublicadas}</span>
+          <span className="cursos-kpi__rotulo">Avaliações publicadas</span>
+        </li>
+      </ul>
+
+      {/* Filtro */}
       <div className="barra-filtros">
         <label htmlFor="busca-cursos" className="visualmente-oculto">Buscar curso</label>
         <input
@@ -274,144 +399,249 @@ export default function TelaCursos({ usuario }) {
           placeholder="Buscar por título ou nível..."
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
-          aria-label="Filtrar cursos por título ou nível"
         />
       </div>
 
-      <ul className="grade-cursos" role="list" aria-label="Lista de cursos">
-        {cursosFiltrados.map((curso) => (
-          <li key={curso.id}>
-            <article
-              className="cartao-curso"
-              onClick={() => abrirDetalhe(curso)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && abrirDetalhe(curso)}
-              aria-label={`Ver detalhes do curso ${curso.titulo}`}
-            >
-              <div className="cartao-curso__topo" aria-hidden="true" />
-              <div className="cartao-curso__corpo">
-                <div className="cartao-curso__cabecalho">
-                  <h3 className="cartao-curso__titulo">{curso.titulo}</h3>
-                  <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "erro"} />
+      {/* Cabeçalho da listagem */}
+      <div className="desempenho-cursos-cabecalho" aria-hidden="true">
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--identidade">Curso</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--turma">Turma / Professor</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--alunos">Alunos</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--metricas">Módulos / Aval.</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--acoes" />
+      </div>
+
+      {/* Lista de desempenho */}
+      <ul className="desempenho-cursos" role="list" aria-label="Desempenho dos cursos ativos">
+        {cursosAtivos.map((curso) => {
+          const turmasCurso   = turmas.filter((t) => t.cursoId === curso.id);
+          const modulosCurso  = modulos.filter((m) => m.cursoId === curso.id);
+          const avsPublicadas = avaliacoes.filter((a) => a.cursoId === curso.id && a.status === "Publicada");
+          const totalAlunos   = turmasCurso.reduce((s, t) => s + (t.totalAlunos ?? 0), 0);
+          const turmaAtiva    = turmasCurso.find((t) => t.status === "Ativa");
+          return (
+            <li key={curso.id} className="desempenho-curso-item">
+              {/* Nome + código + nível */}
+              <div className="desempenho-curso-item__identidade">
+                <div className="desempenho-curso-item__cabecalho">
+                  <h3 className="desempenho-curso-item__titulo">{curso.titulo}</h3>
                 </div>
-                <p className="cartao-curso__descricao">{curso.descricao}</p>
-                <ul className="cartao-curso__meta" aria-label="Detalhes do curso">
-                  <li>{curso.duracao}</li>
-                  <li>{curso.nivel}</li>
-                  <li>{curso.totalModulos} módulos</li>
-                  <li>{curso.totalAlunos} alunos</li>
-                </ul>
+                <div className="desempenho-curso-item__meta">
+                  <span className="desempenho-curso-item__codigo">{curso.codigoRegistro}</span>
+                  <Insignia texto={curso.nivel} variante="neutro" />
+
+                </div>
               </div>
-              <div className="cartao-curso__rodape">
-                {tipo !== "Coordenador" && (
-                  <strong className="cartao-curso__preco">
-                    R$ {curso.preco.toFixed(2).replace(".", ",")}
-                  </strong>
+
+              {/* Turma e professor */}
+              <div className="desempenho-curso-item__turma">
+                {turmaAtiva ? (
+                  <>
+                    <span className="desempenho-curso-item__turma-nome">{turmaAtiva.nomeTurma}</span>
+                    <span className="desempenho-curso-item__professor">
+                      {turmaAtiva.professorNome ?? curso.professorNome ?? "Sem professor"}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="desempenho-curso-item__sem-turma">Sem turma ativa</span>
+                    {curso.professorNome && (
+                      <span className="desempenho-curso-item__professor">{curso.professorNome}</span>
+                    )}
+                  </>
                 )}
-                <span className="cartao-curso__codigo">{curso.codigoRegistro}</span>
               </div>
-            </article>
-          </li>
-        ))}
+
+              {/* Alunos */}
+              <div className="desempenho-curso-item__alunos">
+                <span className="desempenho-curso-item__alunos-num">{totalAlunos}</span>
+              </div>
+
+              {/* Módulos e avaliações */}
+              <div className="desempenho-curso-item__metricas">
+                <span className="desempenho-metrica">
+                  <strong>{modulosCurso.length}</strong> módulos
+                </span>
+                <span className="desempenho-metrica">
+                  <strong>{avsPublicadas.length}</strong> avaliações
+                </span>
+              </div>
+
+              {/* Menu de ações */}
+              <div className="menu-contexto">
+                <button
+                  className="menu-contexto__botao"
+                  onClick={() => setMenuAberto(menuAberto === curso.id ? null : curso.id)}
+                  aria-label={`Opções para ${curso.titulo}`}
+                  aria-expanded={menuAberto === curso.id}
+                  type="button"
+                >···</button>
+                {menuAberto === curso.id && (
+                  <ul className="menu-contexto__lista" role="menu">
+                    <li>
+                      <button role="menuitem" onClick={() => { setCursoDetalhe(curso); setMenuAberto(null); }}>
+                        Opções
+                      </button>
+                    </li>
+                    {podeExcluir(tipo, "cursos") && (
+                      <li>
+                        <button role="menuitem" className="menu-item--perigo" onClick={() => { abrirExclusao(curso); setMenuAberto(null); }}>
+                          Excluir
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
-      {cursosFiltrados.length === 0 && (
+      {cursosAtivos.length === 0 && (
         <p className="texto-vazio texto-vazio--central" role="status">
-          Nenhum curso encontrado para "{filtro}".
+          {filtro ? `Nenhum curso encontrado para "${filtro}".` : "Nenhum curso ativo cadastrado."}
         </p>
       )}
 
-      {modalAberto && (
-        <Modal
-          titulo={cursoSelecionado ? (modoEdicao ? "Editar Curso" : "Detalhes do Curso") : "Novo Curso"}
-          onFechar={() => setModalAberto(false)}
-        >
-          {cursoSelecionado && !modoEdicao && (
-            <>
-              <dl className="lista-detalhes">
-                <div className="lista-detalhes__item"><dt>Título</dt><dd>{cursoSelecionado.titulo}</dd></div>
-                <div className="lista-detalhes__item"><dt>Código</dt><dd>{cursoSelecionado.codigoRegistro}</dd></div>
-                <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoSelecionado.descricao}</dd></div>
-                <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoSelecionado.nivel}</dd></div>
-                <div className="lista-detalhes__item"><dt>Duração</dt><dd>{cursoSelecionado.duracao}</dd></div>
-                {tipo !== "Coordenador" && (
-                  <div className="lista-detalhes__item"><dt>Preço</dt><dd>R$ {cursoSelecionado.preco.toFixed(2).replace(".", ",")}</dd></div>
-                )}
-                <div className="lista-detalhes__item"><dt>Módulos</dt><dd>{cursoSelecionado.totalModulos}</dd></div>
-                <div className="lista-detalhes__item"><dt>Alunos matriculados</dt><dd>{cursoSelecionado.totalAlunos}</dd></div>
-                <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={cursoSelecionado.ativo ? "Ativo" : "Inativo"} /></dd></div>
-              </dl>
-              <div className="modal-rodape">
-                <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Fechar</Botao>
-                {podeEditar(tipo, "cursos") && (
-                  <Botao variante="primario" onClick={() => setModoEdicao(true)}>Editar Curso</Botao>
-                )}
-              </div>
-            </>
-          )}
+      {/* Overlay dropdown */}
+      {menuAberto && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 99 }} onClick={() => setMenuAberto(null)} aria-hidden="true" />
+      )}
 
-          {cursoSelecionado && modoEdicao && (
-            <form className="formulario-modal" onSubmit={salvarEdicaoCurso}>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="edit-titulo-curso">Título *</label>
-                <input id="edit-titulo-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.titulo} required />
-              </div>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="edit-descricao-curso">Descrição</label>
-                <textarea id="edit-descricao-curso" className="campo__entrada" rows={3} defaultValue={cursoSelecionado.descricao} />
-              </div>
-              <div className="grade-2">
+      {/* Modal detalhes + atribuições */}
+      {cursoDetalhe && (
+        <Modal titulo="Detalhes do Curso" onFechar={tentarFecharDetalhe} className="modal-caixa--largo">
+          <form onSubmit={salvarAlteracoes}>
+            <dl className="lista-detalhes">
+              <div className="lista-detalhes__item"><dt>Título</dt><dd>{cursoDetalhe.titulo}</dd></div>
+              <div className="lista-detalhes__item"><dt>Código</dt><dd>{cursoDetalhe.codigoRegistro}</dd></div>
+              <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoDetalhe.nivel}</dd></div>
+              <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoDetalhe.descricao || "—"}</dd></div>
+              <div className="lista-detalhes__item"><dt>Catálogo</dt><dd>{cursoDetalhe.visivelCatalogo ? "Visível" : "Oculto"}</dd></div>
+            </dl>
+
+            {podeEditar(tipo, "cursos") && (
+              <div className="detalhe-atribuicoes">
                 <div className="campo">
-                  <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
-                  <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
-                    <option>Iniciante</option>
-                    <option>Intermediário</option>
-                    <option>Avançado</option>
+                  <label className="campo__rotulo" htmlFor="det-professor">Professor</label>
+                  <select id="det-professor" className="campo__entrada" defaultValue={cursoDetalhe.professorId ?? ""} onChange={() => setFormSujo(true)}>
+                    <option value="">Sem professor</option>
+                    {professoresAtivos.map((p) => (
+                      <option key={p.id} value={p.id}>{p.nome}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="campo">
-                  <label className="campo__rotulo" htmlFor="edit-duracao-curso">Duração</label>
-                  <input id="edit-duracao-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.duracao} />
+                  <label className="campo__rotulo" htmlFor="det-coordenador">Coordenador</label>
+                  <select id="det-coordenador" className="campo__entrada" defaultValue={cursoDetalhe.coordenadorId ?? ""} onChange={() => setFormSujo(true)}>
+                    <option value="">Sem coordenador</option>
+                    {coordenadoresAtivos.map((c) => (
+                      <option key={c.id} value={c.id}>{c.nome}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
-              <div className="modal-rodape">
-                <Botao variante="fantasma" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
+            )}
+
+            <div className="modal-rodape">
+              <Botao variante="perigo" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto" }}>Fechar</Botao>
+              {podeEditar(tipo, "cursos") && (
+                <Botao variante="secundario" type="button" onClick={() => { abrirEdicao(cursoDetalhe); setCursoDetalhe(null); }}>Editar curso</Botao>
+              )}
+              {podeEditar(tipo, "cursos") && (
                 <Botao variante="primario" type="submit">Salvar alterações</Botao>
-              </div>
-            </form>
-          )}
+              )}
+            </div>
+          </form>
 
-          {!cursoSelecionado && (
-            <form className="formulario-modal" onSubmit={criarCurso}>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="titulo-curso">Título *</label>
-                <input id="titulo-curso" className="campo__entrada" type="text" required />
-              </div>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="descricao-curso">Descrição</label>
-                <textarea id="descricao-curso" className="campo__entrada" rows={3} />
-              </div>
-              <div className="grade-2">
-                <div className="campo">
-                  <label className="campo__rotulo" htmlFor="nivel-curso">Nível</label>
-                  <select id="nivel-curso" className="campo__entrada">
-                    <option>Iniciante</option>
-                    <option>Intermediário</option>
-                    <option>Avançado</option>
-                  </select>
-                </div>
-                <div className="campo">
-                  <label className="campo__rotulo" htmlFor="duracao-curso">Duração</label>
-                  <input id="duracao-curso" className="campo__entrada" type="text" placeholder="Ex: 6 meses" />
-                </div>
-              </div>
-              <div className="modal-rodape">
-                <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Cancelar</Botao>
-                <Botao variante="primario" type="submit">Criar Curso</Botao>
-              </div>
-            </form>
-          )}
+        </Modal>
+      )}
+
+      {/* Confirmação de saída sem salvar */}
+      {confirmarSaida && (
+        <Modal titulo="Sair sem salvar?" onFechar={() => setConfirmarSaida(false)}>
+          <p style={{ fontSize: "0.9rem", color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-md)" }}>
+            Há alterações não salvas nas atribuições. Se sair agora, as alterações serão perdidas.
+          </p>
+          <div className="modal-rodape">
+            <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
+            <Botao variante="perigo" onClick={() => { setCursoDetalhe(null); }}>Sair sem salvar</Botao>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal editar */}
+      {modalAberto && cursoSelecionado && modoEdicao && (
+        <Modal titulo="Editar Curso" onFechar={() => setModalAberto(false)}>
+          <form className="formulario-modal" onSubmit={salvarEdicaoCurso}>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-titulo-curso">Título *</label>
+              <input id="edit-titulo-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.titulo} required />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-descricao-curso">Descrição</label>
+              <textarea id="edit-descricao-curso" className="campo__entrada" rows={3} defaultValue={cursoSelecionado.descricao} />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
+              <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
+                <option>Iniciante</option>
+                <option>Intermediário</option>
+                <option>Avançado</option>
+              </select>
+            </div>
+            <div className="modal-rodape">
+              <Botao variante="fantasma" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Salvar alterações</Botao>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Modal criar */}
+      {modalAberto && !cursoSelecionado && (
+        <Modal titulo="Novo Curso" onFechar={() => setModalAberto(false)}>
+          <form className="formulario-modal" onSubmit={criarCurso}>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="titulo-curso">Título *</label>
+              <input id="titulo-curso" className="campo__entrada" type="text" required />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="descricao-curso">Descrição</label>
+              <textarea id="descricao-curso" className="campo__entrada" rows={3} />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="nivel-curso">Nível</label>
+              <select id="nivel-curso" className="campo__entrada">
+                <option>Iniciante</option>
+                <option>Intermediário</option>
+                <option>Avançado</option>
+              </select>
+            </div>
+            <div className="modal-rodape">
+              <Botao variante="fantasma" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Criar Curso</Botao>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Popup de exclusão */}
+      {popupExclusao && cursoSelecionado && (
+        <Modal titulo="Excluir curso" onFechar={() => setPopupExclusao(false)}>
+          <p style={{ fontSize: "0.9rem", color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-md)" }}>
+            Tem certeza que deseja excluir o curso{" "}
+            <strong style={{ color: "var(--cor-texto-forte)" }}>{cursoSelecionado.titulo}</strong>?
+            <br />
+            <span style={{ fontSize: "0.8rem", color: "#fca5a5", marginTop: "var(--espaco-xs)", display: "block" }}>
+              Esta ação não pode ser desfeita.
+            </span>
+          </p>
+          <div className="modal-rodape">
+            <Botao variante="fantasma" onClick={() => setPopupExclusao(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={excluirCurso}>Excluir permanentemente</Botao>
+          </div>
         </Modal>
       )}
     </div>
