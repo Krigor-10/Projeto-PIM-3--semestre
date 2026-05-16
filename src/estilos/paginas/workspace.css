@@ -10,9 +10,6 @@
   display: none;
 }
 
-.sidebar__logo-icone {
-  font-size: 1.3rem;
-}
 
 .sidebar__usuario {
   display: flex;

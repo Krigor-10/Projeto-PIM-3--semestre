@@ -1,4 +1,0 @@
-- continuar com dados mock para salvar e apresentar
-- criar icone de notificação e barra global 
-- modal de perfil
-- icone de trofeu para ir direto aos certificados 
