@@ -10,9 +10,9 @@ import { podeCriar, podeEditar, podeExcluir } from "@/dados/permissoes.js";
 
 function VistaGerencialCoordenador({ usuario }) {
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
-  const [modoEdicao, setModoEdicao]             = useState(false);
   const [menuAberto, setMenuAberto]             = useState(null);
-  const [cursoAtribuir, setCursoAtribuir]       = useState(null);
+  const [formSujo, setFormSujo]                 = useState(false);
+  const [confirmarSaida, setConfirmarSaida]     = useState(false);
   const [listaCursos, setListaCursos]           = useState(() =>
     db.cursos.listar()
       .filter((c) => c.coordenadorId === usuario.id)
@@ -22,6 +22,8 @@ function VistaGerencialCoordenador({ usuario }) {
       })
   );
 
+  useEffect(() => { setFormSujo(false); setConfirmarSaida(false); }, [cursoSelecionado]);
+
   const professoresAtivos = usuarios.filter((u) => u.tipo === "Professor" && u.ativo);
 
   const totalAtivos     = listaCursos.filter((c) => c.ativo).length;
@@ -30,28 +32,17 @@ function VistaGerencialCoordenador({ usuario }) {
   }, 0);
   const qtdTurmasAtivas = turmas.filter((t) => t.status === "Ativa" && listaCursos.some((c) => c.id === t.cursoId)).length;
 
-  function atribuirProfessor(e) {
-    e.preventDefault();
-    const professorId = Number(e.target["select-professor"].value);
-    const professor   = professoresAtivos.find((p) => p.id === professorId);
-    setListaCursos((prev) => prev.map((c) =>
-      c.id === cursoAtribuir.id
-        ? { ...c, professorId: professor.id, professorNome: professor.nome }
-        : c
-    ));
-    setCursoAtribuir(null);
+  function tentarFechar() {
+    if (formSujo) { setConfirmarSaida(true); } else { setCursoSelecionado(null); }
   }
 
-  function salvarEdicao(e) {
+  function salvarAlteracoes(e) {
     e.preventDefault();
-    const f = e.target;
+    const profId    = Number(e.target["coord-professor"].value) || null;
+    const professor = professoresAtivos.find((p) => p.id === profId);
     setListaCursos((prev) => prev.map((c) =>
       c.id === cursoSelecionado.id
-        ? { ...c,
-            titulo:    f["edit-titulo-curso"].value,
-            descricao: f["edit-descricao-curso"].value,
-            nivel:     f["edit-nivel-curso"].value,
-          }
+        ? { ...c, professorId: profId, professorNome: professor?.nome ?? null }
         : c
     ));
     setCursoSelecionado(null);
@@ -158,7 +149,7 @@ function VistaGerencialCoordenador({ usuario }) {
                 {menuAberto === curso.id && (
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
-                      <button role="menuitem" onClick={() => { setCursoSelecionado(curso); setModoEdicao(false); setMenuAberto(null); }}>
+                      <button role="menuitem" onClick={() => { setCursoSelecionado(curso); setMenuAberto(null); }}>
                         Opções
                       </button>
                     </li>
@@ -179,76 +170,49 @@ function VistaGerencialCoordenador({ usuario }) {
         <div style={{ position: "fixed", inset: 0, zIndex: 99 }} onClick={() => setMenuAberto(null)} aria-hidden="true" />
       )}
 
-      {/* Modal atribuir professor */}
-      {cursoAtribuir && (
-        <Modal titulo="Atribuir Professor" onFechar={() => setCursoAtribuir(null)}>
-          <p style={{ fontSize: "0.875rem", color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-md)" }}>
-            Curso: <strong style={{ color: "var(--cor-texto-forte)" }}>{cursoAtribuir.titulo}</strong>
+      {/* Modal detalhes + atribuição de professor */}
+      {cursoSelecionado && (
+        <Modal titulo="Detalhes do Curso" onFechar={tentarFechar} className="modal-caixa--largo">
+          <form onSubmit={salvarAlteracoes}>
+            <dl className="lista-detalhes">
+              <div className="lista-detalhes__item"><dt>Título</dt><dd>{cursoSelecionado.titulo}</dd></div>
+              <div className="lista-detalhes__item"><dt>Código</dt><dd>{cursoSelecionado.codigoRegistro}</dd></div>
+              <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoSelecionado.nivel}</dd></div>
+              <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoSelecionado.descricao || "—"}</dd></div>
+              <div className="lista-detalhes__item"><dt>Módulos</dt><dd>{modulos.filter((m) => m.cursoId === cursoSelecionado.id).length}</dd></div>
+              <div className="lista-detalhes__item"><dt>Alunos</dt><dd>{turmas.filter((t) => t.cursoId === cursoSelecionado.id).reduce((a, t) => a + (t.totalAlunos ?? 0), 0)}</dd></div>
+            </dl>
+
+            <div className="detalhe-atribuicoes" style={{ gridTemplateColumns: "1fr" }}>
+              <div className="campo">
+                <label className="campo__rotulo" htmlFor="coord-professor">Professor</label>
+                <select id="coord-professor" className="campo__entrada" defaultValue={cursoSelecionado.professorId ?? ""} onChange={() => setFormSujo(true)}>
+                  <option value="">Sem professor</option>
+                  {professoresAtivos.map((p) => (
+                    <option key={p.id} value={p.id}>{p.nome}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-rodape">
+              <Botao variante="perigo" type="button" onClick={tentarFechar} style={{ marginRight: "auto" }}>Fechar</Botao>
+              <Botao variante="primario" type="submit">Salvar alterações</Botao>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Confirmação de saída sem salvar */}
+      {confirmarSaida && (
+        <Modal titulo="Sair sem salvar?" onFechar={() => setConfirmarSaida(false)}>
+          <p style={{ fontSize: "0.9rem", color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-md)" }}>
+            Há alterações não salvas na atribuição do professor. Se sair agora, as alterações serão perdidas.
           </p>
-          <form className="formulario-modal" onSubmit={atribuirProfessor}>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="select-professor">Professor *</label>
-              <select id="select-professor" className="campo__entrada" defaultValue={cursoAtribuir.professorId ?? ""} required>
-                <option value="" disabled>Selecione um professor</option>
-                {professoresAtivos.map((p) => (
-                  <option key={p.id} value={p.id}>{p.nome}</option>
-                ))}
-              </select>
-            </div>
-            <footer className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setCursoAtribuir(null)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Confirmar</Botao>
-            </footer>
-          </form>
-        </Modal>
-      )}
-
-      {/* Modal detalhes */}
-      {cursoSelecionado && !modoEdicao && (
-        <Modal titulo="Detalhes do Curso" onFechar={() => setCursoSelecionado(null)}>
-          <dl className="lista-detalhes">
-            <div className="lista-detalhes__item"><dt>Título</dt><dd>{cursoSelecionado.titulo}</dd></div>
-            <div className="lista-detalhes__item"><dt>Código</dt><dd>{cursoSelecionado.codigoRegistro}</dd></div>
-            <div className="lista-detalhes__item"><dt>Descrição</dt><dd>{cursoSelecionado.descricao}</dd></div>
-            <div className="lista-detalhes__item"><dt>Nível</dt><dd>{cursoSelecionado.nivel}</dd></div>
-
-            <div className="lista-detalhes__item"><dt>Módulos</dt><dd>{modulos.filter((m) => m.cursoId === cursoSelecionado.id).length}</dd></div>
-            <div className="lista-detalhes__item"><dt>Alunos</dt><dd>{turmas.filter((t) => t.cursoId === cursoSelecionado.id).reduce((a, t) => a + (t.totalAlunos ?? 0), 0)}</dd></div>
-            <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={cursoSelecionado.ativo ? "Ativo" : "Inativo"} /></dd></div>
-          </dl>
           <div className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setCursoSelecionado(null)}>Fechar</Botao>
-            <Botao variante="secundario" tamanho="pequeno" onClick={() => { setCursoAtribuir(cursoSelecionado); setCursoSelecionado(null); }}>Atribuir Professor</Botao>
-            <Botao variante="primario" onClick={() => setModoEdicao(true)}>Editar</Botao>
+            <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
+            <Botao variante="perigo" onClick={() => { setCursoSelecionado(null); }}>Sair sem salvar</Botao>
           </div>
-        </Modal>
-      )}
-
-      {/* Modal editar */}
-      {cursoSelecionado && modoEdicao && (
-        <Modal titulo="Editar Curso" onFechar={() => setCursoSelecionado(null)}>
-          <form className="formulario-modal" onSubmit={salvarEdicao}>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-titulo-curso">Título *</label>
-              <input id="edit-titulo-curso" className="campo__entrada" type="text" defaultValue={cursoSelecionado.titulo} required />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-descricao-curso">Descrição</label>
-              <textarea id="edit-descricao-curso" className="campo__entrada" rows={3} defaultValue={cursoSelecionado.descricao} />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-nivel-curso">Nível</label>
-              <select id="edit-nivel-curso" className="campo__entrada" defaultValue={cursoSelecionado.nivel}>
-                <option>Iniciante</option>
-                <option>Intermediário</option>
-                <option>Avançado</option>
-              </select>
-            </div>
-            <footer className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Salvar</Botao>
-            </footer>
-          </form>
         </Modal>
       )}
     </div>
