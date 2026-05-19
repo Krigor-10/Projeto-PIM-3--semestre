@@ -1391,3 +1391,111 @@
     max-width: none;
   }
 }
+
+/* ------------------------------------------------------------
+   IMPRESSÃO
+   ------------------------------------------------------------ */
+@media print {
+  /* 1. Autorizar o Chrome a imprimir cores de fundo exatamente */
+  html, body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* 2. Reset geral: fundo branco, texto preto em TUDO */
+  *,
+  *::before,
+  *::after {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #111 !important;
+    -webkit-text-fill-color: #111 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #111 !important;
+    font-size: 11pt;
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  /* 3. Esconder toda a interface de navegação */
+  .sidebar,
+  .topbar,
+  .nav-mobile,
+  .toast-container,
+  .popup-perfil,
+  .switch-tema,
+  .topbar__atalho-certificados,
+  .topbar__separador,
+  .sidebar__toggle,
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  /* 4. Layout — trocar flex por block e remover offsets */
+  .layout-workspace {
+    display: block !important;
+    min-height: auto !important;
+  }
+
+  .layout-conteudo {
+    display: block !important;
+    margin-left: 0 !important;
+  }
+
+  .layout-principal,
+  .layout-principal--com-tabs {
+    display: block !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+  }
+
+  .tela-animada {
+    display: block !important;
+  }
+
+  /* 5. Esconder botões de ação */
+  .cabecalho-pagina .botao,
+  .painel-secao__cabecalho .botao,
+  .reset-demo,
+  .toolbar-massa-matriculas,
+  .abas-matriculas,
+  .barra-filtros {
+    display: none !important;
+  }
+
+  /* 6. Quebras de página */
+  .cartao,
+  .cartao-curso,
+  .cartao-estatistica,
+  .painel-secao {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cabecalho-pagina {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* 7. Grids adaptados para A4 */
+  .grade-2,
+  .grade-3,
+  .grade-cursos {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grade-estatisticas {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

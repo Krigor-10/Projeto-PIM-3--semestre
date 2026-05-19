@@ -66,6 +66,9 @@ h4 { letter-spacing: -0.01em; }
 /* Sugestão 4 — dígitos tabulares em toda a UI */
 body { font-variant-numeric: tabular-nums; }
 
+/* Seção de impressão estática — visível apenas em @media print */
+#versao-impressao { display: none; }
+
 /* ------------------------------------------------------------
    FOCO — ACESSIBILIDADE
    ------------------------------------------------------------ */

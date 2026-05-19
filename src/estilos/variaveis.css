@@ -202,3 +202,27 @@
   border-color: rgba(123, 47, 247, 0.45);
   box-shadow: 0 3px 10px rgba(123, 47, 247, 0.18);
 }
+
+/* ------------------------------------------------------------
+   VARIÁVEIS DE IMPRESSÃO — devem vir por último para ganhar
+   no cascade sobre os blocos :root acima
+   ------------------------------------------------------------ */
+@media print {
+  :root {
+    --cor-fundo:         #ffffff;
+    --cor-fundo-alt:     #f4f5f9;
+    --cor-fundo-elevado: #ffffff;
+    --cor-cartao:        #ffffff;
+
+    --cor-texto-forte:   #0d0f18;
+    --cor-texto-suave:   #4a5068;
+    --cor-texto-mudo:    #8b92a8;
+
+    --cor-borda:         rgba(0, 0, 0, 0.12);
+    --cor-borda-forte:   rgba(0, 0, 0, 0.22);
+
+    --sombra-sm: none;
+    --sombra-md: none;
+    --sombra-lg: none;
+  }
+}

@@ -42,6 +42,7 @@ const cursosVisiveis = cursos
 
 export default function TelaInicio() {
   const navigate = useNavigate();
+
   return (
     <>
       <a href="#conteudo-principal" className="pular-para-conteudo">

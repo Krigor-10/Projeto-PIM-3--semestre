@@ -380,3 +380,98 @@
   font-size: 0.82rem;
   color: var(--cor-texto-mudo);
 }
+
+/* ------------------------------------------------------------
+   IMPRESSÃO — HOME PÚBLICA
+   ------------------------------------------------------------ */
+@media print {
+  /* Fundo e texto base */
+  html, body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  /* Esconder cabeçalho fixo */
+  .cabecalho-publico,
+  .pular-para-conteudo,
+  .secao-hero__acoes {
+    display: none !important;
+  }
+
+  /* Hero: remover altura de viewport, overflow e isolamento que bloqueavam o conteúdo */
+  .secao-hero {
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    isolation: auto !important;
+    display: block !important;
+    padding: 2rem 1.5rem !important;
+    margin: 0 !important;
+  }
+
+  /* Remover imagem de fundo e overlays */
+  .secao-hero__banner,
+  .secao-hero::before,
+  .secao-hero::after {
+    display: none !important;
+  }
+
+  /* Texto do hero hardcoded como branco — forçar escuro */
+  .secao-hero__titulo {
+    color: #111 !important;
+    font-size: 2rem !important;
+  }
+
+  .secao-hero__titulo--destaque {
+    color: #7b2ff7 !important;
+    -webkit-text-fill-color: #7b2ff7 !important;
+    background-image: none !important;
+  }
+
+  .secao-hero__descricao {
+    color: #333 !important;
+  }
+
+  .secao-hero__tag {
+    color: #7b2ff7 !important;
+    background: transparent !important;
+    border-color: #7b2ff7 !important;
+  }
+
+  /* Demais textos */
+  .cartao-pilar__titulo,
+  .secao-cabecalho__titulo,
+  .rodape-publico__marca {
+    color: #111 !important;
+  }
+
+  .cartao-pilar__descricao,
+  .secao-cabecalho__subtitulo,
+  .rodape-publico__direitos {
+    color: #444 !important;
+  }
+
+  /* Remover fundos decorativos */
+  .cartao-pilar,
+  .secao-cta {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: #ddd !important;
+  }
+
+  /* Grids adaptados para A4 */
+  .grade-pilares,
+  .grade-pilares--publica {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .secao-cursos__inner .grade-cursos {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Não quebrar dentro de cards */
+  .cartao-curso,
+  .cartao-pilar {
+    break-inside: avoid;
+  }
+}
