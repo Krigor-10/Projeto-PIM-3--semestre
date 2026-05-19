@@ -1449,7 +1449,7 @@
   }
 
   .nav-mobile__rotulo {
-    font-size: 10px;
+    font-size: 0.625rem;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
