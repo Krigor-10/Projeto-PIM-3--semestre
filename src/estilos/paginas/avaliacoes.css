@@ -498,7 +498,7 @@
 
 .quiz-enunciado__texto p {
   font-size: 0.93rem;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
   line-height: 1.75;
 }
 
@@ -523,7 +523,7 @@
   cursor: pointer;
   text-align: left;
   width: 100%;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
   transition: border-color var(--transicao-rapida), background var(--transicao-rapida);
 }
 
@@ -582,7 +582,7 @@
 
 .quiz-alternativa__texto {
   font-size: 0.9rem;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
   line-height: 1.5;
 }
 
@@ -644,7 +644,7 @@
 
 .quiz-feedback__analise p {
   font-size: 0.88rem;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
   line-height: 1.7;
 }
 
@@ -757,7 +757,7 @@
 
 .quiz-resultado__item-tema {
   font-size: 0.85rem;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
 }
 
 .quiz-resultado__item-resp {
@@ -906,14 +906,14 @@
 }
 
 .quiz-embutido__curso {
-  color: var(--neutro-400);
+  color: var(--cor-texto-suave);
   font-size: 0.85rem;
   margin: 0;
 }
 
 /* Notas no resultado */
 .quiz-resultado__notas {
-  border: 1px solid var(--neutro-700);
+  border: 1px solid var(--cor-borda-forte);
   border-radius: var(--raio-md);
   display: flex;
   flex-wrap: wrap;
@@ -924,7 +924,7 @@
 }
 
 .quiz-resultado__nota-item {
-  border-right: 1px solid var(--neutro-700);
+  border-right: 1px solid var(--cor-borda-forte);
   flex: 1;
   min-width: 130px;
   padding: var(--espaco-sm) var(--espaco-md);
@@ -936,7 +936,7 @@
 }
 
 .quiz-resultado__nota-item dt {
-  color: var(--neutro-400);
+  color: var(--cor-texto-suave);
   font-size: 0.75rem;
   font-weight: 500;
   margin-bottom: 0.25rem;
@@ -964,7 +964,7 @@
 
   .quiz-resultado__nota-item {
     border-right: none;
-    border-bottom: 1px solid var(--neutro-700);
+    border-bottom: 1px solid var(--cor-borda-forte);
   }
 
   .quiz-resultado__nota-item:last-child {
@@ -986,7 +986,7 @@
 
 /* Contador de tentativas no resultado */
 .resultado-tentativas {
-  color: var(--neutro-400);
+  color: var(--cor-texto-suave);
   font-size: 0.82rem;
 }
 
@@ -1199,7 +1199,7 @@
   border: none;
   cursor: pointer;
   text-align: left;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
   transition: background var(--transicao-rapida);
 }
 
@@ -1477,7 +1477,7 @@
   border-radius: var(--raio-md);
   padding: var(--espaco-md);
   font-size: 0.88rem;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
   line-height: 1.7;
 }
 
@@ -1553,7 +1553,7 @@
 .quiz-rapido__item-tema {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
 }
 
 .quiz-rapido__item-resp {

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { FiPlusCircle } from "react-icons/fi";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbCirclePlus } from "react-icons/tb";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -602,7 +601,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
             onClick={onNovoConteudo}
             style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            <FiPlusCircle size={20} />
+            <TbCirclePlus size={20} />
             Novo Conteúdo
           </Botao>
         )}
@@ -657,7 +656,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                   aria-label={`Adicionar conteúdo em ${modulo.titulo}`}
                   title="Adicionar conteúdo"
                 >
-                  <FiPlusCircle size={30} />
+                  <TbCirclePlus size={30} />
                 </button>
               )}
             </header>

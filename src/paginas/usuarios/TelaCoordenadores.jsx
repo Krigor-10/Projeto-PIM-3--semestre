@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { FiPlusCircle } from "react-icons/fi";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbCirclePlus } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -184,7 +183,7 @@ export default function TelaCoordenadores({ usuario }) {
         </div>
         {podeCriar(tipo, "coordenadores") && (
           <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <FiPlusCircle size={20} />
+            <TbCirclePlus size={20} />
             Novo Coordenador
           </Botao>
         )}

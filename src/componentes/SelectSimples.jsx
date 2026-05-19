@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FiChevronDown } from "react-icons/fi";
+import { TbChevronDown } from "react-icons/tb";
 
 export default function SelectSimples({ id, value, opcoes, onChange, placeholder = "Selecione", required, erro }) {
   const [aberto, setAberto] = useState(false);
@@ -81,7 +81,7 @@ export default function SelectSimples({ id, value, opcoes, onChange, placeholder
         <span className="sel-simples__texto">
           {selecionada ? selecionada.rotulo : placeholder}
         </span>
-        <FiChevronDown
+        <TbChevronDown
           size={14}
           aria-hidden="true"
           style={{

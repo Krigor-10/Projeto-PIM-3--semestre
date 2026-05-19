@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FiChevronDown } from "react-icons/fi";
+import { TbChevronDown } from "react-icons/tb";
 
 function iniciais(nome) {
   return (nome ?? "").split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
@@ -76,7 +76,7 @@ export default function SelectUsuario({ id, value, opcoes, onChange, placeholder
         ) : (
           <span className="sel-usr__placeholder">{placeholder}</span>
         )}
-        <FiChevronDown
+        <TbChevronDown
           size={14}
           aria-hidden="true"
           style={{

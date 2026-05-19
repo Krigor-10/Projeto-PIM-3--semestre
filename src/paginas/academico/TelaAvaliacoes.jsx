@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FiPlusCircle } from "react-icons/fi";
-import { TbDotsVertical, TbClock, TbLock } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbLock, TbCirclePlus } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -847,7 +846,7 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes }) {
           </p>
         </div>
         <Botao variante="primario" tamanho="pequeno" onClick={onCriar} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <FiPlusCircle size={22} />
+          <TbCirclePlus size={22} />
           Nova Avaliação
         </Botao>
       </header>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiPlusCircle } from "react-icons/fi";
+import { TbCirclePlus } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import ModalEdicaoUsuario from "@/componentes/ModalEdicaoUsuario.jsx";
@@ -58,7 +58,7 @@ export default function TelaUsuarios({ usuario }) {
         </div>
         {podeCriar(tipo, "usuarios") && (
           <Botao variante="primario" onClick={() => setModalAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <FiPlusCircle size={20} />
+            <TbCirclePlus size={20} />
             Novo Usuário
           </Botao>
         )}

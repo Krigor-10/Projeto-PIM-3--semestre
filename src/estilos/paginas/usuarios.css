@@ -139,7 +139,7 @@
 }
 
 .btn-editar-linha:hover {
-  color: var(--cor-primaria);
+  color: var(--cor-marca);
   background: rgba(123, 47, 247, 0.08);
 }
 
@@ -182,7 +182,7 @@
 }
 
 .dropdown-nivel__botao:hover {
-  border-color: var(--cor-primaria);
+  border-color: var(--cor-marca);
   background: rgba(123, 47, 247, 0.06);
 }
 

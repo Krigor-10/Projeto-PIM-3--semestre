@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiPlusCircle } from "react-icons/fi";
-import { TbDotsVertical } from "react-icons/tb";
+import { TbDotsVertical, TbCirclePlus } from "react-icons/tb";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -244,7 +243,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
         </div>
         {podeCriar(tipo, "modulos") && (
           <Botao variante="primario" onClick={() => setModalAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <FiPlusCircle size={20} />
+            <TbCirclePlus size={20} />
             Novo Módulo
           </Botao>
         )}

@@ -1020,18 +1020,18 @@
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
-  color: var(--cor-texto-secundario);
+  color: var(--cor-texto-suave);
   transition: background var(--transicao-rapida), border-color var(--transicao-rapida), color var(--transicao-rapida);
 }
 .topbar__atalho-certificados:hover {
-  background: var(--cor-fundo-hover);
+  background: var(--cor-fundo-elevado);
   border-color: var(--cor-borda);
-  color: var(--cor-texto-primario);
+  color: var(--cor-texto-forte);
 }
 .topbar__atalho-certificados--ativo {
-  background: var(--cor-primaria-suave);
-  border-color: var(--cor-primaria);
-  color: var(--cor-primaria);
+  background: rgba(123, 47, 247, 0.12);
+  border-color: var(--cor-marca);
+  color: var(--cor-marca);
 }
 
 .topbar__separador {

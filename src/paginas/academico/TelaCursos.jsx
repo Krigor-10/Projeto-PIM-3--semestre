@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiPlusCircle, FiEdit2 } from "react-icons/fi";
-import { TbDotsVertical } from "react-icons/tb";
+import { TbDotsVertical, TbCirclePlus, TbPencil } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -349,7 +348,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
         </div>
         {podeCriar(tipo, "cursos") && (
           <Botao variante="primario" onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setNivelModal("Iniciante"); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <FiPlusCircle size={20} />
+            <TbCirclePlus size={20} />
             Novo Curso
           </Botao>
         )}
@@ -514,7 +513,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                   <dd>{valoresEdit.titulo ?? cursoDetalhe.titulo}</dd>
                 )}
                 {podeEditar(tipo, "cursos") && (
-                  <button className="btn-editar-linha" type="button" title="Editar título" onClick={() => setCampoEditando("titulo")}><FiEdit2 size={17} /></button>
+                  <button className="btn-editar-linha" type="button" title="Editar título" onClick={() => setCampoEditando("titulo")}><TbPencil size={17} /></button>
                 )}
               </div>
 
@@ -547,7 +546,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                   <dd>{(valoresEdit.descricao ?? cursoDetalhe.descricao) || "—"}</dd>
                 )}
                 {podeEditar(tipo, "cursos") && (
-                  <button className="btn-editar-linha" type="button" title="Editar descrição" onClick={() => setCampoEditando("descricao")}><FiEdit2 size={17} /></button>
+                  <button className="btn-editar-linha" type="button" title="Editar descrição" onClick={() => setCampoEditando("descricao")}><TbPencil size={17} /></button>
                 )}
               </div>
 

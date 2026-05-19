@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiPlusCircle } from "react-icons/fi";
-import { TbDotsVertical } from "react-icons/tb";
+import { TbDotsVertical, TbCirclePlus } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -208,7 +207,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
         </div>
         {podeCriar(tipo, "turmas") && (
           <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <FiPlusCircle size={20} />
+            <TbCirclePlus size={20} />
             Nova Turma
           </Botao>
         )}
