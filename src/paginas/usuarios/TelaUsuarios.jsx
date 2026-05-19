@@ -119,7 +119,7 @@ export default function TelaUsuarios({ usuario }) {
               )}
               {podeEditar(tipo, "usuarios") && (
                 <Botao
-                  variante="fantasma"
+                  variante="perigo"
                   tamanho="pequeno"
                   onClick={() => setUsuarioEditando(usr)}
                   aria-label={`Editar usuário ${usr.nome}`}
@@ -193,7 +193,7 @@ export default function TelaUsuarios({ usuario }) {
               <input id="telefone-usr" className="campo__entrada" type="tel" placeholder="(11) 99999-9999" />
             </div>
             <div className="modal-rodape">
-              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" onClick={() => setModalAberto(false)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Criar Usuário</Botao>
             </div>
           </form>

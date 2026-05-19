@@ -541,7 +541,7 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
           </p>
         </div>
         <Botao
-          variante="fantasma"
+          variante="perigo"
           onClick={onCancelar}
         >
           Cancelar
@@ -1119,7 +1119,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={avaliacaoAtiva.status} /></dd></div>
             </dl>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>Fechar</Botao>
+              <Botao variante="perigo" onClick={() => setModalAberto(false)}>Fechar</Botao>
               <Botao variante="primario">Editar</Botao>
             </footer>
           </Modal>

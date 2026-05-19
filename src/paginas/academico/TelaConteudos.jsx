@@ -147,7 +147,7 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
           </ul>
 
           <footer className="modal-rodape">
-            <Botao variante="primario" onClick={onFechar}>
+            <Botao variante="perigo" onClick={onFechar}>
               Fechar
             </Botao>
           </footer>
@@ -830,7 +830,7 @@ function VistaProfessor({ usuario }) {
               />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" onClick={() => setModalAberto(false)}>
+              <Botao variante="perigo" onClick={() => setModalAberto(false)}>
                 Cancelar
               </Botao>
               <Botao variante="primario" type="submit">

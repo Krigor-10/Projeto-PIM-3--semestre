@@ -214,7 +214,7 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
               />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setCursoEditando(null)}>
+              <Botao variante="perigo" type="button" onClick={() => setCursoEditando(null)}>
                 Cancelar
               </Botao>
               <Botao variante="primario" type="submit">

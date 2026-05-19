@@ -137,7 +137,7 @@ export default function ModalEdicaoUsuario({ usuario, onSalvar, onFechar }) {
         </fieldset>
 
         <footer className="modal-rodape">
-          <Botao variante="fantasma" onClick={onFechar}>
+          <Botao variante="perigo" onClick={onFechar}>
             Cancelar
           </Botao>
           <Botao variante="primario" type="submit">

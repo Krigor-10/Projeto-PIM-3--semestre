@@ -374,11 +374,11 @@ export default function TelaProfessores({ usuario }) {
             {inicio + 1}–{Math.min(inicio + ITENS_POR_PAGINA, listaProcessada.length)} de {listaProcessada.length}
           </span>
           <div className="paginacao__controles">
-            <button className="botao botao--fantasma botao--pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1} type="button">‹ Anterior</button>
+            <button className="botao botao--perigo botao--pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1} type="button">‹ Anterior</button>
             {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
               <button key={n} className={`paginacao__pagina${paginaSegura === n ? " paginacao__pagina--ativa" : ""}`} onClick={() => setPagina(n)} type="button" aria-current={paginaSegura === n ? "page" : undefined}>{n}</button>
             ))}
-            <button className="botao botao--fantasma botao--pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas} type="button">Próxima ›</button>
+            <button className="botao botao--perigo botao--pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas} type="button">Próxima ›</button>
           </div>
         </nav>
       )}
@@ -569,7 +569,7 @@ export default function TelaProfessores({ usuario }) {
               >
                 {professorDetalhe.ativo ? "Desativar" : "Ativar"}
               </Botao>
-              <Botao variante="primario" onClick={() => setProfessorDetalhe(null)}>
+              <Botao variante="perigo" onClick={() => setProfessorDetalhe(null)}>
                 Fechar
               </Botao>
             </footer>
@@ -622,7 +622,7 @@ export default function TelaProfessores({ usuario }) {
               />
             </div>
             <footer className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setProfessorEditando(null)}>Cancelar</button>
+              <button type="button" className="botao botao--perigo" onClick={() => setProfessorEditando(null)}>Cancelar</button>
               <button type="submit" className="botao botao--primario">Salvar alterações</button>
             </footer>
           </form>
@@ -683,7 +683,7 @@ export default function TelaProfessores({ usuario }) {
               })}
             </ul>
             <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
-              <button type="button" className="botao botao--fantasma" onClick={() => setAtribuindoTurmas(null)}>Cancelar</button>
+              <button type="button" className="botao botao--perigo" onClick={() => setAtribuindoTurmas(null)}>Cancelar</button>
               <button type="button" className="botao botao--primario" onClick={salvarAtribuicao} disabled={temConflito}>
                 Salvar atribuições
               </button>
@@ -699,7 +699,7 @@ export default function TelaProfessores({ usuario }) {
             Tem certeza que deseja remover <strong>{selecionados.size} {selecionados.size === 1 ? "professor" : "professores"}</strong>? Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <button className="botao botao--fantasma" onClick={() => setRemovendoEmMassa(false)} type="button">Cancelar</button>
+            <button className="botao botao--perigo" onClick={() => setRemovendoEmMassa(false)} type="button">Cancelar</button>
             <button className="botao botao--perigo"   onClick={confirmarRemocaoEmMassa}           type="button">Confirmar remoção</button>
           </footer>
         </Modal>
@@ -714,7 +714,7 @@ export default function TelaProfessores({ usuario }) {
               Tem certeza que deseja remover <strong>{prof?.nome}</strong>? Esta ação não pode ser desfeita.
             </p>
             <footer className="modal-rodape">
-              <button className="botao botao--fantasma" onClick={() => setProfessorRemovendo(null)} type="button">Cancelar</button>
+              <button className="botao botao--perigo" onClick={() => setProfessorRemovendo(null)} type="button">Cancelar</button>
               <button className="botao botao--perigo"   onClick={confirmarRemocao}                  type="button">Confirmar remoção</button>
             </footer>
           </Modal>
@@ -757,7 +757,7 @@ export default function TelaProfessores({ usuario }) {
               <input id="especializacao-prof" className="campo__entrada" type="text" placeholder="Ex: Desenvolvimento Web" />
             </div>
             <footer className="modal-rodape">
-              <button type="button" className="botao botao--fantasma" onClick={() => setModalNovoAberto(false)}>Cancelar</button>
+              <button type="button" className="botao botao--perigo" onClick={() => setModalNovoAberto(false)}>Cancelar</button>
               <button type="submit" className="botao botao--primario">Cadastrar Professor</button>
             </footer>
           </form>

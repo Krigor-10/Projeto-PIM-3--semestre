@@ -237,7 +237,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
           Tem certeza que deseja sair? Você precisará fazer login novamente para acessar a plataforma.
         </p>
         <footer style={{ display: "flex", gap: "var(--espaco-md)", justifyContent: "flex-end" }}>
-          <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>
+          <Botao variante="perigo" onClick={() => setConfirmarSaida(false)}>
             Cancelar
           </Botao>
           <Botao variante="perigo" onClick={onLogout}>

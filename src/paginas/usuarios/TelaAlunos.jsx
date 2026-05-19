@@ -419,7 +419,7 @@ export default function TelaAlunos({ usuario }) {
                 Remover aluno
               </Botao>
             )}
-            <Botao variante="primario" onClick={() => setAlunoDetalhe(null)}>Fechar</Botao>
+            <Botao variante="perigo" onClick={() => setAlunoDetalhe(null)}>Fechar</Botao>
           </footer>
         </Modal>
       )}
@@ -431,7 +431,7 @@ export default function TelaAlunos({ usuario }) {
             Tem certeza que deseja remover <strong>{selecionados.size} {selecionados.size === 1 ? "aluno" : "alunos"}</strong>? Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
             <Botao variante="perigo" onClick={confirmarRemocaoEmMassa}>Confirmar remoção</Botao>
           </footer>
         </Modal>
@@ -446,7 +446,7 @@ export default function TelaAlunos({ usuario }) {
               Tem certeza que deseja remover <strong>{aluno?.nome}</strong>? Esta ação não pode ser desfeita.
             </p>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" onClick={() => setAlunoRemovendo(null)}>Cancelar</Botao>
+              <Botao variante="perigo" onClick={() => setAlunoRemovendo(null)}>Cancelar</Botao>
               <Botao variante="perigo" onClick={confirmarRemocao}>Confirmar remoção</Botao>
             </footer>
           </Modal>

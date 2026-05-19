@@ -231,7 +231,7 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
                 Todos os dados criados ou editados serão perdidos. Esta ação não pode ser desfeita.
               </p>
               <div className="reset-demo__acoes">
-                <Botao variante="fantasma" tamanho="pequeno" onClick={() => setConfirmandoReset(false)}>
+                <Botao variante="perigo" tamanho="pequeno" onClick={() => setConfirmandoReset(false)}>
                   Cancelar
                 </Botao>
                 <Botao variante="perigo" tamanho="pequeno" onClick={executarReset}>

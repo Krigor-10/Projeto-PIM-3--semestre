@@ -334,7 +334,7 @@ export default function TelaMatriculas({ usuario }) {
             }
           </p>
           <footer className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setConfirmandoEmMassa(null)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmandoEmMassa(null)}>Cancelar</Botao>
             <Botao
               variante={confirmandoEmMassa === "aprovar" ? "sucesso" : "perigo"}
               onClick={() => executarEmMassa(confirmandoEmMassa === "aprovar" ? "Aprovada" : "Rejeitada")}

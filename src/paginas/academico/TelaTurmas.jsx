@@ -327,7 +327,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
               )}
             </div>
             <div className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setModalNova(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalNova(false)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Criar Turma</Botao>
             </div>
           </form>
@@ -352,7 +352,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
               />
             </div>
             <div className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setTurmaEditando(null)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setTurmaEditando(null)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Salvar alterações</Botao>
             </div>
           </form>

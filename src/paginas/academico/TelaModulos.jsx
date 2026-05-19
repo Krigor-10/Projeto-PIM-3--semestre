@@ -89,7 +89,7 @@ function ModalDetalhesModulo({ modulo, curso, onFechar }) {
         </section>
 
         <footer className="modal-rodape">
-          <Botao variante="primario" onClick={onFechar}>Fechar</Botao>
+          <Botao variante="perigo" onClick={onFechar}>Fechar</Botao>
         </footer>
       </div>
     </Modal>
@@ -374,7 +374,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
               <input id="ordem-modulo" className="campo__entrada" type="number" min="1" defaultValue="1" />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Criar Módulo</Botao>
             </footer>
           </form>

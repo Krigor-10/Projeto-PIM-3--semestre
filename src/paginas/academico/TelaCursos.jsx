@@ -204,7 +204,7 @@ function VistaGerencialCoordenador({ usuario }) {
             </div>
 
             <div className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={tentarFechar} style={{ marginRight: "auto" }}>Fechar</Botao>
+              <Botao variante="perigo" type="button" onClick={tentarFechar} style={{ marginRight: "auto" }}>Fechar</Botao>
               <Botao variante="primario" type="submit">Salvar alterações</Botao>
             </div>
           </form>
@@ -218,7 +218,7 @@ function VistaGerencialCoordenador({ usuario }) {
             Há alterações não salvas na atribuição do professor. Se sair agora, as alterações serão perdidas.
           </p>
           <div className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
             <Botao variante="perigo" onClick={() => { setCursoSelecionado(null); }}>Sair sem salvar</Botao>
           </div>
         </Modal>
@@ -579,7 +579,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             )}
 
             <div className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto" }}>Fechar</Botao>
+              <Botao variante="perigo" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto" }}>Fechar</Botao>
               {podeEditar(tipo, "cursos") && (
                 <Botao variante="primario" type="submit">Salvar alterações</Botao>
               )}
@@ -596,7 +596,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             Há alterações não salvas nas atribuições. Se sair agora, as alterações serão perdidas.
           </p>
           <div className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
             <Botao variante="perigo" onClick={() => { setCursoDetalhe(null); }}>Sair sem salvar</Botao>
           </div>
         </Modal>
@@ -624,7 +624,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
               />
             </div>
             <div className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Salvar alterações</Botao>
             </div>
           </form>
@@ -653,7 +653,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
               />
             </div>
             <div className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Criar Curso</Botao>
             </div>
           </form>
@@ -672,7 +672,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             </span>
           </p>
           <div className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setPopupExclusao(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setPopupExclusao(false)}>Cancelar</Botao>
             <Botao variante="perigo" onClick={excluirCurso}>Excluir permanentemente</Botao>
           </div>
         </Modal>

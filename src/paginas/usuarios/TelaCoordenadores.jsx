@@ -432,7 +432,7 @@ export default function TelaCoordenadores({ usuario }) {
                 Remover
               </Botao>
             )}
-            <Botao variante="primario" onClick={() => setCoordDetalhe(null)}>Fechar</Botao>
+            <Botao variante="perigo" onClick={() => setCoordDetalhe(null)}>Fechar</Botao>
           </footer>
         </Modal>
         );
@@ -451,7 +451,7 @@ export default function TelaCoordenadores({ usuario }) {
               <input id="edit-email" className="campo__entrada" type="email" defaultValue={coordEditando.email} required />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setCoordEditando(null)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setCoordEditando(null)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Salvar alterações</Botao>
             </footer>
           </form>
@@ -487,7 +487,7 @@ export default function TelaCoordenadores({ usuario }) {
               <input id="cpf-coord" className="campo__entrada" type="text" placeholder="000.000.000-00" required />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" type="button" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Cadastrar Coordenador</Botao>
             </footer>
           </form>
@@ -501,7 +501,7 @@ export default function TelaCoordenadores({ usuario }) {
             Tem certeza que deseja remover <strong>{selecionados.size} {selecionados.size === 1 ? "coordenador" : "coordenadores"}</strong>? Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
             <Botao variante="perigo" onClick={confirmarRemocaoEmMassa}>Confirmar remoção</Botao>
           </footer>
         </Modal>
@@ -516,7 +516,7 @@ export default function TelaCoordenadores({ usuario }) {
               Tem certeza que deseja remover <strong>{coord?.nome}</strong>? Esta ação não pode ser desfeita.
             </p>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" onClick={() => setCoordRemovendo(null)}>Cancelar</Botao>
+              <Botao variante="perigo" onClick={() => setCoordRemovendo(null)}>Cancelar</Botao>
               <Botao variante="perigo" onClick={confirmarRemocao}>Confirmar remoção</Botao>
             </footer>
           </Modal>
