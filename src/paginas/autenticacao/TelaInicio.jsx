@@ -209,9 +209,41 @@ export default function TelaInicio() {
       {/* Rodapé */}
       <footer className="rodape-publico" role="contentinfo">
         <div className="rodape-publico__inner">
-          <p className="rodape-publico__marca">CodeRyse Academy</p>
-          <p className="rodape-publico__direitos">
-            Cursos digitais e gestão acadêmica em uma única plataforma.
+          <div className="rodape-publico__marca-bloco">
+            <p className="rodape-publico__marca">CodeRyse Academy</p>
+            <p className="rodape-publico__direitos">
+              Cursos digitais e gestão acadêmica em uma única plataforma.
+            </p>
+          </div>
+
+          <nav className="rodape-publico__nav" aria-label="Links do rodapé">
+            <p className="rodape-publico__nav-titulo">Plataforma</p>
+            <ul className="rodape-publico__nav-lista">
+              <li>
+                <a href="#cursos" className="rodape-publico__nav-link">Cursos</a>
+              </li>
+              <li>
+                <button className="rodape-publico__nav-link" onClick={() => navigate(ROTAS.LOGIN)}>
+                  Entrar
+                </button>
+              </li>
+              <li>
+                <button className="rodape-publico__nav-link" onClick={() => navigate(ROTAS.CADASTRO)}>
+                  Criar conta
+                </button>
+              </li>
+              <li>
+                <button className="rodape-publico__nav-link" onClick={() => navigate(ROTAS.LOGIN_STAFF)}>
+                  Acesso administrativo
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div className="rodape-publico__barra-inferior">
+          <p className="rodape-publico__copyright">
+            © {new Date().getFullYear()} CodeRyse Academy. Todos os direitos reservados.
           </p>
         </div>
       </footer>

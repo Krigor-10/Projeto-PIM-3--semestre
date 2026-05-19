@@ -63,6 +63,7 @@
   background-clip: text;
 }
 
+
 .cabecalho-publico__nav {
   display: flex;
   align-items: center;
@@ -356,29 +357,91 @@
 .rodape-publico {
   background: var(--cor-fundo-alt);
   border-top: 1px solid var(--cor-borda);
-  padding: var(--espaco-xl);
+  padding: var(--espaco-2xl) var(--espaco-xl) 0;
 }
 
 .rodape-publico__inner {
   max-width: 1200px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--espaco-2xl);
+  padding-bottom: var(--espaco-2xl);
+}
+
+.rodape-publico__marca-bloco {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--espaco-md);
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--espaco-sm);
 }
 
 .rodape-publico__marca {
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: var(--espaco-sm);
+  font-size: 1rem;
 }
 
 .rodape-publico__direitos {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--cor-texto-mudo);
+  max-width: 42ch;
+  line-height: 1.5;
+}
+
+.rodape-publico__nav-titulo {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-texto-mudo);
+  margin-bottom: var(--espaco-md);
+}
+
+.rodape-publico__nav-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.rodape-publico__nav-link {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-family: inherit;
+  text-decoration: none;
+  transition: color var(--transicao-rapida);
+  display: block;
+}
+
+.rodape-publico__nav-link:hover {
+  color: var(--cor-texto-forte);
+}
+
+.rodape-publico__barra-inferior {
+  border-top: 1px solid var(--cor-borda);
+}
+
+.rodape-publico__copyright {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--espaco-lg) 0;
+  font-size: 0.8rem;
+  color: var(--cor-texto-mudo);
+}
+
+@media (max-width: 600px) {
+  .rodape-publico__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .rodape-publico__nav-lista {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--espaco-sm) var(--espaco-xl);
+  }
 }
 
 /* ------------------------------------------------------------
