@@ -1,6 +1,25 @@
 /* ------------------------------------------------------------
    BOTÕES
    ------------------------------------------------------------ */
+.botao-icone {
+  align-items: center;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--raio-sm);
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0.3rem;
+  transition: background var(--transicao-rapida), color var(--transicao-rapida);
+}
+
+.botao-icone:hover {
+  background: var(--cor-fundo-elevado);
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-forte);
+}
+
 .botao {
   display: inline-flex;
   align-items: center;

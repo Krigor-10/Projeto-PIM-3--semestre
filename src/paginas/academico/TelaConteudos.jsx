@@ -225,7 +225,7 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
 
 /* ── Slide de um curso (conteúdo de uma matrícula) ───────────── */
 
-function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMudarSecao, onConteudoConcluido, ativo }) {
+function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMudarSecao, onConteudoConcluido, onAlternarConclusao, conteudosConcluidos, ativo }) {
   const curso = cursos.find((c) => c.id === matricula.cursoId);
 
   const modulosDoCurso = modulos
@@ -242,9 +242,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
   }
   const resumoTiposAluno = ["Video", "Texto", "Documento"].filter((t) => totalPorTipoAluno[t]);
 
-  const [concluidos, setConcluidos] = useState(
-    () => new Set(conteudosDoCurso.filter((c) => c.concluido).map((c) => c.id))
-  );
+  const concluidos = conteudosConcluidos ?? new Set(conteudosDoCurso.filter((c) => c.concluido).map((c) => c.id));
   const [modulosAbertos, setModulosAbertos] = useState(() => new Set());
   const [quizModulo, setQuizModulo] = useState(null);
   const refsModulos = useRef({});
@@ -303,11 +301,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
   }, [concluidos, quizzesAprovados]);
 
   function alternarConclusao(id) {
-    setConcluidos((prev) => {
-      const copia = new Set(prev);
-      copia.has(id) ? copia.delete(id) : copia.add(id);
-      return copia;
-    });
+    onAlternarConclusao?.(id);
   }
 
   function alternarModulo(id) {
@@ -854,7 +848,7 @@ function VistaProfessor({ usuario }) {
 
 /* ── Vista do aluno — carrossel de cursos ────────────────────── */
 
-function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onMudarSecao, onConteudoConcluido }) {
+function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onMudarSecao, onConteudoConcluido, conteudosConcluidos, onAlternarConclusao }) {
   const matriculasAprovadas = matriculas.filter(
     (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
   );
@@ -930,6 +924,8 @@ function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onM
           onQuizAprovado={onQuizAprovado}
           onMudarSecao={onMudarSecao}
           onConteudoConcluido={onConteudoConcluido}
+          conteudosConcluidos={conteudosConcluidos}
+          onAlternarConclusao={onAlternarConclusao}
           ativo={true}
         />
       </div>
@@ -1196,7 +1192,7 @@ function VistaGestao({ usuario }) {
 
 /* ── Componente principal — seleciona a vista pelo perfil ────── */
 
-export default function TelaConteudos({ usuario, quizzesAprovados, onQuizAprovado, onMudarSecao, onConteudoConcluido }) {
+export default function TelaConteudos({ usuario, quizzesAprovados, onQuizAprovado, onMudarSecao, onConteudoConcluido, conteudosConcluidos, onAlternarConclusao }) {
   if (usuario?.tipo === "Aluno") {
     return (
       <VistaAluno
@@ -1205,6 +1201,8 @@ export default function TelaConteudos({ usuario, quizzesAprovados, onQuizAprovad
         onQuizAprovado={onQuizAprovado}
         onMudarSecao={onMudarSecao}
         onConteudoConcluido={onConteudoConcluido}
+        conteudosConcluidos={conteudosConcluidos}
+        onAlternarConclusao={onAlternarConclusao}
       />
     );
   }

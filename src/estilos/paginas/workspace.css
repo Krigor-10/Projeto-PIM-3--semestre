@@ -253,15 +253,133 @@
 /* ------------------------------------------------------------
    DASHBOARD ALUNO
    ------------------------------------------------------------ */
-.cartao-curso-ativo {
+
+/* Card "Continue de onde parou" */
+.cartao-retomar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-xl);
+  margin-top: var(--espaco-xl);
+  padding: var(--espaco-lg) var(--espaco-xl);
+  background: linear-gradient(135deg, rgba(123, 47, 247, 0.16) 0%, rgba(91, 25, 207, 0.09) 100%);
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-lg);
+}
+
+.cartao-retomar__info {
   display: flex;
   flex-direction: column;
+  gap: var(--espaco-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.cartao-retomar__etiqueta {
+  font-size: var(--texto-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cor-marca-clara);
+}
+
+.cartao-retomar__modulo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  margin: 0;
+}
+
+.cartao-retomar__proximo {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  margin: 0;
+}
+
+.cartao-retomar__proximo strong {
+  color: var(--cor-texto-forte);
+  font-weight: 600;
+}
+
+.cartao-retomar__barra {
+  max-width: 320px;
+}
+
+.cartao-retomar__acao {
+  flex-shrink: 0;
+}
+
+/* Quick Actions */
+.acesso-rapido {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--espaco-md);
-  padding: var(--espaco-md);
+  margin-top: var(--espaco-lg);
+}
+
+.acao-rapida {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color var(--transicao-rapida), background var(--transicao-rapida);
+}
+
+.acao-rapida:hover {
+  border-color: var(--cor-borda-forte);
+  background: var(--cor-fundo-elevado);
+}
+
+.acao-rapida__icone {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  color: var(--cor-marca-clara);
+  line-height: 1;
+}
+
+.acao-rapida__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.acao-rapida__texto strong {
+  font-size: var(--texto-md);
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.acao-rapida__texto span {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cartao-curso-ativo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-lg);
+  padding: var(--espaco-md) var(--espaco-lg);
   background: rgba(123, 47, 247, 0.08);
   border: 1px solid var(--cor-borda-forte);
   border-radius: var(--raio-md);
-  margin-bottom: var(--espaco-lg);
+}
+
+.cartao-curso-ativo__info {
+  min-width: 0;
+  flex-shrink: 0;
 }
 
 .cartao-curso-ativo__titulo {
@@ -273,6 +391,12 @@
   font-size: 0.8rem;
   color: var(--cor-texto-suave);
   margin-top: 2px;
+  white-space: nowrap;
+}
+
+.cartao-curso-ativo__progresso {
+  flex: 1;
+  min-width: 0;
 }
 
 .lista-modulos {
@@ -387,18 +511,18 @@
 .grade-avaliacoes {
   display: flex;
   flex-direction: column;
-  gap: var(--espaco-sm);
+  gap: var(--espaco-md);
   list-style: none;
 }
 
 .cartao-avaliacao {
-  align-items: center;
   background: var(--cor-cartao);
   border: 1px solid var(--cor-borda);
+  border-left: 3px solid var(--cor-marca);
   border-radius: var(--raio-lg);
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--espaco-md);
+  flex-direction: column;
+  gap: var(--espaco-sm);
   padding: var(--espaco-md) var(--espaco-lg);
   transition: border-color var(--transicao-rapida), background var(--transicao-rapida);
 }
@@ -406,50 +530,76 @@
 .cartao-avaliacao:hover {
   background: var(--cor-fundo-elevado);
   border-color: var(--cor-borda-forte);
+  border-left-color: var(--cor-marca);
 }
 
-/* Título e badge ocupam a maior parte do espaço à esquerda */
-.cartao-avaliacao__cabecalho {
+.cartao-avaliacao--aprovado  { border-left-color: #22c55e; }
+.cartao-avaliacao--reprovado { border-left-color: #ef4444; }
+.cartao-avaliacao--bloqueado { border-left-color: var(--cor-borda-forte); opacity: 0.6; }
+
+/* Linha 1: título + badge */
+.cartao-avaliacao__topo {
   align-items: center;
   display: flex;
-  flex: 1;
   gap: var(--espaco-sm);
-  min-width: 200px;
 }
 
 .cartao-avaliacao__titulo {
-  font-size: 0.92rem;
+  color: var(--cor-texto-forte);
+  flex: 1;
+  font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.3;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Metadados exibidos em linha, compactos */
-.cartao-avaliacao__meta {
+/* Linha 2: meta inline + botão */
+.cartao-avaliacao__corpo {
   align-items: center;
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--espaco-sm) var(--espaco-lg);
-  flex: 2;
+  gap: var(--espaco-md);
 }
 
-.cartao-avaliacao__meta > div {
+.cartao-avaliacao__meta {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 0.2rem var(--espaco-md);
+}
+
+.cartao-avaliacao__meta-item {
   align-items: baseline;
   display: flex;
   gap: 0.3rem;
 }
 
-.cartao-avaliacao__meta dt {
+.cartao-avaliacao__meta-item dt {
   color: var(--cor-texto-mudo);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  font-size: 0.75rem;
 }
 
-.cartao-avaliacao__meta dd {
-  font-size: var(--texto-md);
-  font-weight: 700;
+.cartao-avaliacao__meta-item dd {
+  color: var(--cor-texto-forte);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.cartao-avaliacao__rodape {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--espaco-sm);
+}
+
+.cartao-avaliacao__bloqueado-info {
+  align-items: center;
+  color: var(--cor-texto-suave);
+  display: flex;
+  font-size: 0.78rem;
+  gap: 0.25rem;
   white-space: nowrap;
 }
 
@@ -615,6 +765,34 @@
 
   .topbar__menu-mobile {
     display: flex;
+  }
+
+  .cartao-retomar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espaco-lg);
+    padding: var(--espaco-lg);
+  }
+
+  .cartao-retomar__acao {
+    width: 100%;
+  }
+
+  .cartao-retomar__barra {
+    max-width: 100%;
+  }
+
+  .acesso-rapido {
+    grid-template-columns: 1fr;
+  }
+
+  .cartao-curso-ativo {
+    flex-wrap: wrap;
+  }
+
+  .cartao-curso-ativo__progresso {
+    width: 100%;
+    order: 3;
   }
 
   .grade-turmas {

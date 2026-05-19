@@ -48,9 +48,9 @@
 .progresso-hero__direita {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: var(--espaco-sm);
-  min-width: 220px;
+  align-items: center;
+  gap: var(--espaco-md);
+  min-width: 160px;
 }
 
 .progresso-hero__percentual {
@@ -67,7 +67,96 @@
 .progresso-hero__legenda {
   font-size: 0.8rem;
   color: var(--cor-texto-suave);
-  text-align: right;
+  text-align: center;
+}
+
+/* Tabs de seleção de curso */
+.tabs-cursos {
+  display: flex;
+  gap: var(--espaco-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--espaco-lg);
+}
+
+.tabs-cursos__tab {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--espaco-sm) var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--transicao-rapida), background var(--transicao-rapida);
+}
+
+.tabs-cursos__tab:hover {
+  border-color: var(--cor-borda-forte);
+  background: var(--cor-fundo-elevado);
+}
+
+.tabs-cursos__tab--ativo {
+  border-color: var(--cor-marca);
+  background: rgba(123, 47, 247, 0.08);
+  box-shadow: inset 0 -2px 0 var(--cor-marca);
+}
+
+.tabs-cursos__nome {
+  font-size: var(--texto-md);
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+}
+
+.tabs-cursos__tab--ativo .tabs-cursos__nome {
+  color: var(--cor-marca-clara);
+}
+
+.tabs-cursos__turma {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-mudo);
+}
+
+/* Anel de progresso circular */
+.anel-progresso {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+
+.anel-progresso__svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.anel-progresso__trilha {
+  fill: none;
+  stroke: rgba(123, 47, 247, 0.12);
+  stroke-width: 10;
+}
+
+.anel-progresso__arco {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.anel-progresso__texto {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--cor-marca-clara), var(--cor-marca));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: var(--fonte-display);
 }
 
 /* Cards de estatísticas */
@@ -280,21 +369,24 @@
 .cartao-conquista--desbloqueada {
   opacity: 1;
   filter: none;
-  border-color: rgba(123, 47, 247, 0.35);
-  background: rgba(123, 47, 247, 0.05);
+  border-color: rgba(123, 47, 247, 0.4);
+  background: linear-gradient(145deg, rgba(123, 47, 247, 0.12), rgba(185, 153, 255, 0.04));
+  box-shadow: 0 0 0 1px rgba(123, 47, 247, 0.15), 0 4px 16px rgba(123, 47, 247, 0.1);
 }
 
 .cartao-conquista--desbloqueada:hover {
-  border-color: var(--cor-marca);
+  border-color: rgba(123, 47, 247, 0.65);
+  box-shadow: 0 0 0 1px rgba(123, 47, 247, 0.25), 0 6px 20px rgba(123, 47, 247, 0.15);
 }
 
 .cartao-conquista__icone {
   font-size: 1.75rem;
-  color: var(--cor-marca-clara);
+  color: var(--cor-texto-mudo);
 }
 
 .cartao-conquista--desbloqueada .cartao-conquista__icone {
-  filter: drop-shadow(0 0 6px rgba(185, 153, 255, 0.5));
+  color: var(--cor-marca-clara);
+  filter: drop-shadow(0 0 8px rgba(185, 153, 255, 0.6));
 }
 
 .cartao-conquista__titulo {
@@ -309,12 +401,150 @@
   line-height: 1.4;
 }
 
+.cartao-conquista__check {
+  position: absolute;
+  top: var(--espaco-sm);
+  right: var(--espaco-sm);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cor-sucesso);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .cartao-conquista__cadeado {
   position: absolute;
   top: var(--espaco-sm);
   right: var(--espaco-sm);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--cor-texto-mudo);
+  opacity: 0.6;
+}
+
+/* Jornada de módulos — steps verticais */
+.trilha-modulos {
+  list-style: none;
+  margin-bottom: var(--espaco-xl);
+}
+
+.passo-modulo {
+  display: flex;
+  gap: var(--espaco-md);
+}
+
+.passo-modulo__esquerda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px;
+}
+
+.passo-modulo__indicador {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--cor-borda-forte);
+  background: var(--cor-cartao);
+  color: var(--cor-texto-mudo);
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transicao-normal), border-color var(--transicao-normal), box-shadow var(--transicao-normal);
+}
+
+.passo-modulo--concluido .passo-modulo__indicador {
+  background: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+.passo-modulo--andamento .passo-modulo__indicador {
+  background: rgba(123, 47, 247, 0.15);
+  border-color: var(--cor-marca);
+  color: var(--cor-marca-clara);
+  box-shadow: 0 0 0 4px rgba(123, 47, 247, 0.12);
+}
+
+.passo-modulo__linha {
+  width: 2px;
+  flex: 1;
+  min-height: var(--espaco-lg);
+  background: var(--cor-borda);
+  margin: 4px 0;
+  border-radius: 2px;
+}
+
+.passo-modulo--concluido .passo-modulo__linha {
+  background: linear-gradient(180deg, var(--cor-sucesso), var(--cor-borda));
+}
+
+.passo-modulo__corpo {
+  flex: 1;
+  padding-bottom: var(--espaco-lg);
+  min-width: 0;
+}
+
+.passo-modulo__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+  margin-bottom: var(--espaco-sm);
+  min-height: 36px;
+}
+
+.passo-modulo__titulo {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+}
+
+.passo-modulo--concluido .passo-modulo__titulo {
+  color: var(--cor-texto-suave);
+}
+
+.passo-modulo__progresso {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.passo-modulo__pct {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-mudo);
+  min-width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.passo-modulo__quiz {
+  font-size: var(--texto-xs);
+  color: var(--cor-sucesso);
+  margin: var(--espaco-xs) 0 0;
+}
+
+.passo-modulo--avaliacao .passo-modulo__indicador {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--cor-erro);
+  font-size: 0.9rem;
+}
+
+.passo-modulo--avaliacao.passo-modulo--concluido .passo-modulo__indicador {
+  background: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
 }
 
 /* Aproveitamento por módulo (TelaProgresso) */
@@ -437,6 +667,26 @@
 
 .cartao-avaliacao-resultado__detalhe {
   font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+.cartao-avaliacao-resultado__nota {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.cartao-avaliacao-resultado__nota-valor {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--cor-sucesso);
+  line-height: 1;
+  font-family: var(--fonte-display);
+}
+
+.cartao-avaliacao-resultado__nota-max {
+  font-size: 0.85rem;
   color: var(--cor-texto-suave);
 }
 
@@ -1006,6 +1256,86 @@
   .certificado__nome { -webkit-text-fill-color: #1a1a1a; }
   .certificado .botao { display: none; }
   .certificado-modal { display: block !important; box-shadow: none; }
+}
+
+/* Cartão compacto de certificado — link para TelaCertificados */
+.cartao-certificado-link {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-xl);
+  padding: var(--espaco-lg) var(--espaco-xl);
+  transition: border-color 0.2s;
+}
+
+.cartao-certificado-link--desbloqueado {
+  border-color: var(--cor-sucesso);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cor-sucesso) 10%, var(--cor-fundo-elevado)),
+    color-mix(in srgb, var(--cor-sucesso) 4%, var(--cor-fundo-elevado))
+  );
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cor-sucesso) 25%, transparent);
+}
+
+.cartao-certificado-link__icone {
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--cor-texto-mudo);
+  flex-shrink: 0;
+}
+
+.cartao-certificado-link__trofeu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--cor-sucesso) 16%, transparent);
+  color: var(--cor-sucesso);
+  flex-shrink: 0;
+}
+
+.cartao-certificado-link__nota-valor {
+  font-size: 1.05rem;
+  color: var(--cor-sucesso);
+}
+
+.cartao-certificado-link__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cartao-certificado-link__info strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--cor-texto-forte);
+}
+
+.cartao-certificado-link__info p {
+  font-size: 0.82rem;
+  color: var(--cor-texto-mudo);
+  margin-top: 0.15rem;
+}
+
+.cartao-certificado-link__cadeado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--cor-texto-mudo) 12%, transparent);
+  color: var(--cor-texto-mudo);
+  flex-shrink: 0;
+}
+
+.cartao-certificado-link__cadeado svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* ============================================================

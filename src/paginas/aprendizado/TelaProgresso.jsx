@@ -1,7 +1,9 @@
+import { useState } from "react";
+import { TbTrophy } from "react-icons/tb";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
+import { conteudos, cursos, modulos, matriculas, turmas, certificadosDemo } from "@/dados/dadosMock.js";
 
 /* Percentuais simulados por id de matrícula para a vista administrativa */
 const PROGRESSO_MOCK = { 1: 42, 2: 15, 6: 68 };
@@ -17,46 +19,14 @@ function resolverStatusModulo(concluidosModulo, totalItens) {
   return                                      { texto: "Em andamento", variante: "info"    };
 }
 
-/* Definição das conquistas desbloqueáveis */
-function gerarConquistas(totalConcluidos, modulosConcluidos, percentualGeral) {
-  return [
-    {
-      id: "primeiro-passo",
-      icone: "✦",
-      titulo: "Primeiro passo",
-      descricao: "Concluiu o 1º conteúdo",
-      desbloqueada: totalConcluidos >= 1,
-    },
-    {
-      id: "em-ritmo",
-      icone: "◆",
-      titulo: "Em ritmo",
-      descricao: "5 conteúdos concluídos",
-      desbloqueada: totalConcluidos >= 5,
-    },
-    {
-      id: "modulo-completo",
-      icone: "◎",
-      titulo: "Módulo completo",
-      descricao: "Finalizou um módulo inteiro",
-      desbloqueada: modulosConcluidos >= 1,
-    },
-    {
-      id: "metade",
-      icone: "⬟",
-      titulo: "Metade do caminho",
-      descricao: "50% do curso concluído",
-      desbloqueada: percentualGeral >= 50,
-    },
-  ];
-}
-
 /* ── Vista do Aluno ──────────────────────────────────────────── */
 
-function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} }) {
-  const matricula = matriculas.find(
+function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {}, onMudarSecao, conteudosConcluidos }) {
+  const matriculasAprovadas = matriculas.filter(
     (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
   );
+  const [cursoAtivo, setCursoAtivo] = useState(0);
+  const matricula = matriculasAprovadas[cursoAtivo] ?? null;
   const curso = matricula ? cursos.find((c) => c.id === matricula.cursoId) : null;
 
   const modulosDoCurso = matricula
@@ -67,21 +37,26 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} 
     ? conteudos.filter((c) => modulosDoCurso.some((m) => m.id === c.moduloId))
     : [];
 
-  const totalConteudos  = conteudosDoCurso.length;
-  const totalConcluidos = conteudosDoCurso.filter((c) => c.concluido).length;
-  /* Percentual geral = concluídos / total × 100, arredondado para inteiro */
-  const percentualGeral = totalConteudos > 0
-    ? Math.round((totalConcluidos / totalConteudos) * 100)
-    : 0;
+  const concluidos = conteudosConcluidos ?? new Set(conteudosDoCurso.filter((c) => c.concluido).map((c) => c.id));
 
-  /* Conta módulos onde todos os conteúdos estão marcados como concluídos */
+  const totalConteudos  = conteudosDoCurso.length;
+  const totalConcluidos = conteudosDoCurso.filter((c) => concluidos.has(c.id)).length;
+
+  /* Quiz conta como um passo extra por módulo — igual a TelaConteudos */
+  const modulosComConteudo = modulosDoCurso.filter((m) => conteudosDoCurso.some((c) => c.moduloId === m.id));
+  const quizzesFeitos = modulosComConteudo.filter((m) => resultadosQuizzes[m.id] !== undefined).length;
+  const totalPassos   = totalConteudos + modulosComConteudo.length;
+  const passosFeitos  = totalConcluidos + quizzesFeitos;
+  const percentualGeral = totalPassos > 0 ? Math.round((passosFeitos / totalPassos) * 100) : 0;
+
+  /* Módulo concluído = todos os conteúdos + quiz aprovado */
   const modulosConcluidos = modulosDoCurso.filter((modulo) => {
     const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
-    return itens.length > 0 && itens.every((c) => c.concluido);
+    return itens.length > 0 && itens.every((c) => concluidos.has(c.id)) && resultadosQuizzes[modulo.id] !== undefined;
   }).length;
 
-  const conquistas = gerarConquistas(totalConcluidos, modulosConcluidos, percentualGeral);
-  const certificadoDesbloqueado = percentualGeral === 100 && Boolean(avaliacaoAprovada);
+  const certAtivo = avaliacaoAprovada ?? (matricula ? certificadosDemo[matricula.cursoId] ?? null : null);
+  const certificadoDesbloqueado = Boolean(certAtivo);
 
   if (!matricula) {
     return (
@@ -102,6 +77,22 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} 
         </div>
       </header>
 
+      {matriculasAprovadas.length > 1 && (
+        <nav className="tabs-cursos" aria-label="Selecionar curso">
+          {matriculasAprovadas.map((mat, idx) => (
+            <button
+              key={mat.id}
+              className={`tabs-cursos__tab${idx === cursoAtivo ? " tabs-cursos__tab--ativo" : ""}`}
+              onClick={() => setCursoAtivo(idx)}
+              aria-current={idx === cursoAtivo ? "true" : undefined}
+            >
+              <span className="tabs-cursos__nome">{mat.cursoTitulo}</span>
+              <span className="tabs-cursos__turma">{mat.turmaNome}</span>
+            </button>
+          ))}
+        </nav>
+      )}
+
       {/* ── Curso ── */}
       <section className="progresso-hero" aria-label="Visão geral do curso">
         <div className="progresso-hero__info">
@@ -110,15 +101,29 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} 
           <p className="progresso-hero__codigo">{matricula.codigoMatricula}</p>
         </div>
         <div className="progresso-hero__direita">
-          <span
-            className="progresso-hero__percentual"
-            aria-label={`${percentualGeral} por cento concluído`}
-          >
-            {percentualGeral}%
-          </span>
-          <BarraProgresso percentual={percentualGeral} />
+          <div className="anel-progresso" aria-label={`${percentualGeral} por cento concluído`}>
+            <svg className="anel-progresso__svg" viewBox="0 0 120 120" aria-hidden="true">
+              <defs>
+                <linearGradient id="anel-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#b992ff" />
+                  <stop offset="100%" stopColor="#7b2ff7" />
+                </linearGradient>
+              </defs>
+              <circle className="anel-progresso__trilha" cx="60" cy="60" r="50" />
+              <circle
+                className="anel-progresso__arco"
+                cx="60" cy="60" r="50"
+                stroke="url(#anel-grad)"
+                style={{
+                  strokeDasharray: "314.16",
+                  strokeDashoffset: 314.16 * (1 - percentualGeral / 100),
+                }}
+              />
+            </svg>
+            <span className="anel-progresso__texto" aria-hidden="true">{percentualGeral}%</span>
+          </div>
           <p className="progresso-hero__legenda">
-            {totalConcluidos}/{totalConteudos} conteúdos · {modulosConcluidos}/{modulosDoCurso.length} módulos
+            {passosFeitos}/{totalPassos} passos · {modulosConcluidos}/{modulosComConteudo.length} módulos
           </p>
         </div>
       </section>
@@ -127,154 +132,114 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {} 
       <section aria-labelledby="titulo-aproveitamento">
         <h3 className="secao-progresso__titulo" id="titulo-aproveitamento">Aproveitamento</h3>
 
-        <ul className="lista-aproveitamento" role="list">
-          {modulosDoCurso.map((modulo) => {
+        <ol className="trilha-modulos" aria-label="Jornada por módulo">
+          {modulosDoCurso.map((modulo, idx) => {
             const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
-            const concluidosModulo = itens.filter((c) => c.concluido).length;
-            /* Percentual de conclusão do módulo = concluídos / total × 100 */
-            const percentualModulo = itens.length > 0
-              ? Math.round((concluidosModulo / itens.length) * 100)
-              : 0;
-            const { texto: statusTexto, variante: statusVariante } =
-              resolverStatusModulo(concluidosModulo, itens.length);
+            const concluidosModulo = itens.filter((c) => concluidos.has(c.id)).length;
             const quizPercentual = resultadosQuizzes[modulo.id];
+            const quizFeito = quizPercentual !== undefined;
+            /* Progresso do step = conteúdos + quiz (cada um vale 1 passo) */
+            const totalPassosModulo = itens.length + 1;
+            const passosModulo = concluidosModulo + (quizFeito ? 1 : 0);
+            const percentualModulo = Math.round((passosModulo / totalPassosModulo) * 100);
+            const concluido = passosModulo === totalPassosModulo;
+            const emAndamento = passosModulo > 0 && !concluido;
 
             return (
-              <li key={modulo.id} className="item-aproveitamento">
-                <span className="item-aproveitamento__num" aria-hidden="true">
-                  {modulo.ordem}
-                </span>
-                <div className="item-aproveitamento__info">
-                  <span className="item-aproveitamento__titulo">{modulo.titulo}</span>
-                  <div className="item-aproveitamento__barra" aria-hidden="true">
-                    <BarraProgresso percentual={percentualModulo} mostrarTexto={false} />
+              <li
+                key={modulo.id}
+                className={`passo-modulo${concluido ? " passo-modulo--concluido" : emAndamento ? " passo-modulo--andamento" : ""}`}
+              >
+                <div className="passo-modulo__esquerda">
+                  <div className="passo-modulo__indicador" aria-hidden="true">
+                    {concluido ? "✓" : modulo.ordem}
                   </div>
+                  <div className="passo-modulo__linha" aria-hidden="true" />
                 </div>
-                <div className="item-aproveitamento__badges">
-                  <Insignia texto={statusTexto} variante={statusVariante} />
-                  {quizPercentual !== undefined ? (
-                    <Insignia texto={`Quiz ${quizPercentual}%`} variante="sucesso" />
-                  ) : (
-                    <Insignia texto="Quiz pendente" variante="neutro" />
+                <div className="passo-modulo__corpo">
+                  <div className="passo-modulo__cabecalho">
+                    <span className="passo-modulo__titulo">{modulo.titulo}</span>
+                  </div>
+                  {itens.length > 0 && (
+                    <div className="passo-modulo__progresso">
+                      <BarraProgresso percentual={percentualModulo} mostrarTexto={false} />
+                      <span className="passo-modulo__pct">{percentualModulo}%</span>
+                    </div>
+                  )}
+                  {quizPercentual !== undefined && (
+                    <p className="passo-modulo__quiz">Quiz aprovado — {quizPercentual}%</p>
                   )}
                 </div>
               </li>
             );
           })}
-        </ul>
-
-        {/* Resultado da avaliação final */}
-        <div
-          className={`cartao-avaliacao-resultado ${avaliacaoAprovada ? "cartao-avaliacao-resultado--aprovado" : ""}`}
-          role="status"
-          aria-label="Resultado da avaliação final"
-        >
-          <span className="cartao-avaliacao-resultado__icone" aria-hidden="true">
-            {avaliacaoAprovada ? "✓" : "⊘"}
-          </span>
-          <div className="cartao-avaliacao-resultado__info">
-            <strong className="cartao-avaliacao-resultado__titulo">Avaliação Final</strong>
-            <p className="cartao-avaliacao-resultado__detalhe">
-              {avaliacaoAprovada
-                ? `Nota ${avaliacaoAprovada.nota} / ${avaliacaoAprovada.notaMaxima} — ${avaliacaoAprovada.porcentagem}% de aproveitamento`
-                : "Não realizada"}
-            </p>
-          </div>
-          {avaliacaoAprovada && <Insignia texto="Aprovado" variante="sucesso" />}
-        </div>
-      </section>
-
-      {/* ── Conquistas ── */}
-      <section aria-labelledby="titulo-conquistas">
-        <h3 className="secao-progresso__titulo" id="titulo-conquistas">Conquistas</h3>
-        <ul className="grade-conquistas" role="list">
-          {conquistas.map((c) => (
-            <li
-              key={c.id}
-              className={`cartao-conquista ${c.desbloqueada ? "cartao-conquista--desbloqueada" : ""}`}
-              aria-label={`${c.titulo} — ${c.desbloqueada ? "desbloqueada" : "bloqueada"}`}
-            >
-              <span className="cartao-conquista__icone" aria-hidden="true">{c.icone}</span>
-              <strong className="cartao-conquista__titulo">{c.titulo}</strong>
-              <p className="cartao-conquista__descricao">{c.descricao}</p>
-              {!c.desbloqueada && (
-                <span className="cartao-conquista__cadeado" aria-hidden="true">⊘</span>
+          <li
+            className={`passo-modulo passo-modulo--avaliacao${certAtivo ? " passo-modulo--concluido" : modulosConcluidos === modulosDoCurso.length && modulosDoCurso.length > 0 ? " passo-modulo--andamento" : ""}`}
+          >
+            <div className="passo-modulo__esquerda">
+              <div className="passo-modulo__indicador" aria-hidden="true">
+                {certAtivo ? "✓" : "★"}
+              </div>
+            </div>
+            <div className="passo-modulo__corpo">
+              <div className="passo-modulo__cabecalho">
+                <span className="passo-modulo__titulo">Avaliação Final</span>
+                {certAtivo
+                  ? <Insignia texto="Aprovado" variante="sucesso" />
+                  : <Insignia texto="Pendente" variante="neutro" />
+                }
+              </div>
+              {certAtivo ? (
+                <div className="cartao-avaliacao-resultado__nota">
+                  <span className="cartao-avaliacao-resultado__nota-valor">{certAtivo.nota}</span>
+                  <span className="cartao-avaliacao-resultado__nota-max">/ {certAtivo.notaMaxima} — {certAtivo.porcentagem}% de aproveitamento</span>
+                </div>
+              ) : (
+                <p className="passo-modulo__quiz" style={{ color: "var(--cor-texto-mudo)" }}>
+                  {modulosConcluidos < modulosDoCurso.length
+                    ? `Conclua os módulos para liberar — ${modulosConcluidos}/${modulosDoCurso.length} concluídos`
+                    : "Módulos concluídos — faça a avaliação para obter o certificado"
+                  }
+                </p>
               )}
-            </li>
-          ))}
-        </ul>
+            </div>
+          </li>
+        </ol>
       </section>
 
       {/* ── Certificado ── */}
-      <section className="secao-certificado" aria-labelledby="titulo-certificado">
-        <h3 className="secao-progresso__titulo" id="titulo-certificado">
-          Certificado de Conclusão
-        </h3>
-
-        {certificadoDesbloqueado ? (
-          <div className="certificado" role="region" aria-label="Certificado de conclusão do curso">
-            <div className="certificado__cabecalho">
-              <span className="certificado__logo" aria-hidden="true">◈</span>
-              <span className="certificado__plataforma">CodeRyse Academy</span>
-            </div>
-            <p className="certificado__subtitulo">Certificado de Conclusão</p>
-            <p className="certificado__declara">Certificamos que</p>
-            <h2 className="certificado__nome">{usuario.nome}</h2>
-            <p className="certificado__texto">concluiu com êxito o curso</p>
-            <h3 className="certificado__curso">{curso?.titulo}</h3>
-            <dl className="certificado__meta">
-              <div>
-                <dt>Data de conclusão</dt>
-                <dd>{new Date().toLocaleDateString("pt-BR")}</dd>
-              </div>
-              <div>
-                <dt>Aproveitamento</dt>
-                <dd>{avaliacaoAprovada.porcentagem}%</dd>
-              </div>
-              <div>
-                <dt>Código de verificação</dt>
-                <dd>CR-{matricula.codigoMatricula}-{new Date().getFullYear()}</dd>
-              </div>
-            </dl>
-            <Botao
-              variante="primario"
-              onClick={() => window.print()}
-            >
-              Imprimir certificado
-            </Botao>
-          </div>
-        ) : (
-          <div className="certificado-bloqueado" aria-label="Certificado bloqueado">
-            <span className="certificado-bloqueado__icone" aria-hidden="true">⊘</span>
-            <h4 className="certificado-bloqueado__titulo">Certificado bloqueado</h4>
-            <p className="certificado-bloqueado__desc">
-              Complete os requisitos abaixo para desbloquear seu certificado.
+      {certificadoDesbloqueado ? (
+        <div className="cartao-certificado-link cartao-certificado-link--desbloqueado" role="status" aria-label="Certificado disponível">
+          <span className="cartao-certificado-link__trofeu" aria-hidden="true">
+            <TbTrophy size={28} />
+          </span>
+          <div className="cartao-certificado-link__info">
+            <strong>Parabéns! Certificado disponível</strong>
+            <p>
+              Nota{" "}
+              <strong className="cartao-certificado-link__nota-valor">{certAtivo.nota}</strong>
+              /{certAtivo.notaMaxima ?? 10} · {certAtivo.porcentagem}% de aproveitamento
             </p>
-            <ul className="certificado-bloqueado__requisitos" role="list">
-              <li className={`requisito ${percentualGeral === 100 ? "requisito--ok" : ""}`}>
-                <span className="requisito__icone" aria-hidden="true">
-                  {percentualGeral === 100 ? "✓" : "○"}
-                </span>
-                <span>Concluir todos os conteúdos do curso</span>
-                <Insignia
-                  texto={`${percentualGeral}%`}
-                  variante={percentualGeral === 100 ? "sucesso" : "neutro"}
-                />
-              </li>
-              <li className={`requisito ${Boolean(avaliacaoAprovada) ? "requisito--ok" : ""}`}>
-                <span className="requisito__icone" aria-hidden="true">
-                  {Boolean(avaliacaoAprovada) ? "✓" : "○"}
-                </span>
-                <span>Aprovação na avaliação final com ≥ 70%</span>
-                <Insignia
-                  texto={Boolean(avaliacaoAprovada) ? "Aprovado" : "Pendente"}
-                  variante={Boolean(avaliacaoAprovada) ? "sucesso" : "neutro"}
-                />
-              </li>
-            </ul>
           </div>
-        )}
-      </section>
+          <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao?.("certificados")}>
+            Ver meu certificado →
+          </Botao>
+        </div>
+      ) : (
+        <div className="cartao-certificado-link" role="status" aria-label="Certificado bloqueado">
+          <span className="cartao-certificado-link__icone" aria-hidden="true">⊘</span>
+          <div className="cartao-certificado-link__info">
+            <strong>Certificado de Conclusão</strong>
+            <p>{percentualGeral}% concluído — complete o curso e a avaliação</p>
+          </div>
+          <span className="cartao-certificado-link__cadeado" aria-label="Bloqueado">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -515,13 +480,15 @@ function VistaAdmin() {
 
 /* ── Componente principal ────────────────────────────────────── */
 
-export default function TelaProgresso({ usuario, avaliacaoAprovada, resultadosQuizzes }) {
+export default function TelaProgresso({ usuario, avaliacaoAprovada, resultadosQuizzes, onMudarSecao, conteudosConcluidos }) {
   if (usuario?.tipo === "Aluno") {
     return (
       <VistaAluno
         usuario={usuario}
         avaliacaoAprovada={avaliacaoAprovada}
         resultadosQuizzes={resultadosQuizzes}
+        onMudarSecao={onMudarSecao}
+        conteudosConcluidos={conteudosConcluidos}
       />
     );
   }

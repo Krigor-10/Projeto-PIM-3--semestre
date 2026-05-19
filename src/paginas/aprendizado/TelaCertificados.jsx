@@ -4,8 +4,17 @@ import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { matriculas, cursos, certificadosDemo } from "@/dados/dadosMock.js";
+import { matriculas, cursos, modulos, conteudos, certificadosDemo } from "@/dados/dadosMock.js";
 import fundoCertificado from "@/ativos/certificado-fundo.png";
+
+function gerarConquistas(totalConcluidos, modulosConcluidos, percentualGeral) {
+  return [
+    { id: "primeiro-passo", icone: "✦", titulo: "Primeiro passo",    descricao: "Concluiu o 1º conteúdo",       desbloqueada: totalConcluidos >= 1  },
+    { id: "em-ritmo",       icone: "◆", titulo: "Em ritmo",           descricao: "5 conteúdos concluídos",       desbloqueada: totalConcluidos >= 5  },
+    { id: "modulo-completo",icone: "◎", titulo: "Módulo completo",    descricao: "Finalizou um módulo inteiro",  desbloqueada: modulosConcluidos >= 1 },
+    { id: "metade",         icone: "⬟", titulo: "Metade do caminho",  descricao: "50% do curso concluído",       desbloqueada: percentualGeral >= 50  },
+  ];
+}
 
 export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
   const [certificadoAberto, setCertificadoAberto] = useState(null);
@@ -38,6 +47,22 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
   ).length;
 
   const bloqueados = matriculasAluno.length - totalCertificados;
+
+  const modulosDosAluno = modulos.filter(
+    (m) => matriculasAluno.some((mat) => mat.cursoId === m.cursoId)
+  );
+  const conteudosDosAluno = conteudos.filter(
+    (c) => modulosDosAluno.some((m) => m.id === c.moduloId)
+  );
+  const totalConcluidos = conteudosDosAluno.filter((c) => c.concluido).length;
+  const modulosConcluidos = modulosDosAluno.filter((mod) => {
+    const itens = conteudosDosAluno.filter((c) => c.moduloId === mod.id);
+    return itens.length > 0 && itens.every((c) => c.concluido);
+  }).length;
+  const percentualGeral = conteudosDosAluno.length > 0
+    ? Math.round((totalConcluidos / conteudosDosAluno.length) * 100)
+    : 0;
+  const conquistas = gerarConquistas(totalConcluidos, modulosConcluidos, percentualGeral);
 
   return (
     <div className="tela-certificados">
@@ -161,6 +186,27 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
           })}
         </ul>
       )}
+
+      <section aria-labelledby="titulo-conquistas">
+        <h3 className="secao-progresso__titulo" id="titulo-conquistas">Conquistas</h3>
+        <ul className="grade-conquistas" role="list">
+          {conquistas.map((c) => (
+            <li
+              key={c.id}
+              className={`cartao-conquista ${c.desbloqueada ? "cartao-conquista--desbloqueada" : ""}`}
+              aria-label={`${c.titulo} — ${c.desbloqueada ? "desbloqueada" : "bloqueada"}`}
+            >
+              <span className="cartao-conquista__icone" aria-hidden="true">{c.icone}</span>
+              <strong className="cartao-conquista__titulo">{c.titulo}</strong>
+              <p className="cartao-conquista__descricao">{c.descricao}</p>
+              {c.desbloqueada
+                ? <span className="cartao-conquista__check" aria-hidden="true">✓</span>
+                : <span className="cartao-conquista__cadeado" aria-hidden="true">⊘</span>
+              }
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* Modal do certificado */}
       {certificadoAberto && (

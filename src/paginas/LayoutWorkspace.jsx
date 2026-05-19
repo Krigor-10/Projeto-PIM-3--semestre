@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { rotaPainelSecao } from "@/rotas.js";
 import { temPermissao } from "@/dados/permissoes.js";
 import { db } from "@/dados/db.js";
+import { conteudos as conteudosIniciais } from "@/dados/dadosMock.js";
 import BarraLateral from "@/componentes/BarraLateral.jsx";
 import BarraTopo from "@/componentes/BarraTopo.jsx";
 import { temNavGrupo } from "@/componentes/NavGrupo.jsx";
@@ -83,6 +84,10 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   /* null enquanto não aprovada; objeto { porcentagem, nota, notaMaxima } após aprovação */
   const [avaliacaoAprovada, setAvaliacaoAprovada] = useState(null);
   const [conteudoConcluido, setConteudoConcluido] = useState(false);
+  /* Set de IDs de conteúdos concluídos — compartilhado entre TelaConteudos e TelaProgresso */
+  const [conteudosConcluidos, setConteudosConcluidos] = useState(
+    () => new Set(conteudosIniciais.filter((c) => c.concluido).map((c) => c.id))
+  );
   const [toasts, setToasts] = useState([]);
 
   function mostrarToast(mensagem, tipo = "sucesso") {
@@ -94,6 +99,14 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   function registrarQuizAprovado(moduloId, percentual) {
     setQuizzesAprovados((prev) => new Set(prev).add(moduloId));
     setResultadosQuizzes((prev) => ({ ...prev, [moduloId]: percentual }));
+  }
+
+  function alternarConclusaoConteudo(id) {
+    setConteudosConcluidos((prev) => {
+      const copia = new Set(prev);
+      copia.has(id) ? copia.delete(id) : copia.add(id);
+      return copia;
+    });
   }
 
   function resolverTela() {
@@ -143,6 +156,8 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
               onAvaliacaoAprovada={(resultado) => setAvaliacaoAprovada(resultado)}
               conteudoConcluido={conteudoConcluido}
               onConteudoConcluido={setConteudoConcluido}
+              conteudosConcluidos={conteudosConcluidos}
+              onAlternarConclusao={alternarConclusaoConteudo}
               onToast={mostrarToast}
             />
           </div>

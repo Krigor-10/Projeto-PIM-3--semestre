@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FiPlusCircle } from "react-icons/fi";
-import { TbDotsVertical } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbLock } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -117,6 +117,8 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
 
   const questao = questoes[indice];
   const tempoEsgotando = segundos <= 60 && segundos > 0;
+  /* true quando o aluno navegou de volta a uma questão já respondida e ainda há perguntas sem resposta */
+  const eRevisando = indice < respostas.length && respostas.length < totalQuestoes;
 
   /* Timer: decrementa a cada segundo e finaliza ao zerar */
   useEffect(() => {
@@ -146,14 +148,31 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
   }
 
   function avancarQuestao() {
-    if (indice + 1 < totalQuestoes) {
-      setIndice((i) => i + 1);
+    /* Sempre avança para a próxima questão SEM resposta (não necessariamente indice+1) */
+    const proxIndice = respostas.length;
+    if (proxIndice < totalQuestoes) {
+      setIndice(proxIndice);
       setSelecionada(null);
       setConfirmada(false);
       setApoioAberto(true);
     } else {
       finalizarAvaliacao(respostasRef.current);
     }
+  }
+
+  function navegarParaQuestao(idx) {
+    const podeNavegar = idx <= respostas.length;
+    if (!podeNavegar) return;
+    const respostaExistente = respostas.find((r) => r.id === questoes[idx].id);
+    setIndice(idx);
+    if (respostaExistente) {
+      setSelecionada(respostaExistente.resposta);
+      setConfirmada(true);
+    } else {
+      setSelecionada(null);
+      setConfirmada(false);
+    }
+    setApoioAberto(false);
   }
 
   function finalizarAvaliacao(respostasFinais) {
@@ -176,41 +195,50 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
   return (
     <section className="quiz-embutido" aria-labelledby="quiz-avaliacao-titulo">
       <header className="quiz-cabecalho">
-        <div className="quiz-embutido__info">
-          <h2 className="quiz-embutido__titulo" id="quiz-avaliacao-titulo">
-            {avaliacao.titulo}
-          </h2>
-          <p className="quiz-embutido__curso">{avaliacao.cursoTitulo}</p>
+        <div className="quiz-cabecalho__topo">
+          <div className="quiz-embutido__info">
+            <h2 className="quiz-embutido__titulo" id="quiz-avaliacao-titulo">
+              {avaliacao.titulo}
+            </h2>
+            <p className="quiz-embutido__curso">{avaliacao.cursoTitulo}</p>
+          </div>
+          <time
+            className={`quiz-timer${tempoEsgotando ? " quiz-timer--urgente" : ""}`}
+            aria-live="polite"
+            aria-label={`Tempo restante: ${formatarTempo(segundos)}`}
+            dateTime={`PT${segundos}S`}
+          >
+            <TbClock size={16} aria-hidden="true" />
+            {formatarTempo(segundos)}
+          </time>
         </div>
 
-        <div className="quiz-progresso">
-          <span className="quiz-progresso__texto">
+        <div className="quiz-cabecalho__steps">
+          <span className="quiz-cabecalho__contador">
             Questão {indice + 1} de {totalQuestoes}
           </span>
-          <div
-            className="quiz-progresso__barra"
-            role="progressbar"
-            aria-valuenow={indice + 1}
-            aria-valuemin={1}
-            aria-valuemax={totalQuestoes}
-            aria-label={`Questão ${indice + 1} de ${totalQuestoes}`}
-          >
-            <div
-              className="quiz-progresso__fill"
-              style={{ width: `${((indice + 1) / totalQuestoes) * 100}%` }}
-            />
-          </div>
+          <nav className="quiz-steps" aria-label="Progresso do quiz">
+            {questoes.map((q, idx) => {
+              const resposta = respostas.find((r) => r.id === q.id);
+              const eAtual = idx === indice;
+              let estado = idx > respostas.length ? "pendente" : "atual";
+              if (resposta) estado = resposta.correta ? "correta" : "errada";
+              return (
+                <button
+                  key={q.id}
+                  type="button"
+                  className={`quiz-step quiz-step--${estado}${eAtual ? " quiz-step--ativo" : ""}`}
+                  onClick={() => navegarParaQuestao(idx)}
+                  disabled={idx > respostas.length}
+                  aria-label={`Questão ${idx + 1}${resposta ? (resposta.correta ? " — correta" : " — errada") : eAtual ? " — atual" : " — pendente"}`}
+                  aria-current={eAtual ? "step" : undefined}
+                >
+                  {idx + 1}
+                </button>
+              );
+            })}
+          </nav>
         </div>
-
-        {/* Timer: fica vermelho quando restam menos de 60 segundos */}
-        <time
-          className={`quiz-timer${tempoEsgotando ? " quiz-timer--urgente" : ""}`}
-          aria-live="polite"
-          aria-label={`Tempo restante: ${formatarTempo(segundos)}`}
-          dateTime={`PT${segundos}S`}
-        >
-          {formatarTempo(segundos)}
-        </time>
       </header>
 
       <div className="quiz-corpo">
@@ -280,7 +308,7 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
           })}
         </fieldset>
 
-        {!confirmada && (
+        {!confirmada && !eRevisando && (
           <div className="quiz-acoes">
             <Botao
               variante="primario"
@@ -324,12 +352,8 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
               ))}
             </div>
             <div className="quiz-acoes">
-              <Botao
-                variante="primario"
-                tamanho="grande"
-                onClick={avancarQuestao}
-              >
-                {indice + 1 < totalQuestoes
+              <Botao variante="primario" tamanho="grande" onClick={avancarQuestao}>
+                {respostas.length < totalQuestoes
                   ? "Próxima questão"
                   : "Ver resultado"}
               </Botao>
@@ -1189,9 +1213,6 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             className="avaliacoes-grupo__titulo"
             id={`curso-${grupo.cursoId}`}
           >
-            <span className="avaliacoes-grupo__icone" aria-hidden="true">
-              📚
-            </span>
             {grupo.cursoTitulo}
             <span className="avaliacoes-grupo__contagem">
               {grupo.itens.length}
@@ -1207,78 +1228,85 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               const jaRealizada = Boolean(resultados[av.id]);
               const tentativasUsadas = tentativas[av.id] || 0;
               const limiteAtingido = tentativasUsadas >= LIMITE_TENTATIVAS;
+              const resultado = resultados[av.id];
+              const aprovado = resultado?.porcentagem >= 70;
+
+              const classesCartao = [
+                "cartao-avaliacao",
+                ehAluno && !avaliacaoLiberada && "cartao-avaliacao--bloqueado",
+                ehAluno && resultado && (aprovado ? "cartao-avaliacao--aprovado" : "cartao-avaliacao--reprovado"),
+              ].filter(Boolean).join(" ");
 
               return (
                 <li key={av.id}>
                   <article
-                    className="cartao-avaliacao"
+                    className={classesCartao}
                     aria-labelledby={`av-titulo-${av.id}`}
                   >
-                    <header className="cartao-avaliacao__cabecalho">
+                    <header className="cartao-avaliacao__topo">
                       <h4
                         className="cartao-avaliacao__titulo"
                         id={`av-titulo-${av.id}`}
                       >
                         {av.titulo}
                       </h4>
-                      {/* Aluno vê status de realização; outros veem status de publicação */}
-                      {ehAluno
-                        ? badgeRealizacao(av.id)
-                        : <Insignia texto={av.status} />}
+                      {!ehAluno && <Insignia texto={av.status} />}
                     </header>
 
-                    <dl className="cartao-avaliacao__meta">
-                      <div>
-                        <dt>Questões</dt>
-                        <dd>{av.totalQuestoes}</dd>
-                      </div>
-                      <div>
-                        <dt>Tentativas</dt>
-                        <dd>{av.tentativasPermitidas}</dd>
-                      </div>
-                      <div>
-                        <dt>Tempo</dt>
-                        <dd>{av.tempoLimiteMinutos}min</dd>
-                      </div>
-                      <div>
-                        <dt>Nota máx.</dt>
-                        <dd>{av.notaMaxima}</dd>
-                      </div>
-                    </dl>
+                    <div className="cartao-avaliacao__corpo">
+                      <dl className="cartao-avaliacao__meta">
+                        <div className="cartao-avaliacao__meta-item">
+                          <dt>Questões</dt>
+                          <dd>{av.totalQuestoes}</dd>
+                        </div>
+                        <div className="cartao-avaliacao__meta-item">
+                          <dt>Tempo</dt>
+                          <dd>{av.tempoLimiteMinutos}min</dd>
+                        </div>
+                        <div className="cartao-avaliacao__meta-item">
+                          <dt>Nota máx.</dt>
+                          <dd>{av.notaMaxima}</dd>
+                        </div>
+                        <div className="cartao-avaliacao__meta-item">
+                          <dt>Tentativas</dt>
+                          <dd>{ehAluno ? `${tentativasUsadas}/${av.tentativasPermitidas}` : av.tentativasPermitidas}</dd>
+                        </div>
+                      </dl>
 
-                    <footer className="cartao-avaliacao__rodape">
-                      <Botao
-                        variante="fantasma"
-                        tamanho="pequeno"
-                        onClick={() => abrirDetalhes(av)}
-                        aria-label={`Ver detalhes de ${av.titulo}`}
-                      >
-                        Detalhes
-                      </Botao>
-                      {ehAluno && (
-                        !avaliacaoLiberada ? (
-                          <span className="resultado-tentativas resultado-tentativas--esgotadas">
+                      <footer className="cartao-avaliacao__rodape">
+                        {ehAluno && badgeRealizacao(av.id)}
+                        {ehAluno && !avaliacaoLiberada ? (
+                          <span className="cartao-avaliacao__bloqueado-info">
+                            <TbLock size={13} aria-hidden="true" />
                             Bloqueado
                           </span>
-                        ) : limiteAtingido ? (
-                          /* Exibe tentativas esgotadas sem botão clicável */
+                        ) : ehAluno && limiteAtingido ? (
                           <span className="resultado-tentativas resultado-tentativas--esgotadas">
                             {LIMITE_TENTATIVAS}/{LIMITE_TENTATIVAS} tentativas
                           </span>
                         ) : (
-                          <Botao
-                            variante={jaRealizada ? "secundario" : "primario"}
-                            tamanho="pequeno"
-                            onClick={() => iniciarAvaliacao(av)}
-                            aria-label={`${jaRealizada ? "Refazer" : "Iniciar"} ${av.titulo} — tentativa ${tentativasUsadas + 1} de ${LIMITE_TENTATIVAS}`}
-                          >
-                            {jaRealizada
-                              ? `Refazer (${tentativasUsadas}/${LIMITE_TENTATIVAS})`
-                              : "Iniciar"}
-                          </Botao>
-                        )
-                      )}
-                    </footer>
+                          <>
+                            <button
+                              className="botao-icone"
+                              onClick={() => abrirDetalhes(av)}
+                              aria-label={`Ver detalhes de ${av.titulo}`}
+                            >
+                              <TbDotsVertical size={16} />
+                            </button>
+                            {ehAluno && (
+                              <Botao
+                                variante={jaRealizada ? "secundario" : "primario"}
+                                tamanho="pequeno"
+                                onClick={() => iniciarAvaliacao(av)}
+                                aria-label={`${jaRealizada ? "Refazer" : "Iniciar"} ${av.titulo}`}
+                              >
+                                {jaRealizada ? `Refazer (${tentativasUsadas + 1}ª)` : "Iniciar avaliação"}
+                              </Botao>
+                            )}
+                          </>
+                        )}
+                      </footer>
+                    </div>
                   </article>
                 </li>
               );

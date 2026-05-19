@@ -99,7 +99,7 @@
   display: flex;
   align-items: center;
   gap: var(--espaco-md);
-  background: var(--cor-superficie);
+  background: var(--cor-fundo-elevado);
   border: 2px solid var(--cor-marca);
   border-radius: var(--raio-lg);
   padding: var(--espaco-md) var(--espaco-lg);

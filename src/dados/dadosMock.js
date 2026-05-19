@@ -165,11 +165,9 @@ export const cursos = [
 /* ── Módulos por curso ───────────────────────────────────────── */
 export const modulos = [
   /* Desenvolvimento Web (cursoId: 1) */
-  { id: 1,  cursoId: 1, codigoRegistro: "MOD-001", titulo: "Fundamentos de HTML5",          ordem: 1, totalConteudos: 8  },
-  { id: 2,  cursoId: 1, codigoRegistro: "MOD-002", titulo: "CSS3 e Responsividade",          ordem: 2, totalConteudos: 10 },
-  { id: 3,  cursoId: 1, codigoRegistro: "MOD-003", titulo: "JavaScript Moderno (ES6+)",      ordem: 3, totalConteudos: 12 },
-  { id: 4,  cursoId: 1, codigoRegistro: "MOD-004", titulo: "React — Fundamentos",            ordem: 4, totalConteudos: 9  },
-  { id: 5,  cursoId: 1, codigoRegistro: "MOD-005", titulo: "React — Hooks e Estado",         ordem: 5, totalConteudos: 7  },
+  { id: 1, cursoId: 1, codigoRegistro: "MOD-001", titulo: "Fundamentos de HTML5",     ordem: 1, totalConteudos: 3 },
+  { id: 2, cursoId: 1, codigoRegistro: "MOD-002", titulo: "CSS3 e Responsividade",     ordem: 2, totalConteudos: 3 },
+  { id: 3, cursoId: 1, codigoRegistro: "MOD-003", titulo: "JavaScript Moderno (ES6+)", ordem: 3, totalConteudos: 2 },
 
   /* Ciência de Dados (cursoId: 2) */
   { id: 6,  cursoId: 2, codigoRegistro: "MOD-006", titulo: "Python para Análise de Dados",  ordem: 1, totalConteudos: 10 },
@@ -218,7 +216,6 @@ export const matriculas = [
 export const avaliacoes = [
   { id: 1, titulo: "Prova 1 — HTML e CSS",              cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 2,  tentativasPermitidas: 2, tempoLimiteMinutos: 60,  notaMaxima: 10, totalQuestoes: 10, status: "Publicada", novo: true },
   { id: 2, titulo: "Prova 2 — JavaScript Avançado",     cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 3,  tentativasPermitidas: 1, tempoLimiteMinutos: 90,  notaMaxima: 10, totalQuestoes: 15, status: "Publicada", novo: true },
-  { id: 3, titulo: "Prova Final — React",               cursoId: 1, cursoTitulo: "Desenvolvimento Web",    moduloId: 5,  tentativasPermitidas: 1, tempoLimiteMinutos: 120, notaMaxima: 10, totalQuestoes: 20, status: "Rascunho"  },
   { id: 4, titulo: "Avaliação — Python e Pandas",       cursoId: 2, cursoTitulo: "Ciência de Dados",       moduloId: 6,  tentativasPermitidas: 3, tempoLimiteMinutos: 45,  notaMaxima: 10, totalQuestoes: 8,  status: "Publicada" },
   { id: 5, titulo: "Quiz — Fundamentos de IA",          cursoId: 3, cursoTitulo: "Inteligência Artificial", moduloId: 8,  tentativasPermitidas: 2, tempoLimiteMinutos: 30,  notaMaxima: 10, totalQuestoes: 5,  status: "Publicada" },
   { id: 6, titulo: "Prova — OWASP e Pentest",           cursoId: 4, cursoTitulo: "Cybersegurança",          moduloId: 11, tentativasPermitidas: 1, tempoLimiteMinutos: 60,  notaMaxima: 10, totalQuestoes: 12, status: "Publicada" },
@@ -228,16 +225,14 @@ export const avaliacoes = [
 
 /* ── Conteúdos (ligados aos módulos do Desenvolvimento Web) ──── */
 export const conteudos = [
-  { id: 1,  moduloId: 1, titulo: "Introdução ao HTML5",               tipo: "Video",     duracao: "18min", concluido: true  },
-  { id: 2,  moduloId: 1, titulo: "Estrutura semântica",               tipo: "Video",     duracao: "22min", concluido: true  },
-  { id: 3,  moduloId: 1, titulo: "Formulários e inputs",              tipo: "Texto",     duracao: "15min", concluido: true  },
-  { id: 4,  moduloId: 2, titulo: "Flexbox na prática",                tipo: "Video",     duracao: "30min", concluido: false },
-  { id: 5,  moduloId: 2, titulo: "CSS Grid",                          tipo: "Video",     duracao: "28min", concluido: false },
-  { id: 6,  moduloId: 2, titulo: "Media Queries e responsividade",    tipo: "Documento", duracao: "20min", concluido: false },
-  { id: 7,  moduloId: 3, titulo: "Arrow functions e destructuring",   tipo: "Video",     duracao: "25min", concluido: false },
-  { id: 8,  moduloId: 3, titulo: "Promises e Async/Await",            tipo: "Video",     duracao: "35min", concluido: false, novo: true },
-  { id: 9,  moduloId: 4, titulo: "Introdução ao React",               tipo: "Video",     duracao: "20min", concluido: false, novo: true },
-  { id: 10, moduloId: 4, titulo: "Componentes e Props",               tipo: "Video",     duracao: "32min", concluido: false, novo: true },
+  { id: 1, moduloId: 1, titulo: "Introdução ao HTML5",             tipo: "Video",     duracao: "18min", concluido: true  },
+  { id: 2, moduloId: 1, titulo: "Estrutura semântica",             tipo: "Video",     duracao: "22min", concluido: true  },
+  { id: 3, moduloId: 1, titulo: "Formulários e inputs",            tipo: "Texto",     duracao: "15min", concluido: true  },
+  { id: 4, moduloId: 2, titulo: "Flexbox na prática",              tipo: "Video",     duracao: "30min", concluido: false },
+  { id: 5, moduloId: 2, titulo: "CSS Grid",                        tipo: "Video",     duracao: "28min", concluido: false },
+  { id: 6, moduloId: 2, titulo: "Media Queries e responsividade",  tipo: "Documento", duracao: "20min", concluido: false },
+  { id: 7, moduloId: 3, titulo: "Arrow functions e destructuring", tipo: "Video",     duracao: "25min", concluido: false },
+  { id: 8, moduloId: 3, titulo: "Promises e Async/Await",          tipo: "Video",     duracao: "35min", concluido: false, novo: true },
 ];
 
 /* ── Progresso da aluna demo (Maria Isabela) ────────────────── */
@@ -246,10 +241,9 @@ export const progressoAluno = {
     { cursoId: 1, cursoTitulo: "Desenvolvimento Web", percentual: 42, status: "Em andamento", ultimoAcesso: "2024-03-19" },
   ],
   modulos: [
-    { moduloId: 1, moduloTitulo: "Fundamentos de HTML5",        percentual: 100, status: "Concluído"    },
-    { moduloId: 2, moduloTitulo: "CSS3 e Responsividade",        percentual: 40,  status: "Em andamento" },
-    { moduloId: 3, moduloTitulo: "JavaScript Moderno (ES6+)",    percentual: 0,   status: "Não iniciado" },
-    { moduloId: 4, moduloTitulo: "React — Fundamentos",          percentual: 0,   status: "Não iniciado" },
+    { moduloId: 1, moduloTitulo: "Fundamentos de HTML5",     percentual: 100, status: "Concluído"    },
+    { moduloId: 2, moduloTitulo: "CSS3 e Responsividade",     percentual: 40,  status: "Em andamento" },
+    { moduloId: 3, moduloTitulo: "JavaScript Moderno (ES6+)", percentual: 0,   status: "Não iniciado" },
   ],
 };
 
