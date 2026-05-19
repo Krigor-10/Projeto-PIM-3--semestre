@@ -112,7 +112,37 @@ telas menores. É possível também salvar a página inicial como PDF pelo próp
 sem nenhuma etapa adicional.
 
 
-5. FUNCIONALIDADES IMPLEMENTADAS
+5. O PAPEL DO HTML, JAVASCRIPT E JSX NO PROJETO
+-------------------------------------------------
+
+HTML
+
+É a base estrutural de qualquer página web. No projeto, o HTML aparece principalmente
+em um único arquivo que serve como ponto de entrada da aplicação — é ele que o navegador
+carrega primeiro. Também é usado diretamente na seção de impressão da página inicial,
+onde o conteúdo precisa existir de forma estática para funcionar com o Ctrl+P.
+
+JavaScript
+
+É a linguagem de programação que dá vida à interface. No projeto, o JavaScript é
+responsável por toda a lógica da aplicação: controlar qual tela o usuário vê, verificar
+se ele está logado, filtrar dados, calcular progresso, gerenciar o estado dos formulários
+e conectar as ações do usuário com as respostas da interface.
+
+JSX (JavaScript XML)
+
+É uma extensão do JavaScript criada pelo React que permite escrever a estrutura visual
+das telas dentro do próprio código. Na prática, é uma mistura de HTML com JavaScript —
+em vez de separar a estrutura da lógica em arquivos diferentes, o JSX mantém os dois
+juntos no mesmo componente. Cada tela do projeto é escrita em JSX, o que facilita
+reutilizar partes da interface e manter tudo organizado por funcionalidade.
+
+Em resumo: o HTML define a estrutura inicial da página, o JavaScript controla o
+comportamento e a lógica, e o JSX une os dois dentro do React para construir as telas
+de forma organizada e reutilizável.
+
+
+6. FUNCIONALIDADES IMPLEMENTADAS
 ----------------------------------
 
 - Página pública com catálogo de cursos e fluxo de matrícula
