@@ -204,7 +204,7 @@ function VistaGerencialCoordenador({ usuario }) {
             </div>
 
             <div className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={tentarFechar} style={{ marginRight: "auto" }}>Fechar</Botao>
+              <Botao variante="fantasma" type="button" onClick={tentarFechar} style={{ marginRight: "auto" }}>Fechar</Botao>
               <Botao variante="primario" type="submit">Salvar alterações</Botao>
             </div>
           </form>
@@ -579,7 +579,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             )}
 
             <div className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto" }}>Fechar</Botao>
+              <Botao variante="fantasma" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto" }}>Fechar</Botao>
               {podeEditar(tipo, "cursos") && (
                 <Botao variante="primario" type="submit">Salvar alterações</Botao>
               )}

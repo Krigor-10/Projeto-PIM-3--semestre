@@ -415,7 +415,7 @@ export default function TelaAlunos({ usuario }) {
               </Botao>
             )}
             {podeExcluir_ && (
-              <Botao variante="fantasma" tamanho="pequeno" onClick={() => { setAlunoRemovendo(alunoDetalhe.id); setAlunoDetalhe(null); }}>
+              <Botao variante="perigo" tamanho="pequeno" onClick={() => { setAlunoRemovendo(alunoDetalhe.id); setAlunoDetalhe(null); }}>
                 Remover aluno
               </Botao>
             )}
