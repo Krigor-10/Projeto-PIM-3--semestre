@@ -485,20 +485,26 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
 
 function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
   const [form, setForm] = useState(formVazio);
+  const [confirmarCancelar, setConfirmarCancelar] = useState(false);
+  const [stepAtivo, setStepAtivo] = useState("geral");
 
   function atualizarMeta(campo, valor) {
     setForm((f) => ({ ...f, [campo]: valor }));
   }
 
   function adicionarQuestao() {
-    setForm((f) => ({ ...f, questoes: [...f.questoes, novaQuestao()] }));
+    const nova = novaQuestao();
+    setForm((f) => ({ ...f, questoes: [...f.questoes, nova] }));
+    setStepAtivo(nova._id);
   }
 
   function removerQuestao(id) {
-    setForm((f) => ({
-      ...f,
-      questoes: f.questoes.filter((q) => q._id !== id),
-    }));
+    const novas = form.questoes.filter((q) => q._id !== id);
+    setForm((f) => ({ ...f, questoes: novas }));
+    if (stepAtivo === id) {
+      const idx = form.questoes.findIndex((q) => q._id === id);
+      setStepAtivo(novas.length > 0 ? novas[Math.max(0, idx - 1)]._id : "geral");
+    }
   }
 
   function atualizarQuestao(id, campo, valor) {
@@ -515,12 +521,7 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
       ...f,
       questoes: f.questoes.map((q) =>
         q._id === questaoId
-          ? {
-              ...q,
-              alternativas: q.alternativas.map((a) =>
-                a.letra === letra ? { ...a, texto: valor } : a
-              ),
-            }
+          ? { ...q, alternativas: q.alternativas.map((a) => a.letra === letra ? { ...a, texto: valor } : a) }
           : q
       ),
     }));
@@ -531,6 +532,11 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
     onSalvar({ ...form, status });
   }
 
+  const questaoAtiva = stepAtivo !== "geral"
+    ? form.questoes.find((q) => q._id === stepAtivo)
+    : null;
+  const idxAtivo = questaoAtiva ? form.questoes.indexOf(questaoAtiva) : -1;
+
   return (
     <div className="criar-avaliacao">
       <header className="cabecalho-pagina">
@@ -540,172 +546,199 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
             Preencha os dados e as questões da prova
           </p>
         </div>
-        <Botao
-          variante="perigo"
-          onClick={onCancelar}
-        >
+        <Botao variante="perigo" onClick={() => setConfirmarCancelar(true)}>
           Cancelar
         </Botao>
       </header>
 
       <form onSubmit={(e) => salvarAvaliacao(e, "Publicada")} noValidate>
-        <section className="criar-avaliacao__secao">
-          <h3 className="criar-avaliacao__secao-titulo">Dados gerais</h3>
-          <div className="criar-avaliacao__secao-corpo">
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="av-titulo">
-                Título da avaliação *
-              </label>
-              <input
-                id="av-titulo"
-                className="campo__entrada"
-                type="text"
-                placeholder="Ex: Prova 1 — Fundamentos de HTML"
-                value={form.titulo}
-                onChange={(e) => atualizarMeta("titulo", e.target.value)}
-                required
-              />
-            </div>
+        <div className="criar-avaliacao__layout">
 
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="av-curso">
-                Curso *
-              </label>
-              <SelectSimples
-                id="av-curso"
-                value={form.cursoId}
-                opcoes={cursosDisponiveis.map((c) => ({ valor: c.id, rotulo: c.titulo }))}
-                onChange={(val) => atualizarMeta("cursoId", val)}
-                placeholder="Selecione um curso"
-                required
-              />
-            </div>
-
-            <div className="grade-3">
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="av-tentativas">
-                  Tentativas permitidas
-                </label>
-                <input
-                  id="av-tentativas"
-                  className="campo__entrada"
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={form.tentativas}
-                  onChange={(e) =>
-                    atualizarMeta("tentativas", Number(e.target.value))
-                  }
-                />
-              </div>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="av-tempo">
-                  Tempo limite (min)
-                </label>
-                <input
-                  id="av-tempo"
-                  className="campo__entrada"
-                  type="number"
-                  min="5"
-                  value={form.tempo}
-                  onChange={(e) =>
-                    atualizarMeta("tempo", Number(e.target.value))
-                  }
-                />
-              </div>
-              <div className="campo">
-                <label className="campo__rotulo" htmlFor="av-nota">
-                  Nota máxima
-                </label>
-                <input
-                  id="av-nota"
-                  className="campo__entrada"
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={form.notaMaxima}
-                  onChange={(e) =>
-                    atualizarMeta("notaMaxima", Number(e.target.value))
-                  }
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="criar-avaliacao__secao">
-          <div className="criar-avaliacao__secao-cabecalho">
-            <h3 className="criar-avaliacao__secao-titulo">
-              Questões
-              <span className="criar-avaliacao__contagem">
-                {form.questoes.length}
+          {/* ── Barra de steps ─────────────────────────────── */}
+          <aside className="criar-avaliacao__steps">
+            <button
+              type="button"
+              className={`criar-avaliacao__step${stepAtivo === "geral" ? " criar-avaliacao__step--ativo" : ""}`}
+              onClick={() => setStepAtivo("geral")}
+            >
+              <span className="criar-avaliacao__step-icone">
+                {stepAtivo === "geral" ? "●" : "○"}
               </span>
-            </h3>
-            <Botao
-              variante="secundario"
-              tamanho="pequeno"
+              Dados Gerais
+            </button>
+
+            {form.questoes.length > 0 && (
+              <div className="criar-avaliacao__step-divisor">
+                <span>Questões</span>
+                <span className="criar-avaliacao__contagem">{form.questoes.length}</span>
+              </div>
+            )}
+
+            {form.questoes.map((q, idx) => (
+              <button
+                key={q._id}
+                type="button"
+                className={`criar-avaliacao__step criar-avaliacao__step--questao${stepAtivo === q._id ? " criar-avaliacao__step--ativo" : ""}`}
+                onClick={() => setStepAtivo(q._id)}
+                aria-label={`Ir para questão ${idx + 1}`}
+              >
+                <span className="criar-avaliacao__step-num">{idx + 1}</span>
+                <span className="criar-avaliacao__step-label">Questão {idx + 1}</span>
+              </button>
+            ))}
+
+            <button
+              type="button"
+              className="criar-avaliacao__step criar-avaliacao__step--adicionar"
               onClick={adicionarQuestao}
             >
-              + Adicionar questão
-            </Botao>
-          </div>
+              <span className="criar-avaliacao__step-num criar-avaliacao__step-num--mais">+</span>
+              Adicionar questão
+            </button>
+          </aside>
 
-          <div className="criar-avaliacao__questoes">
-            {form.questoes.map((q, idx) => (
-              <article key={q._id} className="questao-editor">
+          {/* ── Painel do step ativo ────────────────────────── */}
+          <div className="criar-avaliacao__painel">
+            {stepAtivo === "geral" ? (
+              <section className="criar-avaliacao__secao">
+                <h3 className="criar-avaliacao__secao-titulo">Dados gerais</h3>
+                <div className="criar-avaliacao__secao-corpo">
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="av-titulo">
+                      Título da avaliação *
+                    </label>
+                    <input
+                      id="av-titulo"
+                      className="campo__entrada"
+                      type="text"
+                      placeholder="Ex: Prova 1 — Fundamentos de HTML"
+                      value={form.titulo}
+                      onChange={(e) => atualizarMeta("titulo", e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="av-curso">
+                      Curso *
+                    </label>
+                    <SelectSimples
+                      id="av-curso"
+                      value={form.cursoId}
+                      opcoes={cursosDisponiveis.map((c) => ({ valor: c.id, rotulo: c.titulo }))}
+                      onChange={(val) => atualizarMeta("cursoId", val)}
+                      placeholder="Selecione um curso"
+                      required
+                    />
+                  </div>
+
+                  <div className="grade-3">
+                    <div className="campo">
+                      <label className="campo__rotulo" htmlFor="av-tentativas">
+                        Tentativas permitidas
+                      </label>
+                      <input
+                        id="av-tentativas"
+                        className="campo__entrada"
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={form.tentativas}
+                        onChange={(e) => atualizarMeta("tentativas", Number(e.target.value))}
+                      />
+                    </div>
+                    <div className="campo">
+                      <label className="campo__rotulo" htmlFor="av-tempo">
+                        Tempo limite (min)
+                      </label>
+                      <input
+                        id="av-tempo"
+                        className="campo__entrada"
+                        type="number"
+                        min="5"
+                        value={form.tempo}
+                        onChange={(e) => atualizarMeta("tempo", Number(e.target.value))}
+                      />
+                    </div>
+                    <div className="campo">
+                      <label className="campo__rotulo" htmlFor="av-nota">
+                        Nota máxima
+                      </label>
+                      <input
+                        id="av-nota"
+                        className="campo__entrada"
+                        type="number"
+                        min="1"
+                        max="100"
+                        value={form.notaMaxima}
+                        onChange={(e) => atualizarMeta("notaMaxima", Number(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+            ) : questaoAtiva ? (
+              <article className="questao-editor">
                 <header className="questao-editor__cabecalho">
-                  <span className="questao-editor__num">
-                    Questão {idx + 1}
-                  </span>
-                  {form.questoes.length > 1 && (
+                  <div className="questao-editor__nav">
                     <button
-                      className="questao-editor__remover"
-                      onClick={() => removerQuestao(q._id)}
                       type="button"
-                      aria-label={`Remover questão ${idx + 1}`}
+                      className="questao-editor__seta"
+                      disabled={idxAtivo === 0}
+                      onClick={() => setStepAtivo(form.questoes[idxAtivo - 1]._id)}
+                      aria-label="Questão anterior"
                     >
-                      Remover
+                      ‹
                     </button>
-                  )}
+                    <span className="questao-editor__num">
+                      Questão {idxAtivo + 1}
+                      <span className="questao-editor__total"> de {form.questoes.length}</span>
+                    </span>
+                    <button
+                      type="button"
+                      className="questao-editor__seta"
+                      disabled={idxAtivo === form.questoes.length - 1}
+                      onClick={() => setStepAtivo(form.questoes[idxAtivo + 1]._id)}
+                      aria-label="Próxima questão"
+                    >
+                      ›
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="questao-editor__remover"
+                    onClick={() => removerQuestao(questaoAtiva._id)}
+                    aria-label="Remover esta questão"
+                  >
+                    Remover
+                  </button>
                 </header>
 
                 <div className="questao-editor__bloco">
-                  <label
-                    className="questao-editor__rotulo"
-                    htmlFor={`q-intro-${q._id}`}
-                  >
+                  <label className="questao-editor__rotulo" htmlFor={`q-intro-${questaoAtiva._id}`}>
                     Introdução Teórica
-                    <span className="questao-editor__hint">
-                      Texto de apoio exibido antes do enunciado
-                    </span>
+                    <span className="questao-editor__hint">Texto de apoio exibido antes do enunciado</span>
                   </label>
                   <textarea
-                    id={`q-intro-${q._id}`}
+                    id={`q-intro-${questaoAtiva._id}`}
                     className="campo__entrada questao-editor__textarea questao-editor__textarea--alto"
                     placeholder="Insira os conceitos teóricos que embasam a questão..."
-                    value={q.introducaoTeorica}
-                    onChange={(e) =>
-                      atualizarQuestao(q._id, "introducaoTeorica", e.target.value)
-                    }
+                    value={questaoAtiva.introducaoTeorica}
+                    onChange={(e) => atualizarQuestao(questaoAtiva._id, "introducaoTeorica", e.target.value)}
                     required
                   />
                 </div>
 
                 <div className="questao-editor__bloco">
-                  <label
-                    className="questao-editor__rotulo"
-                    htmlFor={`q-enun-${q._id}`}
-                  >
+                  <label className="questao-editor__rotulo" htmlFor={`q-enun-${questaoAtiva._id}`}>
                     Enunciado *
                   </label>
                   <textarea
-                    id={`q-enun-${q._id}`}
+                    id={`q-enun-${questaoAtiva._id}`}
                     className="campo__entrada questao-editor__textarea questao-editor__textarea--medio"
                     placeholder="Digite o enunciado da questão..."
-                    value={q.enunciado}
-                    onChange={(e) =>
-                      atualizarQuestao(q._id, "enunciado", e.target.value)
-                    }
+                    value={questaoAtiva.enunciado}
+                    onChange={(e) => atualizarQuestao(questaoAtiva._id, "enunciado", e.target.value)}
                     required
                   />
                 </div>
@@ -713,22 +746,15 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
                 <div className="questao-editor__bloco">
                   <p className="questao-editor__rotulo">Alternativas *</p>
                   <div className="questao-editor__alternativas">
-                    {q.alternativas.map((alt) => (
-                      <div
-                        key={alt.letra}
-                        className="questao-editor__alternativa-linha"
-                      >
-                        <span className="questao-editor__letra">
-                          {alt.letra}
-                        </span>
+                    {questaoAtiva.alternativas.map((alt) => (
+                      <div key={alt.letra} className="questao-editor__alternativa-linha">
+                        <span className="questao-editor__letra">{alt.letra}</span>
                         <input
                           className="campo__entrada"
                           type="text"
                           placeholder={`Texto da alternativa ${alt.letra}`}
                           value={alt.texto}
-                          onChange={(e) =>
-                            atualizarAlternativa(q._id, alt.letra, e.target.value)
-                          }
+                          onChange={(e) => atualizarAlternativa(questaoAtiva._id, alt.letra, e.target.value)}
                           required
                         />
                       </div>
@@ -738,26 +764,18 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
 
                 <div className="questao-editor__bloco">
                   <p className="questao-editor__rotulo">Resposta Correta *</p>
-                  <div
-                    className="questao-editor__gabarito"
-                    role="group"
-                    aria-label="Selecione a resposta correta"
-                  >
+                  <div className="questao-editor__gabarito" role="group" aria-label="Selecione a resposta correta">
                     {LETRAS_GABARITO.map((l) => (
                       <label
                         key={l}
-                        className={`questao-editor__opcao-gabarito ${
-                          q.gabarito === l
-                            ? "questao-editor__opcao-gabarito--ativo"
-                            : ""
-                        }`}
+                        className={`questao-editor__opcao-gabarito${questaoAtiva.gabarito === l ? " questao-editor__opcao-gabarito--ativo" : ""}`}
                       >
                         <input
                           type="radio"
-                          name={`gabarito-${q._id}`}
+                          name={`gabarito-${questaoAtiva._id}`}
                           value={l}
-                          checked={q.gabarito === l}
-                          onChange={() => atualizarQuestao(q._id, "gabarito", l)}
+                          checked={questaoAtiva.gabarito === l}
+                          onChange={() => atualizarQuestao(questaoAtiva._id, "gabarito", l)}
                           required
                           className="visualmente-oculto"
                         />
@@ -768,47 +786,30 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
                 </div>
 
                 <div className="questao-editor__bloco">
-                  <label
-                    className="questao-editor__rotulo"
-                    htmlFor={`q-analise-${q._id}`}
-                  >
+                  <label className="questao-editor__rotulo" htmlFor={`q-analise-${questaoAtiva._id}`}>
                     Análise das Questões *
-                    <span className="questao-editor__hint">
-                      Justificativa de cada alternativa exibida após a resposta
-                    </span>
+                    <span className="questao-editor__hint">Justificativa de cada alternativa exibida após a resposta</span>
                   </label>
                   <textarea
-                    id={`q-analise-${q._id}`}
+                    id={`q-analise-${questaoAtiva._id}`}
                     className="campo__entrada questao-editor__textarea questao-editor__textarea--alto"
                     placeholder="Explique por que cada alternativa está correta ou incorreta..."
-                    value={q.analiseDasAfirmativas}
-                    onChange={(e) =>
-                      atualizarQuestao(
-                        q._id,
-                        "analiseDasAfirmativas",
-                        e.target.value
-                      )
-                    }
+                    value={questaoAtiva.analiseDasAfirmativas}
+                    onChange={(e) => atualizarQuestao(questaoAtiva._id, "analiseDasAfirmativas", e.target.value)}
                     required
                   />
                 </div>
               </article>
-            ))}
+            ) : null}
           </div>
-        </section>
+        </div>
 
         <footer className="criar-avaliacao__rodape">
-          <Botao
-            variante="fantasma"
-            onClick={onCancelar}
-          >
+          <Botao variante="perigo" onClick={() => setConfirmarCancelar(true)}>
             Cancelar
           </Botao>
           <div className="criar-avaliacao__rodape-direita">
-            <Botao
-              variante="secundario"
-              onClick={(e) => salvarAvaliacao(e, "Rascunho")}
-            >
+            <Botao variante="secundario" onClick={(e) => salvarAvaliacao(e, "Rascunho")}>
               Salvar rascunho
             </Botao>
             <Botao variante="primario" type="submit">
@@ -817,6 +818,22 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
           </div>
         </footer>
       </form>
+
+      {confirmarCancelar && (
+        <Modal titulo="Cancelar avaliação?" onFechar={() => setConfirmarCancelar(false)}>
+          <p style={{ fontSize: "0.9rem", color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-md)" }}>
+            Tem certeza que deseja cancelar? Todas as informações preenchidas serão perdidas.
+          </p>
+          <div className="modal-rodape">
+            <Botao variante="fantasma" onClick={() => setConfirmarCancelar(false)}>
+              Continuar editando
+            </Botao>
+            <Botao variante="perigo" onClick={onCancelar}>
+              Sim, cancelar
+            </Botao>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

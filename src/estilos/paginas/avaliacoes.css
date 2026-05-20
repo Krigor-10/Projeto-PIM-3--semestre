@@ -2,8 +2,143 @@
    AVALIAÇÕES — formulário de criação de prova (Professor)
    ------------------------------------------------------------ */
 .criar-avaliacao {
-  max-width: 860px;
+  max-width: 960px;
   margin: 0 auto;
+}
+
+/* Layout principal: sidebar de steps + painel */
+.criar-avaliacao__layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--espaco-lg);
+  align-items: start;
+  margin-bottom: var(--espaco-lg);
+}
+
+/* ── Sidebar de steps ──────────────────────────────── */
+.criar-avaliacao__steps {
+  position: sticky;
+  top: var(--espaco-lg);
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  padding: var(--espaco-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.criar-avaliacao__step {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  width: 100%;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transicao-rapida), color var(--transicao-rapida);
+}
+
+.criar-avaliacao__step:hover {
+  background: var(--cor-fundo);
+  color: var(--cor-texto-forte);
+}
+
+.criar-avaliacao__step--ativo {
+  background: rgba(123, 47, 247, 0.1);
+  color: var(--cor-marca);
+  font-weight: 600;
+}
+
+.criar-avaliacao__step-icone {
+  font-size: 0.6rem;
+  flex-shrink: 0;
+}
+
+/* step numerado de questão */
+.criar-avaliacao__step--questao {
+  gap: var(--espaco-md);
+}
+
+.criar-avaliacao__step-num {
+  min-width: 26px;
+  height: 26px;
+  border-radius: var(--raio-sm);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo);
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transicao-rapida), border-color var(--transicao-rapida), color var(--transicao-rapida);
+}
+
+.criar-avaliacao__step--ativo .criar-avaliacao__step-num {
+  background: var(--cor-marca);
+  border-color: var(--cor-marca);
+  color: #fff;
+}
+
+.criar-avaliacao__step-num--mais {
+  font-size: 1rem;
+  font-weight: 400;
+  border-style: dashed;
+}
+
+.criar-avaliacao__step-label {
+  font-size: 0.875rem;
+}
+
+/* separador "Questões N" */
+.criar-avaliacao__step-divisor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espaco-sm) var(--espaco-md);
+  margin-top: var(--espaco-xs);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-texto-mudo);
+}
+
+/* step de adicionar */
+.criar-avaliacao__step--adicionar {
+  margin-top: var(--espaco-xs);
+  border-top: 1px solid var(--cor-borda);
+  padding-top: var(--espaco-md);
+  color: var(--cor-texto-mudo);
+  font-size: 0.82rem;
+}
+
+.criar-avaliacao__step--adicionar:hover {
+  color: var(--cor-marca);
+}
+
+/* badge de contagem */
+.criar-avaliacao__contagem {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: 99px;
+  padding: 0.1rem 0.45rem;
+}
+
+/* ── Painel do step ativo ──────────────────────────── */
+.criar-avaliacao__painel {
+  min-width: 0;
 }
 
 .criar-avaliacao__secao {
@@ -11,39 +146,13 @@
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-lg);
   padding: var(--espaco-xl);
-  margin-bottom: var(--espaco-lg);
-}
-
-.criar-avaliacao__secao-cabecalho {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--espaco-lg);
 }
 
 .criar-avaliacao__secao-titulo {
   font-size: 1rem;
   font-weight: 700;
   color: var(--cor-texto-forte);
-  display: flex;
-  align-items: center;
-  gap: var(--espaco-sm);
   margin-bottom: var(--espaco-lg);
-}
-
-/* quando dentro do cabecalho com flex, o margin-bottom não se aplica */
-.criar-avaliacao__secao-cabecalho .criar-avaliacao__secao-titulo {
-  margin-bottom: 0;
-}
-
-.criar-avaliacao__contagem {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--cor-texto-suave);
-  background: var(--cor-fundo);
-  border: 1px solid var(--cor-borda);
-  border-radius: 99px;
-  padding: 0.1rem 0.55rem;
 }
 
 .criar-avaliacao__secao-corpo {
@@ -52,14 +161,9 @@
   gap: var(--espaco-md);
 }
 
-.criar-avaliacao__questoes {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-lg);
-}
-
-/* Cartão de cada questão */
+/* ── Editor de questão ─────────────────────────────── */
 .questao-editor {
+  background: var(--cor-fundo-elevado);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-lg);
   overflow: hidden;
@@ -74,12 +178,52 @@
   border-bottom: 1px solid var(--cor-borda);
 }
 
+/* navegação ‹ Questão X de N › */
+.questao-editor__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.questao-editor__seta {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--raio-sm);
+  border: 1px solid var(--cor-borda);
+  background: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transicao-rapida), color var(--transicao-rapida);
+}
+
+.questao-editor__seta:hover:not(:disabled) {
+  background: var(--cor-fundo-elevado);
+  color: var(--cor-texto-forte);
+}
+
+.questao-editor__seta:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 .questao-editor__num {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--cor-marca);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.questao-editor__total {
+  font-weight: 400;
+  color: var(--cor-texto-mudo);
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .questao-editor__remover {
@@ -190,12 +334,12 @@
 }
 
 .questao-editor__opcao-gabarito--ativo {
-  border-color: #22c55e;
+  border-color: var(--cor-sucesso);
   background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  color: var(--cor-sucesso);
 }
 
-/* Rodapé do formulário */
+/* ── Rodapé do formulário ──────────────────────────── */
 .criar-avaliacao__rodape {
   display: flex;
   align-items: center;
@@ -216,7 +360,29 @@
   gap: var(--espaco-md);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
+  .criar-avaliacao__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .criar-avaliacao__steps {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--espaco-xs);
+  }
+
+  .criar-avaliacao__step-divisor {
+    width: 100%;
+    margin-top: 0;
+    padding: var(--espaco-xs) var(--espaco-sm);
+  }
+
+  .criar-avaliacao__step--adicionar {
+    border-top: none;
+    padding-top: var(--espaco-sm);
+  }
+
   .grade-3 {
     grid-template-columns: 1fr;
   }
