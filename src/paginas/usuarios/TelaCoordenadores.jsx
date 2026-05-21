@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbCirclePlus } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbCirclePlus, TbX, TbCheck } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -20,13 +20,15 @@ function IconeOrdenacao({ campo, ordenacao }) {
     : <TbChevronDown size={14} aria-hidden="true" />;
 }
 
-export default function TelaCoordenadores({ usuario }) {
+export default function TelaCoordenadores({ usuario, onToast }) {
   const tipo = usuario?.tipo;
   const podeEditar_  = podeEditar(tipo, "coordenadores");
   const podeExcluir_ = podeExcluir(tipo, "coordenadores");
 
-  const [lista, setLista] = useState(() => db.usuarios.listar().filter((u) => u.tipo === "Coordenador"));
+  const [lista, setLista]             = useState(() => db.usuarios.listar().filter((u) => u.tipo === "Coordenador"));
+  const [cursosLista, setCursosLista] = useState(() => db.cursos.listar());
   useEffect(() => { db.usuarios.salvarPorTipo("Coordenador", lista); }, [lista]);
+  useEffect(() => { db.cursos.salvar(cursosLista); }, [cursosLista]);
 
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
@@ -39,9 +41,12 @@ export default function TelaCoordenadores({ usuario }) {
   const [kebabAberto,      setKebabAberto]      = useState(null);
   const [kebabPos,         setKebabPos]         = useState({ top: 0, left: 0 });
   const [coordDetalhe,     setCoordDetalhe]     = useState(null);
-  const [coordRemovendo,   setCoordRemovendo]   = useState(null);
-  const [coordEditando,    setCoordEditando]    = useState(null);
-  const [modalNovoAberto,  setModalNovoAberto]  = useState(false);
+  const [modoEdicao,       setModoEdicao]       = useState(false);
+  const [coordRemovendo,     setCoordRemovendo]     = useState(null);
+  const [confirmandoStatus,  setConfirmandoStatus]  = useState(null);
+  const [modalNovoAberto,    setModalNovoAberto]    = useState(false);
+  const [atribuindoCursos,   setAtribuindoCursos]   = useState(null);
+  const [cursosSelecionados, setCursosSelecionados] = useState(new Set());
 
   const kebabRef = useRef(null);
 
@@ -62,8 +67,42 @@ export default function TelaCoordenadores({ usuario }) {
   }
 
   function alternarAtivo(id) {
-    setLista((prev) => prev.map((u) => u.id === id ? { ...u, ativo: !u.ativo } : u));
-    if (coordDetalhe?.id === id) setCoordDetalhe((prev) => ({ ...prev, ativo: !prev.ativo }));
+    const alvo = lista.find((u) => u.id === id);
+    const novoEstado = !alvo.ativo;
+    setLista((prev) => prev.map((u) => u.id === id ? { ...u, ativo: novoEstado } : u));
+    if (coordDetalhe?.id === id) setCoordDetalhe((prev) => ({ ...prev, ativo: novoEstado }));
+    onToast?.(
+      novoEstado ? `${alvo.nome} foi ativado` : `${alvo.nome} foi desativado`,
+      novoEstado ? "sucesso" : "aviso"
+    );
+  }
+
+  function abrirAtribuicaoCursos(coord) {
+    setAtribuindoCursos(coord);
+    setCursosSelecionados(new Set(cursosLista.filter((c) => c.coordenadorId === coord.id).map((c) => c.id)));
+    setCoordDetalhe(null);
+  }
+
+  function salvarAtribuicaoCursos() {
+    setCursosLista((prev) =>
+      prev.map((c) => {
+        const eraDesteCoord = c.coordenadorId === atribuindoCursos.id;
+        const agora = cursosSelecionados.has(c.id);
+        if (agora)         return { ...c, coordenadorId: atribuindoCursos.id };
+        if (eraDesteCoord) return { ...c, coordenadorId: null };
+        return c;
+      })
+    );
+    onToast?.(`Cursos de ${atribuindoCursos.nome.split(" ")[0]} atualizados`, "sucesso");
+    setAtribuindoCursos(null);
+  }
+
+  function toggleCurso(cursoId) {
+    setCursosSelecionados((prev) => {
+      const prox = new Set(prev);
+      prox.has(cursoId) ? prox.delete(cursoId) : prox.add(cursoId);
+      return prox;
+    });
   }
 
   function confirmarRemocao() {
@@ -76,13 +115,13 @@ export default function TelaCoordenadores({ usuario }) {
     e.preventDefault();
     const f = e.target;
     const atualizado = {
-      ...coordEditando,
+      ...coordDetalhe,
       nome:  f["edit-nome"].value.trim(),
       email: f["edit-email"].value.trim(),
     };
     setLista((prev) => prev.map((u) => u.id === atualizado.id ? atualizado : u));
-    if (coordDetalhe?.id === atualizado.id) setCoordDetalhe(atualizado);
-    setCoordEditando(null);
+    setCoordDetalhe(atualizado);
+    setModoEdicao(false);
   }
 
   function toggleSelecionado(e, id) {
@@ -342,125 +381,177 @@ export default function TelaCoordenadores({ usuario }) {
             onClick={() => { setCoordDetalhe(coordKebab); setKebabAberto(null); }}>
             Ver detalhes
           </button>
-          {podeEditar_ && (
-            <button role="menuitem" className="kebab-menu__item" type="button"
-              onClick={() => { setCoordEditando({ ...coordKebab }); setKebabAberto(null); }}>
-              Editar dados
-            </button>
-          )}
-          {podeEditar_ && (
-            <button role="menuitem" className="kebab-menu__item" type="button"
-              onClick={() => { alternarAtivo(coordKebab.id); setKebabAberto(null); }}>
-              {coordKebab.ativo ? "Desativar conta" : "Ativar conta"}
-            </button>
-          )}
-          {podeExcluir_ && (
-            <>
-              <div className="kebab-menu__divisor" />
-              <button role="menuitem" className="kebab-menu__item kebab-menu__item--perigo" type="button"
-                onClick={() => { setCoordRemovendo(coordKebab.id); setKebabAberto(null); }}>
-                Remover coordenador
-              </button>
-            </>
-          )}
         </div>,
         document.body
       )}
 
-      {/* Modal detalhes */}
+      {/* Modal detalhes / edição inline */}
       {coordDetalhe && (() => {
-        const cursosCoord = db.cursos.listar().filter((c) => c.coordenadorId === coordDetalhe.id);
+        const cursosCoord = cursosLista.filter((c) => c.coordenadorId === coordDetalhe.id);
         return (
-        <Modal titulo="Detalhes do Coordenador" onFechar={() => setCoordDetalhe(null)}>
-          <div className="detalhe-aluno">
-            <div className="detalhe-aluno__perfil">
-              <div className="topbar__avatar detalhe-aluno__avatar" aria-hidden="true">
-                {gerarIniciais(coordDetalhe.nome)}
-              </div>
-              <div>
-                <h3 className="detalhe-aluno__nome">{coordDetalhe.nome}</h3>
-                <span className="detalhe-aluno__email">{coordDetalhe.email}</span>
-              </div>
-              <Insignia texto={coordDetalhe.ativo ? "Ativo" : "Inativo"} variante={coordDetalhe.ativo ? "sucesso" : "erro"} />
-            </div>
-            <dl className="detalhe-aluno__dados">
-              <div className="detalhe-aluno__dado">
-                <dt>Cadastro</dt>
-                <dd>{new Date(coordDetalhe.dataCadastro).toLocaleDateString("pt-BR")}</dd>
-              </div>
-              {coordDetalhe.telefone && (
-                <div className="detalhe-aluno__dado">
-                  <dt>Telefone</dt>
-                  <dd>{coordDetalhe.telefone}</dd>
+          <Modal
+            titulo={modoEdicao ? "Editar Coordenador" : "Detalhes do Coordenador"}
+            onFechar={() => { setCoordDetalhe(null); setModoEdicao(false); }}
+          >
+            {modoEdicao ? (
+              <>
+                <div className="modal-edicao__avatar" aria-hidden="true">
+                  {gerarIniciais(coordDetalhe.nome)}
                 </div>
-              )}
-            </dl>
-          </div>
-
-          <div className="coord-cursos-secao">
-            <h4 className="coord-cursos-secao__titulo">
-              Cursos sob coordenação
-              <span className="coord-cursos-secao__contagem">{cursosCoord.length}</span>
-            </h4>
-            {cursosCoord.length === 0 ? (
-              <p className="texto-vazio">Nenhum curso atribuído a este coordenador.</p>
+                <form className="formulario-modal" onSubmit={salvarEdicao}>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="edit-nome">Nome completo *</label>
+                    <input id="edit-nome" className="campo__entrada" type="text" defaultValue={coordDetalhe.nome} required />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="edit-email">E-mail *</label>
+                    <input id="edit-email" className="campo__entrada" type="email" defaultValue={coordDetalhe.email} required />
+                  </div>
+                  <footer className="modal-rodape">
+                    <Botao variante="perigo" type="button" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
+                    <Botao variante="primario" type="submit">Salvar alterações</Botao>
+                  </footer>
+                </form>
+              </>
             ) : (
-              <ul className="coord-cursos-lista" role="list">
-                {cursosCoord.map((c) => (
-                  <li key={c.id} className="coord-cursos-lista__item">
-                    <div className="coord-cursos-lista__info">
-                      <span className="coord-cursos-lista__titulo">{c.titulo}</span>
-                      <span className="coord-cursos-lista__codigo">{c.codigoRegistro} · {c.nivel}</span>
+              <>
+                <div className="detalhe-aluno">
+                  <div className="detalhe-aluno__perfil">
+                    <div className="topbar__avatar detalhe-aluno__avatar" aria-hidden="true">
+                      {gerarIniciais(coordDetalhe.nome)}
                     </div>
-                    <Insignia texto={c.ativo ? "Ativo" : "Inativo"} variante={c.ativo ? "sucesso" : "erro"} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                    <div>
+                      <h3 className="detalhe-aluno__nome">{coordDetalhe.nome}</h3>
+                      <span className="detalhe-aluno__email">{coordDetalhe.email}</span>
+                    </div>
+                    <Insignia texto={coordDetalhe.ativo ? "Ativo" : "Inativo"} variante={coordDetalhe.ativo ? "sucesso" : "erro"} />
+                  </div>
+                  <dl className="detalhe-aluno__dados">
+                    <div className="detalhe-aluno__dado">
+                      <dt>Código</dt>
+                      <dd style={{ fontFamily: "var(--fonte-mono)", fontSize: "0.85rem" }}>{coordDetalhe.codigo ?? "—"}</dd>
+                    </div>
+                    <div className="detalhe-aluno__dado">
+                      <dt>Cadastro</dt>
+                      <dd>{new Date(coordDetalhe.dataCadastro).toLocaleDateString("pt-BR")}</dd>
+                    </div>
+                    {coordDetalhe.telefone && (
+                      <div className="detalhe-aluno__dado">
+                        <dt>Telefone</dt>
+                        <dd>{coordDetalhe.telefone}</dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
 
-          <footer className="modal-rodape">
-            {podeEditar_ && (
-              <Botao variante={coordDetalhe.ativo ? "perigo" : "sucesso"} tamanho="pequeno"
-                onClick={() => alternarAtivo(coordDetalhe.id)}>
-                {coordDetalhe.ativo ? "Desativar conta" : "Ativar conta"}
-              </Botao>
+                <div className="coord-cursos-secao">
+                  <h4 className="coord-cursos-secao__titulo">
+                    Cursos sob coordenação
+                    <span className="coord-cursos-secao__contagem">{cursosCoord.length}</span>
+                  </h4>
+                  {cursosCoord.length === 0 ? (
+                    <p className="texto-vazio">Nenhum curso atribuído a este coordenador.</p>
+                  ) : (
+                    <ul className="coord-cursos-lista" role="list">
+                      {cursosCoord.map((c) => (
+                        <li key={c.id} className="coord-cursos-lista__item">
+                          <div className="coord-cursos-lista__info">
+                            <span className="coord-cursos-lista__titulo">{c.titulo}</span>
+                            <span className="coord-cursos-lista__codigo">{c.codigoRegistro} · {c.nivel}</span>
+                          </div>
+                          <Insignia texto={c.ativo ? "Ativo" : "Inativo"} variante={c.ativo ? "sucesso" : "erro"} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="detalhe-status">
+                  <div>
+                    <strong className="detalhe-status__rotulo">Status da conta</strong>
+                    <span className="detalhe-status__descricao">
+                      {coordDetalhe.ativo ? "Coordenador tem acesso à plataforma" : "Acesso à plataforma bloqueado"}
+                    </span>
+                  </div>
+                  <button
+                    role="switch"
+                    aria-checked={coordDetalhe.ativo}
+                    className={`switch-ativo${coordDetalhe.ativo ? " switch-ativo--ativo" : ""}`}
+                    onClick={() => setConfirmandoStatus({ id: coordDetalhe.id, nome: coordDetalhe.nome, novoEstado: !coordDetalhe.ativo })}
+                    type="button"
+                    aria-label={coordDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
+                  >
+                    <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
+                    <span className="switch-ativo__thumb" aria-hidden="true" />
+                    <TbCheck size={10} className="switch-ativo__icone switch-ativo__icone--dir" aria-hidden="true" />
+                  </button>
+                </div>
+
+                <footer className="modal-rodape">
+                  {podeEditar_ && (
+                    <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)}>Editar dados</Botao>
+                  )}
+                  <Botao variante="fantasma" tamanho="pequeno" onClick={() => abrirAtribuicaoCursos(coordDetalhe)}>
+                    Atribuir cursos
+                  </Botao>
+                  <Botao variante="perigo" onClick={() => { setCoordDetalhe(null); setModoEdicao(false); }}>Fechar</Botao>
+                </footer>
+              </>
             )}
-            {podeExcluir_ && (
-              <Botao variante="fantasma" tamanho="pequeno"
-                onClick={() => { setCoordRemovendo(coordDetalhe.id); setCoordDetalhe(null); }}>
-                Remover
-              </Botao>
-            )}
-            <Botao variante="perigo" onClick={() => setCoordDetalhe(null)}>Fechar</Botao>
-          </footer>
-        </Modal>
+          </Modal>
         );
       })()}
 
-      {/* Modal edição */}
-      {coordEditando && (
-        <Modal titulo="Editar Coordenador" onFechar={() => setCoordEditando(null)}>
-          <form className="formulario-modal" onSubmit={salvarEdicao}>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-nome">Nome completo *</label>
-              <input id="edit-nome" className="campo__entrada" type="text" defaultValue={coordEditando.nome} required />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-email">E-mail *</label>
-              <input id="edit-email" className="campo__entrada" type="email" defaultValue={coordEditando.email} required />
-            </div>
-            <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setCoordEditando(null)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Salvar alterações</Botao>
-            </footer>
-          </form>
+      {/* Modal atribuição de cursos */}
+      {atribuindoCursos && (
+        <Modal titulo={`Cursos — ${atribuindoCursos.nome.split(" ")[0]}`} onFechar={() => setAtribuindoCursos(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-lg)", fontSize: "0.875rem" }}>
+            Selecione os cursos sob coordenação de <strong>{atribuindoCursos.nome.split(" ")[0]}</strong>.
+          </p>
+          <ul className="atribuicao-turmas-lista" role="list">
+            {cursosLista.map((c) => {
+              const marcado       = cursosSelecionados.has(c.id);
+              const outroCoordId  = c.coordenadorId && c.coordenadorId !== atribuindoCursos.id ? c.coordenadorId : null;
+              const outroCoordNome = outroCoordId
+                ? lista.find((u) => u.id === outroCoordId)?.nome.split(" ")[0] ?? "outro coordenador"
+                : null;
+              return (
+                <li key={c.id} className={`atribuicao-turma-item${marcado ? " atribuicao-turma-item--selecionada" : ""}`}>
+                  <label className="atribuicao-turma-item__label">
+                    <input
+                      type="checkbox"
+                      className="tabela-checkbox"
+                      checked={marcado}
+                      onChange={() => toggleCurso(c.id)}
+                    />
+                    <div className="atribuicao-turma-item__info">
+                      <strong className="atribuicao-turma-item__nome">{c.titulo}</strong>
+                      <span className="atribuicao-turma-item__curso">{c.codigoRegistro} · {c.nivel}</span>
+                      {outroCoordNome && !marcado && (
+                        <span className="atribuicao-turma-item__atual">com {outroCoordNome}</span>
+                      )}
+                    </div>
+                    <div className="atribuicao-turma-item__meta">
+                      <Insignia texto={c.ativo ? "Ativo" : "Inativo"} variante={c.ativo ? "sucesso" : "erro"} />
+                    </div>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+          <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
+            <button type="button" className="botao botao--perigo" onClick={() => setAtribuindoCursos(null)}>Cancelar</button>
+            <button type="button" className="botao botao--primario" onClick={salvarAtribuicaoCursos}>
+              Salvar atribuições
+            </button>
+          </footer>
         </Modal>
       )}
 
       {/* Novo coordenador */}
       {modalNovoAberto && (
         <Modal titulo="Novo Coordenador" onFechar={() => setModalNovoAberto(false)}>
+          <div className="modal-edicao__avatar" aria-hidden="true">+</div>
           <form className="formulario-modal" onSubmit={(e) => {
             e.preventDefault();
             const f = e.target;
@@ -494,6 +585,22 @@ export default function TelaCoordenadores({ usuario }) {
         </Modal>
       )}
 
+      {/* Confirmação de alteração de status */}
+      {confirmandoStatus && (
+        <Modal
+          titulo={confirmandoStatus.novoEstado ? "Ativar conta" : "Desativar conta"}
+          onFechar={() => setConfirmandoStatus(null)}
+        >
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Tem certeza que deseja <strong>{confirmandoStatus.novoEstado ? "ativar" : "desativar"}</strong> a conta de <strong>{confirmandoStatus.nome}</strong>?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)}>Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }}>Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
+
       {/* Confirmação remoção em massa */}
       {removendoEmMassa && (
         <Modal titulo="Remover coordenadores" onFechar={() => setRemovendoEmMassa(false)}>
@@ -502,7 +609,7 @@ export default function TelaCoordenadores({ usuario }) {
           </p>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
-            <Botao variante="perigo" onClick={confirmarRemocaoEmMassa}>Confirmar remoção</Botao>
+            <Botao variante="sucesso" onClick={confirmarRemocaoEmMassa}>Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -517,7 +624,7 @@ export default function TelaCoordenadores({ usuario }) {
             </p>
             <footer className="modal-rodape">
               <Botao variante="perigo" onClick={() => setCoordRemovendo(null)}>Cancelar</Botao>
-              <Botao variante="perigo" onClick={confirmarRemocao}>Confirmar remoção</Botao>
+              <Botao variante="sucesso" onClick={confirmarRemocao}>Confirmar</Botao>
             </footer>
           </Modal>
         );

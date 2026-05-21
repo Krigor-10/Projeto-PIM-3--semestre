@@ -3,7 +3,7 @@ import { TbDotsVertical, TbCirclePlus } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { matriculas, usuarios } from "@/dados/dadosMock.js";
+import { matriculas, usuarios, PROGRESSO_MOCK, NOTAS_MOCK } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
@@ -27,17 +27,67 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
     ? alunos.filter((a) => a.nome.toLowerCase().includes(busca.toLowerCase()))
     : alunos;
 
+  const aprovados      = alunos.filter((a) => a.statusMatricula === "Aprovada").length;
+  const progressoMedio = alunos.length > 0
+    ? Math.round(alunos.reduce((acc, a) => acc + (PROGRESSO_MOCK[a.matriculaId] ?? 50), 0) / alunos.length)
+    : 0;
+  const mediaNota      = NOTAS_MOCK[turma.id] ?? null;
+
+  const corProgresso = progressoMedio >= 70 ? "var(--cor-sucesso)" : progressoMedio >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+  const corNota      = mediaNota === null    ? "var(--cor-texto-mudo)"
+    : mediaNota >= 7 ? "var(--cor-sucesso)"
+    : mediaNota >= 5 ? "var(--cor-aviso)"
+    : "var(--cor-erro)";
+
+  const RAIO = 30;
+  const CIRCUNFERENCIA = 2 * Math.PI * RAIO;
+
   return (
     <div className="slide-turma">
-      {/* Cabeçalho da turma */}
+      {/* Cabeçalho da turma com métricas integradas */}
       <header className="slide-turma__cabecalho">
         <div className="slide-turma__identidade">
-          <h3 className="slide-turma__nome">{turma.nomeTurma}</h3>
+          <div className="slide-turma__nome-linha">
+            <h3 className="slide-turma__nome">{turma.nomeTurma}</h3>
+            <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
+          </div>
           <span className="slide-turma__curso">{turma.cursoTitulo}</span>
         </div>
-        <div className="slide-turma__meta">
-          <span className="slide-turma__professor">{turma.professorNome}</span>
-          <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
+
+        <div className="slide-turma__metricas">
+          <div className="anel-turma" aria-label={`${progressoMedio}% de progresso médio`}>
+            <svg viewBox="0 0 80 80" aria-hidden="true">
+              <circle cx="40" cy="40" r={RAIO} fill="none" stroke="rgba(123,47,247,0.1)" strokeWidth="7" />
+              <circle
+                cx="40" cy="40" r={RAIO} fill="none"
+                stroke={corProgresso}
+                strokeWidth="7"
+                strokeDasharray={CIRCUNFERENCIA}
+                strokeDashoffset={CIRCUNFERENCIA * (1 - progressoMedio / 100)}
+                strokeLinecap="round"
+                style={{ transform: "rotate(-90deg)", transformOrigin: "40px 40px" }}
+              />
+            </svg>
+            <span className="anel-turma__texto">{progressoMedio}%</span>
+          </div>
+
+          <div className="slide-turma__kpis">
+            <div className="slide-turma__kpi">
+              <span className="slide-turma__kpi-valor">{alunos.length}</span>
+              <span className="slide-turma__kpi-rotulo">alunos</span>
+            </div>
+            <div className="slide-turma__kpi">
+              <span className="slide-turma__kpi-valor" style={{ color: corNota }}>
+                {mediaNota !== null ? mediaNota.toFixed(1) : "—"}
+              </span>
+              <span className="slide-turma__kpi-rotulo">média</span>
+            </div>
+            <div className="slide-turma__kpi">
+              <span className="slide-turma__kpi-valor">{aprovados}</span>
+              <span className="slide-turma__kpi-rotulo">aprovados</span>
+            </div>
+          </div>
+
           {podeEditar(tipo, "turmas") && (
             <div className="menu-contexto">
               <button
@@ -55,12 +105,6 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
           )}
         </div>
       </header>
-
-      {/* Stats rápidos */}
-      <div className="slide-turma__stats">
-        <span><strong>{alunos.length}</strong> aluno{alunos.length !== 1 ? "s" : ""} matriculado{alunos.length !== 1 ? "s" : ""}</span>
-        <span><strong>{alunos.filter((a) => a.statusMatricula === "Aprovada").length}</strong> aprovado{alunos.filter((a) => a.statusMatricula === "Aprovada").length !== 1 ? "s" : ""}</span>
-      </div>
 
       {/* Lista de alunos */}
       {alunos.length === 0 ? (
@@ -96,6 +140,7 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
 function mediaMock(alunoId) {
   return (((alunoId * 17 + 43) % 45) + 55) / 10;
 }
+
 
 function corMedia(media) {
   if (media >= 7) return "var(--cor-sucesso)";
@@ -304,6 +349,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
       {/* Modal nova turma */}
       {modalNova && (
         <Modal titulo="Nova Turma" onFechar={() => setModalNova(false)}>
+          <div className="modal-edicao__avatar" aria-hidden="true">+</div>
           <form className="formulario-modal" onSubmit={criarTurma}>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="nome-turma">Nome da Turma *</label>
@@ -326,21 +372,44 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
                 <span className="campo__erro" role="alert">{erroNovaTurma}</span>
               )}
             </div>
-            <div className="modal-rodape">
+            <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalNova(false)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Criar Turma</Botao>
-            </div>
+            </footer>
           </form>
         </Modal>
       )}
 
       {/* Modal edição */}
       {turmaEditando && (
-        <Modal titulo={`Editar — ${turmaEditando.nomeTurma}`} onFechar={() => setTurmaEditando(null)}>
+        <Modal titulo="Editar Turma" onFechar={() => setTurmaEditando(null)}>
+          <div
+            className="modal-edicao__avatar"
+            aria-hidden="true"
+          >
+            {turmaEditando.nomeTurma.split("-").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
+          </div>
           <form className="formulario-modal" onSubmit={salvarEdicao}>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="edit-nome-turma">Nome da Turma *</label>
-              <input id="edit-nome-turma" className="campo__entrada" type="text" defaultValue={turmaEditando.nomeTurma} required />
+              <input
+                id="edit-nome-turma"
+                className="campo__entrada"
+                type="text"
+                defaultValue={turmaEditando.nomeTurma}
+                required
+              />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-curso-turma">Curso</label>
+              <input
+                id="edit-curso-turma"
+                className="campo__entrada"
+                type="text"
+                value={turmaEditando.cursoTitulo}
+                disabled
+                style={{ opacity: 0.6, cursor: "not-allowed" }}
+              />
             </div>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="edit-status-turma">Status</label>
@@ -351,10 +420,10 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
                 onChange={setStatusEditando}
               />
             </div>
-            <div className="modal-rodape">
+            <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setTurmaEditando(null)}>Cancelar</Botao>
               <Botao variante="primario" type="submit">Salvar alterações</Botao>
-            </div>
+            </footer>
           </form>
         </Modal>
       )}

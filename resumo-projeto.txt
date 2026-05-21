@@ -15,7 +15,7 @@ de uma plataforma EAD acadêmica, sem necessidade de infraestrutura de servidor.
 
 
 2. IMPORTÂNCIA DO PROTÓTIPO DE FRONTEND NO PROJETO
----------------------------------------------------
+------------------------------------------------
 
 Em um projeto de desenvolvimento de sistema, a interface com o usuário é o ponto de
 contato direto entre a solução proposta e quem irá utilizá-la. O protótipo de frontend

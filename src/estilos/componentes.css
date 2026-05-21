@@ -398,6 +398,32 @@ select.campo__entrada option {
   max-width: 640px;
 }
 
+.modal-caixa--certificado {
+  max-width: min(720px, 90vw);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.modal-caixa--certificado .modal-cabecalho {
+  padding: var(--espaco-md) var(--espaco-lg);
+  flex-shrink: 0;
+}
+
+.modal-caixa--certificado .certificado-modal {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: 0;
+}
+
+.modal-caixa--certificado .modal-rodape {
+  padding: var(--espaco-md) var(--espaco-lg);
+  flex-shrink: 0;
+  border-top: 1px solid var(--cor-borda);
+}
+
 .modal-cabecalho {
   display: flex;
   align-items: center;

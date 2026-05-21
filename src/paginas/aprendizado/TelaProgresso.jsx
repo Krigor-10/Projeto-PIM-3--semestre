@@ -3,13 +3,7 @@ import { TbTrophy } from "react-icons/tb";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { conteudos, cursos, modulos, matriculas, turmas, certificadosDemo } from "@/dados/dadosMock.js";
-
-/* Percentuais simulados por id de matrícula para a vista administrativa */
-const PROGRESSO_MOCK = { 1: 42, 2: 15, 6: 68 };
-
-/* Média de notas simulada por id de turma (escala 0–10) */
-const NOTAS_MOCK = { 1: 7.8, 3: 8.2, 4: 7.1, 5: 9.0, 6: 6.5, 7: 8.5 };
+import { conteudos, cursos, modulos, matriculas, turmas, certificadosDemo, PROGRESSO_MOCK, NOTAS_MOCK } from "@/dados/dadosMock.js";
 
 /* Retorna status e variante de badge a partir do progresso do módulo */
 function resolverStatusModulo(concluidosModulo, totalItens) {
@@ -54,6 +48,21 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
     const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
     return itens.length > 0 && itens.every((c) => concluidos.has(c.id)) && resultadosQuizzes[modulo.id] !== undefined;
   }).length;
+
+  /* ── Desempenho: média das notas dos quizzes de módulo realizados ── */
+  const quizzesRealizados = modulosComConteudo.filter((m) => resultadosQuizzes[m.id] !== undefined);
+  const desempenhoMedio   = quizzesRealizados.length > 0
+    ? Math.round(quizzesRealizados.reduce((acc, m) => acc + resultadosQuizzes[m.id], 0) / quizzesRealizados.length)
+    : null;
+  const desempenhoNota = desempenhoMedio !== null ? parseFloat((desempenhoMedio / 10).toFixed(1)) : null;
+  const desempenhoOk   = desempenhoNota !== null && desempenhoNota >= 7;
+  const corDesempenho  = desempenhoNota === null   ? "var(--cor-texto-mudo)"
+    : desempenhoNota >= 7 ? "var(--cor-sucesso)"
+    : desempenhoNota >= 5 ? "var(--cor-aviso)"
+    : "var(--cor-erro)";
+
+  const todosConcluidos    = modulosConcluidos === modulosDoCurso.length && modulosDoCurso.length > 0;
+  const avaliacaoLiberada  = todosConcluidos && desempenhoOk;
 
   const certAtivo = avaliacaoAprovada ?? (matricula ? certificadosDemo[matricula.cursoId] ?? null : null);
   const certificadoDesbloqueado = Boolean(certAtivo);
@@ -125,6 +134,12 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
           <p className="progresso-hero__legenda">
             {passosFeitos}/{totalPassos} passos · {modulosConcluidos}/{modulosComConteudo.length} módulos
           </p>
+          <div className="progresso-hero__desempenho">
+            <span className="progresso-hero__desempenho-rotulo">Desempenho</span>
+            <span className="progresso-hero__desempenho-valor" style={{ color: corDesempenho }}>
+              {desempenhoNota !== null ? `${desempenhoNota.toFixed(1)}/10` : "—"}
+            </span>
+          </div>
         </div>
       </section>
 
@@ -167,14 +182,16 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
                     </div>
                   )}
                   {quizPercentual !== undefined && (
-                    <p className="passo-modulo__quiz">Quiz aprovado — {quizPercentual}%</p>
+                    <p className="passo-modulo__quiz">
+                      Quiz · nota {(quizPercentual / 10).toFixed(1)} · {quizPercentual}%
+                    </p>
                   )}
                 </div>
               </li>
             );
           })}
           <li
-            className={`passo-modulo passo-modulo--avaliacao${certAtivo ? " passo-modulo--concluido" : modulosConcluidos === modulosDoCurso.length && modulosDoCurso.length > 0 ? " passo-modulo--andamento" : ""}`}
+            className={`passo-modulo passo-modulo--avaliacao${certAtivo ? " passo-modulo--concluido" : avaliacaoLiberada ? " passo-modulo--andamento" : ""}`}
           >
             <div className="passo-modulo__esquerda">
               <div className="passo-modulo__indicador" aria-hidden="true">
@@ -196,9 +213,11 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
                 </div>
               ) : (
                 <p className="passo-modulo__quiz" style={{ color: "var(--cor-texto-mudo)" }}>
-                  {modulosConcluidos < modulosDoCurso.length
-                    ? `Conclua os módulos para liberar — ${modulosConcluidos}/${modulosDoCurso.length} concluídos`
-                    : "Módulos concluídos — faça a avaliação para obter o certificado"
+                  {!todosConcluidos
+                    ? `Conclua os módulos — ${modulosConcluidos}/${modulosDoCurso.length} concluídos`
+                    : !desempenhoOk
+                      ? `Desempenho insuficiente (${desempenhoNota !== null ? desempenhoNota.toFixed(1) : "—"}/10) — mínimo 7.0 nos quizzes para liberar`
+                      : "Módulos concluídos — faça a avaliação para obter o certificado"
                   }
                 </p>
               )}

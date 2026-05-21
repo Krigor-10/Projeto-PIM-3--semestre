@@ -61,7 +61,7 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
 
         <section className="painel-secao" aria-labelledby="titulo-minhas-avaliacoes">
           <header className="painel-secao__cabecalho">
-            <h2 className="painel-secao__titulo" id="titulo-minhas-avaliacoes">Avaliacoes</h2>
+            <h2 className="painel-secao__titulo" id="titulo-minhas-avaliacoes">Avaliações</h2>
             <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao("avaliacoes")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <TbCirclePlus size={18} />
               Nova

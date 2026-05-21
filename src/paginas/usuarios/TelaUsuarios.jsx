@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbCirclePlus } from "react-icons/tb";
+import { TbCirclePlus, TbSearch } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import ModalEdicaoUsuario from "@/componentes/ModalEdicaoUsuario.jsx";
@@ -11,6 +11,7 @@ import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 export default function TelaUsuarios({ usuario }) {
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroNome, setFiltroNome] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState("");
   const [modalAberto, setModalAberto]     = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [lista, setLista]                 = useState(usuarios);
@@ -20,11 +21,10 @@ export default function TelaUsuarios({ usuario }) {
   const tipo = usuario?.tipo;
 
   const usuariosFiltrados = lista.filter((u) => {
-    const matchTipo = filtroTipo ? u.tipo === filtroTipo : true;
-    const matchNome = filtroNome
-      ? u.nome.toLowerCase().includes(filtroNome.toLowerCase())
-      : true;
-    return matchTipo && matchNome;
+    const matchTipo   = filtroTipo   ? u.tipo === filtroTipo : true;
+    const matchNome   = filtroNome   ? u.nome.toLowerCase().includes(filtroNome.toLowerCase()) : true;
+    const matchStatus = filtroStatus ? (filtroStatus === "ativo" ? u.ativo : !u.ativo) : true;
+    return matchTipo && matchNome && matchStatus;
   });
 
   function alternarAtivo(id) {
@@ -66,27 +66,53 @@ export default function TelaUsuarios({ usuario }) {
 
       <div className="barra-filtros">
         <label htmlFor="busca-usuarios" className="visualmente-oculto">Buscar usuário</label>
-        <input
-          id="busca-usuarios"
-          type="search"
-          className="campo__entrada barra-filtros__busca"
-          placeholder="Buscar por nome..."
-          value={filtroNome}
-          onChange={(e) => setFiltroNome(e.target.value)}
-        />
-        <label htmlFor="filtro-tipo-usr" className="visualmente-oculto">Filtrar por tipo</label>
-        <select
-          id="filtro-tipo-usr"
-          className="campo__entrada barra-filtros__select"
+        <div className="barra-pesquisa">
+          <span
+            aria-hidden="true"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              width: "1rem",
+              height: "1rem",
+              marginLeft: "0.75rem",
+              color: "var(--cor-texto-mudo)",
+            }}
+          >
+            <TbSearch size={16} />
+          </span>
+          <input
+            id="busca-usuarios"
+            type="search"
+            className="barra-pesquisa__campo"
+            placeholder="Buscar por nome..."
+            value={filtroNome}
+            onChange={(e) => setFiltroNome(e.target.value)}
+          />
+        </div>
+        <SelectSimples
           value={filtroTipo}
-          onChange={(e) => setFiltroTipo(e.target.value)}
-        >
-          <option value="">Todos os tipos</option>
-          <option value="Aluno">Aluno</option>
-          <option value="Professor">Professor</option>
-          <option value="Coordenador">Coordenador</option>
-          <option value="Admin">Admin</option>
-        </select>
+          opcoes={[
+            { valor: "",            rotulo: "Todos os tipos"  },
+            { valor: "Aluno",       rotulo: "Aluno"           },
+            { valor: "Professor",   rotulo: "Professor"       },
+            { valor: "Coordenador", rotulo: "Coordenador"     },
+            { valor: "Admin",       rotulo: "Admin"           },
+          ]}
+          onChange={setFiltroTipo}
+          placeholder="Todos os tipos"
+        />
+        <SelectSimples
+          value={filtroStatus}
+          opcoes={[
+            { valor: "",       rotulo: "Todos os status" },
+            { valor: "ativo",  rotulo: "Ativos"          },
+            { valor: "inativo", rotulo: "Inativos"       },
+          ]}
+          onChange={setFiltroStatus}
+          placeholder="Todos os status"
+        />
       </div>
 
       <ul className="lista-usuarios-completa" role="list" aria-label="Lista de usuários">

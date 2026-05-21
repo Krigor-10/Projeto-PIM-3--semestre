@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbCirclePlus } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbCirclePlus, TbX, TbCheck } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -29,7 +29,7 @@ function CelulaTurmas({ professorId, turmasLista }) {
   );
 }
 
-export default function TelaProfessores({ usuario }) {
+export default function TelaProfessores({ usuario, onToast }) {
   const [lista, setLista]               = useState(() => db.usuarios.listar().filter((u) => u.tipo === "Professor"));
   const [turmasLista, setTurmasLista]   = useState(() => db.turmas.listar());
   useEffect(() => { db.usuarios.salvarPorTipo("Professor", lista); }, [lista]);
@@ -45,8 +45,8 @@ export default function TelaProfessores({ usuario }) {
   const [kebabAberto,         setKebabAberto]         = useState(null);
   const [kebabPos,            setKebabPos]            = useState({ top: 0, left: 0 });
   const [professorDetalhe,    setProfessorDetalhe]    = useState(null);
-  const [professorRemovendo,  setProfessorRemovendo]  = useState(null);
-  const [professorEditando,   setProfessorEditando]   = useState(null);
+  const [modoEdicao,          setModoEdicao]          = useState(false);
+  const [confirmandoStatus,   setConfirmandoStatus]   = useState(null);
   const [atribuindoTurmas,    setAtribuindoTurmas]    = useState(null);
   const [turmasSelecionadas,  setTurmasSelecionadas]  = useState(new Set());
   const [modalNovoAberto,     setModalNovoAberto]     = useState(false);
@@ -69,23 +69,17 @@ export default function TelaProfessores({ usuario }) {
     setKebabAberto((prev) => (prev === profId ? null : profId));
   }
 
-  function abrirEdicao(prof) {
-    setProfessorEditando({ ...prof });
-    setKebabAberto(null);
-  }
-
   function salvarEdicao(e) {
     e.preventDefault();
     const f = e.target;
     const atualizado = {
-      ...professorEditando,
-      nome:          f["edit-nome"].value.trim(),
-      email:         f["edit-email"].value.trim(),
-      telefone:      f["edit-telefone"].value.trim() || undefined,
+      ...professorDetalhe,
+      nome:           f["edit-nome"].value.trim(),
+      email:          f["edit-email"].value.trim(),
+      telefone:       f["edit-telefone"].value.trim() || undefined,
       especializacao: f["edit-espec"].value.trim() || undefined,
     };
     setLista((prev) => prev.map((u) => (u.id === atualizado.id ? atualizado : u)));
-    /* Atualiza o nome do professor nas turmas quando ele muda */
     setTurmasLista((prev) =>
       prev.map((t) =>
         t.professorId === atualizado.id
@@ -93,8 +87,8 @@ export default function TelaProfessores({ usuario }) {
           : t
       )
     );
-    if (professorDetalhe?.id === atualizado.id) setProfessorDetalhe(atualizado);
-    setProfessorEditando(null);
+    setProfessorDetalhe(atualizado);
+    setModoEdicao(false);
   }
 
   function abrirAtribuicao(prof) {
@@ -119,6 +113,7 @@ export default function TelaProfessores({ usuario }) {
         return t;
       })
     );
+    onToast?.(`Turmas de ${atribuindoTurmas.nome.split(" ")[0]} atualizadas`, "sucesso");
     setAtribuindoTurmas(null);
   }
 
@@ -131,15 +126,15 @@ export default function TelaProfessores({ usuario }) {
   }
 
   function alternarAtivo(id) {
-    setLista((prev) => prev.map((u) => (u.id === id ? { ...u, ativo: !u.ativo } : u)));
+    const alvo = lista.find((u) => u.id === id);
+    const novoEstado = !alvo.ativo;
+    setLista((prev) => prev.map((u) => (u.id === id ? { ...u, ativo: novoEstado } : u)));
     if (professorDetalhe?.id === id)
-      setProfessorDetalhe((prev) => ({ ...prev, ativo: !prev.ativo }));
-  }
-
-  function confirmarRemocao() {
-    setLista((prev) => prev.filter((u) => u.id !== professorRemovendo));
-    if (professorDetalhe?.id === professorRemovendo) setProfessorDetalhe(null);
-    setProfessorRemovendo(null);
+      setProfessorDetalhe((prev) => ({ ...prev, ativo: novoEstado }));
+    onToast?.(
+      novoEstado ? `${alvo.nome} foi ativado` : `${alvo.nome} foi desativado`,
+      novoEstado ? "sucesso" : "aviso"
+    );
   }
 
   function toggleSelecionado(e, id) {
@@ -231,8 +226,8 @@ export default function TelaProfessores({ usuario }) {
   const colunas = [
     { chave: "nome",         rotulo: "Professor" },
     { chave: "dataCadastro", rotulo: "Cadastro"  },
-    { chave: "ativo",        rotulo: "Status"    },
     { chave: null,           rotulo: "Turmas"    },
+    { chave: "ativo",        rotulo: "Status"    },
   ];
 
   const profKebab = lista.find((p) => p.id === kebabAberto);
@@ -345,10 +340,10 @@ export default function TelaProfessores({ usuario }) {
                   </div>
                 </td>
                 <td>{new Date(prof.dataCadastro).toLocaleDateString("pt-BR")}</td>
+                <td><CelulaTurmas professorId={prof.id} turmasLista={turmasLista} /></td>
                 <td>
                   <Insignia texto={prof.ativo ? "Ativo" : "Inativo"} variante={prof.ativo ? "sucesso" : "erro"} />
                 </td>
-                <td><CelulaTurmas professorId={prof.id} turmasLista={turmasLista} /></td>
                 <td onClick={(e) => e.stopPropagation()}>
                   <button
                     className="kebab-btn"
@@ -430,34 +425,53 @@ export default function TelaProfessores({ usuario }) {
             Ver detalhes
           </button>
           <button role="menuitem" className="kebab-menu__item" type="button"
-            onClick={() => abrirEdicao(profKebab)}>
-            Editar dados
-          </button>
-          <button role="menuitem" className="kebab-menu__item" type="button"
             onClick={() => abrirAtribuicao(profKebab)}>
             Atribuir turmas
-          </button>
-          <div className="kebab-menu__divisor" />
-          <button role="menuitem" className="kebab-menu__item" type="button"
-            onClick={() => { alternarAtivo(profKebab.id); setKebabAberto(null); }}>
-            {profKebab.ativo ? "Desativar conta" : "Ativar conta"}
-          </button>
-          <div className="kebab-menu__divisor" />
-          <button role="menuitem" className="kebab-menu__item kebab-menu__item--perigo" type="button"
-            onClick={() => { setProfessorRemovendo(profKebab.id); setKebabAberto(null); }}>
-            Remover professor
           </button>
         </div>,
         document.body
       )}
 
-      {/* ── Modal detalhes ── */}
+      {/* ── Modal detalhes / edição inline ── */}
       {professorDetalhe && (() => {
         const turmasPro    = turmasLista.filter((t) => t.professorId === professorDetalhe.id);
         const totalAlunos  = turmasPro.reduce((acc, t) => acc + (t.totalAlunos ?? 0), 0);
         const turmasAtivas = turmasPro.filter((t) => t.status === "Ativa").length;
         return (
-          <Modal titulo="Perfil do Professor" onFechar={() => setProfessorDetalhe(null)}>
+          <Modal
+            titulo={modoEdicao ? "Editar Professor" : "Perfil do Professor"}
+            onFechar={() => { setProfessorDetalhe(null); setModoEdicao(false); }}
+          >
+            {modoEdicao ? (
+              <>
+                <div className="modal-edicao__avatar" aria-hidden="true">
+                  {gerarIniciais(professorDetalhe.nome)}
+                </div>
+                <form className="formulario-modal" onSubmit={salvarEdicao}>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="edit-nome">Nome completo *</label>
+                    <input id="edit-nome" className="campo__entrada" type="text" defaultValue={professorDetalhe.nome} required />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="edit-email">E-mail *</label>
+                    <input id="edit-email" className="campo__entrada" type="email" defaultValue={professorDetalhe.email} required />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="edit-telefone">Telefone</label>
+                    <input id="edit-telefone" className="campo__entrada" type="text" placeholder="(00) 00000-0000" defaultValue={professorDetalhe.telefone ?? ""} />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="edit-espec">Especialização</label>
+                    <input id="edit-espec" className="campo__entrada" type="text" placeholder="Ex: Desenvolvimento Web" defaultValue={professorDetalhe.especializacao ?? ""} />
+                  </div>
+                  <footer className="modal-rodape">
+                    <Botao variante="perigo" type="button" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
+                    <Botao variante="primario" type="submit">Salvar alterações</Botao>
+                  </footer>
+                </form>
+              </>
+            ) : (
+            <>
             <div className="detalhe-prof">
 
               {/* Cabeçalho */}
@@ -498,6 +512,10 @@ export default function TelaProfessores({ usuario }) {
               <section>
                 <h4 className="detalhe-prof__secao-titulo">Informações</h4>
                 <dl className="detalhe-prof__info-grade">
+                  <div className="detalhe-prof__info-item">
+                    <dt>Código</dt>
+                    <dd style={{ fontFamily: "var(--fonte-mono)", fontSize: "0.85rem" }}>{professorDetalhe.codigo ?? "—"}</dd>
+                  </div>
                   <div className="detalhe-prof__info-item">
                     <dt>Membro desde</dt>
                     <dd>{new Date(professorDetalhe.dataCadastro).toLocaleDateString("pt-BR")}</dd>
@@ -551,83 +569,47 @@ export default function TelaProfessores({ usuario }) {
                   </ul>
                 )}
               </section>
+
+              <div className="detalhe-status">
+                <div>
+                  <strong className="detalhe-status__rotulo">Status da conta</strong>
+                  <span className="detalhe-status__descricao">
+                    {professorDetalhe.ativo ? "Professor tem acesso à plataforma" : "Acesso à plataforma bloqueado"}
+                  </span>
+                </div>
+                <button
+                  role="switch"
+                  aria-checked={professorDetalhe.ativo}
+                  className={`switch-ativo${professorDetalhe.ativo ? " switch-ativo--ativo" : ""}`}
+                  onClick={() => setConfirmandoStatus({ id: professorDetalhe.id, nome: professorDetalhe.nome, novoEstado: !professorDetalhe.ativo })}
+                  type="button"
+                  aria-label={professorDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
+                >
+                  <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
+                  <span className="switch-ativo__thumb" aria-hidden="true" />
+                  <TbCheck size={10} className="switch-ativo__icone switch-ativo__icone--dir" aria-hidden="true" />
+                </button>
+              </div>
             </div>
 
             <footer className="modal-rodape">
-              <Botao variante="fantasma" tamanho="pequeno"
-                onClick={() => { abrirEdicao(professorDetalhe); setProfessorDetalhe(null); }}>
+              <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)}>
                 Editar dados
               </Botao>
               <Botao variante="fantasma" tamanho="pequeno"
                 onClick={() => { abrirAtribuicao(professorDetalhe); setProfessorDetalhe(null); }}>
                 Atribuir turmas
               </Botao>
-              <Botao
-                variante={professorDetalhe.ativo ? "perigo" : "sucesso"}
-                tamanho="pequeno"
-                onClick={() => alternarAtivo(professorDetalhe.id)}
-              >
-                {professorDetalhe.ativo ? "Desativar" : "Ativar"}
-              </Botao>
-              <Botao variante="perigo" onClick={() => setProfessorDetalhe(null)}>
+              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }}>
                 Fechar
               </Botao>
             </footer>
+            </>
+            )}
           </Modal>
         );
       })()}
 
-      {/* ── Modal edição de dados ── */}
-      {professorEditando && (
-        <Modal titulo="Editar Professor" onFechar={() => setProfessorEditando(null)}>
-          <form className="formulario-modal" onSubmit={salvarEdicao}>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-nome">Nome completo *</label>
-              <input
-                id="edit-nome"
-                className="campo__entrada"
-                type="text"
-                defaultValue={professorEditando.nome}
-                required
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-email">E-mail *</label>
-              <input
-                id="edit-email"
-                className="campo__entrada"
-                type="email"
-                defaultValue={professorEditando.email}
-                required
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-telefone">Telefone</label>
-              <input
-                id="edit-telefone"
-                className="campo__entrada"
-                type="text"
-                placeholder="(00) 00000-0000"
-                defaultValue={professorEditando.telefone ?? ""}
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-espec">Especialização</label>
-              <input
-                id="edit-espec"
-                className="campo__entrada"
-                type="text"
-                placeholder="Ex: Desenvolvimento Web"
-                defaultValue={professorEditando.especializacao ?? ""}
-              />
-            </div>
-            <footer className="modal-rodape">
-              <button type="button" className="botao botao--perigo" onClick={() => setProfessorEditando(null)}>Cancelar</button>
-              <button type="submit" className="botao botao--primario">Salvar alterações</button>
-            </footer>
-          </form>
-        </Modal>
-      )}
 
       {/* ── Modal atribuição de turmas ── */}
       {atribuindoTurmas && (() => {
@@ -692,6 +674,22 @@ export default function TelaProfessores({ usuario }) {
         );
       })()}
 
+      {/* ── Confirmação de alteração de status ── */}
+      {confirmandoStatus && (
+        <Modal
+          titulo={confirmandoStatus.novoEstado ? "Ativar conta" : "Desativar conta"}
+          onFechar={() => setConfirmandoStatus(null)}
+        >
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Tem certeza que deseja <strong>{confirmandoStatus.novoEstado ? "ativar" : "desativar"}</strong> a conta de <strong>{confirmandoStatus.nome}</strong>?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)}>Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }}>Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
+
       {/* ── Confirmação de remoção em massa ── */}
       {removendoEmMassa && (
         <Modal titulo="Remover professores" onFechar={() => setRemovendoEmMassa(false)}>
@@ -700,26 +698,10 @@ export default function TelaProfessores({ usuario }) {
           </p>
           <footer className="modal-rodape">
             <button className="botao botao--perigo" onClick={() => setRemovendoEmMassa(false)} type="button">Cancelar</button>
-            <button className="botao botao--perigo"   onClick={confirmarRemocaoEmMassa}           type="button">Confirmar remoção</button>
+            <button className="botao botao--sucesso" onClick={confirmarRemocaoEmMassa} type="button">Confirmar</button>
           </footer>
         </Modal>
       )}
-
-      {/* ── Confirmação de remoção individual ── */}
-      {professorRemovendo && (() => {
-        const prof = lista.find((p) => p.id === professorRemovendo);
-        return (
-          <Modal titulo="Remover professor" onFechar={() => setProfessorRemovendo(null)}>
-            <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
-              Tem certeza que deseja remover <strong>{prof?.nome}</strong>? Esta ação não pode ser desfeita.
-            </p>
-            <footer className="modal-rodape">
-              <button className="botao botao--perigo" onClick={() => setProfessorRemovendo(null)} type="button">Cancelar</button>
-              <button className="botao botao--perigo"   onClick={confirmarRemocao}                  type="button">Confirmar remoção</button>
-            </footer>
-          </Modal>
-        );
-      })()}
 
       {/* ── Modal novo professor ── */}
       {modalNovoAberto && (

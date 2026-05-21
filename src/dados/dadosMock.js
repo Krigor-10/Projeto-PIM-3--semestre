@@ -249,27 +249,27 @@ export const progressoAluno = {
 
 /* ── Lista completa de usuários ─────────────────────────────── */
 export const usuarios = [
-  { id: 1,  nome: "Maria Isabela Branco",   email: "maria.isabela@coderyse.com",  tipo: "Aluno",       ativo: true,  dataCadastro: "2024-01-15" },
-  { id: 2,  nome: "Heitor Henrique Nadir",  email: "heitor.nadir@coderyse.com",   tipo: "Professor",   ativo: true,  dataCadastro: "2023-08-01" },
-  { id: 3,  nome: "Nicolas Pimentel",       email: "nicolas.pimentel@coderyse.com", tipo: "Coordenador", ativo: true, dataCadastro: "2023-07-20" },
-  { id: 4,  nome: "Krigor de Sousa",        email: "krigor@coderyse.com",          tipo: "Admin",       ativo: true,  dataCadastro: "2023-01-01" },
-  { id: 5,  nome: "Ana Carvalho",           email: "ana.carvalho@coderyse.com",    tipo: "Professor",   ativo: true,  dataCadastro: "2023-09-10" },
-  { id: 6,  nome: "Carlos Mendes",          email: "carlos.mendes@coderyse.com",   tipo: "Professor",   ativo: true,  dataCadastro: "2023-10-05" },
-  { id: 7,  nome: "Fernanda Lima",          email: "fernanda.lima@coderyse.com",   tipo: "Professor",   ativo: false, dataCadastro: "2023-06-15" },
-  { id: 8,  nome: "João Pedro Alves",       email: "joao.alves@coderyse.com",      tipo: "Aluno",       ativo: true,  dataCadastro: "2024-02-01" },
-  { id: 9,  nome: "Lucas Ferreira",         email: "lucas.ferreira@coderyse.com",  tipo: "Aluno",       ativo: true,  dataCadastro: "2024-03-10" },
-  { id: 10, nome: "Camila Rodrigues",       email: "camila.rodrigues@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-03-12" },
-  { id: 11, nome: "Rafael Souza",           email: "rafael.souza@coderyse.com",    tipo: "Aluno",       ativo: false, dataCadastro: "2024-01-05" },
-  { id: 12, nome: "Juliana Castro",         email: "juliana.castro@coderyse.com",  tipo: "Aluno",       ativo: true,  dataCadastro: "2024-02-28" },
-  { id: 13, nome: "Felipe Oliveira",        email: "felipe.oliveira@coderyse.com", tipo: "Aluno",       ativo: true,  dataCadastro: "2024-03-18" },
-  { id: 14, nome: "Beatriz Mendonça",      email: "beatriz.mendonca@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-03-22" },
-  { id: 15, nome: "Thiago Carvalho",       email: "thiago.carvalho@coderyse.com",  tipo: "Aluno",      ativo: false, dataCadastro: "2024-01-30" },
-  { id: 16, nome: "Larissa Monteiro",      email: "larissa.monteiro@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-02" },
-  { id: 17, nome: "Gabriel Santos",        email: "gabriel.santos@coderyse.com",   tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-05" },
-  { id: 18, nome: "Natália Freitas",       email: "natalia.freitas@coderyse.com",  tipo: "Aluno",      ativo: false, dataCadastro: "2024-02-14" },
-  { id: 19, nome: "Diego Nascimento",      email: "diego.nascimento@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-10" },
-  { id: 20, nome: "Isabela Teixeira",      email: "isabela.teixeira@coderyse.com", tipo: "Aluno",      ativo: true,  dataCadastro: "2024-04-12" },
-  { id: 21, nome: "Vitor Hugo Lima",       email: "vitor.lima@coderyse.com",       tipo: "Aluno",      ativo: false, dataCadastro: "2024-03-05" },
+  { id: 1,  nome: "Maria Isabela Branco",   email: "maria.isabela@coderyse.com",    tipo: "Aluno",       codigo: "ALU-2024-001", ativo: true,  dataCadastro: "2024-01-15" },
+  { id: 2,  nome: "Heitor Henrique Nadir",  email: "heitor.nadir@coderyse.com",     tipo: "Professor",   codigo: "PRF-2023-001", ativo: true,  dataCadastro: "2023-08-01" },
+  { id: 3,  nome: "Nicolas Pimentel",       email: "nicolas.pimentel@coderyse.com", tipo: "Coordenador", codigo: "CRD-2023-001", ativo: true,  dataCadastro: "2023-07-20" },
+  { id: 4,  nome: "Krigor de Sousa",        email: "krigor@coderyse.com",            tipo: "Admin",       codigo: "ADM-2023-001", ativo: true,  dataCadastro: "2023-01-01" },
+  { id: 5,  nome: "Ana Carvalho",           email: "ana.carvalho@coderyse.com",      tipo: "Professor",   codigo: "PRF-2023-002", ativo: true,  dataCadastro: "2023-09-10" },
+  { id: 6,  nome: "Carlos Mendes",          email: "carlos.mendes@coderyse.com",     tipo: "Professor",   codigo: "PRF-2023-003", ativo: true,  dataCadastro: "2023-10-05" },
+  { id: 7,  nome: "Fernanda Lima",          email: "fernanda.lima@coderyse.com",     tipo: "Professor",   codigo: "PRF-2023-004", ativo: false, dataCadastro: "2023-06-15" },
+  { id: 8,  nome: "João Pedro Alves",       email: "joao.alves@coderyse.com",        tipo: "Aluno",       codigo: "ALU-2024-002", ativo: true,  dataCadastro: "2024-02-01" },
+  { id: 9,  nome: "Lucas Ferreira",         email: "lucas.ferreira@coderyse.com",    tipo: "Aluno",       codigo: "ALU-2024-003", ativo: true,  dataCadastro: "2024-03-10" },
+  { id: 10, nome: "Camila Rodrigues",       email: "camila.rodrigues@coderyse.com",  tipo: "Aluno",       codigo: "ALU-2024-004", ativo: true,  dataCadastro: "2024-03-12" },
+  { id: 11, nome: "Rafael Souza",           email: "rafael.souza@coderyse.com",      tipo: "Aluno",       codigo: "ALU-2024-005", ativo: false, dataCadastro: "2024-01-05" },
+  { id: 12, nome: "Juliana Castro",         email: "juliana.castro@coderyse.com",    tipo: "Aluno",       codigo: "ALU-2024-006", ativo: true,  dataCadastro: "2024-02-28" },
+  { id: 13, nome: "Felipe Oliveira",        email: "felipe.oliveira@coderyse.com",   tipo: "Aluno",       codigo: "ALU-2024-007", ativo: true,  dataCadastro: "2024-03-18" },
+  { id: 14, nome: "Beatriz Mendonça",       email: "beatriz.mendonca@coderyse.com",  tipo: "Aluno",       codigo: "ALU-2024-008", ativo: true,  dataCadastro: "2024-03-22" },
+  { id: 15, nome: "Thiago Carvalho",        email: "thiago.carvalho@coderyse.com",   tipo: "Aluno",       codigo: "ALU-2024-009", ativo: false, dataCadastro: "2024-01-30" },
+  { id: 16, nome: "Larissa Monteiro",       email: "larissa.monteiro@coderyse.com",  tipo: "Aluno",       codigo: "ALU-2024-010", ativo: true,  dataCadastro: "2024-04-02" },
+  { id: 17, nome: "Gabriel Santos",         email: "gabriel.santos@coderyse.com",    tipo: "Aluno",       codigo: "ALU-2024-011", ativo: true,  dataCadastro: "2024-04-05" },
+  { id: 18, nome: "Natália Freitas",        email: "natalia.freitas@coderyse.com",   tipo: "Aluno",       codigo: "ALU-2024-012", ativo: false, dataCadastro: "2024-02-14" },
+  { id: 19, nome: "Diego Nascimento",       email: "diego.nascimento@coderyse.com",  tipo: "Aluno",       codigo: "ALU-2024-013", ativo: true,  dataCadastro: "2024-04-10" },
+  { id: 20, nome: "Isabela Teixeira",       email: "isabela.teixeira@coderyse.com",  tipo: "Aluno",       codigo: "ALU-2024-014", ativo: true,  dataCadastro: "2024-04-12" },
+  { id: 21, nome: "Vitor Hugo Lima",        email: "vitor.lima@coderyse.com",        tipo: "Aluno",       codigo: "ALU-2024-015", ativo: false, dataCadastro: "2024-03-05" },
 ];
 
 /* ── Estatísticas por perfil ─────────────────────────────────── */
@@ -302,4 +302,25 @@ export const estatisticasCoordenador = {
 /* Chave = cursoId; representa cursos já concluídos com avaliação aprovada */
 export const certificadosDemo = {
   5: { nota: 9.2, porcentagem: 92, notaMaxima: 10, dataConclusao: "10/06/2024" },
+};
+
+/* ── Progresso por matrícula (chave = matricula.id) ──────────── */
+export const PROGRESSO_MOCK = {
+  1:  42,
+  2:  15,
+  3:  60,
+  4:  30,
+  5:  55,
+  6:  68,
+  7:  20,
+  20: 85,
+};
+
+/* ── Média de notas por turma (chave = turma.id) ─────────────── */
+export const NOTAS_MOCK = {
+  1: 7.8,
+  3: 8.2,
+  4: 7.1,
+  5: 9.0,
+  6: 6.5,
 };

@@ -6,6 +6,7 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
+  TbUserCircle, TbEdit,
 } from "react-icons/tb";
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
@@ -28,6 +29,7 @@ const iconesPorSecao = {
   certificados: TbTrophy,
   usuarios:     TbUsersGroup,
   catalogo:     TbWorld,
+  perfil:       TbUserCircle,
 };
 
 const metadadosPorSecao = {
@@ -45,6 +47,7 @@ const metadadosPorSecao = {
   certificados: { titulo: "Meus Certificados",   descricao: "Cursos concluídos e certificados disponíveis para download." },
   usuarios:     { titulo: "Usuários",            descricao: "Visão administrativa dos perfis do sistema."                },
   catalogo:     { titulo: "Catálogo Público",    descricao: "Gerencie a visibilidade dos cursos na homepage."             },
+  perfil:       { titulo: "Meu Perfil",          descricao: "Visualize e edite suas informações pessoais."               },
 };
 
 const variantePorTipo = { Aluno: "marca", Professor: "info", Coordenador: "aviso", Admin: "erro" };
@@ -214,6 +217,15 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
 
               <div className="popup-perfil__rodape">
                 <Botao
+                  variante="fantasma"
+                  className="popup-perfil__editar"
+                  onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil")); }}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                >
+                  <TbEdit size={15} aria-hidden="true" />
+                  Editar perfil
+                </Botao>
+                <Botao
                   variante="perigo"
                   className="popup-perfil__sair"
                   onClick={() => { setConfirmarSaida(true); setPopupAberto(false); }}
@@ -237,7 +249,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
           Tem certeza que deseja sair? Você precisará fazer login novamente para acessar a plataforma.
         </p>
         <footer style={{ display: "flex", gap: "var(--espaco-md)", justifyContent: "flex-end" }}>
-          <Botao variante="perigo" onClick={() => setConfirmarSaida(false)}>
+          <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>
             Cancelar
           </Botao>
           <Botao variante="perigo" onClick={onLogout}>

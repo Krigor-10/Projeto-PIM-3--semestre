@@ -26,6 +26,7 @@ import TelaCoordenadores from "./usuarios/TelaCoordenadores.jsx";
 import TelaQuiz from "./aprendizado/TelaQuiz.jsx";
 import TelaCertificados from "./aprendizado/TelaCertificados.jsx";
 import TelaCatalogo from "./admin/TelaCatalogo.jsx";
+import TelaPerfilUsuario from "./perfil/TelaPerfilUsuario.jsx";
 import Toast from "@/componentes/Toast.jsx";
 
 function resolverDashboard(tipo) {
@@ -53,6 +54,7 @@ const mapaTelas = {
   quiz: TelaQuiz,
   certificados: TelaCertificados,
   catalogo: TelaCatalogo,
+  perfil: TelaPerfilUsuario,
 };
 
 function TelaAcessoNegado() {
@@ -112,7 +114,8 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   function resolverTela() {
     if (secaoAtual === "dashboard") return resolverDashboard(usuario.tipo);
 
-    if (secaoAtual === "quiz") return mapaTelas.quiz;
+    if (secaoAtual === "quiz")   return mapaTelas.quiz;
+    if (secaoAtual === "perfil") return mapaTelas.perfil;
 
     if (!temPermissao(usuario.tipo, secaoAtual)) return TelaAcessoNegado;
 

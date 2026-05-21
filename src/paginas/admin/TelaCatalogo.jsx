@@ -88,27 +88,27 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
           onChange={(e) => setBusca(e.target.value)}
           aria-label="Filtrar cursos por título"
         />
-        <select
-          className="campo__entrada barra-filtros__select"
+        <SelectSimples
           value={filtroNivel}
-          onChange={(e) => setFiltroNivel(e.target.value)}
-          aria-label="Filtrar por nível"
-        >
-          <option value="">Todos os níveis</option>
-          <option>Iniciante</option>
-          <option>Intermediário</option>
-          <option>Avançado</option>
-        </select>
-        <select
-          className="campo__entrada barra-filtros__select"
+          opcoes={[
+            { valor: "", rotulo: "Todos os níveis" },
+            { valor: "Iniciante",     rotulo: "Iniciante"     },
+            { valor: "Intermediário", rotulo: "Intermediário" },
+            { valor: "Avançado",      rotulo: "Avançado"      },
+          ]}
+          onChange={setFiltroNivel}
+          placeholder="Todos os níveis"
+        />
+        <SelectSimples
           value={filtroVisivel}
-          onChange={(e) => setFiltroVisivel(e.target.value)}
-          aria-label="Filtrar por visibilidade"
-        >
-          <option value="">Toda visibilidade</option>
-          <option value="visivel">Visíveis</option>
-          <option value="oculto">Ocultos</option>
-        </select>
+          opcoes={[
+            { valor: "", rotulo: "Toda visibilidade" },
+            { valor: "visivel", rotulo: "Visíveis" },
+            { valor: "oculto",  rotulo: "Ocultos"  },
+          ]}
+          onChange={setFiltroVisivel}
+          placeholder="Toda visibilidade"
+        />
       </div>
 
       <ul className="catalogo-grade" role="list" aria-label="Cursos do catálogo público">

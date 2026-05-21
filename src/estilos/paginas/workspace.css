@@ -66,10 +66,55 @@
   margin-bottom: var(--espaco-lg);
 }
 
-.barra-filtros__busca {
+.barra-pesquisa {
+  display: flex;
+  align-items: center;
   flex: 1;
   min-width: 200px;
   max-width: 400px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-circular);
+  transition: border-color var(--transicao-rapida), box-shadow var(--transicao-rapida);
+}
+
+.barra-pesquisa:focus-within {
+  border-color: var(--cor-marca);
+  box-shadow: 0 0 0 3px rgba(123, 47, 247, 0.15);
+}
+
+.barra-pesquisa__icone {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 0.75rem;
+  color: var(--cor-texto-mudo);
+  pointer-events: none;
+}
+
+.barra-pesquisa__icone svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.barra-pesquisa:focus-within .barra-pesquisa__icone {
+  color: var(--cor-marca);
+}
+
+.barra-pesquisa__campo {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  color: var(--cor-texto);
+  font-size: var(--texto-sm);
+  font-family: inherit;
+  outline: none;
+}
+
+.barra-pesquisa__campo::placeholder {
+  color: var(--cor-texto-mudo);
 }
 
 .barra-filtros__select {
@@ -1466,5 +1511,156 @@
 
 [data-tema="claro"] .nav-mobile {
   background: rgba(240, 242, 248, 0.96);
+}
+
+/* ------------------------------------------------------------
+   TELA DE PERFIL DO USUÁRIO
+   ------------------------------------------------------------ */
+.perfil-grade {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--espaco-xl);
+  align-items: start;
+}
+
+.perfil-cartao-identidade {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  padding: var(--espaco-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-md);
+  text-align: center;
+}
+
+.perfil-avatar-grande {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--cor-perfil, #7b2ff7) 18%, transparent);
+  border: 2px solid color-mix(in srgb, var(--cor-perfil, #7b2ff7) 40%, transparent);
+  color: var(--cor-perfil, #7b2ff7);
+  font-size: 1.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.perfil-cartao-identidade__nome {
+  font-size: var(--texto-md);
+  font-weight: 600;
+  color: var(--cor-texto);
+  line-height: 1.3;
+}
+
+.perfil-cartao-identidade__dados {
+  width: 100%;
+  margin-top: var(--espaco-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.perfil-dado {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.perfil-dado dt {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-mudo);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.perfil-dado dd {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  word-break: break-word;
+}
+
+.perfil-painel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Grade do formulário: 2 colunas por padrão */
+.formulario-perfil__grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espaco-md);
+}
+
+.formulario-perfil__campo--largo {
+  grid-column: 1 / -1;
+}
+
+.formulario-perfil__rodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-md);
+  margin-top: var(--espaco-lg);
+  padding-top: var(--espaco-md);
+  border-top: 1px solid var(--cor-borda);
+}
+
+/* Segurança */
+.perfil-seguranca-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md) 0;
+}
+
+.perfil-seguranca-item__info {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  color: var(--cor-texto-suave);
+}
+
+.perfil-seguranca-item__info strong {
+  display: block;
+  font-size: var(--texto-sm);
+  color: var(--cor-texto);
+}
+
+.perfil-seguranca-item__info p {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-mudo);
+  margin: 0;
+}
+
+/* popup-perfil: botão "Editar perfil" */
+.popup-perfil__rodape {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .perfil-grade {
+    grid-template-columns: 1fr;
+  }
+
+  .formulario-perfil__grade {
+    grid-template-columns: 1fr;
+  }
+
+  .formulario-perfil__campo--largo {
+    grid-column: 1;
+  }
 }
 

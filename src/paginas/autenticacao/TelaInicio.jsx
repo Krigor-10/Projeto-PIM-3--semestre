@@ -190,7 +190,7 @@ export default function TelaInicio() {
                         <Botao
                           variante="secundario"
                           tamanho="pequeno"
-                          onClick={() => navigate(ROTAS.LOGIN)}
+                          onClick={() => navigate(ROTAS.CADASTRO)}
                           aria-label={`Matricular-se em ${curso.titulo}`}
                           style={{ color: "#fff" }}
                         >

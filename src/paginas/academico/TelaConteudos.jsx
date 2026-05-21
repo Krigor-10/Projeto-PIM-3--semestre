@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbCirclePlus } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbCirclePlus, TbLock } from "react-icons/tb";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -57,13 +57,13 @@ function BotaoQuizModulo({ percentual, aprovado = false, onClick }) {
           />
         </svg>
         <span className="botao-quiz-modulo__icone">
-          {aprovado ? "✓" : liberado ? "▶" : `${percentual}%`}
+          {aprovado ? "✓" : liberado ? "▶" : <TbLock size={13} aria-hidden="true" />}
         </span>
       </span>
 
       {/* Texto identificador */}
       <span className="botao-quiz-modulo__texto">
-        {aprovado ? "Quiz concluído" : liberado ? "Quiz rápido" : "Quiz bloqueado"}
+        {aprovado ? "Quiz concluído" : liberado ? "Iniciar Quiz" : "Quiz bloqueado"}
       </span>
     </button>
   );
@@ -71,7 +71,7 @@ function BotaoQuizModulo({ percentual, aprovado = false, onClick }) {
 
 /* ── Modal de quiz rápido ────────────────────────────────────── */
 
-function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
+function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModulo }) {
   const [indice, setIndice] = useState(0);
   const [respostas, setRespostas] = useState({});
   const [concluido, setConcluido] = useState(false);
@@ -94,6 +94,12 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
     } else {
       setIndice((i) => i + 1);
     }
+  }
+
+  function reiniciar() {
+    setIndice(0);
+    setRespostas({});
+    setConcluido(false);
   }
 
   /* Conta quantas respostas batem com o gabarito */
@@ -150,6 +156,16 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado }) {
             <Botao variante="perigo" onClick={onFechar}>
               Fechar
             </Botao>
+            {!aprovado && (
+              <Botao variante="primario" onClick={reiniciar}>
+                Refazer Quiz
+              </Botao>
+            )}
+            {aprovado && onProximoModulo && (
+              <Botao variante="primario" onClick={onProximoModulo}>
+                Iniciar próximo módulo →
+              </Botao>
+            )}
           </footer>
         </div>
       </Modal>
@@ -315,7 +331,9 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
     const sorteadas = [...questoesQuiz]
       .sort(() => Math.random() - 0.5)
       .slice(0, QUESTOES_POR_MODULO);
-    setQuizModulo({ modulo, questoes: sorteadas });
+    const idx = modulosDoCurso.findIndex((m) => m.id === modulo.id);
+    const proximoModulo = modulosDoCurso[idx + 1] ?? null;
+    setQuizModulo({ modulo, questoes: sorteadas, proximoModulo });
   }
 
   function continuarConteudo() {
@@ -525,6 +543,12 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
           questoes={quizModulo.questoes}
           onFechar={() => setQuizModulo(null)}
           onAprovado={(percentual) => onQuizAprovado?.(quizModulo.modulo.id, percentual)}
+          onProximoModulo={quizModulo.proximoModulo ? () => {
+            const proximo = quizModulo.proximoModulo;
+            setQuizModulo(null);
+            setModulosAbertos((prev) => { const c = new Set(prev); c.add(proximo.id); return c; });
+            setTimeout(() => refsModulos.current[proximo.id]?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+          } : undefined}
         />,
         document.body
       )}

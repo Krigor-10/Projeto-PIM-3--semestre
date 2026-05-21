@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbX, TbCheck } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -36,7 +36,7 @@ function CelulaMatricula({ alunoId }) {
   );
 }
 
-export default function TelaAlunos({ usuario }) {
+export default function TelaAlunos({ usuario, onToast }) {
   const tipo = usuario?.tipo;
 
   const podeEditar_   = podeEditar(tipo, "alunos");
@@ -55,7 +55,7 @@ export default function TelaAlunos({ usuario }) {
   const [kebabAberto,   setKebabAberto]   = useState(null);
   const [kebabPos,      setKebabPos]      = useState({ top: 0, left: 0 });
   const [alunoDetalhe,  setAlunoDetalhe]  = useState(null);
-  const [alunoRemovendo, setAlunoRemovendo] = useState(null);
+  const [confirmandoStatus, setConfirmandoStatus] = useState(null);
 
   const kebabRef = useRef(null);
 
@@ -76,14 +76,14 @@ export default function TelaAlunos({ usuario }) {
   }
 
   function alternarAtivo(id) {
-    setLista((prev) => prev.map((u) => u.id === id ? { ...u, ativo: !u.ativo } : u));
-    if (alunoDetalhe?.id === id) setAlunoDetalhe((prev) => ({ ...prev, ativo: !prev.ativo }));
-  }
-
-  function confirmarRemocao() {
-    setLista((prev) => prev.filter((u) => u.id !== alunoRemovendo));
-    if (alunoDetalhe?.id === alunoRemovendo) setAlunoDetalhe(null);
-    setAlunoRemovendo(null);
+    const alvo = lista.find((u) => u.id === id);
+    const novoEstado = !alvo.ativo;
+    setLista((prev) => prev.map((u) => u.id === id ? { ...u, ativo: novoEstado } : u));
+    if (alunoDetalhe?.id === id) setAlunoDetalhe((prev) => ({ ...prev, ativo: novoEstado }));
+    onToast?.(
+      novoEstado ? `${alvo.nome} foi ativado` : `${alvo.nome} foi desativado`,
+      novoEstado ? "sucesso" : "aviso"
+    );
   }
 
   function toggleSelecionado(e, id) {
@@ -168,8 +168,8 @@ export default function TelaAlunos({ usuario }) {
   const colunas = [
     { chave: "nome",         rotulo: "Aluno"     },
     { chave: "dataCadastro", rotulo: "Cadastro"  },
-    { chave: "ativo",        rotulo: "Status"    },
     { chave: null,           rotulo: "Matrícula" },
+    { chave: "ativo",        rotulo: "Status"    },
   ];
 
   const alunoKebab = lista.find((a) => a.id === kebabAberto);
@@ -280,10 +280,10 @@ export default function TelaAlunos({ usuario }) {
                   </div>
                 </td>
                 <td>{new Date(aluno.dataCadastro).toLocaleDateString("pt-BR")}</td>
+                <td><CelulaMatricula alunoId={aluno.id} /></td>
                 <td>
                   <Insignia texto={aluno.ativo ? "Ativo" : "Inativo"} variante={aluno.ativo ? "sucesso" : "erro"} />
                 </td>
-                <td><CelulaMatricula alunoId={aluno.id} /></td>
                 <td onClick={(e) => e.stopPropagation()}>
                   <button
                     className="kebab-btn"
@@ -343,21 +343,6 @@ export default function TelaAlunos({ usuario }) {
             onClick={() => { setAlunoDetalhe(alunoKebab); setKebabAberto(null); }}>
             Ver detalhes
           </button>
-          {podeEditar_ && (
-            <button role="menuitem" className="kebab-menu__item" type="button"
-              onClick={() => { alternarAtivo(alunoKebab.id); setKebabAberto(null); }}>
-              {alunoKebab.ativo ? "Desativar conta" : "Ativar conta"}
-            </button>
-          )}
-          {podeExcluir_ && (
-            <>
-              <div className="kebab-menu__divisor" />
-              <button role="menuitem" className="kebab-menu__item kebab-menu__item--perigo" type="button"
-                onClick={() => { setAlunoRemovendo(alunoKebab.id); setKebabAberto(null); }}>
-                Remover aluno
-              </button>
-            </>
-          )}
         </div>,
         document.body
       )}
@@ -379,10 +364,35 @@ export default function TelaAlunos({ usuario }) {
 
             <dl className="detalhe-aluno__dados">
               <div className="detalhe-aluno__dado">
+                <dt>Código</dt>
+                <dd style={{ fontFamily: "var(--fonte-mono)", fontSize: "0.85rem" }}>{alunoDetalhe.codigo ?? "—"}</dd>
+              </div>
+              <div className="detalhe-aluno__dado">
                 <dt>Cadastro</dt>
                 <dd>{new Date(alunoDetalhe.dataCadastro).toLocaleDateString("pt-BR")}</dd>
               </div>
             </dl>
+
+            <div className="detalhe-status">
+              <div>
+                <strong className="detalhe-status__rotulo">Status da conta</strong>
+                <span className="detalhe-status__descricao">
+                  {alunoDetalhe.ativo ? "Aluno tem acesso à plataforma" : "Acesso à plataforma bloqueado"}
+                </span>
+              </div>
+              <button
+                role="switch"
+                aria-checked={alunoDetalhe.ativo}
+                className={`switch-ativo${alunoDetalhe.ativo ? " switch-ativo--ativo" : ""}`}
+                onClick={() => setConfirmandoStatus({ id: alunoDetalhe.id, nome: alunoDetalhe.nome, novoEstado: !alunoDetalhe.ativo })}
+                type="button"
+                aria-label={alunoDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
+              >
+                <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
+                <span className="switch-ativo__thumb" aria-hidden="true" />
+                <TbCheck size={10} className="switch-ativo__icone switch-ativo__icone--dir" aria-hidden="true" />
+              </button>
+            </div>
 
             <section className="detalhe-aluno__matriculas">
               <h4 className="detalhe-aluno__secao-titulo">Matrículas</h4>
@@ -409,17 +419,23 @@ export default function TelaAlunos({ usuario }) {
           </div>
 
           <footer className="modal-rodape">
-            {podeEditar_ && (
-              <Botao variante={alunoDetalhe.ativo ? "perigo" : "sucesso"} tamanho="pequeno" onClick={() => alternarAtivo(alunoDetalhe.id)}>
-                {alunoDetalhe.ativo ? "Desativar conta" : "Ativar conta"}
-              </Botao>
-            )}
-            {podeExcluir_ && (
-              <Botao variante="perigo" tamanho="pequeno" onClick={() => { setAlunoRemovendo(alunoDetalhe.id); setAlunoDetalhe(null); }}>
-                Remover aluno
-              </Botao>
-            )}
             <Botao variante="perigo" onClick={() => setAlunoDetalhe(null)}>Fechar</Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {/* Confirmação de alteração de status */}
+      {confirmandoStatus && (
+        <Modal
+          titulo={confirmandoStatus.novoEstado ? "Ativar conta" : "Desativar conta"}
+          onFechar={() => setConfirmandoStatus(null)}
+        >
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Tem certeza que deseja <strong>{confirmandoStatus.novoEstado ? "ativar" : "desativar"}</strong> a conta de <strong>{confirmandoStatus.nome}</strong>?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)}>Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }}>Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -432,26 +448,11 @@ export default function TelaAlunos({ usuario }) {
           </p>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
-            <Botao variante="perigo" onClick={confirmarRemocaoEmMassa}>Confirmar remoção</Botao>
+            <Botao variante="sucesso" onClick={confirmarRemocaoEmMassa}>Confirmar</Botao>
           </footer>
         </Modal>
       )}
 
-      {/* Confirmação remoção individual */}
-      {alunoRemovendo && (() => {
-        const aluno = lista.find((a) => a.id === alunoRemovendo);
-        return (
-          <Modal titulo="Remover aluno" onFechar={() => setAlunoRemovendo(null)}>
-            <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
-              Tem certeza que deseja remover <strong>{aluno?.nome}</strong>? Esta ação não pode ser desfeita.
-            </p>
-            <footer className="modal-rodape">
-              <Botao variante="perigo" onClick={() => setAlunoRemovendo(null)}>Cancelar</Botao>
-              <Botao variante="perigo" onClick={confirmarRemocao}>Confirmar remoção</Botao>
-            </footer>
-          </Modal>
-        );
-      })()}
     </div>
   );
 }

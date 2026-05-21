@@ -113,6 +113,32 @@ html, body {
   page-break-inside: avoid;
 }
 
+/* ── IMPRESSÃO DO CERTIFICADO (workspace) ────────────────────
+   Quando imprimirCertificado() é chamado, a flag
+   data-imprimindo-certificado é adicionada ao <html>.
+   Nesse modo: esconde tudo e exibe apenas #cert-print-temp.
+   ---------------------------------------------------------- */
+html[data-imprimindo-certificado] #raiz,
+html[data-imprimindo-certificado] #versao-impressao {
+  display: none !important;
+}
+
+html[data-imprimindo-certificado] #cert-print-temp {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-imprimindo-certificado] #cert-print-temp img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  background-color: transparent !important;
+  background-image: initial !important;
+  print-color-adjust: exact !important;
+  -webkit-print-color-adjust: exact !important;
+}
+
 /* ── IMPRESSÃO ESTÁTICA ─────────────────────────────────────
    #raiz (React) não aparece no motor de impressão do Chrome.
    Usamos #versao-impressao — HTML puro em index.html.

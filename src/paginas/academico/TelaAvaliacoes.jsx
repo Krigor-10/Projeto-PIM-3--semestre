@@ -6,6 +6,7 @@ import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { avaliacoes, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
+import fundoCertificado from "@/ativos/certificado-fundo.png";
 
 const LETRAS_GABARITO = ["A", "B", "C", "D", "E"];
 
@@ -364,11 +365,34 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
   );
 }
 
+/* ── Impressão isolada do certificado ───────────────────────── */
+
+function imprimirCertificado(src) {
+  document.documentElement.dataset.imprimindoCertificado = "true";
+
+  const el = document.createElement("div");
+  el.id = "cert-print-temp";
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = "Certificado de conclusão";
+  el.appendChild(img);
+  document.body.appendChild(el);
+
+  function cleanup() {
+    delete document.documentElement.dataset.imprimindoCertificado;
+    if (document.body.contains(el)) document.body.removeChild(el);
+    window.removeEventListener("afterprint", cleanup);
+  }
+  window.addEventListener("afterprint", cleanup);
+  window.print();
+}
+
 /* ── Resultado da avaliação ──────────────────────────────────── */
 
 function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, onRefazer, onMudarSecao }) {
   const aprovado = resultado.porcentagem >= 70;
   const podeRefazer = tentativasUsadas < LIMITE_TENTATIVAS;
+  const [certificadoAberto, setCertificadoAberto] = useState(false);
 
   return (
     <section
@@ -460,9 +484,9 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
         {aprovado ? (
           <Botao
             variante="primario"
-            onClick={() => onMudarSecao?.("progresso")}
+            onClick={() => setCertificadoAberto(true)}
           >
-            Ver Certificado
+            Visualizar Certificado
           </Botao>
         ) : podeRefazer ? (
           <Botao
@@ -477,6 +501,28 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
           </span>
         )}
       </footer>
+
+      {certificadoAberto && (
+        <Modal titulo="Certificado de Conclusão" onFechar={() => setCertificadoAberto(false)} className="modal-caixa--certificado">
+          <figure className="certificado-modal">
+            <img
+              src={fundoCertificado}
+              alt={`Certificado de conclusão — ${avaliacao.titulo}`}
+              className="certificado-modal__imagem"
+              width="860"
+              height="609"
+            />
+          </figure>
+          <footer className="modal-rodape">
+            <Botao variante="fantasma" onClick={() => setCertificadoAberto(false)}>
+              Fechar
+            </Botao>
+            <Botao variante="primario" onClick={() => imprimirCertificado(fundoCertificado)}>
+              Baixar / Imprimir
+            </Botao>
+          </footer>
+        </Modal>
+      )}
     </section>
   );
 }
