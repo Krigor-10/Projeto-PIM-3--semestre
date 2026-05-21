@@ -94,6 +94,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
       })
     );
     onToast?.(`Cursos de ${atribuindoCursos.nome.split(" ")[0]} atualizados`, "sucesso");
+    setCoordDetalhe(atribuindoCursos);
     setAtribuindoCursos(null);
   }
 
@@ -504,7 +505,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
 
       {/* Modal atribuição de cursos */}
       {atribuindoCursos && (
-        <Modal titulo={`Cursos — ${atribuindoCursos.nome.split(" ")[0]}`} onFechar={() => setAtribuindoCursos(null)}>
+        <Modal titulo={`Cursos — ${atribuindoCursos.nome.split(" ")[0]}`} onFechar={() => { setCoordDetalhe(atribuindoCursos); setAtribuindoCursos(null); }}>
           <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-lg)", fontSize: "0.875rem" }}>
             Selecione os cursos sob coordenação de <strong>{atribuindoCursos.nome.split(" ")[0]}</strong>.
           </p>
@@ -540,7 +541,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             })}
           </ul>
           <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
-            <button type="button" className="botao botao--perigo" onClick={() => setAtribuindoCursos(null)}>Cancelar</button>
+            <button type="button" className="botao botao--perigo" onClick={() => { setCoordDetalhe(atribuindoCursos); setAtribuindoCursos(null); }}>Cancelar</button>
             <button type="button" className="botao botao--primario" onClick={salvarAtribuicaoCursos}>
               Salvar atribuições
             </button>

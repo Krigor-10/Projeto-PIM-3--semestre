@@ -114,6 +114,7 @@ export default function TelaProfessores({ usuario, onToast }) {
       })
     );
     onToast?.(`Turmas de ${atribuindoTurmas.nome.split(" ")[0]} atualizadas`, "sucesso");
+    setProfessorDetalhe(atribuindoTurmas);
     setAtribuindoTurmas(null);
   }
 
@@ -621,7 +622,7 @@ export default function TelaProfessores({ usuario, onToast }) {
         );
         const temConflito = cursosComConflito.size > 0;
         return (
-          <Modal titulo={`Turmas — ${atribuindoTurmas.nome.split(" ")[0]}`} onFechar={() => setAtribuindoTurmas(null)}>
+          <Modal titulo={`Turmas — ${atribuindoTurmas.nome.split(" ")[0]}`} onFechar={() => { setProfessorDetalhe(atribuindoTurmas); setAtribuindoTurmas(null); }}>
             <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-lg)", fontSize: "0.875rem" }}>
               Selecione a turma de cada curso. Cada curso deve ter no máximo uma turma por professor.
             </p>
@@ -665,7 +666,7 @@ export default function TelaProfessores({ usuario, onToast }) {
               })}
             </ul>
             <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
-              <button type="button" className="botao botao--perigo" onClick={() => setAtribuindoTurmas(null)}>Cancelar</button>
+              <button type="button" className="botao botao--perigo" onClick={() => { setProfessorDetalhe(atribuindoTurmas); setAtribuindoTurmas(null); }}>Cancelar</button>
               <button type="button" className="botao botao--primario" onClick={salvarAtribuicao} disabled={temConflito}>
                 Salvar atribuições
               </button>
