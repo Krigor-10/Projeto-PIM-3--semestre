@@ -125,7 +125,7 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   const ComponenteTela = resolverTela();
 
   return (
-    <div className="layout-workspace">
+    <div className={`layout-workspace${secaoAtual === "quiz" ? " layout-workspace--quiz-ativo" : ""}`}>
       <a href="#conteudo-principal" className="pular-para-conteudo">
         Pular para o conteúdo
       </a>
@@ -149,26 +149,27 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
           id="conteudo-principal"
           tabIndex={-1}
         >
-          <div key={secaoAtual} className="tela-animada">
-            <ComponenteTela
-              usuario={usuario}
-              onMudarSecao={mudarSecao}
-              listaCursos={listaCursos}
-              onListaCursosChange={setListaCursos}
-              quizzesAprovados={quizzesAprovados}
-              onQuizAprovado={registrarQuizAprovado}
-              resultadosQuizzes={resultadosQuizzes}
-              avaliacaoAprovada={avaliacaoAprovada}
-              onAvaliacaoAprovada={(resultado) => setAvaliacaoAprovada(resultado)}
-              conteudoConcluido={conteudoConcluido}
-              onConteudoConcluido={setConteudoConcluido}
-              conteudosConcluidos={conteudosConcluidos}
-              onAlternarConclusao={alternarConclusaoConteudo}
-              onToast={mostrarToast}
-            />
-          </div>
+            <div key={secaoAtual} className="tela-animada">
+              <ComponenteTela
+                usuario={usuario}
+                onMudarSecao={mudarSecao}
+                listaCursos={listaCursos}
+                onListaCursosChange={setListaCursos}
+                quizzesAprovados={quizzesAprovados}
+                onQuizAprovado={registrarQuizAprovado}
+                resultadosQuizzes={resultadosQuizzes}
+                avaliacaoAprovada={avaliacaoAprovada}
+                onAvaliacaoAprovada={(resultado) => setAvaliacaoAprovada(resultado)}
+                conteudoConcluido={conteudoConcluido}
+                onConteudoConcluido={setConteudoConcluido}
+                conteudosConcluidos={conteudosConcluidos}
+                onAlternarConclusao={alternarConclusaoConteudo}
+                onToast={mostrarToast}
+              />
+            </div>
         </main>
       </div>
+
       <Toast
         toasts={toasts}
         onFechar={(id) => setToasts((prev) => prev.filter((t) => t.id !== id))}

@@ -48,11 +48,18 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
           </div>
           <div className="cartao-retomar__acao">
             <motion.div
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-              whileHover={{ scale: 1.07 }}
-              whileTap={{ scale: 0.96 }}
-              style={{ display: "inline-block" }}
+              animate={{
+                scale: [1, 1.07, 1],
+                boxShadow: [
+                  "0 0 0px rgba(123, 47, 247, 0)",
+                  "0 6px 28px rgba(123, 47, 247, 0.65)",
+                  "0 0 0px rgba(123, 47, 247, 0)",
+                ],
+              }}
+              transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+              whileHover={{ scale: 1.1, boxShadow: "0 8px 32px rgba(123, 47, 247, 0.8)" }}
+              whileTap={{ scale: 0.95 }}
+              style={{ display: "inline-block", borderRadius: "var(--raio-md)" }}
             >
               <Botao variante="primario" onClick={() => onMudarSecao("conteudos")}>
                 Continuar agora →

@@ -6,7 +6,7 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle, TbEdit,
+  TbUserCircle, TbSettings,
 } from "react-icons/tb";
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
@@ -222,8 +222,8 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
                   onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil")); }}
                   style={{ display: "flex", alignItems: "center", gap: "6px" }}
                 >
-                  <TbEdit size={15} aria-hidden="true" />
-                  Editar perfil
+                  <TbSettings size={15} aria-hidden="true" />
+                  Configurações
                 </Botao>
                 <Botao
                   variante="perigo"
