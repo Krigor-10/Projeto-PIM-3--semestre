@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { TbPlus } from "react-icons/tb";
+import { motion } from "framer-motion";
+import { MdSave } from "react-icons/md";
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -11,8 +14,10 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
   const [busca, setBusca] = useState("");
   const [filtroNivel, setFiltroNivel] = useState("");
   const [filtroVisivel, setFiltroVisivel] = useState("");
-  const [cursoEditando, setCursoEditando] = useState(null);
-  const [nivelEditando, setNivelEditando] = useState("Iniciante");
+  const [cursoEditando, setCursoEditando]   = useState(null);
+  const [nivelEditando, setNivelEditando]   = useState("Iniciante");
+  const [modalNovo, setModalNovo]           = useState(false);
+  const [nivelNovo, setNivelNovo]           = useState("Iniciante");
 
   const totalVisiveis = lista.filter((c) => c.visivelCatalogo).length;
   const totalDestaque = lista.filter((c) => c.destaque).length;
@@ -68,6 +73,12 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
             Gerencie quais cursos aparecem na homepage da plataforma
           </p>
         </div>
+        <Botao variante="primario" onClick={() => { setModalNovo(true); setNivelNovo("Iniciante"); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+            <TbPlus size={20} aria-hidden="true" />
+          </motion.span>
+          Novo Curso
+        </Botao>
       </header>
 
       <div className="grade-estatisticas" style={{ marginBottom: "var(--espaco-xl)" }}>
@@ -179,6 +190,55 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
         <p className="texto-vazio texto-vazio--central" role="status">
           Nenhum curso encontrado.
         </p>
+      )}
+
+      {modalNovo && (
+        <Modal titulo="Novo Curso" onFechar={() => setModalNovo(false)}>
+          <form
+            className="formulario-modal"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const f = e.target;
+              setLista((prev) => [...prev, {
+                id:              Date.now(),
+                titulo:          f["novo-titulo"].value.trim(),
+                descricao:       f["novo-descricao"].value.trim(),
+                preco:           parseFloat(f["novo-preco"].value) || 0,
+                nivel:           nivelNovo,
+                visivelCatalogo: false,
+                destaque:        false,
+                codigoRegistro:  `CRS-${Date.now().toString().slice(-5)}`,
+              }]);
+              setModalNovo(false);
+            }}
+          >
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="novo-titulo">Título *</label>
+              <input id="novo-titulo" className="campo__entrada" type="text" required />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="novo-descricao">Descrição</label>
+              <textarea id="novo-descricao" className="campo__entrada" rows={3} />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="novo-nivel">Nível</label>
+              <SelectSimples
+                id="novo-nivel"
+                value={nivelNovo}
+                opcoes={["Iniciante", "Intermediário", "Avançado"]}
+                onChange={setNivelNovo}
+              />
+            </div>
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="novo-preco">Preço (R$)</label>
+              <input id="novo-preco" className="campo__entrada" type="number" step="0.01" min="0" defaultValue="0" />
+            </div>
+            <footer className="modal-rodape">
+              <Botao variante="perigo" type="button" onClick={() => setModalNovo(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
+            </footer>
+          </form>
+        </Modal>
       )}
 
       {cursoEditando && (

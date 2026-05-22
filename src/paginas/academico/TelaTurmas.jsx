@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbCirclePlus } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings } from "react-icons/tb";
+import { motion } from "framer-motion";
+import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -98,7 +100,7 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
               ><TbDotsVertical size={18} aria-hidden="true" /></button>
               {menuAberto && (
                 <ul className="menu-contexto__lista" role="menu">
-                  <li><button type="button" onClick={() => { setMenuAberto(false); onEditar(); }}>Editar</button></li>
+                  <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(false); onEditar(); }}><TbSettings size={15} aria-hidden="true" />Opções</button></li>
                 </ul>
               )}
             </div>
@@ -252,7 +254,9 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
         </div>
         {podeCriar(tipo, "turmas") && (
           <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <TbCirclePlus size={20} />
+            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+              <TbPlus size={20} aria-hidden="true" />
+            </motion.span>
             Nova Turma
           </Botao>
         )}
@@ -374,7 +378,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
             </div>
             <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalNova(false)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Criar Turma</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>
         </Modal>

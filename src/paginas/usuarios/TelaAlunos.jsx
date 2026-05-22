@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbX, TbCheck } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbX, TbCheck, TbTrash, TbSettings } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -328,7 +328,7 @@ export default function TelaAlunos({ usuario, onToast }) {
             <Botao variante="sucesso" tamanho="pequeno" onClick={ativarSelecionados}>Ativar</Botao>
             <Botao tamanho="pequeno" style={{ background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }} onClick={desativarSelecionados}>Desativar</Botao>
             {podeExcluir_ && (
-              <Botao variante="perigo" tamanho="pequeno" onClick={() => setRemovendoEmMassa(true)}>Remover</Botao>
+              <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}><TbTrash size={15} aria-hidden="true" />Remover</Botao>
             )}
           </div>
           <button className="barra-massa__limpar" onClick={() => setSelecionados(new Set())} aria-label="Limpar seleção" type="button">✕</button>
@@ -339,9 +339,9 @@ export default function TelaAlunos({ usuario, onToast }) {
       {/* Kebab portal */}
       {kebabAberto && alunoKebab && createPortal(
         <div className="kebab-menu" role="menu" style={{ top: kebabPos.top, left: kebabPos.left }} ref={kebabRef}>
-          <button role="menuitem" className="kebab-menu__item" type="button"
+          <button role="menuitem" className="kebab-menu__item" type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }}
             onClick={() => { setAlunoDetalhe(alunoKebab); setKebabAberto(null); }}>
-            Ver detalhes
+            <TbSettings size={15} aria-hidden="true" />Opções
           </button>
         </div>,
         document.body
@@ -373,26 +373,28 @@ export default function TelaAlunos({ usuario, onToast }) {
               </div>
             </dl>
 
-            <div className="detalhe-status">
-              <div>
-                <strong className="detalhe-status__rotulo">Status da conta</strong>
-                <span className="detalhe-status__descricao">
-                  {alunoDetalhe.ativo ? "Aluno tem acesso à plataforma" : "Acesso à plataforma bloqueado"}
-                </span>
+            {podeEditar_ && (
+              <div className="detalhe-status">
+                <div>
+                  <strong className="detalhe-status__rotulo">Status da conta</strong>
+                  <span className="detalhe-status__descricao">
+                    {alunoDetalhe.ativo ? "Aluno tem acesso à plataforma" : "Acesso à plataforma bloqueado"}
+                  </span>
+                </div>
+                <button
+                  role="switch"
+                  aria-checked={alunoDetalhe.ativo}
+                  className={`switch-ativo${alunoDetalhe.ativo ? " switch-ativo--ativo" : ""}`}
+                  onClick={() => setConfirmandoStatus({ id: alunoDetalhe.id, nome: alunoDetalhe.nome, novoEstado: !alunoDetalhe.ativo })}
+                  type="button"
+                  aria-label={alunoDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
+                >
+                  <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
+                  <span className="switch-ativo__thumb" aria-hidden="true" />
+                  <TbCheck size={10} className="switch-ativo__icone switch-ativo__icone--dir" aria-hidden="true" />
+                </button>
               </div>
-              <button
-                role="switch"
-                aria-checked={alunoDetalhe.ativo}
-                className={`switch-ativo${alunoDetalhe.ativo ? " switch-ativo--ativo" : ""}`}
-                onClick={() => setConfirmandoStatus({ id: alunoDetalhe.id, nome: alunoDetalhe.nome, novoEstado: !alunoDetalhe.ativo })}
-                type="button"
-                aria-label={alunoDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
-              >
-                <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
-                <span className="switch-ativo__thumb" aria-hidden="true" />
-                <TbCheck size={10} className="switch-ativo__icone switch-ativo__icone--dir" aria-hidden="true" />
-              </button>
-            </div>
+            )}
 
             <section className="detalhe-aluno__matriculas">
               <h4 className="detalhe-aluno__secao-titulo">Matrículas</h4>
@@ -418,9 +420,6 @@ export default function TelaAlunos({ usuario, onToast }) {
             </section>
           </div>
 
-          <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setAlunoDetalhe(null)}>Fechar</Botao>
-          </footer>
         </Modal>
       )}
 
@@ -448,7 +447,7 @@ export default function TelaAlunos({ usuario, onToast }) {
           </p>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={confirmarRemocaoEmMassa}>Confirmar</Botao>
+            <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
       )}

@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbCirclePlus, TbX, TbCheck } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash } from "react-icons/tb";
+import { motion } from "framer-motion";
+import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -223,7 +225,9 @@ export default function TelaCoordenadores({ usuario, onToast }) {
         </div>
         {podeCriar(tipo, "coordenadores") && (
           <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <TbCirclePlus size={20} />
+            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+              <TbPlus size={20} aria-hidden="true" />
+            </motion.span>
             Novo Coordenador
           </Botao>
         )}
@@ -367,7 +371,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             <Botao variante="sucesso" tamanho="pequeno" onClick={ativarSelecionados}>Ativar</Botao>
             <Botao tamanho="pequeno" style={{ background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }} onClick={desativarSelecionados}>Desativar</Botao>
             {podeExcluir_ && (
-              <Botao variante="perigo" tamanho="pequeno" onClick={() => setRemovendoEmMassa(true)}>Remover</Botao>
+              <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}><TbTrash size={15} aria-hidden="true" />Remover</Botao>
             )}
           </div>
           <button className="barra-massa__limpar" onClick={() => setSelecionados(new Set())} aria-label="Limpar seleção" type="button">✕</button>
@@ -580,7 +584,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             </div>
             <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Cadastrar Coordenador</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>
         </Modal>
@@ -610,7 +614,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
           </p>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={confirmarRemocaoEmMassa}>Confirmar</Botao>
+            <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -625,7 +629,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             </p>
             <footer className="modal-rodape">
               <Botao variante="perigo" onClick={() => setCoordRemovendo(null)}>Cancelar</Botao>
-              <Botao variante="sucesso" onClick={confirmarRemocao}>Confirmar</Botao>
+              <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocao}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
             </footer>
           </Modal>
         );

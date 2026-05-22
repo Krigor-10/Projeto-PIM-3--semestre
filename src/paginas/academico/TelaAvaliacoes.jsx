@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { TbDotsVertical, TbClock, TbLock, TbCirclePlus, TbX, TbCheck, TbPencil } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings } from "react-icons/tb";
+import { motion } from "framer-motion";
+import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -909,7 +911,9 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, statusAvaliac
           </p>
         </div>
         <Botao variante="primario" tamanho="pequeno" onClick={onCriar} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <TbCirclePlus size={22} />
+          <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+            <TbPlus size={22} aria-hidden="true" />
+          </motion.span>
           Nova Avaliação
         </Botao>
       </header>
@@ -939,8 +943,11 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, statusAvaliac
                 ><TbDotsVertical size={18} aria-hidden="true" /></button>
                 {menuAberto === av.id && (
                   <ul className="menu-contexto__lista" role="menu">
-                    <li><button type="button" onClick={() => { setMenuAberto(null); onVerDetalhes(av); }}>Detalhes</button></li>
-                    <li><button type="button" onClick={() => setMenuAberto(null)}>Editar</button></li>
+                    <li>
+                      <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); onVerDetalhes(av); }}>
+                        <TbSettings size={15} aria-hidden="true" />Opções
+                      </button>
+                    </li>
                   </ul>
                 )}
               </div>
@@ -1152,9 +1159,9 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
     setValorEditando(String(valorAtual));
   }
 
-  function salvarEdicaoCampo() {
+  function salvarEdicaoCampo(valorBruto) {
     if (!campoEditando) return;
-    const valor = campoEditando === "titulo" ? valorEditando.trim() : Number(valorEditando);
+    const valor = campoEditando === "titulo" ? String(valorBruto).trim() : Number(valorBruto);
     if (!valor && valor !== 0) return;
     setAvaliacaoAtiva((prev) => ({ ...prev, [campoEditando]: valor }));
     setCampoEditando(null);
@@ -1228,26 +1235,20 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               {/* Título — editável */}
               <div className="lista-detalhes__item">
                 <dt>Título</dt>
-                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  {campoEditando === "titulo" ? (
-                    <input
-                      autoFocus
-                      className="campo__entrada"
-                      style={{ padding: "2px 8px", fontSize: "0.85rem", flex: 1 }}
-                      value={valorEditando}
-                      onChange={(e) => setValorEditando(e.target.value)}
-                      onBlur={salvarEdicaoCampo}
-                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
-                    />
-                  ) : (
-                    <>
-                      {avaliacaoAtiva.titulo}
-                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("titulo", avaliacaoAtiva.titulo)} aria-label="Editar título">
-                        <TbPencil size={13} aria-hidden="true" />
-                      </button>
-                    </>
-                  )}
-                </dd>
+                {campoEditando === "titulo" ? (
+                  <input
+                    autoFocus
+                    className="campo__entrada campo__entrada--inline"
+                    defaultValue={valorEditando}
+                    onBlur={(e) => salvarEdicaoCampo(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                  />
+                ) : (
+                  <dd>{avaliacaoAtiva.titulo}</dd>
+                )}
+                <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar título" onClick={() => iniciarEdicao("titulo", avaliacaoAtiva.titulo)}>
+                  <TbPencil size={18} aria-hidden="true" />
+                </button>
               </div>
 
               {/* Curso — somente leitura */}
@@ -1259,79 +1260,61 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               {/* Tentativas — editável */}
               <div className="lista-detalhes__item">
                 <dt>Tentativas permitidas</dt>
-                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  {campoEditando === "tentativasPermitidas" ? (
-                    <input
-                      autoFocus
-                      className="campo__entrada"
-                      type="number" min="1" max="10"
-                      style={{ padding: "2px 8px", fontSize: "0.85rem", width: "72px" }}
-                      value={valorEditando}
-                      onChange={(e) => setValorEditando(e.target.value)}
-                      onBlur={salvarEdicaoCampo}
-                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
-                    />
-                  ) : (
-                    <>
-                      {avaliacaoAtiva.tentativasPermitidas}
-                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("tentativasPermitidas", avaliacaoAtiva.tentativasPermitidas)} aria-label="Editar tentativas">
-                        <TbPencil size={13} aria-hidden="true" />
-                      </button>
-                    </>
-                  )}
-                </dd>
+                {campoEditando === "tentativasPermitidas" ? (
+                  <input
+                    autoFocus
+                    className="campo__entrada campo__entrada--inline"
+                    type="number" min="1" max="10"
+                    defaultValue={valorEditando}
+                    onBlur={(e) => salvarEdicaoCampo(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                  />
+                ) : (
+                  <dd>{avaliacaoAtiva.tentativasPermitidas}</dd>
+                )}
+                <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar tentativas" onClick={() => iniciarEdicao("tentativasPermitidas", avaliacaoAtiva.tentativasPermitidas)}>
+                  <TbPencil size={18} aria-hidden="true" />
+                </button>
               </div>
 
               {/* Tempo limite — editável */}
               <div className="lista-detalhes__item">
                 <dt>Tempo limite</dt>
-                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  {campoEditando === "tempoLimiteMinutos" ? (
-                    <input
-                      autoFocus
-                      className="campo__entrada"
-                      type="number" min="5"
-                      style={{ padding: "2px 8px", fontSize: "0.85rem", width: "72px" }}
-                      value={valorEditando}
-                      onChange={(e) => setValorEditando(e.target.value)}
-                      onBlur={salvarEdicaoCampo}
-                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
-                    />
-                  ) : (
-                    <>
-                      {avaliacaoAtiva.tempoLimiteMinutos} minutos
-                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("tempoLimiteMinutos", avaliacaoAtiva.tempoLimiteMinutos)} aria-label="Editar tempo limite">
-                        <TbPencil size={13} aria-hidden="true" />
-                      </button>
-                    </>
-                  )}
-                </dd>
+                {campoEditando === "tempoLimiteMinutos" ? (
+                  <input
+                    autoFocus
+                    className="campo__entrada campo__entrada--inline"
+                    type="number" min="5"
+                    defaultValue={valorEditando}
+                    onBlur={(e) => salvarEdicaoCampo(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                  />
+                ) : (
+                  <dd>{avaliacaoAtiva.tempoLimiteMinutos} minutos</dd>
+                )}
+                <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar tempo limite" onClick={() => iniciarEdicao("tempoLimiteMinutos", avaliacaoAtiva.tempoLimiteMinutos)}>
+                  <TbPencil size={18} aria-hidden="true" />
+                </button>
               </div>
 
               {/* Nota máxima — editável */}
               <div className="lista-detalhes__item">
                 <dt>Nota máxima</dt>
-                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  {campoEditando === "notaMaxima" ? (
-                    <input
-                      autoFocus
-                      className="campo__entrada"
-                      type="number" min="1" max="100"
-                      style={{ padding: "2px 8px", fontSize: "0.85rem", width: "72px" }}
-                      value={valorEditando}
-                      onChange={(e) => setValorEditando(e.target.value)}
-                      onBlur={salvarEdicaoCampo}
-                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
-                    />
-                  ) : (
-                    <>
-                      {avaliacaoAtiva.notaMaxima}
-                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("notaMaxima", avaliacaoAtiva.notaMaxima)} aria-label="Editar nota máxima">
-                        <TbPencil size={13} aria-hidden="true" />
-                      </button>
-                    </>
-                  )}
-                </dd>
+                {campoEditando === "notaMaxima" ? (
+                  <input
+                    autoFocus
+                    className="campo__entrada campo__entrada--inline"
+                    type="number" min="1" max="100"
+                    defaultValue={valorEditando}
+                    onBlur={(e) => salvarEdicaoCampo(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                  />
+                ) : (
+                  <dd>{avaliacaoAtiva.notaMaxima}</dd>
+                )}
+                <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar nota máxima" onClick={() => iniciarEdicao("notaMaxima", avaliacaoAtiva.notaMaxima)}>
+                  <TbPencil size={18} aria-hidden="true" />
+                </button>
               </div>
 
             </dl>
@@ -1364,8 +1347,9 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               </div>
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" onClick={() => { setModalAberto(false); setCampoEditando(null); }}>Fechar</Botao>
-              <Botao variante="perigo" onClick={() => setConfirmandoExclusao(true)}>Excluir</Botao>
+              <Botao variante="perigo" style={{ marginRight: "auto" }} onClick={() => { setModalAberto(false); setCampoEditando(null); }}>Fechar</Botao>
+              <Botao variante="perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setConfirmandoExclusao(true)}><MdDelete size={19} aria-hidden="true" />Excluir</Botao>
+              <Botao variante="primario" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalAberto(false); setCampoEditando(null); onToast?.("Alterações salvas.", "sucesso"); }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </Modal>
         )}
@@ -1378,7 +1362,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
           </p>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setConfirmandoExclusao(false)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={confirmarExclusao}>Confirmar exclusão</Botao>
+            <Botao variante="sucesso" onClick={confirmarExclusao}>Confirmar</Botao>
           </footer>
         </Modal>
       )}

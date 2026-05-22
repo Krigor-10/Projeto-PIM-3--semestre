@@ -2679,9 +2679,6 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--espaco-sm) var(--espaco-lg);
-  padding: var(--espaco-md);
-  background: var(--cor-fundo-alt);
-  border-radius: var(--raio-md);
 }
 
 .detalhe-prof__info-item dt {

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbCirclePlus, TbPencil } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings } from "react-icons/tb";
+import { motion } from "framer-motion";
+import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -156,8 +158,8 @@ function VistaGerencialCoordenador({ usuario }) {
                 {menuAberto === curso.id && (
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
-                      <button role="menuitem" onClick={() => { setCursoSelecionado(curso); setMenuAberto(null); }}>
-                        Opções
+                      <button role="menuitem" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setCursoSelecionado(curso); setMenuAberto(null); }}>
+                        <TbSettings size={15} aria-hidden="true" />Opções
                       </button>
                     </li>
                   </ul>
@@ -240,10 +242,13 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
   const [formSujo, setFormSujo]                 = useState(false);
   const [confirmarSaida, setConfirmarSaida]     = useState(false);
   const [nivelModal, setNivelModal]               = useState("Iniciante");
+  const [visivelNovo, setVisivelNovo]             = useState(false);
   const [campoEditando, setCampoEditando]         = useState(null);
   const [valoresEdit, setValoresEdit]             = useState({});
   const [profSelecionadoId, setProfSelecionadoId] = useState(null);
   const [coordSelecionadoId, setCoordSelecionadoId] = useState(null);
+  const [selecionados, setSelecionados]           = useState(new Set());
+  const [excluindoEmMassa, setExcluindoEmMassa]  = useState(false);
 
   useEffect(() => {
     setFormSujo(false);
@@ -321,10 +326,36 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
       descricao: f["descricao-curso"].value,
       nivel:    nivelModal,
       preco: 0, totalModulos: 0, totalAlunos: 0, ativo: true,
-      visivelCatalogo: false, destaque: false,
+      visivelCatalogo: visivelNovo, destaque: false,
     }]);
     setModalAberto(false);
     onToast?.("Curso criado.", "sucesso");
+  }
+
+  const todosSelecionados = cursosAtivos.length > 0 && cursosAtivos.every((c) => selecionados.has(c.id));
+
+  function alternarSelecao(id) {
+    setSelecionados((prev) => {
+      const novo = new Set(prev);
+      novo.has(id) ? novo.delete(id) : novo.add(id);
+      return novo;
+    });
+  }
+
+  function alternarTodos() {
+    if (todosSelecionados) {
+      setSelecionados(new Set());
+    } else {
+      setSelecionados(new Set(cursosAtivos.map((c) => c.id)));
+    }
+  }
+
+  function confirmarExclusaoEmMassa() {
+    const ids = new Set(selecionados);
+    onListaCursosChange((prev) => prev.filter((c) => !ids.has(c.id)));
+    onToast?.(`${ids.size} ${ids.size === 1 ? "curso excluído" : "cursos excluídos"}.`, "sucesso");
+    setSelecionados(new Set());
+    setExcluindoEmMassa(false);
   }
 
   function salvarEdicaoCurso(e) {
@@ -347,8 +378,10 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
           <p className="cabecalho-pagina__subtitulo">{totalAtivos} cursos ativos na plataforma</p>
         </div>
         {podeCriar(tipo, "cursos") && (
-          <Botao variante="primario" onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setNivelModal("Iniciante"); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <TbCirclePlus size={20} />
+          <Botao variante="primario" onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setNivelModal("Iniciante"); setVisivelNovo(false); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+              <TbPlus size={20} aria-hidden="true" />
+            </motion.span>
             Novo Curso
           </Botao>
         )}
@@ -374,7 +407,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
         </li>
       </ul>
 
-      {/* Filtro */}
+      {/* Filtro + ação em massa */}
       <div className="barra-filtros">
         <label htmlFor="busca-cursos" className="visualmente-oculto">Buscar curso</label>
         <input
@@ -385,15 +418,38 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
         />
+        {podeExcluir(tipo, "cursos") && (
+          <Botao
+            variante="perigo"
+            tamanho="pequeno"
+            disabled={selecionados.size === 0}
+            style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}
+            onClick={() => setExcluindoEmMassa(true)}
+          >
+            <TbTrash size={15} aria-hidden="true" />
+            {selecionados.size > 0 ? `Excluir (${selecionados.size})` : "Excluir selecionados"}
+          </Botao>
+        )}
       </div>
 
       {/* Cabeçalho da listagem */}
-      <div className="desempenho-cursos-cabecalho" aria-hidden="true">
+      <div className="desempenho-cursos-cabecalho">
+        {podeExcluir(tipo, "cursos") && (
+          <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--checkbox">
+            <input
+              type="checkbox"
+              className="tabela-checkbox"
+              checked={todosSelecionados}
+              onChange={alternarTodos}
+              aria-label="Selecionar todos os cursos"
+            />
+          </span>
+        )}
         <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--identidade">Curso</span>
         <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--turma">Turma / Professor</span>
         <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--alunos">Alunos</span>
         <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--metricas">Módulos / Aval.</span>
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--acoes" />
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--acoes" aria-hidden="true" />
       </div>
 
       {/* Lista de desempenho */}
@@ -405,7 +461,19 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
           const totalAlunos   = turmasCurso.reduce((s, t) => s + (t.totalAlunos ?? 0), 0);
           const turmaAtiva    = turmasCurso.find((t) => t.status === "Ativa");
           return (
-            <li key={curso.id} className="desempenho-curso-item">
+            <li key={curso.id} className={`desempenho-curso-item${selecionados.has(curso.id) ? " desempenho-curso-item--selecionado" : ""}`}>
+              {/* Checkbox de seleção */}
+              {podeExcluir(tipo, "cursos") && (
+                <div className="desempenho-curso-item__checkbox">
+                  <input
+                    type="checkbox"
+                    className="tabela-checkbox"
+                    checked={selecionados.has(curso.id)}
+                    onChange={() => alternarSelecao(curso.id)}
+                    aria-label={`Selecionar ${curso.titulo}`}
+                  />
+                </div>
+              )}
               {/* Nome + código + nível */}
               <div className="desempenho-curso-item__identidade">
                 <div className="desempenho-curso-item__cabecalho">
@@ -464,14 +532,14 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                 {menuAberto === curso.id && (
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
-                      <button role="menuitem" onClick={() => { setCursoDetalhe(curso); setMenuAberto(null); }}>
-                        Opções
+                      <button role="menuitem" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setCursoDetalhe(curso); setMenuAberto(null); }}>
+                        <TbSettings size={15} aria-hidden="true" />Opções
                       </button>
                     </li>
                     {podeExcluir(tipo, "cursos") && (
                       <li>
-                        <button role="menuitem" className="menu-item--perigo" onClick={() => { abrirExclusao(curso); setMenuAberto(null); }}>
-                          Excluir
+                        <button role="menuitem" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { abrirExclusao(curso); setMenuAberto(null); }}>
+                          <TbTrash size={15} aria-hidden="true" />Excluir
                         </button>
                       </li>
                     )}
@@ -652,11 +720,40 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                 onChange={setNivelModal}
               />
             </div>
+            <div className="campo">
+              <span className="campo__rotulo">Visibilidade no catálogo</span>
+              <button
+                type="button"
+                className={`catalogo-toggle${visivelNovo ? " catalogo-toggle--ativo" : ""}`}
+                onClick={() => setVisivelNovo((v) => !v)}
+                aria-pressed={visivelNovo}
+              >
+                <span className="catalogo-toggle__trilha" aria-hidden="true">
+                  <span className="catalogo-toggle__thumb" />
+                </span>
+                <span className="catalogo-toggle__rotulo">
+                  {visivelNovo ? "Visível" : "Oculto"}
+                </span>
+              </button>
+            </div>
             <div className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Criar Curso</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {/* Confirmação exclusão em massa */}
+      {excluindoEmMassa && (
+        <Modal titulo="Excluir cursos" onFechar={() => setExcluindoEmMassa(false)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Tem certeza que deseja excluir <strong>{selecionados.size} {selecionados.size === 1 ? "curso" : "cursos"}</strong>? Esta ação não pode ser desfeita.
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setExcluindoEmMassa(false)}>Cancelar</Botao>
+            <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarExclusaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar exclusão</Botao>
+          </footer>
         </Modal>
       )}
 
@@ -673,7 +770,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
           </p>
           <div className="modal-rodape">
             <Botao variante="perigo" onClick={() => setPopupExclusao(false)}>Cancelar</Botao>
-            <Botao variante="perigo" onClick={excluirCurso}>Excluir permanentemente</Botao>
+            <Botao variante="perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={excluirCurso}><TbTrash size={16} aria-hidden="true" />Excluir permanentemente</Botao>
           </div>
         </Modal>
       )}

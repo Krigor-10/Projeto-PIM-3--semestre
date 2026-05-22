@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbCirclePlus, TbLock } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash } from "react-icons/tb";
+import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -625,7 +626,9 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
             onClick={onNovoConteudo}
             style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            <TbCirclePlus size={20} />
+            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+              <TbPlus size={20} aria-hidden="true" />
+            </motion.span>
             Novo Conteúdo
           </Botao>
         )}
@@ -680,7 +683,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                   aria-label={`Adicionar conteúdo em ${modulo.titulo}`}
                   title="Adicionar conteúdo"
                 >
-                  <TbCirclePlus size={30} />
+                  <TbPlus size={30} />
                 </button>
               )}
             </header>
@@ -711,8 +714,8 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                           ><TbDotsVertical size={18} aria-hidden="true" /></button>
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
-                              <li><button type="button" onClick={() => setMenuConteudoAberto(null)}>Editar</button></li>
-                              <li><button type="button" style={{ color: "var(--cor-erro)" }} onClick={() => setMenuConteudoAberto(null)}>Excluir</button></li>
+                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={15} aria-hidden="true" />Opções</button></li>
+                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={15} aria-hidden="true" />Excluir</button></li>
                             </ul>
                           )}
                         </div>
@@ -1108,8 +1111,8 @@ function SlideCursoGestao({ curso, tipo }) {
                           </button>
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
-                              <li><button type="button" onClick={() => setMenuConteudoAberto(null)}>Editar</button></li>
-                              <li><button type="button" style={{ color: "var(--cor-erro)" }} onClick={() => setMenuConteudoAberto(null)}>Excluir</button></li>
+                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={15} aria-hidden="true" />Opções</button></li>
+                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={15} aria-hidden="true" />Excluir</button></li>
                             </ul>
                           )}
                         </div>

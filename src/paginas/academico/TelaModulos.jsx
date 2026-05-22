@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbCirclePlus } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings } from "react-icons/tb";
+import { motion } from "framer-motion";
+import { MdSave } from "react-icons/md";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -162,9 +164,10 @@ function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhe
                       <li>
                         <button
                           type="button"
+                          style={{ display: "flex", alignItems: "center", gap: "6px" }}
                           onClick={() => { onVerDetalhes(mod); onToggleMenu(null); }}
                         >
-                          Ver Detalhes
+                          <TbSettings size={15} aria-hidden="true" />Opções
                         </button>
                       </li>
                     </ul>
@@ -242,8 +245,10 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
           </p>
         </div>
         {podeCriar(tipo, "modulos") && (
-          <Botao variante="primario" onClick={() => setModalAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <TbCirclePlus size={20} />
+          <Botao variante="primario" onClick={() => { setCursoIdModal(grupos[slide]?.curso.id ?? null); setErroCursoModal(""); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+              <TbPlus size={20} aria-hidden="true" />
+            </motion.span>
             Novo Módulo
           </Botao>
         )}
@@ -375,7 +380,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
             </div>
             <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Criar Módulo</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>
         </Modal>

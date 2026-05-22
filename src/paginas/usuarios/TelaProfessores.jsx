@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbCirclePlus, TbX, TbCheck } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbSettings } from "react-icons/tb";
+import { MdSave, MdDelete } from "react-icons/md";
+import { motion } from "framer-motion";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -47,8 +49,9 @@ export default function TelaProfessores({ usuario, onToast }) {
   const [professorDetalhe,    setProfessorDetalhe]    = useState(null);
   const [modoEdicao,          setModoEdicao]          = useState(false);
   const [confirmandoStatus,   setConfirmandoStatus]   = useState(null);
-  const [atribuindoTurmas,    setAtribuindoTurmas]    = useState(null);
-  const [turmasSelecionadas,  setTurmasSelecionadas]  = useState(new Set());
+  const [atribuindoTurmas,       setAtribuindoTurmas]       = useState(null);
+  const [turmasSelecionadas,     setTurmasSelecionadas]     = useState(new Set());
+  const [confirmandoRemocaoTurma, setConfirmandoRemocaoTurma] = useState(null);
   const [modalNovoAberto,     setModalNovoAberto]     = useState(false);
 
   const kebabRef = useRef(null);
@@ -244,7 +247,13 @@ export default function TelaProfessores({ usuario, onToast }) {
         </div>
         {podeCriar(usuario?.tipo, "professores") && (
           <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <TbCirclePlus size={20} />
+            <motion.span
+              whileHover={{ scale: 1.15, rotate: 90 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
+              style={{ display: "flex" }}
+            >
+              <TbPlus size={20} aria-hidden="true" />
+            </motion.span>
             Novo Professor
           </Botao>
         )}
@@ -396,8 +405,8 @@ export default function TelaProfessores({ usuario, onToast }) {
             >
               Desativar
             </Botao>
-            <Botao variante="perigo" tamanho="pequeno" onClick={() => setRemovendoEmMassa(true)}>
-              Remover
+            <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}>
+              <TbTrash size={15} aria-hidden="true" />Remover
             </Botao>
           </div>
           <button
@@ -420,9 +429,9 @@ export default function TelaProfessores({ usuario, onToast }) {
           style={{ top: kebabPos.top, left: kebabPos.left }}
           ref={kebabRef}
         >
-          <button role="menuitem" className="kebab-menu__item" type="button"
+          <button role="menuitem" className="kebab-menu__item" type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }}
             onClick={() => { setProfessorDetalhe(profKebab); setKebabAberto(null); }}>
-            Ver detalhes
+            <TbSettings size={15} aria-hidden="true" />Opções
           </button>
           <button role="menuitem" className="kebab-menu__item" type="button"
             onClick={() => abrirAtribuicao(profKebab)}>
@@ -474,7 +483,7 @@ export default function TelaProfessores({ usuario, onToast }) {
             <>
             <div className="detalhe-prof">
 
-              {/* Cabeçalho */}
+              {/* Cabeçalho + informações */}
               <div className="detalhe-prof__cabecalho">
                 <div className="topbar__avatar detalhe-prof__avatar" aria-hidden="true">
                   {gerarIniciais(professorDetalhe.nome)}
@@ -484,11 +493,30 @@ export default function TelaProfessores({ usuario, onToast }) {
                   <span className="detalhe-prof__email">{professorDetalhe.email}</span>
                   <div className="detalhe-prof__badges">
                     <Insignia texto="Professor" variante="info" />
-                    <Insignia
-                      texto={professorDetalhe.ativo ? "Ativo" : "Inativo"}
-                      variante={professorDetalhe.ativo ? "sucesso" : "erro"}
-                    />
+                    <Insignia texto={professorDetalhe.ativo ? "Ativo" : "Inativo"} variante={professorDetalhe.ativo ? "sucesso" : "erro"} />
                   </div>
+                  <dl className="detalhe-prof__info-grade" style={{ marginTop: "var(--espaco-sm)" }}>
+                    <div className="detalhe-prof__info-item">
+                      <dt>Código</dt>
+                      <dd style={{ fontFamily: "var(--fonte-mono)", fontSize: "0.85rem" }}>{professorDetalhe.codigo ?? "—"}</dd>
+                    </div>
+                    <div className="detalhe-prof__info-item">
+                      <dt>Membro desde</dt>
+                      <dd>{new Date(professorDetalhe.dataCadastro).toLocaleDateString("pt-BR")}</dd>
+                    </div>
+                    {professorDetalhe.telefone && (
+                      <div className="detalhe-prof__info-item">
+                        <dt>Telefone</dt>
+                        <dd>{professorDetalhe.telefone}</dd>
+                      </div>
+                    )}
+                    {professorDetalhe.especializacao && (
+                      <div className="detalhe-prof__info-item">
+                        <dt>Especialização</dt>
+                        <dd>{professorDetalhe.especializacao}</dd>
+                      </div>
+                    )}
+                  </dl>
                 </div>
               </div>
 
@@ -508,42 +536,29 @@ export default function TelaProfessores({ usuario, onToast }) {
                 </div>
               </div>
 
-              {/* Informações de contato */}
-              <section>
-                <h4 className="detalhe-prof__secao-titulo">Informações</h4>
-                <dl className="detalhe-prof__info-grade">
-                  <div className="detalhe-prof__info-item">
-                    <dt>Código</dt>
-                    <dd style={{ fontFamily: "var(--fonte-mono)", fontSize: "0.85rem" }}>{professorDetalhe.codigo ?? "—"}</dd>
-                  </div>
-                  <div className="detalhe-prof__info-item">
-                    <dt>Membro desde</dt>
-                    <dd>{new Date(professorDetalhe.dataCadastro).toLocaleDateString("pt-BR")}</dd>
-                  </div>
-                  <div className="detalhe-prof__info-item">
-                    <dt>E-mail</dt>
-                    <dd>{professorDetalhe.email}</dd>
-                  </div>
-                  {professorDetalhe.telefone ? (
-                    <div className="detalhe-prof__info-item">
-                      <dt>Telefone</dt>
-                      <dd>{professorDetalhe.telefone}</dd>
-                    </div>
-                  ) : null}
-                  {professorDetalhe.especializacao ? (
-                    <div className="detalhe-prof__info-item">
-                      <dt>Especialização</dt>
-                      <dd>{professorDetalhe.especializacao}</dd>
-                    </div>
-                  ) : null}
-                </dl>
-              </section>
-
               {/* Turmas */}
               <section>
-                <h4 className="detalhe-prof__secao-titulo">
-                  Turmas lecionadas {turmasPro.length > 0 && `(${turmasPro.length})`}
-                </h4>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--espaco-sm)" }}>
+                  <h4 className="detalhe-prof__secao-titulo" style={{ margin: 0 }}>
+                    Turmas lecionadas {turmasPro.length > 0 && `(${turmasPro.length})`}
+                  </h4>
+                  <button
+                    type="button"
+                    title="Atribuir turma"
+                    aria-label="Atribuir turma"
+                    onClick={() => { abrirAtribuicao(professorDetalhe); setProfessorDetalhe(null); }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#22c55e", display: "flex", alignItems: "center", padding: "2px" }}
+                  >
+                    <motion.span
+                      whileHover={{ scale: 1.15, rotate: 90 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                      style={{ display: "flex" }}
+                    >
+                      <TbPlus size={18} aria-hidden="true" />
+                    </motion.span>
+                    <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>Atribuir turma</span>
+                  </button>
+                </div>
                 {turmasPro.length === 0 ? (
                   <p className="texto-vazio">Nenhuma turma atribuída.</p>
                 ) : (
@@ -557,13 +572,21 @@ export default function TelaProfessores({ usuario, onToast }) {
                           <span className="detalhe-prof__turma-curso">{t.cursoTitulo}</span>
                           <span className="detalhe-prof__turma-meta">{t.nomeTurma}</span>
                         </div>
-                        <div className="detalhe-prof__turma-lado">
-                          <Insignia
-                            texto={t.status}
-                            variante={t.status === "Ativa" ? "sucesso" : "neutro"}
-                          />
-                          <span className="detalhe-prof__turma-alunos">{t.totalAlunos} alunos</span>
-                        </div>
+                        <span style={{ fontSize: "0.72rem", color: "var(--cor-texto-mudo)", fontWeight: 500 }}>{t.status}</span>
+                        <button
+                          type="button"
+                          aria-label={`Remover turma ${t.nomeTurma}`}
+                          style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", padding: "2px" }}
+                          onClick={() => setConfirmandoRemocaoTurma(t)}
+                        >
+                          <motion.span
+                            whileHover={{ scale: 1.3, rotate: -15 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 10 }}
+                            style={{ display: "flex" }}
+                          >
+                            <MdDelete size={21} aria-hidden="true" />
+                          </motion.span>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -593,15 +616,14 @@ export default function TelaProfessores({ usuario, onToast }) {
             </div>
 
             <footer className="modal-rodape">
+              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }} style={{ marginRight: "auto" }}>
+                Fechar
+              </Botao>
               <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)}>
                 Editar dados
               </Botao>
-              <Botao variante="fantasma" tamanho="pequeno"
-                onClick={() => { abrirAtribuicao(professorDetalhe); setProfessorDetalhe(null); }}>
-                Atribuir turmas
-              </Botao>
-              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }}>
-                Fechar
+              <Botao variante="primario" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }}>
+                <MdSave size={19} aria-hidden="true" />Salvar
               </Botao>
             </footer>
             </>
@@ -698,7 +720,32 @@ export default function TelaProfessores({ usuario, onToast }) {
           </p>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={confirmarRemocaoEmMassa}>Confirmar</Botao>
+            <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {/* ── Confirmação de remoção de turma ── */}
+      {confirmandoRemocaoTurma && (
+        <Modal titulo="Remover turma" onFechar={() => setConfirmandoRemocaoTurma(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Deseja remover a turma <strong>{confirmandoRemocaoTurma.nomeTurma}</strong> deste professor?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoRemocaoTurma(null)}>Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => {
+              setTurmasLista((prev) =>
+                prev.map((t) =>
+                  t.id === confirmandoRemocaoTurma.id
+                    ? { ...t, professorId: null, professorNome: null }
+                    : t
+                )
+              );
+              onToast?.(`Turma "${confirmandoRemocaoTurma.nomeTurma}" desatribuída.`, "aviso");
+              setConfirmandoRemocaoTurma(null);
+            }}>
+              Confirmar
+            </Botao>
           </footer>
         </Modal>
       )}
@@ -740,7 +787,7 @@ export default function TelaProfessores({ usuario, onToast }) {
             </div>
             <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Cadastrar Professor</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>
         </Modal>

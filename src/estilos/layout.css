@@ -548,10 +548,10 @@
 .botao--primario {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 46%),
-    linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+    linear-gradient(135deg, #1aac52 0%, #116635 100%);
   border-color: rgba(134, 239, 172, 0.42);
   color: #f7fff9;
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  box-shadow: 0 2px 8px rgba(26, 172, 82, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 .botao--primario:hover:not(:disabled) {
   filter: brightness(1.12);
