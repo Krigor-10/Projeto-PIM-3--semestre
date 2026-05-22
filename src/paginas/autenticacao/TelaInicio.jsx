@@ -163,6 +163,7 @@ export default function TelaInicio() {
                         <img
                           src={imagem}
                           alt=""
+                          aria-hidden="true"
                           className="cartao-curso__imagem"
                           loading="lazy"
                           width="600"
@@ -192,7 +193,6 @@ export default function TelaInicio() {
                           tamanho="pequeno"
                           onClick={() => navigate(ROTAS.CADASTRO)}
                           aria-label={`Matricular-se em ${curso.titulo}`}
-                          style={{ color: "#fff" }}
                         >
                           Matricular-se
                         </Botao>

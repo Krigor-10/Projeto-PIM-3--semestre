@@ -126,6 +126,9 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
 
   return (
     <div className="layout-workspace">
+      <a href="#conteudo-principal" className="pular-para-conteudo">
+        Pular para o conteúdo
+      </a>
       <BarraLateral
         usuario={usuario}
         secaoAtual={secaoAtual}

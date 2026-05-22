@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { TbDotsVertical, TbClock, TbLock, TbCirclePlus } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbLock, TbCirclePlus, TbX, TbCheck, TbPencil } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -886,9 +886,9 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
 
 /* ── Slide de avaliações de uma turma (visão do professor) ──── */
 
-function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes }) {
+function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, statusAvaliacoes, avaliacoesExcluidas }) {
   const [menuAberto, setMenuAberto] = useState(null);
-  const avaliacoesDoCurso = avaliacoes.filter((a) => a.cursoId === turma.cursoId);
+  const avaliacoesDoCurso = avaliacoes.filter((a) => a.cursoId === turma.cursoId && !avaliacoesExcluidas?.has(a.id));
 
   useEffect(() => {
     if (!menuAberto) return;
@@ -928,7 +928,7 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes }) {
                 </p>
               </div>
               <div className="cartao-conteudo__meta">
-                <Insignia texto={av.status} variante={av.status === "Publicada" ? "sucesso" : "neutro"} />
+                {(() => { const s = statusAvaliacoes?.[av.id] ?? av.status; return <Insignia texto={s} variante={s === "Publicada" ? "sucesso" : "neutro"} />; })()}
               </div>
               <div className="menu-contexto">
                 <button
@@ -954,7 +954,7 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes }) {
 
 /* ── Vista do professor — carrossel de turmas (avaliações) ───── */
 
-function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes }) {
+function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes, statusAvaliacoes, avaliacoesExcluidas }) {
   const [slideAtual, setSlideAtual] = useState(0);
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario?.id);
 
@@ -1014,6 +1014,8 @@ function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes }) {
           turma={minhasTurmas[slideAtual]}
           onCriar={onCriar}
           onVerDetalhes={onVerDetalhes}
+          statusAvaliacoes={statusAvaliacoes}
+          avaliacoesExcluidas={avaliacoesExcluidas}
         />
       </div>
     </div>
@@ -1022,7 +1024,7 @@ function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes }) {
 
 /* ── Componente principal ────────────────────────────────────── */
 
-export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados = new Set(), onAvaliacaoAprovada, conteudoConcluido = false }) {
+export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados = new Set(), onAvaliacaoAprovada, conteudoConcluido = false, onToast }) {
   /* modo: "lista" | "criar" | "quiz" | "resultado" */
   const [modo, setModo] = useState("lista");
   const [avaliacaoAtiva, setAvaliacaoAtiva] = useState(null);
@@ -1037,6 +1039,17 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
   /* Conta quantas tentativas o aluno usou por avaliação na sessão */
   const [tentativas, setTentativas] = useState({});
+
+  /* Sobrescritas de status feitas pelo professor na sessão: { [av.id]: "Publicada" | "Arquivada" } */
+  const [statusAvaliacoes, setStatusAvaliacoes] = useState({});
+  /* Pendência de confirmação de troca de status: null | { novoStatus } */
+  const [confirmandoStatusAv, setConfirmandoStatusAv] = useState(null);
+  /* IDs de avaliações excluídas na sessão */
+  const [avaliacoesExcluidas, setAvaliacoesExcluidas] = useState(new Set());
+  const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
+  /* Edição inline de campos do modal de detalhes */
+  const [campoEditando, setCampoEditando] = useState(null);
+  const [valorEditando, setValorEditando] = useState("");
 
   const ehAluno    = usuario?.tipo === "Aluno";
   const ehProfessor = usuario?.tipo === "Professor";
@@ -1134,8 +1147,44 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
   const grupos = agruparPorCurso(avaliacoesFiltradas);
 
+  function iniciarEdicao(campo, valorAtual) {
+    setCampoEditando(campo);
+    setValorEditando(String(valorAtual));
+  }
+
+  function salvarEdicaoCampo() {
+    if (!campoEditando) return;
+    const valor = campoEditando === "titulo" ? valorEditando.trim() : Number(valorEditando);
+    if (!valor && valor !== 0) return;
+    setAvaliacaoAtiva((prev) => ({ ...prev, [campoEditando]: valor }));
+    setCampoEditando(null);
+  }
+
+  function cancelarEdicaoCampo() { setCampoEditando(null); }
+
+  function confirmarExclusao() {
+    setAvaliacoesExcluidas((prev) => new Set(prev).add(avaliacaoAtiva.id));
+    setConfirmandoExclusao(false);
+    setModalAberto(false);
+    onToast?.(`"${avaliacaoAtiva.titulo}" excluída`, "aviso");
+  }
+
+  function confirmarTrocaStatus() {
+    const { novoStatus } = confirmandoStatusAv;
+    const atualizado = { ...avaliacaoAtiva, status: novoStatus };
+    setAvaliacaoAtiva(atualizado);
+    setStatusAvaliacoes((prev) => ({ ...prev, [avaliacaoAtiva.id]: novoStatus }));
+    setConfirmandoStatusAv(null);
+    onToast?.(
+      novoStatus === "Publicada"
+        ? `"${avaliacaoAtiva.titulo}" publicada`
+        : `"${avaliacaoAtiva.titulo}" arquivada`,
+      novoStatus === "Publicada" ? "sucesso" : "aviso"
+    );
+  }
+
   function abrirDetalhes(av) {
-    setAvaliacaoAtiva(av);
+    setAvaliacaoAtiva({ ...av, status: statusAvaliacoes[av.id] ?? av.status });
     setModalAberto(true);
   }
 
@@ -1168,25 +1217,191 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
         <VistaProfessorAvaliacoes
           usuario={usuario}
           onCriar={() => setModo("criar")}
-          onVerDetalhes={(av) => { setAvaliacaoAtiva(av); setModalAberto(true); }}
+          onVerDetalhes={(av) => { setAvaliacaoAtiva({ ...av, status: statusAvaliacoes[av.id] ?? av.status }); setModalAberto(true); }}
+          statusAvaliacoes={statusAvaliacoes}
+          avaliacoesExcluidas={avaliacoesExcluidas}
         />
         {modalAberto && avaliacaoAtiva && (
-          <Modal titulo="Detalhes da Avaliação" onFechar={() => setModalAberto(false)}>
+          <Modal titulo="Detalhes da Avaliação" onFechar={() => { setModalAberto(false); setCampoEditando(null); }}>
             <dl className="lista-detalhes">
-              <div className="lista-detalhes__item"><dt>Título</dt><dd>{avaliacaoAtiva.titulo}</dd></div>
+
+              {/* Título — editável */}
+              <div className="lista-detalhes__item">
+                <dt>Título</dt>
+                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  {campoEditando === "titulo" ? (
+                    <input
+                      autoFocus
+                      className="campo__entrada"
+                      style={{ padding: "2px 8px", fontSize: "0.85rem", flex: 1 }}
+                      value={valorEditando}
+                      onChange={(e) => setValorEditando(e.target.value)}
+                      onBlur={salvarEdicaoCampo}
+                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                    />
+                  ) : (
+                    <>
+                      {avaliacaoAtiva.titulo}
+                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("titulo", avaliacaoAtiva.titulo)} aria-label="Editar título">
+                        <TbPencil size={13} aria-hidden="true" />
+                      </button>
+                    </>
+                  )}
+                </dd>
+              </div>
+
+              {/* Curso — somente leitura */}
               <div className="lista-detalhes__item"><dt>Curso</dt><dd>{avaliacaoAtiva.cursoTitulo}</dd></div>
+
+              {/* Total de questões — somente leitura */}
               <div className="lista-detalhes__item"><dt>Total de questões</dt><dd>{avaliacaoAtiva.totalQuestoes}</dd></div>
-              <div className="lista-detalhes__item"><dt>Tentativas permitidas</dt><dd>{avaliacaoAtiva.tentativasPermitidas}</dd></div>
-              <div className="lista-detalhes__item"><dt>Tempo limite</dt><dd>{avaliacaoAtiva.tempoLimiteMinutos} minutos</dd></div>
-              <div className="lista-detalhes__item"><dt>Nota máxima</dt><dd>{avaliacaoAtiva.notaMaxima}</dd></div>
-              <div className="lista-detalhes__item"><dt>Status</dt><dd><Insignia texto={avaliacaoAtiva.status} /></dd></div>
+
+              {/* Tentativas — editável */}
+              <div className="lista-detalhes__item">
+                <dt>Tentativas permitidas</dt>
+                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  {campoEditando === "tentativasPermitidas" ? (
+                    <input
+                      autoFocus
+                      className="campo__entrada"
+                      type="number" min="1" max="10"
+                      style={{ padding: "2px 8px", fontSize: "0.85rem", width: "72px" }}
+                      value={valorEditando}
+                      onChange={(e) => setValorEditando(e.target.value)}
+                      onBlur={salvarEdicaoCampo}
+                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                    />
+                  ) : (
+                    <>
+                      {avaliacaoAtiva.tentativasPermitidas}
+                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("tentativasPermitidas", avaliacaoAtiva.tentativasPermitidas)} aria-label="Editar tentativas">
+                        <TbPencil size={13} aria-hidden="true" />
+                      </button>
+                    </>
+                  )}
+                </dd>
+              </div>
+
+              {/* Tempo limite — editável */}
+              <div className="lista-detalhes__item">
+                <dt>Tempo limite</dt>
+                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  {campoEditando === "tempoLimiteMinutos" ? (
+                    <input
+                      autoFocus
+                      className="campo__entrada"
+                      type="number" min="5"
+                      style={{ padding: "2px 8px", fontSize: "0.85rem", width: "72px" }}
+                      value={valorEditando}
+                      onChange={(e) => setValorEditando(e.target.value)}
+                      onBlur={salvarEdicaoCampo}
+                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                    />
+                  ) : (
+                    <>
+                      {avaliacaoAtiva.tempoLimiteMinutos} minutos
+                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("tempoLimiteMinutos", avaliacaoAtiva.tempoLimiteMinutos)} aria-label="Editar tempo limite">
+                        <TbPencil size={13} aria-hidden="true" />
+                      </button>
+                    </>
+                  )}
+                </dd>
+              </div>
+
+              {/* Nota máxima — editável */}
+              <div className="lista-detalhes__item">
+                <dt>Nota máxima</dt>
+                <dd style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  {campoEditando === "notaMaxima" ? (
+                    <input
+                      autoFocus
+                      className="campo__entrada"
+                      type="number" min="1" max="100"
+                      style={{ padding: "2px 8px", fontSize: "0.85rem", width: "72px" }}
+                      value={valorEditando}
+                      onChange={(e) => setValorEditando(e.target.value)}
+                      onBlur={salvarEdicaoCampo}
+                      onKeyDown={(e) => { if (e.key === "Enter") salvarEdicaoCampo(); if (e.key === "Escape") cancelarEdicaoCampo(); }}
+                    />
+                  ) : (
+                    <>
+                      {avaliacaoAtiva.notaMaxima}
+                      <button type="button" className="botao-icone" onClick={() => iniciarEdicao("notaMaxima", avaliacaoAtiva.notaMaxima)} aria-label="Editar nota máxima">
+                        <TbPencil size={13} aria-hidden="true" />
+                      </button>
+                    </>
+                  )}
+                </dd>
+              </div>
+
             </dl>
+            <div className="detalhe-status">
+              <div>
+                <strong className="detalhe-status__rotulo">Status da avaliação</strong>
+                <span className="detalhe-status__descricao">
+                  {avaliacaoAtiva.status === "Publicada"
+                    ? "Visível e disponível para os alunos"
+                    : "Oculta — não aparece para os alunos"}
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
+                <Insignia
+                  texto={avaliacaoAtiva.status === "Publicada" ? "Publicada" : "Arquivada"}
+                  variante={avaliacaoAtiva.status === "Publicada" ? "sucesso" : "neutro"}
+                />
+                <button
+                  role="switch"
+                  aria-checked={avaliacaoAtiva.status === "Publicada"}
+                  className={`switch-ativo${avaliacaoAtiva.status === "Publicada" ? " switch-ativo--ativo" : ""}`}
+                  onClick={() => setConfirmandoStatusAv({ novoStatus: avaliacaoAtiva.status === "Publicada" ? "Arquivada" : "Publicada" })}
+                  type="button"
+                  aria-label={avaliacaoAtiva.status === "Publicada" ? "Publicada — clique para arquivar" : "Arquivada — clique para publicar"}
+                >
+                  <TbX size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
+                  <span className="switch-ativo__thumb" aria-hidden="true" />
+                  <TbCheck size={10} className="switch-ativo__icone switch-ativo__icone--dir" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" onClick={() => setModalAberto(false)}>Fechar</Botao>
-              <Botao variante="primario">Editar</Botao>
+              <Botao variante="perigo" onClick={() => { setModalAberto(false); setCampoEditando(null); }}>Fechar</Botao>
+              <Botao variante="perigo" onClick={() => setConfirmandoExclusao(true)}>Excluir</Botao>
             </footer>
           </Modal>
         )}
+
+      {confirmandoExclusao && avaliacaoAtiva && (
+        <Modal titulo="Excluir avaliação" onFechar={() => setConfirmandoExclusao(false)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Tem certeza que deseja excluir <strong>"{avaliacaoAtiva.titulo}"</strong>?
+            Esta ação não pode ser desfeita.
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoExclusao(false)}>Cancelar</Botao>
+            <Botao variante="sucesso" onClick={confirmarExclusao}>Confirmar exclusão</Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {confirmandoStatusAv && avaliacaoAtiva && (
+        <Modal
+          titulo={confirmandoStatusAv.novoStatus === "Publicada" ? "Publicar avaliação" : "Arquivar avaliação"}
+          onFechar={() => setConfirmandoStatusAv(null)}
+        >
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Tem certeza que deseja{" "}
+            <strong>{confirmandoStatusAv.novoStatus === "Publicada" ? "publicar" : "arquivar"}</strong>{" "}
+            a avaliação <strong>"{avaliacaoAtiva.titulo}"</strong>?
+            {confirmandoStatusAv.novoStatus === "Arquivada" && (
+              <> Ela ficará oculta para os alunos.</>
+            )}
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoStatusAv(null)}>Cancelar</Botao>
+            <Botao variante="sucesso" onClick={confirmarTrocaStatus}>Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
       </div>
     );
   }

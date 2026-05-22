@@ -370,11 +370,11 @@ export default function TelaProfessores({ usuario, onToast }) {
             {inicio + 1}–{Math.min(inicio + ITENS_POR_PAGINA, listaProcessada.length)} de {listaProcessada.length}
           </span>
           <div className="paginacao__controles">
-            <button className="botao botao--perigo botao--pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1} type="button">‹ Anterior</button>
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1}>‹ Anterior</Botao>
             {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
               <button key={n} className={`paginacao__pagina${paginaSegura === n ? " paginacao__pagina--ativa" : ""}`} onClick={() => setPagina(n)} type="button" aria-current={paginaSegura === n ? "page" : undefined}>{n}</button>
             ))}
-            <button className="botao botao--perigo botao--pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas} type="button">Próxima ›</button>
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas}>Próxima ›</Botao>
           </div>
         </nav>
       )}
@@ -386,20 +386,19 @@ export default function TelaProfessores({ usuario, onToast }) {
             {selecionados.size} {selecionados.size === 1 ? "selecionado" : "selecionados"}
           </span>
           <div className="barra-massa__acoes">
-            <button className="botao botao--sucesso botao--pequeno" onClick={ativarSelecionados} type="button">
+            <Botao variante="sucesso" tamanho="pequeno" onClick={ativarSelecionados}>
               Ativar
-            </button>
-            <button
-              className="botao botao--pequeno"
+            </Botao>
+            <Botao
+              tamanho="pequeno"
               style={{ background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }}
               onClick={desativarSelecionados}
-              type="button"
             >
               Desativar
-            </button>
-            <button className="botao botao--perigo botao--pequeno" onClick={() => setRemovendoEmMassa(true)} type="button">
+            </Botao>
+            <Botao variante="perigo" tamanho="pequeno" onClick={() => setRemovendoEmMassa(true)}>
               Remover
-            </button>
+            </Botao>
           </div>
           <button
             className="barra-massa__limpar"
@@ -666,10 +665,10 @@ export default function TelaProfessores({ usuario, onToast }) {
               })}
             </ul>
             <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
-              <button type="button" className="botao botao--perigo" onClick={() => { setProfessorDetalhe(atribuindoTurmas); setAtribuindoTurmas(null); }}>Cancelar</button>
-              <button type="button" className="botao botao--primario" onClick={salvarAtribuicao} disabled={temConflito}>
+              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(atribuindoTurmas); setAtribuindoTurmas(null); }}>Cancelar</Botao>
+              <Botao variante="primario" onClick={salvarAtribuicao} disabled={temConflito}>
                 Salvar atribuições
-              </button>
+              </Botao>
             </footer>
           </Modal>
         );
@@ -698,8 +697,8 @@ export default function TelaProfessores({ usuario, onToast }) {
             Tem certeza que deseja remover <strong>{selecionados.size} {selecionados.size === 1 ? "professor" : "professores"}</strong>? Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <button className="botao botao--perigo" onClick={() => setRemovendoEmMassa(false)} type="button">Cancelar</button>
-            <button className="botao botao--sucesso" onClick={confirmarRemocaoEmMassa} type="button">Confirmar</button>
+            <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
+            <Botao variante="sucesso" onClick={confirmarRemocaoEmMassa}>Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -740,8 +739,8 @@ export default function TelaProfessores({ usuario, onToast }) {
               <input id="especializacao-prof" className="campo__entrada" type="text" placeholder="Ex: Desenvolvimento Web" />
             </div>
             <footer className="modal-rodape">
-              <button type="button" className="botao botao--perigo" onClick={() => setModalNovoAberto(false)}>Cancelar</button>
-              <button type="submit" className="botao botao--primario">Cadastrar Professor</button>
+              <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
+              <Botao variante="primario" type="submit">Cadastrar Professor</Botao>
             </footer>
           </form>
         </Modal>

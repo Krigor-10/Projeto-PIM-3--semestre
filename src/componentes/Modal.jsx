@@ -1,18 +1,18 @@
 import { useEffect } from "react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 export default function Modal({ titulo, onFechar, children, className }) {
+  const refModal = useFocusTrap();
+
   useEffect(() => {
-    /* Fecha o modal ao pressionar ESC — comportamento esperado de acessibilidade */
     function fecharComEsc(evento) {
       if (evento.key === "Escape") onFechar();
     }
     document.addEventListener("keydown", fecharComEsc);
-    /* Cleanup remove o listener ao desmontar para evitar memory leak */
     return () => document.removeEventListener("keydown", fecharComEsc);
   }, [onFechar]);
 
   return (
-    /* role="dialog" com aria-modal="true" informa leitores de tela que o foco está restrito ao modal */
     <div
       className="modal-fundo"
       role="dialog"
@@ -20,7 +20,7 @@ export default function Modal({ titulo, onFechar, children, className }) {
       aria-labelledby="modal-titulo"
       onClick={(e) => e.stopPropagation()}
     >
-      <article className={`modal-caixa${className ? ` ${className}` : ""}`}>
+      <article ref={refModal} className={`modal-caixa${className ? ` ${className}` : ""}`}>
         <header className="modal-cabecalho">
           <h2 className="modal-titulo" id="modal-titulo">{titulo}</h2>
           <button
