@@ -292,20 +292,23 @@
   align-items: center;
   gap: var(--espaco-sm);
   padding: 0.6rem 1rem;
-  background: var(--cor-fundo-elevado);
-  border: 1px solid var(--cor-borda);
+  background: var(--cor-cartao);
+  border: 1.5px solid var(--cor-borda-forte);
   border-radius: var(--raio-md);
   color: var(--cor-texto-suave);
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 500;
+  box-shadow: var(--sombra-sm);
   transition: all var(--transicao-rapida);
 }
 
 .botao-acesso-rapido:hover {
   background: rgba(123, 47, 247, 0.1);
-  border-color: var(--cor-borda-forte);
+  border-color: var(--cor-marca);
   color: var(--cor-texto-forte);
+  box-shadow: var(--sombra-md);
+  transform: translateY(-1px);
 }
 
 /* ------------------------------------------------------------

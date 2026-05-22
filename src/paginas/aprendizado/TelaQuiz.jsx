@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Botao from "@/componentes/Botao.jsx";
+import { motion } from "framer-motion";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
 
 const TOTAL = questoesQuiz.length;
@@ -66,13 +67,20 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
             >
               Voltar
             </Botao>
-            <Botao
-              variante="primario"
-              tamanho="grande"
-              onClick={iniciar}
+            <motion.div
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              style={{ display: "inline-block" }}
             >
-              Iniciar Quiz
-            </Botao>
+              <Botao
+                variante="primario"
+                tamanho="grande"
+                onClick={() => setTimeout(iniciar, 150)}
+              >
+                Iniciar Quiz
+              </Botao>
+            </motion.div>
           </div>
         </div>
       </div>

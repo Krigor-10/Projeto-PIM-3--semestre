@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { TbCirclePlus, TbSearch } from "react-icons/tb";
 import { MdSave } from "react-icons/md";
+import SelectSimples from "@/componentes/SelectSimples.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import ModalEdicaoUsuario from "@/componentes/ModalEdicaoUsuario.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { usuarios } from "@/dados/dadosMock.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 

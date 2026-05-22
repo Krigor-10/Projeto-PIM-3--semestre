@@ -2,6 +2,7 @@ import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import { motion } from "framer-motion";
 import { progressoAluno, conteudos } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
@@ -46,9 +47,17 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
             </div>
           </div>
           <div className="cartao-retomar__acao">
-            <Botao variante="primario" onClick={() => onMudarSecao("conteudos")}>
-              Continuar agora →
-            </Botao>
+            <motion.div
+              animate={{ scale: [1, 1.04, 1] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              whileHover={{ scale: 1.07 }}
+              whileTap={{ scale: 0.96 }}
+              style={{ display: "inline-block" }}
+            >
+              <Botao variante="primario" onClick={() => onMudarSecao("conteudos")}>
+                Continuar agora →
+              </Botao>
+            </motion.div>
           </div>
         </section>
       )}

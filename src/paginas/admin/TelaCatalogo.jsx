@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbPlus } from "react-icons/tb";
+import { TbPlus, TbDotsVertical, TbSettings } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
@@ -8,7 +8,7 @@ import Botao from "@/componentes/Botao.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 
-export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
+export default function TelaCatalogo({ listaCursos, onListaCursosChange, onToast }) {
   const lista    = listaCursos;
   const setLista = onListaCursosChange;
   const [busca, setBusca] = useState("");
@@ -18,6 +18,8 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
   const [nivelEditando, setNivelEditando]   = useState("Iniciante");
   const [modalNovo, setModalNovo]           = useState(false);
   const [nivelNovo, setNivelNovo]           = useState("Iniciante");
+  const [visivelNovo, setVisivelNovo]       = useState(false);
+  const [menuAbertoId, setMenuAbertoId]     = useState(null);
 
   const totalVisiveis = lista.filter((c) => c.visivelCatalogo).length;
   const totalDestaque = lista.filter((c) => c.destaque).length;
@@ -61,6 +63,7 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
           : c
       )
     );
+    onToast?.("Curso atualizado.", "sucesso");
     setCursoEditando(null);
   }
 
@@ -73,7 +76,7 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
             Gerencie quais cursos aparecem na homepage da plataforma
           </p>
         </div>
-        <Botao variante="primario" onClick={() => { setModalNovo(true); setNivelNovo("Iniciante"); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <Botao variante="primario" onClick={() => { setModalNovo(true); setNivelNovo("Iniciante"); setVisivelNovo(false); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
             <TbPlus size={20} aria-hidden="true" />
           </motion.span>
@@ -137,15 +140,27 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
                 <h3 className="catalogo-card__titulo">{curso.titulo}</h3>
                 <span className="catalogo-card__codigo">{curso.codigoRegistro}</span>
               </div>
-              <button
-                className={`catalogo-card__btn-estrela${curso.destaque ? " catalogo-card__btn-estrela--ativo" : ""}`}
-                onClick={() => toggleDestaque(curso.id)}
-                aria-label={curso.destaque ? `Remover ${curso.titulo} dos destaques` : `Destacar ${curso.titulo}`}
-                title={curso.destaque ? "Remover destaque" : "Marcar como destaque"}
-                type="button"
-              >
-                {curso.destaque ? "★" : "☆"}
-              </button>
+              <div className="menu-contexto" style={{ position: "relative" }}>
+                <button
+                  className="menu-contexto__botao"
+                  type="button"
+                  aria-label={`Opções para ${curso.titulo}`}
+                  aria-expanded={menuAbertoId === curso.id}
+                  onClick={(e) => { e.stopPropagation(); setMenuAbertoId(menuAbertoId === curso.id ? null : curso.id); }}
+                >
+                  <TbDotsVertical size={16} aria-hidden="true" />
+                </button>
+                {menuAbertoId === curso.id && (
+                  <ul className="menu-contexto__lista" role="menu">
+                    <li>
+                      <button type="button" role="menuitem" style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                        onClick={() => { setCursoEditando({ ...curso }); setNivelEditando(curso.nivel ?? "Iniciante"); setMenuAbertoId(null); }}>
+                        <TbSettings size={15} aria-hidden="true" />Opções
+                      </button>
+                    </li>
+                  </ul>
+                )}
+              </div>
             </div>
 
             <p className="catalogo-card__descricao">{curso.descricao}</p>
@@ -174,13 +189,15 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
                 </span>
               </button>
 
-              <Botao
-                variante="fantasma"
-                tamanho="pequeno"
-                onClick={() => { setCursoEditando({ ...curso }); setNivelEditando(curso.nivel ?? "Iniciante"); }}
+              <button
+                className={`catalogo-card__btn-estrela${curso.destaque ? " catalogo-card__btn-estrela--ativo" : ""}`}
+                onClick={() => toggleDestaque(curso.id)}
+                aria-label={curso.destaque ? `Remover ${curso.titulo} dos destaques` : `Destacar ${curso.titulo}`}
+                title={curso.destaque ? "Remover destaque" : "Marcar como destaque"}
+                type="button"
               >
-                Editar
-              </Botao>
+                {curso.destaque ? "★" : "☆"}
+              </button>
             </footer>
           </li>
         ))}
@@ -205,10 +222,11 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
                 descricao:       f["novo-descricao"].value.trim(),
                 preco:           parseFloat(f["novo-preco"].value) || 0,
                 nivel:           nivelNovo,
-                visivelCatalogo: false,
+                visivelCatalogo: visivelNovo,
                 destaque:        false,
                 codigoRegistro:  `CRS-${Date.now().toString().slice(-5)}`,
               }]);
+              onToast?.("Curso criado com sucesso.", "sucesso");
               setModalNovo(false);
             }}
           >
@@ -232,6 +250,22 @@ export default function TelaCatalogo({ listaCursos, onListaCursosChange }) {
             <div className="campo">
               <label className="campo__rotulo" htmlFor="novo-preco">Preço (R$)</label>
               <input id="novo-preco" className="campo__entrada" type="number" step="0.01" min="0" defaultValue="0" />
+            </div>
+            <div className="campo">
+              <span className="campo__rotulo">Visibilidade no catálogo</span>
+              <button
+                type="button"
+                className={`catalogo-toggle${visivelNovo ? " catalogo-toggle--ativo" : ""}`}
+                onClick={() => setVisivelNovo((v) => !v)}
+                aria-pressed={visivelNovo}
+              >
+                <span className="catalogo-toggle__trilha" aria-hidden="true">
+                  <span className="catalogo-toggle__thumb" />
+                </span>
+                <span className="catalogo-toggle__rotulo">
+                  {visivelNovo ? "Visível" : "Oculto"}
+                </span>
+              </button>
             </div>
             <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalNovo(false)}>Cancelar</Botao>

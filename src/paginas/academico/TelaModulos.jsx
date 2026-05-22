@@ -343,14 +343,17 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
               e.preventDefault();
               if (!cursoIdModal) { setErroCursoModal("Selecione um curso."); return; }
               const f = e.target;
-              setListaModulos((prev) => [...prev, {
-                id: Date.now(),
-                cursoId: cursoIdModal,
-                codigoRegistro: `MOD-${String(prev.length + 1).padStart(3, "0")}`,
-                titulo: f["titulo-modulo"].value,
-                ordem: Number(f["ordem-modulo"].value) || 1,
-                totalConteudos: 0,
-              }]);
+              setListaModulos((prev) => {
+                const proximaOrdem = prev.filter((m) => m.cursoId === cursoIdModal).length + 1;
+                return [...prev, {
+                  id: Date.now(),
+                  cursoId: cursoIdModal,
+                  codigoRegistro: `MOD-${String(prev.length + 1).padStart(3, "0")}`,
+                  titulo: f["titulo-modulo"].value,
+                  ordem: proximaOrdem,
+                  totalConteudos: 0,
+                }];
+              });
               onToast?.("Módulo criado com sucesso.", "sucesso");
               setCursoIdModal(null);
               setErroCursoModal("");
@@ -373,10 +376,6 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
                 erro={erroCursoModal}
               />
               {erroCursoModal && <span className="campo__mensagem-erro" role="alert">{erroCursoModal}</span>}
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="ordem-modulo">Ordem</label>
-              <input id="ordem-modulo" className="campo__entrada" type="number" min="1" defaultValue="1" />
             </div>
             <footer className="modal-rodape">
               <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>

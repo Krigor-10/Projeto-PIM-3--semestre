@@ -2175,16 +2175,17 @@
    ------------------------------------------------------------ */
 .segmented-control {
   display: inline-flex;
-  background: var(--cor-fundo-alt);
-  border: 1px solid var(--cor-borda);
+  background: var(--cor-cartao);
+  border: 1.5px solid var(--cor-borda-forte);
   border-radius: var(--raio-circular);
   padding: 3px;
   gap: 2px;
   flex-shrink: 0;
+  box-shadow: var(--sombra-sm);
 }
 
 .segmented-control__opcao {
-  padding: 0.3rem 0.9rem;
+  padding: 0.35rem 1rem;
   border-radius: var(--raio-circular);
   border: none;
   background: none;
@@ -2192,17 +2193,18 @@
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background var(--transicao-rapida), color var(--transicao-rapida);
+  transition: background var(--transicao-rapida), color var(--transicao-rapida), box-shadow var(--transicao-rapida);
   white-space: nowrap;
 }
 
 .segmented-control__opcao:hover {
   color: var(--cor-texto-forte);
+  background: rgba(123, 47, 247, 0.07);
 }
 
 .segmented-control__opcao--ativa {
-  background: var(--cor-fundo-elevado);
-  color: var(--cor-texto-forte);
+  background: var(--cor-marca);
+  color: #fff;
   font-weight: 600;
   box-shadow: var(--sombra-sm);
 }
