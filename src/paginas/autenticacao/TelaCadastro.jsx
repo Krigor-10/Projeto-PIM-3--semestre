@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { TbArrowLeft } from "react-icons/tb";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { cursos } from "@/dados/dadosMock.js";
@@ -49,7 +50,11 @@ function campoVazio() {
 
 export default function TelaCadastro() {
   const navigate = useNavigate();
-  const [form, setForm] = useState(campoVazio);
+  const [searchParams] = useSearchParams();
+  const [form, setForm] = useState(() => ({
+    ...campoVazio(),
+    cursoId: searchParams.get("curso") || "",
+  }));
   const [erros, setErros] = useState({});
   const [enviado, setEnviado] = useState(false);
   const [buscandoCep, setBuscandoCep] = useState(false);
@@ -158,6 +163,15 @@ export default function TelaCadastro() {
       {/* Cabeçalho */}
       <header className="cadastro-cabecalho" role="banner">
         <div className="cadastro-cabecalho__inner">
+          <button
+            type="button"
+            className="cadastro-voltar"
+            onClick={() => navigate(ROTAS.INICIO)}
+            aria-label="Voltar para a página inicial"
+          >
+            <TbArrowLeft size={18} aria-hidden="true" />
+            Voltar
+          </button>
           <a href="#" className="cabecalho-publico__logo" onClick={() => navigate(ROTAS.INICIO)} aria-label="CodeRyse Academy — página inicial">
             <span className="cabecalho-publico__logo-marca" aria-hidden="true">
               <span>Code</span><span>Ryse</span>
@@ -166,7 +180,7 @@ export default function TelaCadastro() {
           </a>
           <p className="cadastro-cabecalho__legenda">
             Já tem uma conta?{" "}
-            <button className="link-botao" onClick={() => navigate(ROTAS.LOGIN)} type="button">
+            <button className="cadastro-entrar" onClick={() => navigate(ROTAS.LOGIN)} type="button">
               Entrar
             </button>
           </p>
@@ -438,7 +452,7 @@ export default function TelaCadastro() {
             {/* Rodapé do formulário */}
             <div className="formulario-cadastro__rodape">
               <Botao
-                variante="fantasma"
+                variante="perigo"
                 onClick={() => navigate(ROTAS.INICIO)}
               >
                 Cancelar

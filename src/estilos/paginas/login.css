@@ -225,9 +225,21 @@
   margin: 0 auto;
   padding: 0 var(--espaco-xl);
   height: 64px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
+}
+
+.cadastro-cabecalho__inner .cadastro-voltar {
+  justify-self: start;
+}
+
+.cadastro-cabecalho__inner .cabecalho-publico__logo {
+  justify-self: center;
+}
+
+.cadastro-cabecalho__inner .cadastro-cabecalho__legenda {
+  justify-self: end;
 }
 
 .cadastro-cabecalho__legenda {
@@ -264,6 +276,57 @@
   display: flex;
   flex-direction: column;
   gap: var(--espaco-xl);
+}
+
+/* Botão voltar — fixo no cabeçalho */
+.cadastro-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: none;
+  padding: 0.45rem 0;
+  color: var(--cor-marca-clara);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transicao-rapida), transform var(--transicao-rapida);
+  white-space: nowrap;
+}
+
+.cadastro-voltar:hover {
+  color: var(--cor-texto-forte);
+  transform: translateX(-2px);
+}
+
+.cadastro-voltar:active {
+  transform: translateX(0);
+}
+
+.cadastro-entrar {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.75rem;
+  background: var(--cor-marca);
+  border: 1px solid var(--cor-marca);
+  border-radius: var(--raio-md);
+  padding: 0.45rem 1rem;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(123, 47, 247, 0.4);
+  transition: background var(--transicao-rapida), box-shadow var(--transicao-rapida), transform var(--transicao-rapida);
+  white-space: nowrap;
+}
+
+.cadastro-entrar:hover {
+  background: var(--cor-marca-escura, #6320d4);
+  box-shadow: 0 4px 16px rgba(123, 47, 247, 0.55);
+}
+
+.cadastro-entrar:active {
+  transform: scale(0.97);
 }
 
 /* Cabeçalho introdutório */

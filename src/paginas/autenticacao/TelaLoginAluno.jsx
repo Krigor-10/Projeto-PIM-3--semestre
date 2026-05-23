@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { TbArrowLeft } from "react-icons/tb";
 import Botao from "@/componentes/Botao.jsx";
 import { perfisDemo } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
@@ -9,6 +10,8 @@ const perfilAluno = perfisDemo.find((p) => p.chave === "aluno");
 
 export default function TelaLoginAluno({ onLogin }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const cursoParam = searchParams.get("curso");
   const [carregando, setCarregando] = useState(false);
 
   function handleEntrar() {
@@ -41,15 +44,15 @@ export default function TelaLoginAluno({ onLogin }) {
       {/* Formulário de acesso */}
       <main className="tela-login__formulario" id="conteudo-login-aluno">
         <header className="tela-login__cabecalho">
-          <Botao
-            variante="fantasma"
-            tamanho="pequeno"
-            className="tela-login__voltar"
+          <button
+            type="button"
+            className="cadastro-voltar"
             onClick={() => navigate(ROTAS.INICIO)}
             aria-label="Voltar para a página inicial"
           >
+            <TbArrowLeft size={18} aria-hidden="true" />
             Voltar
-          </Botao>
+          </button>
           <a href="#" className="tela-login__logo" aria-label="CodeRyse Academy">
             <span className="tela-login__logo-marca" aria-hidden="true">
               <span>Code</span><span>Ryse</span>
@@ -92,7 +95,7 @@ export default function TelaLoginAluno({ onLogin }) {
             Não tem uma conta?{" "}
             <button
               className="link-botao"
-              onClick={() => navigate(ROTAS.CADASTRO)}
+              onClick={() => navigate(cursoParam ? `${ROTAS.CADASTRO}?curso=${cursoParam}` : ROTAS.CADASTRO)}
               type="button"
             >
               Criar conta
