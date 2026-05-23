@@ -1068,6 +1068,12 @@
 .botao-avaliacao-flutuante--liberado {
   cursor: pointer;
   border-color: rgba(123, 47, 247, 0.6);
+  animation: avaliacao-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes avaliacao-pulse {
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 0px rgba(123, 47, 247, 0); }
+  50%       { transform: scale(1.06); box-shadow: 0 6px 28px rgba(123, 47, 247, 0.65); }
 }
 
 .botao-avaliacao-flutuante--liberado:hover {

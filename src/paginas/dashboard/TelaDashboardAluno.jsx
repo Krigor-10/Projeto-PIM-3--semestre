@@ -3,9 +3,10 @@ import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { motion } from "framer-motion";
+import { MdFavorite } from "react-icons/md";
 import { progressoAluno, conteudos } from "@/dados/dadosMock.js";
 
-export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
+export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos = [], cursosFavoritos = new Set(), onAlternarFavorito }) {
   const cursoPrincipal = progressoAluno.cursos[0];
 
   const conteudosConcluidos = conteudos.filter((c) => c.concluido).length;
@@ -113,6 +114,37 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao }) {
           </Botao>
         </div>
       )}
+
+      <section aria-labelledby="titulo-favoritos" style={{ marginTop: "var(--espaco-xl)" }}>
+        <h2 className="secao-titulo" id="titulo-favoritos">
+          <MdFavorite size={18} aria-hidden="true" style={{ color: "var(--cor-marca)", verticalAlign: "middle", marginRight: "6px" }} />
+          Meus Favoritos
+        </h2>
+        {cursosFavoritos.size === 0 ? (
+          <p className="favoritos-vazio">
+            Nenhum curso favoritado ainda. Explore o <button type="button" className="favoritos-vazio__link" onClick={() => onMudarSecao("catalogo")}>catálogo</button> e salve os que te interessam.
+          </p>
+        ) : (
+          <ul className="favoritos-lista" role="list">
+            {listaCursos.filter((c) => cursosFavoritos.has(c.id) && c.visivelCatalogo).map((curso) => (
+              <li key={curso.id} className="favorito-card">
+                <div className="favorito-card__info">
+                  <h3 className="favorito-card__titulo">{curso.titulo}</h3>
+                  <p className="favorito-card__descricao">{curso.descricao}</p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-favorito btn-favorito--ativo"
+                  onClick={() => onAlternarFavorito?.(curso.id)}
+                  aria-label={`Remover ${curso.titulo} dos favoritos`}
+                >
+                  <MdFavorite size={18} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section aria-labelledby="titulo-stats-aluno" style={{ marginTop: "var(--espaco-xl)" }}>
         <h2 className="visualmente-oculto" id="titulo-stats-aluno">Resumo de atividades</h2>

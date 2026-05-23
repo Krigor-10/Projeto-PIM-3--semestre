@@ -90,6 +90,10 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   const [conteudosConcluidos, setConteudosConcluidos] = useState(
     () => new Set(conteudosIniciais.filter((c) => c.concluido).map((c) => c.id))
   );
+  const [cursosFavoritos, setCursosFavoritos] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("coderyse-favoritos") ?? "[]")); }
+    catch { return new Set(); }
+  });
   const [toasts, setToasts] = useState([]);
 
   function mostrarToast(mensagem, tipo = "sucesso") {
@@ -103,6 +107,18 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
     setResultadosQuizzes((prev) => ({ ...prev, [moduloId]: percentual }));
   }
 
+  useEffect(() => {
+    localStorage.setItem("coderyse-favoritos", JSON.stringify([...cursosFavoritos]));
+  }, [cursosFavoritos]);
+
+  function alternarFavorito(cursoId) {
+    setCursosFavoritos((prev) => {
+      const copia = new Set(prev);
+      copia.has(cursoId) ? copia.delete(cursoId) : copia.add(cursoId);
+      return copia;
+    });
+  }
+
   function alternarConclusaoConteudo(id) {
     setConteudosConcluidos((prev) => {
       const copia = new Set(prev);
@@ -114,8 +130,9 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   function resolverTela() {
     if (secaoAtual === "dashboard") return resolverDashboard(usuario.tipo);
 
-    if (secaoAtual === "quiz")   return mapaTelas.quiz;
-    if (secaoAtual === "perfil") return mapaTelas.perfil;
+    if (secaoAtual === "quiz")    return mapaTelas.quiz;
+    if (secaoAtual === "perfil")  return mapaTelas.perfil;
+    if (secaoAtual === "catalogo" && ["Professor", "Aluno"].includes(usuario.tipo)) return mapaTelas.catalogo;
 
     if (!temPermissao(usuario.tipo, secaoAtual)) return TelaAcessoNegado;
 
@@ -164,6 +181,8 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
                 onConteudoConcluido={setConteudoConcluido}
                 conteudosConcluidos={conteudosConcluidos}
                 onAlternarConclusao={alternarConclusaoConteudo}
+                cursosFavoritos={cursosFavoritos}
+                onAlternarFavorito={alternarFavorito}
                 onToast={mostrarToast}
               />
             </div>

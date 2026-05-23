@@ -868,6 +868,18 @@
   background: rgba(123, 47, 247, 0.07);
 }
 
+.sidebar__item--home-publica {
+  width: 100%;
+  margin-top: var(--espaco-sm);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.sidebar__item--home-publica:hover {
+  color: var(--cor-marca-clara);
+  background: rgba(123, 47, 247, 0.07);
+}
+
 .sidebar__usuario {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(185, 153, 255, 0.12);

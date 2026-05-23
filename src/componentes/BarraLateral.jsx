@@ -21,6 +21,7 @@ import {
   TbChevronRight,
   TbBooks,
   TbUser,
+  TbArrowUpRight,
 } from "react-icons/tb";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
 import { matriculas, conteudos, avaliacoes } from "@/dados/dadosMock.js";
@@ -316,6 +317,21 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
               <span className="sidebar__usuario-tipo">{usuario.tipo}</span>
             </div>
           </div>
+
+          {["Professor", "Aluno"].includes(usuario.tipo) && (
+            <button
+              className="sidebar__item sidebar__item--home-publica"
+              onClick={() => { irPara("catalogo"); onFechar?.(); }}
+              title="Ver catálogo de cursos"
+              type="button"
+              aria-label="Ver catálogo de cursos"
+            >
+              <span className="sidebar__item-icone" aria-hidden="true">
+                <TbArrowUpRight size={18} />
+              </span>
+              <span className="sidebar__item-rotulo">Ver catálogo</span>
+            </button>
+          )}
 
           <button
             className="sidebar__toggle"

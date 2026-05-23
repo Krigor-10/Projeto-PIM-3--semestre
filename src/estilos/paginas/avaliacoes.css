@@ -1751,3 +1751,44 @@
 .quiz-rapido__item--certo .quiz-rapido__item-status { color: #22c55e; }
 .quiz-rapido__item--errado .quiz-rapido__item-status { color: #ef4444; }
 
+/* ============================================================
+   OVERLAY IMERSIVO — Avaliação final (portal no body)
+   ============================================================ */
+
+.quiz-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 12, 0.82);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: var(--espaco-xl);
+}
+
+.quiz-overlay__caixa {
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-xl);
+  width: 100%;
+  max-width: 860px;
+  margin: auto;
+  padding: var(--espaco-xl);
+}
+
+@media (max-width: 600px) {
+  .quiz-overlay {
+    padding: var(--espaco-md);
+    align-items: flex-start;
+  }
+
+  .quiz-overlay__caixa {
+    padding: var(--espaco-lg);
+    border-radius: var(--raio-lg);
+    margin: 0;
+  }
+}
+

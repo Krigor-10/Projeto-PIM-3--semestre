@@ -6,8 +6,9 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle, TbSettings,
+  TbUserCircle,
 } from "react-icons/tb";
+import { MdLogout, MdSettings } from "react-icons/md";
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
 import Botao from "./Botao.jsx";
@@ -222,15 +223,17 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
                   onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil")); }}
                   style={{ display: "flex", alignItems: "center", gap: "6px" }}
                 >
-                  <TbSettings size={15} aria-hidden="true" />
+                  <MdSettings size={15} aria-hidden="true" />
                   Configurações
                 </Botao>
                 <Botao
                   variante="perigo"
                   className="popup-perfil__sair"
                   onClick={() => { setConfirmarSaida(true); setPopupAberto(false); }}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
                 >
-                  Sair da conta
+                  <MdLogout size={15} aria-hidden="true" />
+                  Sair
                 </Botao>
               </div>
             </div>

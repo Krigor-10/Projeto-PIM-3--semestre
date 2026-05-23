@@ -352,6 +352,104 @@
   border-radius: var(--raio-lg);
 }
 
+/* ── Favoritos — dashboard do aluno ─────────────────────────── */
+.secao-titulo {
+  font-size: var(--texto-md);
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  margin-bottom: var(--espaco-md);
+  display: flex;
+  align-items: center;
+}
+
+.favoritos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  list-style: none;
+}
+
+.favorito-card {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  transition: border-color var(--transicao-rapida);
+}
+
+.favorito-card:hover {
+  border-color: rgba(123, 47, 247, 0.4);
+}
+
+.favorito-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.favorito-card__titulo {
+  font-size: var(--texto-md);
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.favoritos-vazio {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  padding: var(--espaco-md);
+  background: var(--cor-cartao);
+  border: 1px dashed var(--cor-borda);
+  border-radius: var(--raio-lg);
+}
+
+.favoritos-vazio__link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--cor-marca-clara);
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.favorito-card__descricao {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Botão coração — catálogo e dashboard ───────────────────── */
+.btn-favorito {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--cor-texto-mudo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--raio-sm);
+  transition: color var(--transicao-rapida), transform var(--transicao-rapida);
+  flex-shrink: 0;
+}
+
+.btn-favorito:hover {
+  color: #ef4444;
+  transform: scale(1.15);
+}
+
+.btn-favorito--ativo {
+  color: #ef4444;
+}
+
 .cartao-retomar__info {
   display: flex;
   flex-direction: column;
@@ -941,6 +1039,28 @@
 
 .catalogo-card--oculto {
   opacity: 0.55;
+}
+
+.catalogo-card--matriculado {
+  border-color: rgba(123, 47, 247, 0.8);
+  box-shadow: 0 0 0 2px rgba(123, 47, 247, 0.35), 0 4px 16px rgba(123, 47, 247, 0.18);
+  background: rgba(123, 47, 247, 0.12);
+}
+
+.badge-matriculado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--cor-marca);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .catalogo-card__topo {

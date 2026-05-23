@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { TbDotsVertical, TbClock, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
@@ -179,7 +180,8 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
 
   function finalizarAvaliacao(respostasFinais) {
     /* Garante que onConcluir seja chamado apenas uma vez
-       mesmo se timer e botão "Ver resultado" dispararem juntos */
+       mesmo se timer e botão "
+       " dispararem juntos */
     if (finalizado.current) return;
     finalizado.current = true;
 
@@ -1086,6 +1088,15 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   /* Avaliação final liberada quando todo o conteúdo do curso foi concluído */
   const avaliacaoLiberada = !ehAluno || conteudoConcluido;
 
+  /* Ativa blur no layout enquanto o quiz ou resultado estiver aberto */
+  useEffect(() => {
+    const layout = document.querySelector(".layout-workspace");
+    if (!layout) return;
+    const ativo = modo === "quiz" || modo === "resultado";
+    layout.classList.toggle("layout-workspace--quiz-ativo", ativo);
+    return () => layout.classList.remove("layout-workspace--quiz-ativo");
+  }, [modo]);
+
   /* ── Modos especiais ── */
 
   if (modo === "criar") {
@@ -1098,46 +1109,45 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
     );
   }
 
-  if (modo === "quiz" && avaliacaoAtiva) {
-    return (
-      <QuizEmbutido
-        avaliacao={avaliacaoAtiva}
-        onConcluir={(resultado) => {
-          /* Persiste resultado e incrementa o contador de tentativas desta avaliação */
-          setResultados((prev) => ({ ...prev, [avaliacaoAtiva.id]: resultado }));
-          setTentativas((prev) => ({
-            ...prev,
-            [avaliacaoAtiva.id]: (prev[avaliacaoAtiva.id] || 0) + 1,
-          }));
-          setResultadoAtual(resultado);
-          /* Libera o certificado passando nota e aproveitamento para exibição no progresso */
-          if (resultado.porcentagem >= 70) onAvaliacaoAprovada?.({
-            porcentagem: resultado.porcentagem,
-            nota: resultado.nota,
-            notaMaxima: avaliacaoAtiva.notaMaxima,
-          });
-          setModo("resultado");
-        }}
-      />
-    );
-  }
-
-  if (modo === "resultado" && avaliacaoAtiva && resultadoAtual) {
-    const tentativasUsadas = tentativas[avaliacaoAtiva.id] || 0;
-    return (
-      <ResultadoAvaliacao
-        avaliacao={avaliacaoAtiva}
-        resultado={resultadoAtual}
-        tentativasUsadas={tentativasUsadas}
-        onVoltar={() => {
-          setModo("lista");
-          setResultadoAtual(null);
-        }}
-        onRefazer={() => setModo("quiz")}
-        onMudarSecao={onMudarSecao}
-      />
-    );
-  }
+  /* Quiz e resultado são renderizados como portal (modal imersivo) */
+  const portalQuiz = (modo === "quiz" || modo === "resultado") && avaliacaoAtiva
+    ? createPortal(
+        <div className="quiz-overlay" role="dialog" aria-modal="true" aria-label="Avaliação em andamento">
+          <div className="quiz-overlay__caixa">
+            {modo === "quiz" && (
+              <QuizEmbutido
+                avaliacao={avaliacaoAtiva}
+                onConcluir={(resultado) => {
+                  setResultados((prev) => ({ ...prev, [avaliacaoAtiva.id]: resultado }));
+                  setTentativas((prev) => ({
+                    ...prev,
+                    [avaliacaoAtiva.id]: (prev[avaliacaoAtiva.id] || 0) + 1,
+                  }));
+                  setResultadoAtual(resultado);
+                  if (resultado.porcentagem >= 70) onAvaliacaoAprovada?.({
+                    porcentagem: resultado.porcentagem,
+                    nota: resultado.nota,
+                    notaMaxima: avaliacaoAtiva.notaMaxima,
+                  });
+                  setModo("resultado");
+                }}
+              />
+            )}
+            {modo === "resultado" && resultadoAtual && (
+              <ResultadoAvaliacao
+                avaliacao={avaliacaoAtiva}
+                resultado={resultadoAtual}
+                tentativasUsadas={tentativas[avaliacaoAtiva.id] || 0}
+                onVoltar={() => { setModo("lista"); setResultadoAtual(null); }}
+                onRefazer={() => setModo("quiz")}
+                onMudarSecao={onMudarSecao}
+              />
+            )}
+          </div>
+        </div>,
+        document.body
+      )
+    : null;
 
   /* ── Filtragem ── */
 
@@ -1386,6 +1396,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
           </footer>
         </Modal>
       )}
+      {portalQuiz}
       </div>
     );
   }
@@ -1575,6 +1586,8 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
           </ul>
         </section>
       ))}
+
+      {portalQuiz}
 
       {/* Modal de detalhes */}
       {modalAberto && avaliacaoAtiva && (

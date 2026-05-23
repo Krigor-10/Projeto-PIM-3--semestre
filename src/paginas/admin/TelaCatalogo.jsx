@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbPlus, TbDotsVertical, TbSettings } from "react-icons/tb";
+import { TbPlus, TbDotsVertical, TbSettings, TbCheck } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
@@ -7,8 +7,125 @@ import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
+import { matriculas } from "@/dados/dadosMock.js";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
-export default function TelaCatalogo({ listaCursos, onListaCursosChange, onToast }) {
+function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), onAlternarFavorito }) {
+  const [busca, setBusca] = useState("");
+  const [filtroNivel, setFiltroNivel] = useState("");
+
+  const cursosMatriculados = usuario?.tipo === "Aluno"
+    ? new Set(matriculas.filter((m) => m.alunoId === usuario.id && m.status === "Aprovada").map((m) => m.cursoId))
+    : new Set();
+
+  const visiveis = listaCursos.filter((c) => c.visivelCatalogo);
+  const destaques = visiveis.filter((c) => c.destaque);
+  const demais = visiveis.filter((c) => !c.destaque);
+  const ordenados = [...destaques, ...demais];
+
+  const filtrados = ordenados.filter((c) => {
+    const matchBusca = c.titulo.toLowerCase().includes(busca.toLowerCase());
+    const matchNivel = !filtroNivel || c.nivel === filtroNivel;
+    return matchBusca && matchNivel;
+  });
+
+  return (
+    <div className="tela-catalogo">
+      <header className="cabecalho-pagina">
+        <div>
+          <h2 className="cabecalho-pagina__titulo">Catálogo de Cursos</h2>
+          <p className="cabecalho-pagina__subtitulo">
+            {visiveis.length} curso{visiveis.length !== 1 ? "s" : ""} disponível{visiveis.length !== 1 ? "eis" : ""}
+            {destaques.length > 0 && ` · ${destaques.length} em destaque`}
+          </p>
+        </div>
+      </header>
+
+      <div className="barra-filtros">
+        <label htmlFor="vitrine-busca" className="visualmente-oculto">Buscar curso</label>
+        <input
+          id="vitrine-busca"
+          type="search"
+          className="campo__entrada barra-filtros__busca"
+          placeholder="Buscar por título..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+        />
+        <SelectSimples
+          value={filtroNivel}
+          opcoes={[
+            { valor: "",              rotulo: "Todos os níveis"  },
+            { valor: "Iniciante",     rotulo: "Iniciante"        },
+            { valor: "Intermediário", rotulo: "Intermediário"    },
+            { valor: "Avançado",      rotulo: "Avançado"         },
+          ]}
+          onChange={setFiltroNivel}
+          placeholder="Todos os níveis"
+        />
+      </div>
+
+      {filtrados.length === 0 ? (
+        <p className="texto-vazio texto-vazio--central" role="status">Nenhum curso encontrado.</p>
+      ) : (
+        <ul className="catalogo-grade" role="list" aria-label="Cursos disponíveis">
+          {filtrados.map((curso) => {
+            const matriculado = cursosMatriculados.has(curso.id);
+            return (
+              <li
+                key={curso.id}
+                className={[
+                  "catalogo-card",
+                  matriculado          ? "catalogo-card--matriculado" : "",
+                  curso.destaque && !matriculado ? "catalogo-card--destaque" : "",
+                ].filter(Boolean).join(" ")}
+              >
+                <div className="catalogo-card__topo">
+                  <h3 className="catalogo-card__titulo">{curso.titulo}</h3>
+                  <span className="menu-contexto__botao" aria-hidden="true">
+                    <TbDotsVertical size={16} />
+                  </span>
+                </div>
+                <p className="catalogo-card__descricao">{curso.descricao}</p>
+                <footer className="catalogo-card__rodape">
+                  <div>
+                    {matriculado && (
+                      <span className="badge-matriculado">
+                        <TbCheck size={12} aria-hidden="true" />
+                        Matriculado
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    {usuario?.tipo === "Aluno" && (
+                      <button
+                        type="button"
+                        className={`btn-favorito${cursosFavoritos.has(curso.id) ? " btn-favorito--ativo" : ""}`}
+                        onClick={() => onAlternarFavorito?.(curso.id)}
+                        aria-label={cursosFavoritos.has(curso.id) ? `Remover ${curso.titulo} dos favoritos` : `Adicionar ${curso.titulo} aos favoritos`}
+                        aria-pressed={cursosFavoritos.has(curso.id)}
+                      >
+                        {cursosFavoritos.has(curso.id)
+                          ? <MdFavorite size={20} />
+                          : <MdFavoriteBorder size={20} />
+                        }
+                      </button>
+                    )}
+                  </div>
+                </footer>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange, onToast, cursosFavoritos, onAlternarFavorito }) {
+  if (["Professor", "Aluno"].includes(usuario?.tipo)) {
+    return <VitrineCatalogo listaCursos={listaCursos ?? []} usuario={usuario} cursosFavoritos={cursosFavoritos} onAlternarFavorito={onAlternarFavorito} />;
+  }
+
   const lista    = listaCursos;
   const setLista = onListaCursosChange;
   const [busca, setBusca] = useState("");

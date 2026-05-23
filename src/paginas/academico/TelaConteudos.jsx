@@ -526,7 +526,6 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
           disabled={!tudoConcluido}
           type="button"
           style={{ "--pct": `${percentualGeral}%` }}
-          style={{ "--pct": `${percentualGeral}%` }}
           aria-label={
             tudoConcluido
               ? "Realizar avaliação final"
