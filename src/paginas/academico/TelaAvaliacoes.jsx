@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbDotsVertical, TbClock, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbHourglass, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -112,6 +112,7 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
   const [respostas, setRespostas] = useState([]);
   const [apoioAberto, setApoioAberto] = useState(true);
   const [segundos, setSegundos] = useState(avaliacao.tempoLimiteMinutos * 60);
+  const [confirmandoSaida, setConfirmandoSaida] = useState(false);
 
   /* Ref mantém as respostas atuais acessíveis dentro do callback do timer
      sem precisar recriar o intervalo a cada render */
@@ -196,54 +197,20 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
     onConcluir({ acertos, total: totalQuestoes, porcentagem, nota });
   }
 
-  return (
-    <section className="quiz-embutido" aria-labelledby="quiz-avaliacao-titulo">
-      <header className="quiz-cabecalho">
-        <div className="quiz-cabecalho__topo">
-          <div className="quiz-embutido__info">
-            <h2 className="quiz-embutido__titulo" id="quiz-avaliacao-titulo">
-              {avaliacao.titulo}
-            </h2>
-            <p className="quiz-embutido__curso">{avaliacao.cursoTitulo}</p>
-          </div>
-          <time
-            className={`quiz-timer${tempoEsgotando ? " quiz-timer--urgente" : ""}`}
-            aria-live="polite"
-            aria-label={`Tempo restante: ${formatarTempo(segundos)}`}
-            dateTime={`PT${segundos}S`}
-          >
-            <TbClock size={16} aria-hidden="true" />
-            {formatarTempo(segundos)}
-          </time>
-        </div>
+  function sairAvaliacao() {
+    const respondidas = respostasRef.current;
+    if (respondidas.length === 0) { onFechar(); return; }
+    if (finalizado.current) return;
+    finalizado.current = true;
+    const acertos = respondidas.filter((r) => r.correta).length;
+    const porcentagem = Math.round((acertos / respondidas.length) * 100);
+    const nota = parseFloat(((acertos / respondidas.length) * avaliacao.notaMaxima).toFixed(1));
+    onConcluir({ acertos, total: respondidas.length, porcentagem, nota });
+  }
 
-        <div className="quiz-cabecalho__steps">
-          <span className="quiz-cabecalho__contador">
-            Questão {indice + 1} de {totalQuestoes}
-          </span>
-          <nav className="quiz-steps" aria-label="Progresso do quiz">
-            {questoes.map((q, idx) => {
-              const resposta = respostas.find((r) => r.id === q.id);
-              const eAtual = idx === indice;
-              let estado = idx > respostas.length ? "pendente" : "atual";
-              if (resposta) estado = resposta.correta ? "correta" : "errada";
-              return (
-                <button
-                  key={q.id}
-                  type="button"
-                  className={`quiz-step quiz-step--${estado}${eAtual ? " quiz-step--ativo" : ""}`}
-                  onClick={() => navegarParaQuestao(idx)}
-                  disabled={idx > respostas.length}
-                  aria-label={`Questão ${idx + 1}${resposta ? (resposta.correta ? " — correta" : " — errada") : eAtual ? " — atual" : " — pendente"}`}
-                  aria-current={eAtual ? "step" : undefined}
-                >
-                  {idx + 1}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </header>
+  return (
+    <>
+    <section className="quiz-embutido quiz-embutido--sem-cabecalho" aria-labelledby="quiz-avaliacao-titulo">
 
       <div className="quiz-corpo">
         {/* Texto de apoio teórico colapsável */}
@@ -365,7 +332,103 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
           </section>
         )}
       </div>
+
+    {createPortal(
+        <header className="quiz-cabecalho quiz-cabecalho--flutuante">
+          {/* Esquerda: info do curso e timer */}
+          <div className="quiz-embutido__info">
+            <p className="quiz-embutido__curso">{avaliacao.cursoTitulo}</p>
+            <h2 className="quiz-embutido__titulo" id="quiz-avaliacao-titulo">
+              {avaliacao.titulo}
+            </h2>
+          </div>
+
+          {/* Centro: navegação de questões */}
+          <div className="quiz-cabecalho__steps">
+            <span className="quiz-cabecalho__contador">
+              Questão {indice + 1} de {totalQuestoes}
+            </span>
+            <nav className="quiz-steps" aria-label="Progresso do quiz">
+              {questoes.map((q, idx) => {
+                const resposta = respostas.find((r) => r.id === q.id);
+                const eAtual = idx === indice;
+                let estado = idx > respostas.length ? "pendente" : "atual";
+                if (resposta) estado = resposta.correta ? "correta" : "errada";
+                return (
+                  <button
+                    key={q.id}
+                    type="button"
+                    className={`quiz-step quiz-step--${estado}${eAtual ? " quiz-step--ativo" : ""}`}
+                    onClick={() => navegarParaQuestao(idx)}
+                    disabled={idx > respostas.length}
+                    aria-label={`Questão ${idx + 1}${resposta ? (resposta.correta ? " — correta" : " — errada") : eAtual ? " — atual" : " — pendente"}`}
+                    aria-current={eAtual ? "step" : undefined}
+                  >
+                    {idx + 1}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Direita: timer + botão sair */}
+          <div className="quiz-cabecalho__direita">
+            <time
+              className={`quiz-timer${tempoEsgotando ? " quiz-timer--urgente" : ""}`}
+              aria-live="polite"
+              aria-label={`Tempo restante: ${formatarTempo(segundos)}`}
+              dateTime={`PT${segundos}S`}
+            >
+              <TbClock size={16} aria-hidden="true" />
+              {formatarTempo(segundos)}
+            </time>
+            <Botao
+              variante="perigo"
+              tamanho="pequeno"
+              onClick={() => setConfirmandoSaida(true)}
+              aria-label="Sair da avaliação"
+              style={{ display: "flex", alignItems: "center", gap: "5px" }}
+            >
+              <TbX size={15} aria-hidden="true" />
+              Sair
+            </Botao>
+          </div>
+        </header>,
+        document.body
+      )}
+      {confirmandoSaida && createPortal(
+        <Modal titulo="Sair da avaliação?" onFechar={() => setConfirmandoSaida(false)}>
+          <div className="modal-sair-quiz">
+            <div className="modal-sair-quiz__aviso" role="alert">
+              <span className="modal-sair-quiz__icone" aria-hidden="true">⚠</span>
+              <p>
+                Você respondeu <strong>{respostas.length}</strong> de{" "}
+                <strong>{totalQuestoes}</strong> questões.
+              </p>
+            </div>
+            {respostas.length > 0 ? (
+              <p className="modal-sair-quiz__descricao">
+                Se sair agora, apenas as <strong>{respostas.length} questões respondidas</strong> serão
+                contabilizadas na sua nota. As demais não serão penalizadas.
+              </p>
+            ) : (
+              <p className="modal-sair-quiz__descricao">
+                Você ainda não respondeu nenhuma questão. Sair agora encerrará a tentativa sem registrar nota.
+              </p>
+            )}
+          </div>
+          <footer className="modal-rodape">
+            <Botao variante="sucesso" onClick={() => setConfirmandoSaida(false)}>Continuar avaliação</Botao>
+            <Botao variante="perigo" onClick={sairAvaliacao}>
+              <TbX size={15} aria-hidden="true" style={{ marginRight: "4px" }} />
+              Sair mesmo assim
+            </Botao>
+          </footer>
+        </Modal>,
+        document.body
+      )}
     </section>
+    </>
   );
 }
 
@@ -478,7 +541,9 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
         <Botao
           variante="fantasma"
           onClick={onVoltar}
+          style={{ display: "flex", alignItems: "center", gap: "6px" }}
         >
+          <TbArrowLeft size={16} aria-hidden="true" />
           Voltar às avaliações
         </Botao>
         {/* Exibe contador de tentativas e botão de refazer se ainda houver saldo */}
@@ -1050,6 +1115,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   const [tentativas, setTentativas] = useState({});
 
   /* Sobrescritas de status feitas pelo professor na sessão: { [av.id]: "Publicada" | "Arquivada" } */
+  const [modalConfirmarInicio, setModalConfirmarInicio] = useState(null);
   const [statusAvaliacoes, setStatusAvaliacoes] = useState({});
   /* Pendência de confirmação de troca de status: null | { novoStatus } */
   const [confirmandoStatusAv, setConfirmandoStatusAv] = useState(null);
@@ -1206,7 +1272,13 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   }
 
   function iniciarAvaliacao(av) {
-    setAvaliacaoAtiva(av);
+    setModalConfirmarInicio(av);
+  }
+
+  function confirmarInicioAvaliacao() {
+    setAvaliacaoAtiva(modalConfirmarInicio);
+    setModalAberto(false);
+    setModalConfirmarInicio(null);
     setModo("quiz");
   }
 
@@ -1589,6 +1661,52 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
       {portalQuiz}
 
+      {/* Modal de confirmação — antes de iniciar o quiz */}
+      {modalConfirmarInicio && (
+        <Modal titulo="Antes de começar" onFechar={() => setModalConfirmarInicio(null)}>
+          <div className="modal-iniciar-avaliacao">
+            <h3 className="modal-iniciar-avaliacao__nome">{modalConfirmarInicio.titulo}</h3>
+            <p className="modal-iniciar-avaliacao__curso">{modalConfirmarInicio.cursoTitulo}</p>
+
+            <ul className="modal-iniciar-avaliacao__info" role="list">
+              <li>
+                <span className="modal-iniciar-avaliacao__icone" aria-hidden="true">◈</span>
+                <span><strong>{modalConfirmarInicio.totalQuestoes}</strong> questões</span>
+              </li>
+              <li>
+                <span className="modal-iniciar-avaliacao__icone" aria-hidden="true">⏱</span>
+                <span>Tempo limite: <strong>{modalConfirmarInicio.tempoLimiteMinutos} minutos</strong></span>
+              </li>
+              <li>
+                <span className="modal-iniciar-avaliacao__icone" aria-hidden="true">★</span>
+                <span>Nota máxima: <strong>{modalConfirmarInicio.notaMaxima}</strong></span>
+              </li>
+              <li>
+                <span className="modal-iniciar-avaliacao__icone" aria-hidden="true">↺</span>
+                <span>
+                  Tentativas: <strong>{(tentativas[modalConfirmarInicio.id] || 0) + 1}</strong> de{" "}
+                  <strong>{modalConfirmarInicio.tentativasPermitidas}</strong>
+                </span>
+              </li>
+              <li>
+                <span className="modal-iniciar-avaliacao__icone" aria-hidden="true">✓</span>
+                <span>Mínimo para aprovação: <strong>70%</strong></span>
+              </li>
+            </ul>
+
+            <div className="modal-iniciar-avaliacao__aviso" role="alert">
+              <span aria-hidden="true">⚠</span>
+              O cronômetro inicia assim que você confirmar. Certifique-se de estar em um ambiente sem interrupções.
+            </div>
+          </div>
+
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setModalConfirmarInicio(null)}>Cancelar</Botao>
+            <Botao variante="primario" onClick={confirmarInicioAvaliacao}>Iniciar avaliação</Botao>
+          </footer>
+        </Modal>
+      )}
+
       {/* Modal de detalhes */}
       {modalAberto && avaliacaoAtiva && (
         <Modal
@@ -1639,7 +1757,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
           </dl>
           <footer className="modal-rodape">
             <Botao
-              variante="fantasma"
+              variante="perigo"
               onClick={() => setModalAberto(false)}
             >
               Fechar

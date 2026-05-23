@@ -396,6 +396,30 @@
   display: flex;
   flex-direction: column;
   gap: var(--espaco-sm);
+  flex: 1;
+}
+
+.cartao-curso__cabecalho-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cartao-curso__mais {
+  background: none;
+  border: none;
+  padding: 0.2rem;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  border-radius: var(--raio-sm);
+  display: flex;
+  align-items: center;
+  transition: color var(--transicao-rapida), background var(--transicao-rapida);
+}
+
+.cartao-curso__mais:hover {
+  color: var(--cor-texto-forte);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .cartao-curso__titulo {
@@ -412,7 +436,7 @@
 .cartao-curso__rodape {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: var(--espaco-md) var(--espaco-lg);
   border-top: 1px solid var(--cor-borda);
 }

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { TbDotsVertical } from "react-icons/tb";
 import Botao from "@/componentes/Botao.jsx";
+import Modal from "@/componentes/Modal.jsx";
 import { cursos } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
 import bannerHome from "@/ativos/banner-home.png";
@@ -42,6 +45,7 @@ const cursosVisiveis = cursos
 
 export default function TelaInicio() {
   const navigate = useNavigate();
+  const [cursoModal, setCursoModal] = useState(null);
 
   return (
     <>
@@ -157,8 +161,6 @@ export default function TelaInicio() {
                 return (
                   <li key={curso.id}>
                     <article className="cartao-curso" aria-labelledby={`curso-titulo-${curso.id}`}>
-
-                      {/* Imagem de capa do curso */}
                       <div className="cartao-curso__topo" aria-hidden="true">
                         <img
                           src={imagem}
@@ -172,29 +174,30 @@ export default function TelaInicio() {
                       </div>
 
                       <div className="cartao-curso__corpo">
-                        <div className="cartao-curso__badges">
+                        <div className="cartao-curso__cabecalho-linha">
                           <span className="cartao-curso__nivel">{curso.nivel}</span>
+                          <button
+                            type="button"
+                            className="cartao-curso__mais"
+                            onClick={() => setCursoModal(curso)}
+                            aria-label={`Ver detalhes de ${curso.titulo}`}
+                          >
+                            <TbDotsVertical size={18} aria-hidden="true" />
+                          </button>
                         </div>
-
                         <h3 className="cartao-curso__titulo" id={`curso-titulo-${curso.id}`}>
                           {curso.titulo}
                         </h3>
-                        <p className="cartao-curso__descricao">{curso.descricao}</p>
-
-
                       </div>
 
                       <footer className="cartao-curso__rodape">
-                        <strong className="cartao-curso__preco">
-                          R$ {curso.preco.toFixed(2).replace(".", ",")}
-                        </strong>
                         <Botao
-                          variante="secundario"
+                          variante="primario"
                           tamanho="pequeno"
                           onClick={() => navigate(`${ROTAS.CADASTRO}?curso=${curso.id}`)}
-                          aria-label={`Matricular-se em ${curso.titulo}`}
+                          aria-label={`Cadastrar-se em ${curso.titulo}`}
                         >
-                          Matricular-se
+                          Cadastrar-se
                         </Botao>
                       </footer>
                     </article>
@@ -205,6 +208,41 @@ export default function TelaInicio() {
           </div>
         </section>
       </main>
+
+      {cursoModal && (
+        <Modal titulo={cursoModal.titulo} onFechar={() => setCursoModal(null)}>
+          <dl className="lista-detalhes">
+            <div className="lista-detalhes__item">
+              <dt>Nível</dt>
+              <dd>{cursoModal.nivel}</dd>
+            </div>
+            <div className="lista-detalhes__item">
+              <dt>Módulos</dt>
+              <dd>{cursoModal.totalModulos}</dd>
+            </div>
+            <div className="lista-detalhes__item">
+              <dt>Alunos matriculados</dt>
+              <dd>{cursoModal.totalAlunos}</dd>
+            </div>
+            <div className="lista-detalhes__item">
+              <dt>Preço</dt>
+              <dd>
+                {cursoModal.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </dd>
+            </div>
+            <div className="lista-detalhes__item">
+              <dt>Descrição</dt>
+              <dd>{cursoModal.descricao}</dd>
+            </div>
+          </dl>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setCursoModal(null)}>Fechar</Botao>
+            <Botao variante="primario" onClick={() => { setCursoModal(null); navigate(`${ROTAS.CADASTRO}?curso=${cursoModal.id}`); }}>
+              Cadastrar-se
+            </Botao>
+          </footer>
+        </Modal>
+      )}
 
       {/* Rodapé */}
       <footer className="rodape-publico" role="contentinfo">

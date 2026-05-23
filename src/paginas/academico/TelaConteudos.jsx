@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash } from "react-icons/tb";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -24,6 +24,36 @@ const QUESTOES_POR_MODULO = 3;
 /* Geometria do círculo SVG (viewBox 48×48, centro 24,24) */
 const RAIO_SVG = 20;
 const CIRCUNFERENCIA = 2 * Math.PI * RAIO_SVG;
+
+/* ── Checkbox circular — marcar conteúdo como concluído ─────── */
+
+function CheckCircular({ concluido, onClick, label }) {
+  return (
+    <motion.button
+      type="button"
+      className={`check-circular${concluido ? " check-circular--concluido" : ""}`}
+      onClick={onClick}
+      aria-pressed={concluido}
+      aria-label={label}
+      whileTap={{ scale: 0.8 }}
+    >
+      <AnimatePresence>
+        {concluido && (
+          <motion.span
+            key="check"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 22 }}
+            aria-hidden="true"
+          >
+            ✓
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
 
 /* ── Botão circular de quiz ──────────────────────────────────── */
 
@@ -497,18 +527,11 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                         <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
-                      <div className="cartao-conteudo__meta">
-                        <Insignia texto={cont.tipo} variante="marca" />
-                      </div>
-                      <Botao
-                        variante={estaConcluido ? "sucesso" : "fantasma"}
-                        tamanho="pequeno"
+                      <CheckCircular
+                        concluido={estaConcluido}
                         onClick={() => alternarConclusao(cont.id)}
-                        aria-pressed={estaConcluido}
-                        aria-label={`${estaConcluido ? "Desmarcar" : "Marcar"} "${cont.titulo}" como concluído`}
-                      >
-                        {estaConcluido ? "✓ Concluído" : "Marcar como feito"}
-                      </Botao>
+                        label={`${estaConcluido ? "Desmarcar" : "Marcar"} "${cont.titulo}" como concluído`}
+                      />
                     </li>
                   );
                 })}

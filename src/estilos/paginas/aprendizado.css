@@ -1,4 +1,40 @@
 /* ------------------------------------------------------------
+   CHECKBOX CIRCULAR — marcar conteúdo como concluído
+   ------------------------------------------------------------ */
+.check-circular {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--cor-borda-forte);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: border-color 0.15s, background 0.15s;
+  padding: 0;
+}
+
+.check-circular:hover:not(.check-circular--concluido) {
+  border-color: var(--cor-sucesso);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.check-circular--concluido {
+  background: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+}
+
+.cartao-conteudo--concluido .cartao-conteudo__titulo {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+/* ------------------------------------------------------------
    TELA PROGRESSO — ALUNO
    ------------------------------------------------------------ */
 
