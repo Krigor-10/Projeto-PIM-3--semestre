@@ -45,39 +45,35 @@ const ICONES_SECAO = {
 /* Definição dos grupos accordion */
 export const GRUPOS_DEF = {
   pessoas: {
-    rotulo: "Usuários",
+    rotulo: "Gestão",
     Icone:  TbUsersGroup,
-    filhos: ["alunos", "professores", "coordenadores"],
+    filhos: ["usuarios", "alunos", "professores", "coordenadores", "matriculas"],
   },
   academico: {
     rotulo: "Acadêmico",
     Icone:  TbBook,
-    filhos: ["cursos", "modulos", "turmas"],
+    filhos: ["cursos", "modulos", "turmas", "conteudos", "avaliacoes"],
   },
   aprendizado: {
     rotulo: "Aprendizado",
     Icone:  TbBooks,
-    filhos: ["conteudos", "avaliacoes", "progresso"],
-  },
-  conta: {
-    rotulo: "Minha Conta",
-    Icone:  TbUser,
-    filhos: ["matriculas", "certificados"],
+    filhos: ["progresso", "certificados"],
   },
 };
 
 export const FILHO_PARA_GRUPO = {
+  usuarios:      "pessoas",
   alunos:        "pessoas",
   professores:   "pessoas",
   coordenadores: "pessoas",
+  matriculas:    "pessoas",
   cursos:        "academico",
   modulos:       "academico",
   turmas:        "academico",
-  conteudos:     "aprendizado",
-  avaliacoes:    "aprendizado",
+  conteudos:     "academico",
+  avaliacoes:    "academico",
   progresso:     "aprendizado",
-  matriculas:    "conta",
-  certificados:  "conta",
+  certificados:  "aprendizado",
 };
 
 export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) {
@@ -116,7 +112,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
     });
   }
 
-  const ORDEM_ALUNO = ["matriculas", "certificados", "dashboard", "conteudos", "avaliacoes", "progresso"];
+  const ORDEM_ALUNO = ["dashboard", "conteudos", "avaliacoes", "progresso", "certificados", "matriculas"];
 
   const itensMenu = (() => {
     const base = obterSecoesPermitidas(usuario.tipo);

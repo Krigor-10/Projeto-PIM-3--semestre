@@ -10,7 +10,7 @@ export const PERFIS_GESTORES = new Set(["Admin", "Coordenador"]);
 export const SECOES = [
   {
     chave: "dashboard",
-    rotulo: "Panorama",
+    rotulo: "Dashboard",
     icone: "PN",
     perfis: ["Admin", "Coordenador", "Professor", "Aluno"],
   },
@@ -88,7 +88,7 @@ export const SECOES = [
   },
   {
     chave: "catalogo",
-    rotulo: "Catálogo Público",
+    rotulo: "Catálogo",
     icone: "CL",
     perfis: ["Admin"],
   },
