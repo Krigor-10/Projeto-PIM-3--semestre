@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { TbArrowLeft } from "react-icons/tb";
 import Botao from "@/componentes/Botao.jsx";
 import { perfisDemo } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
@@ -27,46 +28,33 @@ export default function TelaLoginStaff({ onLogin }) {
       {/* Painel visual lateral */}
       <aside className="tela-login__visual tela-login__visual--staff" aria-hidden="true">
         <div className="tela-login__visual-conteudo">
-          <p className="tela-login__visual-tag">Área restrita</p>
-          <h2 className="tela-login__visual-titulo">
-            Painel da<br />
-            <span>Equipe</span>
-          </h2>
-          <ul className="login-staff__destaques" aria-hidden="true">
-            <li>Gerencie turmas, cursos e avaliações</li>
-            <li>Acompanhe o desempenho dos alunos</li>
-            <li>Controle matrículas e usuários</li>
-          </ul>
+          <div className="visual-logo" aria-label="CodeRyse Academy">
+            <span className="visual-logo__marca">
+              <span>Code</span><span>Ryse</span>
+            </span>
+            <span className="visual-logo__subtitulo">Academy</span>
+          </div>
         </div>
       </aside>
 
       {/* Formulário de acesso */}
       <main className="tela-login__formulario" id="conteudo-login-staff">
         <header className="tela-login__cabecalho">
-          <Botao
-            variante="fantasma"
-            tamanho="pequeno"
-            className="tela-login__voltar"
+          <button
+            type="button"
+            className="cadastro-voltar"
             onClick={() => navigate(ROTAS.INICIO)}
             aria-label="Voltar para a página inicial"
           >
+            <TbArrowLeft size={18} aria-hidden="true" />
             Voltar
-          </Botao>
-          <a href="#" className="tela-login__logo" aria-label="CodeRyse Academy">
-            <span className="tela-login__logo-marca" aria-hidden="true">
-              <span>Code</span><span>Ryse</span>
-            </span>
-          </a>
+          </button>
         </header>
 
         <section className="tela-login__corpo" aria-labelledby="titulo-login-staff">
-          <div className="login-staff__badge" aria-label="Área restrita">
-            <span aria-hidden="true">🔒</span> Acesso restrito
-          </div>
-
           <h1 className="tela-login__titulo" id="titulo-login-staff">Área da Equipe</h1>
           <p className="tela-login__subtitulo">
-            Selecione seu perfil de demonstração para acessar o painel.
+            Selecione seu perfil para acessar o painel de gestão.
           </p>
 
           <fieldset className="tela-login__perfis" aria-legend="Selecione um perfil de equipe">
@@ -84,9 +72,6 @@ export default function TelaLoginStaff({ onLogin }) {
                   <strong className="cartao-perfil__rotulo">{perfil.rotulo}</strong>
                   <span className="cartao-perfil__descricao">{perfil.descricao}</span>
                 </div>
-                {selecionado === perfil.chave && (
-                  <span className="cartao-perfil__check" aria-hidden="true">OK</span>
-                )}
               </button>
             ))}
           </fieldset>
@@ -104,17 +89,9 @@ export default function TelaLoginStaff({ onLogin }) {
             }
           </Botao>
 
-          <div className="tela-login__divisor">
-            <span>ou</span>
-          </div>
-
           <p className="tela-login__rodape-texto">
             É aluno?{" "}
-            <button
-              className="link-botao"
-              onClick={() => navigate(ROTAS.LOGIN)}
-              type="button"
-            >
+            <button className="link-botao" onClick={() => navigate(ROTAS.LOGIN)} type="button">
               Acesso do aluno
             </button>
           </p>

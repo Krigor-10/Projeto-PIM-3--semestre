@@ -19,6 +19,55 @@
 
 .tela-login__visual-conteudo {
   max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+}
+
+/* Logo no painel visual */
+.visual-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.visual-logo__marca {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--fonte-display);
+  font-size: clamp(3.5rem, 6vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #fff;
+}
+
+/* Aluno — "Ryse" com gradiente roxo igual ao staff */
+.tela-login--aluno .visual-logo__marca span:last-child {
+  background: linear-gradient(180deg, #cb9cff 0%, #9d67ff 32%, #7b2ff7 72%, #5b19cf 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Staff — painel escuro: "Ryse" com gradiente roxo */
+.tela-login--staff .visual-logo__marca span:last-child {
+  background: linear-gradient(180deg, #cb9cff 0%, #9d67ff 32%, #7b2ff7 72%, #5b19cf 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.visual-logo__subtitulo {
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #fff;
+  margin-left: 0.15rem;
 }
 
 .tela-login__visual-tag {
@@ -93,12 +142,24 @@
 .tela-login__titulo {
   font-size: 1.75rem;
   font-weight: 800;
+  background: linear-gradient(135deg, var(--cor-texto-forte) 40%, var(--cor-marca-clara));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .tela-login__subtitulo {
   color: var(--cor-texto-suave);
   font-size: 0.9rem;
   margin-top: calc(-1 * var(--espaco-sm));
+}
+
+.tela-login__acoes-rodape {
+  display: flex;
+  gap: var(--espaco-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--espaco-sm);
 }
 
 .tela-login__perfis {
@@ -113,8 +174,8 @@
   display: flex;
   align-items: center;
   gap: var(--espaco-md);
-  padding: var(--espaco-md);
-  border: 1px solid var(--cor-borda);
+  padding: var(--espaco-lg) var(--espaco-xl);
+  border: 2px solid var(--cor-borda);
   border-radius: var(--raio-lg);
   background: var(--cor-cartao);
   cursor: pointer;
@@ -126,13 +187,12 @@
 
 .cartao-perfil:hover {
   border-color: var(--cor-borda-forte);
-  background: rgba(123, 47, 247, 0.06);
 }
 
 .cartao-perfil--selecionado {
   border-color: var(--cor-marca);
-  background: rgba(123, 47, 247, 0.1);
-  box-shadow: 0 0 0 1px var(--cor-marca);
+  background: rgba(123, 47, 247, 0.08);
+  box-shadow: 0 0 0 4px rgba(123, 47, 247, 0.1);
 }
 
 .cartao-perfil__icone {
@@ -150,6 +210,7 @@
 .cartao-perfil__rotulo {
   font-size: 0.95rem;
   font-weight: 700;
+  color: var(--cor-texto-forte);
 }
 
 .cartao-perfil__descricao {

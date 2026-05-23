@@ -180,9 +180,9 @@ export default function TelaCadastro() {
           </a>
           <p className="cadastro-cabecalho__legenda">
             Já tem uma conta?{" "}
-            <button className="cadastro-entrar" onClick={() => navigate(ROTAS.LOGIN)} type="button">
+            <Botao variante="secundario" tamanho="pequeno" onClick={() => navigate(ROTAS.LOGIN)}>
               Entrar
-            </button>
+            </Botao>
           </p>
         </div>
       </header>

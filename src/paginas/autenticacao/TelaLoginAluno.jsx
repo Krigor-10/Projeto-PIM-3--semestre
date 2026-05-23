@@ -28,16 +28,12 @@ export default function TelaLoginAluno({ onLogin }) {
       {/* Painel visual lateral */}
       <aside className="tela-login__visual tela-login__visual--aluno" aria-hidden="true">
         <div className="tela-login__visual-conteudo">
-          <p className="tela-login__visual-tag">Sua jornada de aprendizado</p>
-          <h2 className="tela-login__visual-titulo">
-            Bem-vindo(a)<br />
-            <span>de volta!</span>
-          </h2>
-          <ul className="login-aluno__destaques" aria-hidden="true">
-            <li>Acompanhe seu progresso por módulo</li>
-            <li>Acesse avaliações e materiais do curso</li>
-            <li>Visualize sua matrícula em tempo real</li>
-          </ul>
+          <div className="visual-logo" aria-label="CodeRyse Academy">
+            <span className="visual-logo__marca">
+              <span>Code</span><span>Ryse</span>
+            </span>
+            <span className="visual-logo__subtitulo">Academy</span>
+          </div>
         </div>
       </aside>
 
@@ -53,17 +49,12 @@ export default function TelaLoginAluno({ onLogin }) {
             <TbArrowLeft size={18} aria-hidden="true" />
             Voltar
           </button>
-          <a href="#" className="tela-login__logo" aria-label="CodeRyse Academy">
-            <span className="tela-login__logo-marca" aria-hidden="true">
-              <span>Code</span><span>Ryse</span>
-            </span>
-          </a>
         </header>
 
         <section className="tela-login__corpo" aria-labelledby="titulo-login-aluno">
           <h1 className="tela-login__titulo" id="titulo-login-aluno">Acesso do Aluno</h1>
           <p className="tela-login__subtitulo">
-            Demonstração — clique em entrar para acessar o painel do aluno.
+            Entre com sua conta para acessar sua trilha de aprendizado.
           </p>
 
           {/* Card do perfil aluno */}
@@ -73,7 +64,6 @@ export default function TelaLoginAluno({ onLogin }) {
             </div>
             <div className="login-aluno__info">
               <strong>{perfilAluno.rotulo}</strong>
-              <span>{perfilAluno.descricao}</span>
             </div>
             <span className="login-aluno__check" aria-hidden="true">✓</span>
           </div>
@@ -93,26 +83,14 @@ export default function TelaLoginAluno({ onLogin }) {
 
           <p className="tela-login__rodape-texto">
             Não tem uma conta?{" "}
-            <button
-              className="link-botao"
-              onClick={() => navigate(cursoParam ? `${ROTAS.CADASTRO}?curso=${cursoParam}` : ROTAS.CADASTRO)}
-              type="button"
-            >
+            <button className="link-botao" onClick={() => navigate(cursoParam ? `${ROTAS.CADASTRO}?curso=${cursoParam}` : ROTAS.CADASTRO)} type="button">
               Criar conta
             </button>
           </p>
 
-          <div className="tela-login__divisor">
-            <span>ou</span>
-          </div>
-
           <p className="tela-login__rodape-texto">
             É educador ou administrador?{" "}
-            <button
-              className="link-botao"
-              onClick={() => navigate(ROTAS.LOGIN_STAFF)}
-              type="button"
-            >
+            <button className="link-botao" onClick={() => navigate(ROTAS.LOGIN_STAFF)} type="button">
               Acesso da equipe
             </button>
           </p>

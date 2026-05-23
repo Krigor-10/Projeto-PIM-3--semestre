@@ -42,21 +42,18 @@
    TELA DE LOGIN — variantes Aluno e Staff
    ------------------------------------------------------------ */
 
-/* Visual lateral — Aluno: gradiente roxo‑azul caloroso */
+/* Visual lateral — Aluno: roxo escuro da marca */
 .tela-login--aluno .tela-login__visual {
-  background: linear-gradient(160deg, #1e1b4b 0%, #3730a3 40%, #7c3aed 100%);
+  background: #1a0d3e;
 }
 
 .tela-login--aluno .tela-login__visual-titulo span {
-  background: linear-gradient(90deg, #a5f3fc, #818cf8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-/* Visual lateral — Staff: gradiente escuro‑profissional */
+/* Visual lateral — Staff: cor sólida escura */
 .tela-login--staff .tela-login__visual {
-  background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  background: #0f172a;
 }
 
 .tela-login--staff .tela-login__visual-titulo span {
@@ -99,11 +96,11 @@
   display: flex;
   align-items: center;
   gap: var(--espaco-md);
-  background: var(--cor-fundo-elevado);
+  background: rgba(123, 47, 247, 0.08);
   border: 2px solid var(--cor-marca);
   border-radius: var(--raio-lg);
-  padding: var(--espaco-md) var(--espaco-lg);
-  margin-bottom: var(--espaco-sm);
+  padding: var(--espaco-lg) var(--espaco-xl);
+  box-shadow: 0 0 0 4px rgba(123, 47, 247, 0.1);
 }
 
 .login-aluno__avatar {
@@ -169,11 +166,6 @@
   margin-bottom: var(--espaco-sm);
 }
 
-/* Cards de perfil Staff — borda âmbar ao selecionar */
-.cartao-perfil--staff.cartao-perfil--selecionado {
-  border-color: #f59e0b;
-  background: rgba(245, 158, 11, 0.08);
-}
 
 /* Divisor "ou" entre seções do formulário */
 .tela-login__divisor {
@@ -307,26 +299,23 @@
   display: inline-flex;
   align-items: center;
   margin-left: 0.75rem;
-  background: var(--cor-marca);
-  border: 1px solid var(--cor-marca);
-  border-radius: var(--raio-md);
-  padding: 0.45rem 1rem;
-  color: #fff;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cor-marca-clara);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(123, 47, 247, 0.4);
-  transition: background var(--transicao-rapida), box-shadow var(--transicao-rapida), transform var(--transicao-rapida);
+  transition: color var(--transicao-rapida);
   white-space: nowrap;
 }
 
 .cadastro-entrar:hover {
-  background: var(--cor-marca-escura, #6320d4);
-  box-shadow: 0 4px 16px rgba(123, 47, 247, 0.55);
+  color: var(--cor-texto-forte);
 }
 
 .cadastro-entrar:active {
-  transform: scale(0.97);
+  opacity: 0.8;
 }
 
 /* Cabeçalho introdutório */
