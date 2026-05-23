@@ -26,7 +26,7 @@
 }
 
 .check-circular::after {
-  content: attr(title);
+  content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + 8px);
   right: 0;
@@ -64,13 +64,13 @@
 /* Hero do curso */
 .progresso-hero {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--espaco-xl);
+  gap: var(--espaco-lg);
   background: rgba(123, 47, 247, 0.07);
   border: 1px solid var(--cor-borda-forte);
   border-radius: var(--raio-xl);
-  padding: var(--espaco-xl);
+  padding: var(--espaco-lg) var(--espaco-xl);
   flex-wrap: wrap;
 }
 
@@ -89,7 +89,7 @@
 }
 
 .progresso-hero__titulo {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 800;
   background: linear-gradient(120deg, var(--cor-texto-forte) 40%, var(--cor-marca-clara));
   -webkit-background-clip: text;
@@ -204,8 +204,8 @@
 /* Anel de progresso circular */
 .anel-progresso {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 90px;
+  height: 90px;
   flex-shrink: 0;
 }
 
@@ -234,7 +234,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.9rem;
+  font-size: 1.2rem;
   font-weight: 900;
   background: linear-gradient(135deg, var(--cor-marca-clara), var(--cor-marca));
   -webkit-background-clip: text;

@@ -1049,15 +1049,21 @@
 .topbar__atalho-certificados {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
+  gap: 6px;
   height: 34px;
+  padding: 0 10px;
   border-radius: var(--raio-md);
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
   color: var(--cor-texto-suave);
   transition: background var(--transicao-rapida), border-color var(--transicao-rapida), color var(--transicao-rapida);
+}
+
+.topbar__atalho-certificados-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 .topbar__atalho-certificados:hover {
   background: var(--cor-fundo-elevado);

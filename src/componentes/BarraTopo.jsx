@@ -128,10 +128,10 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
               className={`topbar__atalho-certificados${secaoAtual === "certificados" ? " topbar__atalho-certificados--ativo" : ""}`}
               onClick={() => navigate(ROTAS.PAINEL_CERTIFICADOS)}
               aria-label="Ir para Meus Certificados"
-              title="Meus Certificados"
               type="button"
             >
-              <TbTrophy size={25} aria-hidden="true" />
+              <TbTrophy size={18} aria-hidden="true" />
+              <span className="topbar__atalho-certificados-label">Certificados</span>
             </button>
             <span className="topbar__separador" aria-hidden="true" />
           </>

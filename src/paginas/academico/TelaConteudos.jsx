@@ -35,7 +35,7 @@ function CheckCircular({ concluido, onClick, label }) {
       onClick={onClick}
       aria-pressed={concluido}
       aria-label={label}
-      title={label}
+      data-tooltip={label}
       whileTap={{ scale: 0.8 }}
     >
       <AnimatePresence>
