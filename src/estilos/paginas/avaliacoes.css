@@ -755,6 +755,11 @@
 /* Ações */
 .quiz-acoes {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quiz-acoes:has(> :only-child) {
   justify-content: flex-end;
 }
 
@@ -1877,6 +1882,23 @@
 
 .modal-sair-quiz__descricao strong {
   color: var(--cor-texto-forte);
+}
+
+.modal-sair-quiz__info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--raio-md);
+  font-size: 0.9rem;
+  color: var(--cor-texto-forte);
+}
+
+.modal-sair-quiz__info .modal-sair-quiz__icone {
+  color: #3b82f6;
+  margin-top: 2px;
 }
 
 /* ── Modal confirmar início de avaliação ─────────────────────── */

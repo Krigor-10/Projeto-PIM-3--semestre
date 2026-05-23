@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TbArrowLeft } from "react-icons/tb";
 import Botao from "@/componentes/Botao.jsx";
 import { motion } from "framer-motion";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
@@ -31,11 +32,22 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
     setConfirmada(true);
   }
 
+  function voltarQuestao() {
+    const idx = indice - 1;
+    const anterior = respostas.find((r) => r.id === questoesQuiz[idx].id);
+    setIndice(idx);
+    setSelecionada(anterior?.resposta ?? null);
+    setConfirmada(true);
+    setApoioAberto(false);
+  }
+
   function avancar() {
-    if (indice + 1 < TOTAL) {
-      setIndice((i) => i + 1);
-      setSelecionada(null);
-      setConfirmada(false);
+    const proxIdx = indice + 1;
+    if (proxIdx < TOTAL) {
+      const jaRespondida = respostas.find((r) => r.id === questoesQuiz[proxIdx].id);
+      setIndice(proxIdx);
+      setSelecionada(jaRespondida?.resposta ?? null);
+      setConfirmada(!!jaRespondida);
       setApoioAberto(true);
     } else {
       setFase("resultado");
@@ -64,7 +76,9 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
             <Botao
               variante="fantasma"
               onClick={() => onMudarSecao("avaliacoes")}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
+              <TbArrowLeft size={16} aria-hidden="true" />
               Voltar
             </Botao>
             <motion.div
@@ -132,7 +146,9 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
             <Botao
               variante="fantasma"
               onClick={() => onMudarSecao("avaliacoes")}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
+              <TbArrowLeft size={16} aria-hidden="true" />
               Voltar às avaliações
             </Botao>
             <Botao
@@ -224,8 +240,8 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
           })}
         </fieldset>
 
-        {!confirmada && (
-          <div className="quiz-acoes">
+        <div className="quiz-acoes">
+          {!confirmada && (
             <Botao
               variante="primario"
               tamanho="grande"
@@ -234,8 +250,26 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
             >
               Confirmar resposta
             </Botao>
-          </div>
-        )}
+          )}
+          {confirmada && (
+            <>
+              {indice > 0 && (
+                <Botao
+                  variante="fantasma"
+                  tamanho="grande"
+                  onClick={voltarQuestao}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                >
+                  <TbArrowLeft size={16} aria-hidden="true" />
+                  Anterior
+                </Botao>
+              )}
+              <Botao variante="primario" tamanho="grande" onClick={avancar}>
+                {indice + 1 < TOTAL ? "Próxima questão →" : "Ver resultado"}
+              </Botao>
+            </>
+          )}
+        </div>
 
         {confirmada && (
           <section className="quiz-feedback" aria-live="polite">
@@ -256,15 +290,6 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
               {questao.analiseDasAfirmativas.split("\n\n").map((bloco, i) => (
                 <p key={i}>{bloco}</p>
               ))}
-            </div>
-            <div className="quiz-acoes">
-              <Botao
-                variante="primario"
-                tamanho="grande"
-                onClick={avancar}
-              >
-                {indice + 1 < TOTAL ? "Próxima questão" : "Ver resultado"}
-              </Botao>
             </div>
           </section>
         )}

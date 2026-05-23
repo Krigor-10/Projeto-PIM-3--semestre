@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft } from "react-icons/tb";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
@@ -35,6 +35,7 @@ function CheckCircular({ concluido, onClick, label }) {
       onClick={onClick}
       aria-pressed={concluido}
       aria-label={label}
+      title={label}
       whileTap={{ scale: 0.8 }}
     >
       <AnimatePresence>
@@ -256,6 +257,16 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
         </fieldset>
 
         <footer className="modal-rodape">
+          {indice > 0 && (
+            <Botao
+              variante="fantasma"
+              onClick={() => setIndice((i) => i - 1)}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            >
+              <TbArrowLeft size={16} aria-hidden="true" />
+              Anterior
+            </Botao>
+          )}
           <Botao
             variante="primario"
             onClick={avancar}

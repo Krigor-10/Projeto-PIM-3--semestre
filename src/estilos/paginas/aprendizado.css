@@ -2,10 +2,11 @@
    CHECKBOX CIRCULAR — marcar conteúdo como concluído
    ------------------------------------------------------------ */
 .check-circular {
+  position: relative;
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid var(--cor-borda-forte);
+  border: 2px solid #fff;
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -22,6 +23,28 @@
 .check-circular:hover:not(.check-circular--concluido) {
   border-color: var(--cor-sucesso);
   background: rgba(34, 197, 94, 0.08);
+}
+
+.check-circular::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: var(--cor-fundo-elevado);
+  color: var(--cor-texto-forte);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+
+.check-circular:hover::after {
+  opacity: 1;
 }
 
 .check-circular--concluido {

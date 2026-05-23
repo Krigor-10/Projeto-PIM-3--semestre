@@ -198,14 +198,14 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
   }
 
   function sairAvaliacao() {
-    const respondidas = respostasRef.current;
-    if (respondidas.length === 0) { onFechar(); return; }
     if (finalizado.current) return;
     finalizado.current = true;
+    const respondidas = respostasRef.current;
     const acertos = respondidas.filter((r) => r.correta).length;
-    const porcentagem = Math.round((acertos / respondidas.length) * 100);
-    const nota = parseFloat(((acertos / respondidas.length) * avaliacao.notaMaxima).toFixed(1));
-    onConcluir({ acertos, total: respondidas.length, porcentagem, nota });
+    /* Questões não respondidas valem 0 — denominador é sempre o total */
+    const porcentagem = Math.round((acertos / totalQuestoes) * 100);
+    const nota = parseFloat(((acertos / totalQuestoes) * avaliacao.notaMaxima).toFixed(1));
+    onConcluir({ acertos, total: totalQuestoes, porcentagem, nota });
   }
 
   return (
@@ -281,6 +281,17 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
 
         {!confirmada && !eRevisando && (
           <div className="quiz-acoes">
+            {indice > 0 && (
+              <Botao
+                variante="fantasma"
+                tamanho="grande"
+                onClick={() => navegarParaQuestao(indice - 1)}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              >
+                <TbArrowLeft size={16} aria-hidden="true" />
+                Anterior
+              </Botao>
+            )}
             <Botao
               variante="primario"
               tamanho="grande"
@@ -322,14 +333,28 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
                 <p key={i}>{bloco}</p>
               ))}
             </div>
-            <div className="quiz-acoes">
-              <Botao variante="primario" tamanho="grande" onClick={avancarQuestao}>
-                {respostas.length < totalQuestoes
-                  ? "Próxima questão"
-                  : "Ver resultado"}
-              </Botao>
-            </div>
           </section>
+        )}
+
+        {confirmada && (
+          <div className="quiz-acoes">
+            {indice > 0 && (
+              <Botao
+                variante="fantasma"
+                tamanho="grande"
+                onClick={() => navegarParaQuestao(indice - 1)}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              >
+                <TbArrowLeft size={16} aria-hidden="true" />
+                Anterior
+              </Botao>
+            )}
+            <Botao variante="primario" tamanho="grande" onClick={avancarQuestao}>
+              {respostas.length < totalQuestoes
+                ? "Próxima questão"
+                : "Ver resultado"}
+            </Botao>
+          </div>
         )}
       </div>
 
@@ -397,25 +422,31 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
         document.body
       )}
       {confirmandoSaida && createPortal(
-        <Modal titulo="Sair da avaliação?" onFechar={() => setConfirmandoSaida(false)}>
+        <Modal titulo="Atenção — sair da avaliação" onFechar={() => setConfirmandoSaida(false)}>
           <div className="modal-sair-quiz">
             <div className="modal-sair-quiz__aviso" role="alert">
               <span className="modal-sair-quiz__icone" aria-hidden="true">⚠</span>
               <p>
-                Você respondeu <strong>{respostas.length}</strong> de{" "}
-                <strong>{totalQuestoes}</strong> questões.
+                {respostas.length === 0
+                  ? <>Você <strong>não respondeu nenhuma questão</strong> desta avaliação.</>
+                  : <>Você respondeu <strong>{respostas.length}</strong> de <strong>{totalQuestoes}</strong> questões.</>}
               </p>
             </div>
-            {respostas.length > 0 ? (
-              <p className="modal-sair-quiz__descricao">
-                Se sair agora, apenas as <strong>{respostas.length} questões respondidas</strong> serão
-                contabilizadas na sua nota. As demais não serão penalizadas.
-              </p>
-            ) : (
-              <p className="modal-sair-quiz__descricao">
-                Você ainda não respondeu nenhuma questão. Sair agora encerrará a tentativa sem registrar nota.
-              </p>
-            )}
+            <p className="modal-sair-quiz__descricao">
+              {respostas.length === 0 ? (
+                <>
+                  Ao confirmar a saída, esta tentativa será encerrada e sua nota ficará <strong>0,0</strong> de {avaliacao.notaMaxima}.{" "}
+                  Você utilizará uma das suas tentativas disponíveis sem pontuar.
+                </>
+              ) : (
+                <>
+                  Ainda existem <strong>{totalQuestoes - respostas.length} questões não respondidas</strong> que
+                  impactarão sua nota final caso você saia agora — cada uma valerá <strong>0</strong>.
+                  Sua nota será calculada sobre o total de <strong>{avaliacao.notaMaxima} pontos</strong> e
+                  você perderá <strong>1 tentativa</strong>.
+                </>
+              )}
+            </p>
           </div>
           <footer className="modal-rodape">
             <Botao variante="sucesso" onClick={() => setConfirmandoSaida(false)}>Continuar avaliação</Botao>
