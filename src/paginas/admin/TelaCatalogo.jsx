@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbPlus, TbDotsVertical, TbSettings, TbCheck } from "react-icons/tb";
+import { TbPlus, TbDotsVertical, TbSettings, TbCheck, TbClock } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
@@ -7,16 +7,50 @@ import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
-import { matriculas } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
-function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), onAlternarFavorito }) {
+function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), onAlternarFavorito, onToast }) {
   const [busca, setBusca] = useState("");
   const [filtroNivel, setFiltroNivel] = useState("");
+  const [listaMatriculas, setListaMatriculas] = useState(() => db.matriculas.listar());
+  const [listaTurmas] = useState(() => db.turmas.listar());
+  const [modalMatricula, setModalMatricula] = useState(null);
 
   const cursosMatriculados = usuario?.tipo === "Aluno"
-    ? new Set(matriculas.filter((m) => m.alunoId === usuario.id && m.status === "Aprovada").map((m) => m.cursoId))
+    ? new Set(listaMatriculas.filter((m) => m.alunoId === usuario.id && m.status === "Aprovada").map((m) => m.cursoId))
     : new Set();
+
+  const cursosPendentes = usuario?.tipo === "Aluno"
+    ? new Set(listaMatriculas.filter((m) => m.alunoId === usuario.id && m.status === "Pendente").map((m) => m.cursoId))
+    : new Set();
+
+  function abrirModalMatricula(curso) {
+    const turma = listaTurmas.find((t) => t.cursoId === curso.id && t.status === "Ativa");
+    setModalMatricula({ curso, turma: turma ?? null });
+  }
+
+  function confirmarMatricula() {
+    const { curso, turma } = modalMatricula;
+    if (!turma) return;
+    const novaMatricula = {
+      id: Date.now(),
+      alunoId: usuario.id,
+      alunoNome: usuario.nome,
+      cursoId: curso.id,
+      cursoTitulo: curso.titulo,
+      turmaId: turma.id,
+      turmaNome: turma.nomeTurma,
+      codigoMatricula: `MAT-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
+      status: "Pendente",
+      dataSolicitacao: new Date().toISOString().split("T")[0],
+    };
+    const atualizada = [...listaMatriculas, novaMatricula];
+    db.matriculas.salvar(atualizada);
+    setListaMatriculas(atualizada);
+    setModalMatricula(null);
+    onToast?.("Solicitação enviada! Aguarde aprovação.", "sucesso");
+  }
 
   const visiveis = listaCursos.filter((c) => c.visivelCatalogo);
   const destaques = visiveis.filter((c) => c.destaque);
@@ -70,13 +104,15 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
         <ul className="catalogo-grade" role="list" aria-label="Cursos disponíveis">
           {filtrados.map((curso) => {
             const matriculado = cursosMatriculados.has(curso.id);
+            const pendente    = cursosPendentes.has(curso.id);
             return (
               <li
                 key={curso.id}
                 className={[
                   "catalogo-card",
-                  matriculado          ? "catalogo-card--matriculado" : "",
-                  curso.destaque && !matriculado ? "catalogo-card--destaque" : "",
+                  matriculado                        ? "catalogo-card--matriculado" : "",
+                  pendente && !matriculado           ? "catalogo-card--pendente"    : "",
+                  curso.destaque && !matriculado && !pendente ? "catalogo-card--destaque" : "",
                 ].filter(Boolean).join(" ")}
               >
                 <div className="catalogo-card__topo">
@@ -94,8 +130,23 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
                         Matriculado
                       </span>
                     )}
+                    {!matriculado && pendente && (
+                      <span className="badge-pendente">
+                        <TbClock size={12} aria-hidden="true" />
+                        Aguardando aprovação
+                      </span>
+                    )}
                   </div>
-                  <div>
+                  <div className="catalogo-card__rodape-acoes">
+                    {!matriculado && !pendente && usuario?.tipo === "Aluno" && (
+                      <button
+                        type="button"
+                        className="btn-solicitar-matricula"
+                        onClick={() => abrirModalMatricula(curso)}
+                      >
+                        Solicitar matrícula
+                      </button>
+                    )}
                     {usuario?.tipo === "Aluno" && (
                       <button
                         type="button"
@@ -117,13 +168,50 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
           })}
         </ul>
       )}
+
+      {modalMatricula && (
+        <Modal
+          titulo="Confirmar solicitação de matrícula"
+          onFechar={() => setModalMatricula(null)}
+        >
+          <div className="modal-matricula-vitrine">
+            {modalMatricula.turma ? (
+              <>
+                <p className="modal-matricula-vitrine__info">
+                  Você será matriculado em <strong>{modalMatricula.curso.titulo}</strong>,
+                  turma <strong>{modalMatricula.turma.nomeTurma}</strong>.
+                  Sua solicitação ficará <strong>Pendente</strong> até ser aprovada pela coordenação.
+                </p>
+                <p className="modal-matricula-vitrine__info">
+                  Após a aprovação, os conteúdos do curso estarão disponíveis em{" "}
+                  <strong>Acadêmico &gt; Conteúdos</strong>.
+                </p>
+              </>
+            ) : (
+              <p className="modal-matricula-vitrine__sem-turma">
+                Não há turmas ativas para este curso no momento.
+              </p>
+            )}
+            <div className="modal-rodape">
+              <Botao variante="secundario" onClick={() => setModalMatricula(null)}>Cancelar</Botao>
+              <Botao
+                variante="primario"
+                onClick={confirmarMatricula}
+                disabled={!modalMatricula.turma}
+              >
+                Confirmar solicitação
+              </Botao>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
 
 export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange, onToast, cursosFavoritos, onAlternarFavorito }) {
   if (["Professor", "Aluno"].includes(usuario?.tipo)) {
-    return <VitrineCatalogo listaCursos={listaCursos ?? []} usuario={usuario} cursosFavoritos={cursosFavoritos} onAlternarFavorito={onAlternarFavorito} />;
+    return <VitrineCatalogo listaCursos={listaCursos ?? []} usuario={usuario} cursosFavoritos={cursosFavoritos} onAlternarFavorito={onAlternarFavorito} onToast={onToast} />;
   }
 
   const lista    = listaCursos;

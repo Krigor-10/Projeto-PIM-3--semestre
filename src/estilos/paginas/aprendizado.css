@@ -1340,12 +1340,26 @@
 
 /* Impressão — mostra apenas o certificado */
 @media print {
-  body > * { display: none !important; }
-  .secao-certificado { display: block !important; }
-  .certificado { border: 2px solid #333; background: white; color: black; }
-  .certificado__nome { -webkit-text-fill-color: #1a1a1a; }
-  .certificado .botao { display: none; }
-  .certificado-modal { display: block !important; box-shadow: none; }
+  body * { visibility: hidden; }
+  #area-impressao,
+  #area-impressao * { visibility: visible; }
+  #area-impressao {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+  }
+  #area-impressao img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
 }
 
 /* Cartão compacto de certificado — link para TelaCertificados */

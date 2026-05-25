@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbDotsVertical, TbClock, TbHourglass, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbHourglass, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
-import { avaliacoes, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
+import { cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
+import { db } from "@/dados/db.js";
 import fundoCertificado from "@/ativos/certificado-fundo.png";
 
 const LETRAS_GABARITO = ["A", "B", "C", "D", "E"];
@@ -101,9 +102,7 @@ function Confete() {
 /* ── Quiz embutido ───────────────────────────────────────────── */
 
 function QuizEmbutido({ avaliacao, onConcluir }) {
-  /* Prototipo: usa questoesQuiz como banco de questões da avaliação
-     Em produção, viriam de avaliacao.questoes via API */
-  const questoes = questoesQuiz;
+  const questoes = avaliacao.questoes?.length ? avaliacao.questoes : questoesQuiz;
   const totalQuestoes = questoes.length;
 
   const [indice, setIndice] = useState(0);
@@ -449,7 +448,7 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
             </p>
           </div>
           <footer className="modal-rodape">
-            <Botao variante="sucesso" onClick={() => setConfirmandoSaida(false)}>Continuar avaliação</Botao>
+            <Botao variante="sucesso" onClick={() => setConfirmandoSaida(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" />Continuar avaliação</Botao>
             <Botao variante="perigo" onClick={sairAvaliacao}>
               <TbX size={15} aria-hidden="true" style={{ marginRight: "4px" }} />
               Sair mesmo assim
@@ -511,8 +510,9 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
             tamanho="grande"
             className="celebracao-certificado__botao"
             onClick={() => onMudarSecao?.("certificados")}
+            style={{ display: "flex", alignItems: "center", gap: "8px" }}
           >
-            <span aria-hidden="true">◈</span> Ver meu Certificado
+            <TbCertificate size={20} aria-hidden="true" /> Ver meu Certificado
           </Botao>
         </div>
       )}
@@ -585,15 +585,17 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
           <Botao
             variante="primario"
             onClick={() => setCertificadoAberto(true)}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            Visualizar Certificado
+            <TbCertificate size={16} aria-hidden="true" /> Visualizar Certificado
           </Botao>
         ) : podeRefazer ? (
           <Botao
             variante="secundario"
             onClick={onRefazer}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            Refazer avaliação
+            <TbRefresh size={16} aria-hidden="true" /> Refazer avaliação
           </Botao>
         ) : (
           <span className="resultado-tentativas resultado-tentativas--esgotadas">
@@ -614,11 +616,11 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
             />
           </figure>
           <footer className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setCertificadoAberto(false)}>
-              Fechar
+            <Botao variante="perigo" onClick={() => setCertificadoAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbX size={15} aria-hidden="true" /> Fechar
             </Botao>
-            <Botao variante="primario" onClick={() => imprimirCertificado(fundoCertificado)}>
-              Baixar / Imprimir
+            <Botao variante="primario" onClick={() => imprimirCertificado(fundoCertificado)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbDownload size={16} aria-hidden="true" /> Baixar / Imprimir
             </Botao>
           </footer>
         </Modal>
@@ -629,8 +631,15 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
 
 /* ── Formulário de criação (professores e admins) ────────────── */
 
-function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
-  const [form, setForm] = useState(formVazio);
+function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis, avaliacaoInicial }) {
+  const [form, setForm] = useState(() => avaliacaoInicial ? {
+    titulo:      avaliacaoInicial.titulo,
+    cursoId:     avaliacaoInicial.cursoId,
+    tentativas:  avaliacaoInicial.tentativasPermitidas ?? 1,
+    tempo:       avaliacaoInicial.tempoLimiteMinutos  ?? 60,
+    notaMaxima:  avaliacaoInicial.notaMaxima          ?? 10,
+    questoes:    avaliacaoInicial.questoes?.length ? avaliacaoInicial.questoes : [novaQuestao()],
+  } : formVazio());
   const [confirmarCancelar, setConfirmarCancelar] = useState(false);
   const [stepAtivo, setStepAtivo] = useState("geral");
 
@@ -687,13 +696,13 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
     <div className="criar-avaliacao">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Nova Avaliação</h2>
+          <h2 className="cabecalho-pagina__titulo">{avaliacaoInicial ? "Editar Avaliação" : "Nova Avaliação"}</h2>
           <p className="cabecalho-pagina__subtitulo">
-            Preencha os dados e as questões da prova
+            {avaliacaoInicial ? "Atualize os dados e as questões da prova" : "Preencha os dados e as questões da prova"}
           </p>
         </div>
-        <Botao variante="perigo" onClick={() => setConfirmarCancelar(true)}>
-          Cancelar
+        <Botao variante="perigo" onClick={() => setConfirmarCancelar(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <TbX size={15} aria-hidden="true" /> Cancelar
         </Botao>
       </header>
 
@@ -951,15 +960,15 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
         </div>
 
         <footer className="criar-avaliacao__rodape">
-          <Botao variante="perigo" onClick={() => setConfirmarCancelar(true)}>
-            Cancelar
+          <Botao variante="perigo" onClick={() => setConfirmarCancelar(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <TbX size={15} aria-hidden="true" /> Cancelar
           </Botao>
           <div className="criar-avaliacao__rodape-direita">
-            <Botao variante="secundario" onClick={(e) => salvarAvaliacao(e, "Rascunho")}>
-              Salvar rascunho
+            <Botao variante="secundario" onClick={(e) => salvarAvaliacao(e, "Rascunho")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <MdSave size={17} aria-hidden="true" /> Salvar rascunho
             </Botao>
-            <Botao variante="primario" type="submit">
-              Publicar avaliação
+            <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbCheck size={16} aria-hidden="true" /> Publicar avaliação
             </Botao>
           </div>
         </footer>
@@ -971,11 +980,11 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
             Tem certeza que deseja cancelar? Todas as informações preenchidas serão perdidas.
           </p>
           <div className="modal-rodape">
-            <Botao variante="fantasma" onClick={() => setConfirmarCancelar(false)}>
-              Continuar editando
+            <Botao variante="fantasma" onClick={() => setConfirmarCancelar(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={15} aria-hidden="true" /></motion.span> Continuar editando
             </Botao>
-            <Botao variante="perigo" onClick={onCancelar}>
-              Sim, cancelar
+            <Botao variante="perigo" onClick={onCancelar} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbX size={15} aria-hidden="true" /> Sim, cancelar
             </Botao>
           </div>
         </Modal>
@@ -986,9 +995,9 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis }) {
 
 /* ── Slide de avaliações de uma turma (visão do professor) ──── */
 
-function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, statusAvaliacoes, avaliacoesExcluidas }) {
+function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesList }) {
   const [menuAberto, setMenuAberto] = useState(null);
-  const avaliacoesDoCurso = avaliacoes.filter((a) => a.cursoId === turma.cursoId && !avaliacoesExcluidas?.has(a.id));
+  const avaliacoesDoCurso = avaliacoesList.filter((a) => a.cursoId === turma.cursoId);
 
   useEffect(() => {
     if (!menuAberto) return;
@@ -1030,7 +1039,7 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, statusAvaliac
                 </p>
               </div>
               <div className="cartao-conteudo__meta">
-                {(() => { const s = statusAvaliacoes?.[av.id] ?? av.status; return <Insignia texto={s} variante={s === "Publicada" ? "sucesso" : "neutro"} />; })()}
+                <Insignia texto={av.status} variante={av.status === "Publicada" ? "sucesso" : "neutro"} />
               </div>
               <div className="menu-contexto">
                 <button
@@ -1059,7 +1068,7 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, statusAvaliac
 
 /* ── Vista do professor — carrossel de turmas (avaliações) ───── */
 
-function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes, statusAvaliacoes, avaliacoesExcluidas }) {
+function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes, avaliacoesList }) {
   const [slideAtual, setSlideAtual] = useState(0);
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario?.id);
 
@@ -1119,8 +1128,7 @@ function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes, statusAvali
           turma={minhasTurmas[slideAtual]}
           onCriar={onCriar}
           onVerDetalhes={onVerDetalhes}
-          statusAvaliacoes={statusAvaliacoes}
-          avaliacoesExcluidas={avaliacoesExcluidas}
+          avaliacoesList={avaliacoesList}
         />
       </div>
     </div>
@@ -1133,6 +1141,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   /* modo: "lista" | "criar" | "quiz" | "resultado" */
   const [modo, setModo] = useState("lista");
   const [avaliacaoAtiva, setAvaliacaoAtiva] = useState(null);
+  const [avaliacaoParaEditar, setAvaliacaoParaEditar] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
   const [filtroStatus, setFiltroStatus] = useState("");
   const [filtroCurso, setFiltroCurso] = useState("");
@@ -1145,13 +1154,10 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   /* Conta quantas tentativas o aluno usou por avaliação na sessão */
   const [tentativas, setTentativas] = useState({});
 
-  /* Sobrescritas de status feitas pelo professor na sessão: { [av.id]: "Publicada" | "Arquivada" } */
+  const [avaliacoesList, setAvaliacoesList] = useState(() => db.avaliacoes.listar());
+
   const [modalConfirmarInicio, setModalConfirmarInicio] = useState(null);
-  const [statusAvaliacoes, setStatusAvaliacoes] = useState({});
-  /* Pendência de confirmação de troca de status: null | { novoStatus } */
   const [confirmandoStatusAv, setConfirmandoStatusAv] = useState(null);
-  /* IDs de avaliações excluídas na sessão */
-  const [avaliacoesExcluidas, setAvaliacoesExcluidas] = useState(new Set());
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
   /* Edição inline de campos do modal de detalhes */
   const [campoEditando, setCampoEditando] = useState(null);
@@ -1199,9 +1205,35 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   if (modo === "criar") {
     return (
       <FormularioCriarAvaliacao
-        onCancelar={() => setModo("lista")}
-        onSalvar={() => setModo("lista")}
+        onCancelar={() => { setModo("lista"); setAvaliacaoParaEditar(null); }}
+        onSalvar={(dadosForm) => {
+          const cursoDaAv = cursosDisponiveis.find((c) => c.id === Number(dadosForm.cursoId));
+          const avSalva = {
+            id: avaliacaoParaEditar?.id ?? Date.now(),
+            titulo: dadosForm.titulo,
+            cursoId: Number(dadosForm.cursoId),
+            cursoTitulo: cursoDaAv?.titulo ?? "",
+            tentativasPermitidas: Number(dadosForm.tentativas),
+            tempoLimiteMinutos: Number(dadosForm.tempo),
+            notaMaxima: Number(dadosForm.notaMaxima),
+            totalQuestoes: dadosForm.questoes.length,
+            questoes: dadosForm.questoes,
+            status: dadosForm.status,
+          };
+          const novaLista = avaliacaoParaEditar
+            ? avaliacoesList.map((a) => a.id === avSalva.id ? avSalva : a)
+            : [...avaliacoesList, avSalva];
+          db.avaliacoes.salvar(novaLista);
+          setAvaliacoesList(novaLista);
+          setModo("lista");
+          setAvaliacaoParaEditar(null);
+          onToast?.(
+            avaliacaoParaEditar ? `"${avSalva.titulo}" atualizada` : `"${avSalva.titulo}" criada`,
+            "sucesso"
+          );
+        }}
         cursosDisponiveis={cursosDisponiveis}
+        avaliacaoInicial={avaliacaoParaEditar}
       />
     );
   }
@@ -1248,7 +1280,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
   /* ── Filtragem ── */
 
-  const avaliacoesFiltradas = avaliacoes.filter((a) => {
+  const avaliacoesFiltradas = avaliacoesList.filter((a) => {
     /* Aluno só vê avaliações publicadas do seu curso matriculado */
     if (ehAluno && a.status !== "Publicada") return false;
     if (ehAluno && matriculaAluno && a.cursoId !== matriculaAluno.cursoId) return false;
@@ -1270,14 +1302,20 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
     if (!campoEditando) return;
     const valor = campoEditando === "titulo" ? String(valorBruto).trim() : Number(valorBruto);
     if (!valor && valor !== 0) return;
-    setAvaliacaoAtiva((prev) => ({ ...prev, [campoEditando]: valor }));
+    const atualizado = { ...avaliacaoAtiva, [campoEditando]: valor };
+    const novaLista = avaliacoesList.map((a) => a.id === atualizado.id ? atualizado : a);
+    db.avaliacoes.salvar(novaLista);
+    setAvaliacoesList(novaLista);
+    setAvaliacaoAtiva(atualizado);
     setCampoEditando(null);
   }
 
   function cancelarEdicaoCampo() { setCampoEditando(null); }
 
   function confirmarExclusao() {
-    setAvaliacoesExcluidas((prev) => new Set(prev).add(avaliacaoAtiva.id));
+    const novaLista = avaliacoesList.filter((a) => a.id !== avaliacaoAtiva.id);
+    db.avaliacoes.salvar(novaLista);
+    setAvaliacoesList(novaLista);
     setConfirmandoExclusao(false);
     setModalAberto(false);
     onToast?.(`"${avaliacaoAtiva.titulo}" excluída`, "aviso");
@@ -1286,8 +1324,10 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   function confirmarTrocaStatus() {
     const { novoStatus } = confirmandoStatusAv;
     const atualizado = { ...avaliacaoAtiva, status: novoStatus };
+    const novaLista = avaliacoesList.map((a) => a.id === atualizado.id ? atualizado : a);
+    db.avaliacoes.salvar(novaLista);
+    setAvaliacoesList(novaLista);
     setAvaliacaoAtiva(atualizado);
-    setStatusAvaliacoes((prev) => ({ ...prev, [avaliacaoAtiva.id]: novoStatus }));
     setConfirmandoStatusAv(null);
     onToast?.(
       novoStatus === "Publicada"
@@ -1298,7 +1338,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   }
 
   function abrirDetalhes(av) {
-    setAvaliacaoAtiva({ ...av, status: statusAvaliacoes[av.id] ?? av.status });
+    setAvaliacaoAtiva(av);
     setModalAberto(true);
   }
 
@@ -1337,9 +1377,8 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
         <VistaProfessorAvaliacoes
           usuario={usuario}
           onCriar={() => setModo("criar")}
-          onVerDetalhes={(av) => { setAvaliacaoAtiva({ ...av, status: statusAvaliacoes[av.id] ?? av.status }); setModalAberto(true); }}
-          statusAvaliacoes={statusAvaliacoes}
-          avaliacoesExcluidas={avaliacoesExcluidas}
+          onVerDetalhes={(av) => { setAvaliacaoAtiva(av); setModalAberto(true); }}
+          avaliacoesList={avaliacoesList}
         />
         {modalAberto && avaliacaoAtiva && (
           <Modal titulo="Detalhes da Avaliação" onFechar={() => { setModalAberto(false); setCampoEditando(null); }}>
@@ -1360,15 +1399,35 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                   <dd>{avaliacaoAtiva.titulo}</dd>
                 )}
                 <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar título" onClick={() => iniciarEdicao("titulo", avaliacaoAtiva.titulo)}>
-                  <TbPencil size={18} aria-hidden="true" />
+                  <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={18} aria-hidden="true" /></motion.span>
                 </button>
               </div>
 
               {/* Curso — somente leitura */}
               <div className="lista-detalhes__item"><dt>Curso</dt><dd>{avaliacaoAtiva.cursoTitulo}</dd></div>
 
-              {/* Total de questões — somente leitura */}
-              <div className="lista-detalhes__item"><dt>Total de questões</dt><dd>{avaliacaoAtiva.totalQuestoes}</dd></div>
+              {/* Total de questões — abre editor */}
+              <div className="lista-detalhes__item lista-detalhes__item--com-acao">
+                <div>
+                  <dt>Total de questões</dt>
+                  <dd>{avaliacaoAtiva.totalQuestoes}</dd>
+                </div>
+                <button
+                  type="button"
+                  className="btn-editar-questoes"
+                  data-tooltip="Editar questões"
+                  aria-label="Editar questões desta avaliação"
+                  onClick={() => { setModalAberto(false); setCampoEditando(null); setAvaliacaoParaEditar(avaliacaoAtiva); setModo("criar"); }}
+                >
+                  <motion.span
+                    whileHover={{ scale: 1.25, rotate: -12 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                    style={{ display: "flex" }}
+                  >
+                    <TbPencil size={18} aria-hidden="true" />
+                  </motion.span>
+                </button>
+              </div>
 
               {/* Tentativas — editável */}
               <div className="lista-detalhes__item">
@@ -1386,7 +1445,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                   <dd>{avaliacaoAtiva.tentativasPermitidas}</dd>
                 )}
                 <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar tentativas" onClick={() => iniciarEdicao("tentativasPermitidas", avaliacaoAtiva.tentativasPermitidas)}>
-                  <TbPencil size={18} aria-hidden="true" />
+                  <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={18} aria-hidden="true" /></motion.span>
                 </button>
               </div>
 
@@ -1406,7 +1465,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                   <dd>{avaliacaoAtiva.tempoLimiteMinutos} minutos</dd>
                 )}
                 <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar tempo limite" onClick={() => iniciarEdicao("tempoLimiteMinutos", avaliacaoAtiva.tempoLimiteMinutos)}>
-                  <TbPencil size={18} aria-hidden="true" />
+                  <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={18} aria-hidden="true" /></motion.span>
                 </button>
               </div>
 
@@ -1426,7 +1485,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                   <dd>{avaliacaoAtiva.notaMaxima}</dd>
                 )}
                 <button type="button" className="btn-editar-linha" style={{ color: "#fff" }} title="Editar nota máxima" onClick={() => iniciarEdicao("notaMaxima", avaliacaoAtiva.notaMaxima)}>
-                  <TbPencil size={18} aria-hidden="true" />
+                  <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={18} aria-hidden="true" /></motion.span>
                 </button>
               </div>
 
@@ -1474,8 +1533,8 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmandoExclusao(false)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={confirmarExclusao}>Confirmar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmandoExclusao(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao variante="sucesso" onClick={confirmarExclusao} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -1494,8 +1553,8 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             )}
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmandoStatusAv(null)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={confirmarTrocaStatus}>Confirmar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmandoStatusAv(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao variante="sucesso" onClick={confirmarTrocaStatus} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -1674,8 +1733,11 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                                 tamanho="pequeno"
                                 onClick={() => iniciarAvaliacao(av)}
                                 aria-label={`${jaRealizada ? "Refazer" : "Iniciar"} ${av.titulo}`}
+                                style={{ display: "flex", alignItems: "center", gap: "5px" }}
                               >
-                                {jaRealizada ? `Refazer (${tentativasUsadas + 1}ª)` : "Iniciar avaliação"}
+                                {jaRealizada
+                                  ? <><TbRefresh size={14} aria-hidden="true" /> Refazer ({tentativasUsadas + 1}ª)</>
+                                  : <><TbPlayerPlay size={14} aria-hidden="true" /> Iniciar avaliação</>}
                               </Botao>
                             )}
                           </>
@@ -1732,8 +1794,8 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
           </div>
 
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setModalConfirmarInicio(null)}>Cancelar</Botao>
-            <Botao variante="primario" onClick={confirmarInicioAvaliacao}>Iniciar avaliação</Botao>
+            <Botao variante="perigo" onClick={() => setModalConfirmarInicio(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao variante="primario" onClick={confirmarInicioAvaliacao} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbPlayerPlay size={16} aria-hidden="true" />Iniciar avaliação</Botao>
           </footer>
         </Modal>
       )}
@@ -1790,8 +1852,9 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             <Botao
               variante="perigo"
               onClick={() => setModalAberto(false)}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              Fechar
+              <TbX size={15} aria-hidden="true" /> Fechar
             </Botao>
             {ehAluno && avaliacaoLiberada && (
               <Botao
@@ -1800,13 +1863,16 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                   setModalAberto(false);
                   iniciarAvaliacao(avaliacaoAtiva);
                 }}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
-                {resultados[avaliacaoAtiva.id] ? "Refazer" : "Iniciar avaliação"}
+                {resultados[avaliacaoAtiva.id]
+                  ? <><TbRefresh size={15} aria-hidden="true" /> Refazer</>
+                  : <><TbPlayerPlay size={15} aria-hidden="true" /> Iniciar avaliação</>}
               </Botao>
             )}
             {!ehAluno && (
-              <Botao variante="primario">
-                Editar
+              <Botao variante="primario" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={15} aria-hidden="true" /></motion.span> Editar
               </Botao>
             )}
           </footer>

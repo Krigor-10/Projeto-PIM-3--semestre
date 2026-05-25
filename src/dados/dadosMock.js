@@ -165,9 +165,8 @@ export const cursos = [
 /* ── Módulos por curso ───────────────────────────────────────── */
 export const modulos = [
   /* Desenvolvimento Web (cursoId: 1) */
-  { id: 1, cursoId: 1, codigoRegistro: "MOD-001", titulo: "Fundamentos de HTML5",     ordem: 1, totalConteudos: 3 },
-  { id: 2, cursoId: 1, codigoRegistro: "MOD-002", titulo: "CSS3 e Responsividade",     ordem: 2, totalConteudos: 3 },
-  { id: 3, cursoId: 1, codigoRegistro: "MOD-003", titulo: "JavaScript Moderno (ES6+)", ordem: 3, totalConteudos: 2 },
+  { id: 1, cursoId: 1, codigoRegistro: "MOD-001", titulo: "Fundamentos de HTML5", ordem: 1, totalConteudos: 3 },
+  { id: 2, cursoId: 1, codigoRegistro: "MOD-002", titulo: "CSS3 e Responsividade", ordem: 2, totalConteudos: 3 },
 
   /* Ciência de Dados (cursoId: 2) */
   { id: 6,  cursoId: 2, codigoRegistro: "MOD-006", titulo: "Python para Análise de Dados",  ordem: 1, totalConteudos: 10 },
@@ -243,7 +242,6 @@ export const progressoAluno = {
   modulos: [
     { moduloId: 1, moduloTitulo: "Fundamentos de HTML5",     percentual: 100, status: "Concluído"    },
     { moduloId: 2, moduloTitulo: "CSS3 e Responsividade",     percentual: 40,  status: "Em andamento" },
-    { moduloId: 3, moduloTitulo: "JavaScript Moderno (ES6+)", percentual: 0,   status: "Não iniciado" },
   ],
 };
 

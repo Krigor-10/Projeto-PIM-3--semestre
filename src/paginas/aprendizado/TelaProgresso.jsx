@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbTrophy } from "react-icons/tb";
+import { TbTrophy, TbCertificate } from "react-icons/tb";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -240,8 +240,8 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
               /{certAtivo.notaMaxima ?? 10} · {certAtivo.porcentagem}% de aproveitamento
             </p>
           </div>
-          <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao?.("certificados")}>
-            Ver meu certificado →
+          <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao?.("certificados")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <TbCertificate size={15} aria-hidden="true" /> Ver meu certificado
           </Botao>
         </div>
       ) : (

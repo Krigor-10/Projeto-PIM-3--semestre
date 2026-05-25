@@ -4,6 +4,7 @@ import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { motion } from "framer-motion";
 import { MdFavorite } from "react-icons/md";
+import { TbPlayerPlay, TbArrowRight } from "react-icons/tb";
 import { progressoAluno, conteudos } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos = [], cursosFavoritos = new Set(), onAlternarFavorito }) {
@@ -62,8 +63,8 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos 
               whileTap={{ scale: 0.95 }}
               style={{ display: "inline-block", borderRadius: "var(--raio-md)" }}
             >
-              <Botao variante="primario" onClick={() => onMudarSecao("conteudos")}>
-                Continuar agora →
+              <Botao variante="primario" onClick={() => onMudarSecao("conteudos")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbPlayerPlay size={16} aria-hidden="true" /> Continuar agora
               </Botao>
             </motion.div>
           </div>
@@ -109,8 +110,9 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos 
             variante="fantasma"
             tamanho="pequeno"
             onClick={() => onMudarSecao("progresso")}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            Ver detalhes →
+            Ver detalhes <TbArrowRight size={14} aria-hidden="true" />
           </Botao>
         </div>
       )}

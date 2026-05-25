@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbCertificate, TbLock } from "react-icons/tb";
+import { TbCertificate, TbLock, TbX, TbDownload } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
@@ -39,7 +39,29 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
   }
 
   function imprimirCertificado() {
-    window.print();
+    const janela = window.open("", "_blank");
+    janela.document.write(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8" />
+          <title>Certificado — ${certificadoAberto?.mat?.cursoTitulo ?? "CodeRyse Academy"}</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { background: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+            img { width: 100%; max-width: 860px; height: auto; display: block; }
+            @media print { body { min-height: auto; } img { width: 100%; } }
+          </style>
+        </head>
+        <body>
+          <img src="${fundoCertificado}" alt="Certificado de conclusão" />
+          <script>
+            window.onload = function () { window.print(); window.close(); };
+          </script>
+        </body>
+      </html>
+    `);
+    janela.document.close();
   }
 
   const totalCertificados = matriculasAluno.filter(
@@ -171,8 +193,9 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
                         tamanho="pequeno"
                         onClick={() => { setCertificadoAberto({ mat, cert, curso }); setTimeout(imprimirCertificado, 300); }}
                         aria-label={`Baixar certificado de ${mat.cursoTitulo}`}
+                        style={{ display: "flex", alignItems: "center", gap: "6px" }}
                       >
-                        Baixar
+                        <TbDownload size={14} aria-hidden="true" /> Baixar
                       </Botao>
                     </>
                   ) : (
@@ -226,16 +249,18 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
 
           <footer className="modal-rodape">
             <Botao
-              variante="fantasma"
+              variante="perigo"
               onClick={() => setCertificadoAberto(null)}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              Fechar
+              <TbX size={16} aria-hidden="true" /> Fechar
             </Botao>
             <Botao
               variante="primario"
               onClick={imprimirCertificado}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              Baixar / Imprimir
+              <TbDownload size={16} aria-hidden="true" /> Baixar / Imprimir
             </Botao>
           </footer>
         </Modal>

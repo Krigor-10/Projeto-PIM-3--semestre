@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbListCheck, TbPencil, TbX, TbCheck } from "react-icons/tb";
+import { MdSave } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
-import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
+import { db } from "@/dados/db.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
 import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
@@ -370,7 +371,9 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
   }
 
   function abrirQuizModulo(modulo) {
-    const sorteadas = [...questoesQuiz]
+    const questoesMod = db.questoes.listar().filter((q) => q.moduloId === modulo.id);
+    const pool = questoesMod.length > 0 ? questoesMod : questoesQuiz;
+    const sorteadas = [...pool]
       .sort(() => Math.random() - 0.5)
       .slice(0, QUESTOES_POR_MODULO);
     const idx = modulosDoCurso.findIndex((m) => m.id === modulo.id);
@@ -592,7 +595,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
 
 /* ── Slide de uma turma (visão do professor) ─────────────────── */
 
-function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
+function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
   const [modulosAbertos, setModulosAbertos] = useState(() => new Set());
   const [menuConteudoAberto, setMenuConteudoAberto] = useState(null);
 
@@ -709,15 +712,39 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                 </button>
               </h3>
               {podeCriar(tipo, "conteudos") && (
-                <button
-                  className="modulo-btn-add"
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onNovoConteudo(modulo); }}
-                  aria-label={`Adicionar conteúdo em ${modulo.titulo}`}
-                  title="Adicionar conteúdo"
-                >
-                  <TbPlus size={30} />
-                </button>
+                <>
+                  <button
+                    className="modulo-btn-quiz"
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onAbrirQuiz(modulo); }}
+                    aria-label={`Gerenciar quiz de ${modulo.titulo}`}
+                    data-tooltip="Adicionar Quiz"
+                  >
+                    <motion.span
+                      whileHover={{ scale: 1.2, rotate: -12 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                      style={{ display: "flex" }}
+                    >
+                      <TbListCheck size={30} aria-hidden="true" />
+                    </motion.span>
+                  </button>
+                  <span className="modulo-btn-separador" aria-hidden="true" />
+                  <button
+                    className="modulo-btn-add"
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onNovoConteudo(modulo); }}
+                    aria-label={`Adicionar conteúdo em ${modulo.titulo}`}
+                    data-tooltip="Adicionar conteúdo"
+                  >
+                    <motion.span
+                      whileHover={{ scale: 1.15, rotate: 90 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                      style={{ display: "flex" }}
+                    >
+                      <TbPlus size={30} aria-hidden="true" />
+                    </motion.span>
+                  </button>
+                </>
               )}
             </header>
 
@@ -734,9 +761,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
                         <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
-                      <div className="cartao-conteudo__meta">
-                        <Insignia texto={cont.tipo} variante="marca" />
-                      </div>
+
                       {podeEditar(tipo, "conteudos") && (
                         <div className="menu-contexto">
                           <button
@@ -767,14 +792,82 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo }) {
 
 /* ── Vista do professor — carrossel de turmas ────────────────── */
 
-function VistaProfessor({ usuario }) {
-  const [slideAtual, setSlideAtual]       = useState(0);
-  const [modalAberto, setModalAberto]     = useState(false);
-  const [moduloModal, setModuloModal]     = useState(null);
-  const [moduloIdProf, setModuloIdProf]   = useState(null);
-  const [tipoContProf, setTipoContProf]   = useState(null);
+const FORM_VAZIO = { titulo: "", enunciado: "", a: "", b: "", c: "", d: "", e: "", gabarito: "" };
+
+function VistaProfessor({ usuario, onToast }) {
+  const [slideAtual, setSlideAtual]         = useState(0);
+  const [modalAberto, setModalAberto]       = useState(false);
+  const [moduloModal, setModuloModal]       = useState(null);
+  const [moduloIdProf, setModuloIdProf]     = useState(null);
+  const [tipoContProf, setTipoContProf]     = useState(null);
+  const [modalQuizModulo, setModalQuizModulo] = useState(null);
+  const [questoesDb, setQuestoesDb]         = useState(() => db.questoes.listar());
+  const [formQuestao, setFormQuestao]       = useState(null);
+  const [confirmarFechar, setConfirmarFechar] = useState(false);
 
   useEffect(() => { setModuloIdProf(moduloModal?.id ?? null); setTipoContProf(null); }, [moduloModal]);
+
+  function abrirModalQuiz(modulo) {
+    setModalQuizModulo(modulo);
+    setFormQuestao(null);
+  }
+
+  function fecharModalQuiz() {
+    setModalQuizModulo(null);
+    setFormQuestao(null);
+    setConfirmarFechar(false);
+  }
+
+  function salvarQuiz() {
+    fecharModalQuiz();
+    onToast?.("Quiz salvo com sucesso!", "sucesso");
+  }
+
+  function salvarQuestao(e) {
+    e.preventDefault();
+    const questaoEditada = {
+      id: formQuestao.editandoId ?? Date.now(),
+      moduloId: modalQuizModulo.id,
+      titulo: formQuestao.titulo,
+      tema: modalQuizModulo.titulo,
+      enunciado: formQuestao.enunciado,
+      alternativas: [
+        { letra: "A", texto: formQuestao.a },
+        { letra: "B", texto: formQuestao.b },
+        { letra: "C", texto: formQuestao.c },
+        { letra: "D", texto: formQuestao.d },
+        { letra: "E", texto: formQuestao.e },
+      ],
+      gabarito: formQuestao.gabarito,
+    };
+    const atualizada = formQuestao.editandoId
+      ? questoesDb.map((q) => q.id === formQuestao.editandoId ? questaoEditada : q)
+      : [...questoesDb, questaoEditada];
+    db.questoes.salvar(atualizada);
+    setQuestoesDb(atualizada);
+    setFormQuestao(null);
+  }
+
+  function editarQuestao(q) {
+    setFormQuestao({
+      editandoId: q.id,
+      titulo: q.titulo ?? "",
+      enunciado: q.enunciado,
+      a: q.alternativas[0]?.texto ?? "",
+      b: q.alternativas[1]?.texto ?? "",
+      c: q.alternativas[2]?.texto ?? "",
+      d: q.alternativas[3]?.texto ?? "",
+      e: q.alternativas[4]?.texto ?? "",
+      gabarito: q.gabarito,
+    });
+  }
+
+  function excluirQuestao(id) {
+    const atualizada = questoesDb.filter((q) => q.id !== id);
+    db.questoes.salvar(atualizada);
+    setQuestoesDb(atualizada);
+    onToast?.("Questão excluída.", "erro");
+  }
 
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario?.id);
 
@@ -797,6 +890,21 @@ function VistaProfessor({ usuario }) {
 
   return (
     <div className="carrossel-cursos">
+
+      <div className="barra-filtros" style={{ marginBottom: "var(--espaco-md)" }}>
+        <label htmlFor="filtro-prof-turma" className="visualmente-oculto">Selecionar turma</label>
+        <select
+          id="filtro-prof-turma"
+          className="campo__entrada barra-filtros__select"
+          value={slideAtual}
+          onChange={(e) => setSlideAtual(Number(e.target.value))}
+          aria-label="Navegar para turma"
+        >
+          {minhasTurmas.map((turma, idx) => (
+            <option key={turma.id} value={idx}>{turma.cursoTitulo} — {turma.nomeTurma}</option>
+          ))}
+        </select>
+      </div>
 
       {total > 1 && (
         <nav className="carrossel-cursos__nav" aria-label="Navegação entre turmas">
@@ -845,8 +953,167 @@ function VistaProfessor({ usuario }) {
           turma={minhasTurmas[slideAtual]}
           tipo={usuario?.tipo}
           onNovoConteudo={(modulo = null) => { setModuloModal(modulo); setModalAberto(true); }}
+          onAbrirQuiz={abrirModalQuiz}
         />
       </div>
+
+      {/* Modal de gestão de quiz por módulo */}
+      {modalQuizModulo && createPortal(
+        <Modal
+          titulo={`Quiz — ${modalQuizModulo.titulo}`}
+          onFechar={fecharModalQuiz}
+        >
+          <div className="quiz-mgmt">
+            {formQuestao === null ? (
+              <>
+                {questoesDb.filter((q) => q.moduloId === modalQuizModulo.id).length === 0 ? (
+                  <p className="quiz-mgmt__vazio">Nenhuma questão cadastrada para este módulo.</p>
+                ) : (
+                  <ul className="quiz-mgmt__lista" role="list">
+                    {questoesDb.filter((q) => q.moduloId === modalQuizModulo.id).map((q, i) => (
+                      <li key={q.id} className="quiz-mgmt__item">
+                        <span className="quiz-mgmt__num">Q{i + 1}</span>
+                        <span className="quiz-mgmt__enunciado">{q.titulo || q.enunciado}</span>
+                        <span className="quiz-mgmt__gabarito">Gabarito: <strong>{q.gabarito}</strong></span>
+                        <button
+                          type="button"
+                          className="quiz-mgmt__editar"
+                          onClick={() => editarQuestao(q)}
+                          aria-label={`Editar questão ${i + 1}`}
+                          data-tooltip="Editar"
+                        >
+                          <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={16} aria-hidden="true" /></motion.span>
+                        </button>
+                        <button
+                          type="button"
+                          className="quiz-mgmt__excluir"
+                          onClick={() => excluirQuestao(q.id)}
+                          aria-label={`Excluir questão ${i + 1}`}
+                          data-tooltip="Excluir"
+                        >
+                          <TbTrash size={16} aria-hidden="true" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="modal-rodape">
+                  <Botao variante="perigo" onClick={() => setConfirmarFechar(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <TbX size={16} aria-hidden="true" /> Fechar
+                  </Botao>
+                  <Botao variante="secundario" onClick={() => setFormQuestao({ ...FORM_VAZIO })} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <TbPlus size={16} aria-hidden="true" /> Nova questão
+                  </Botao>
+                  {questoesDb.filter((q) => q.moduloId === modalQuizModulo.id).length > 0 && (
+                    <Botao variante="primario" onClick={salvarQuiz} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <MdSave size={16} aria-hidden="true" /> Salvar Quiz
+                    </Botao>
+                  )}
+                </div>
+              </>
+            ) : (
+              <form className="quiz-mgmt__form formulario-modal" onSubmit={salvarQuestao} noValidate>
+                <button
+                  type="button"
+                  className="quiz-mgmt__voltar"
+                  onClick={() => setFormQuestao(null)}
+                >
+                  <TbArrowLeft size={16} aria-hidden="true" />
+                  Lista de questões
+                </button>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="qz-titulo">Título *</label>
+                  <input
+                    id="qz-titulo"
+                    className="campo__entrada"
+                    type="text"
+                    required
+                    placeholder="Ex: Conceitos de POO"
+                    value={formQuestao.titulo}
+                    onChange={(e) => setFormQuestao((p) => ({ ...p, titulo: e.target.value }))}
+                  />
+                </div>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="qz-enunciado">Enunciado *</label>
+                  <textarea
+                    id="qz-enunciado"
+                    className="campo__entrada"
+                    rows={3}
+                    required
+                    value={formQuestao.enunciado}
+                    onChange={(e) => setFormQuestao((p) => ({ ...p, enunciado: e.target.value }))}
+                  />
+                </div>
+                {["a", "b", "c", "d", "e"].map((letra) => (
+                  <div className="campo" key={letra}>
+                    <label className="campo__rotulo" htmlFor={`qz-alt-${letra}`}>
+                      Alternativa {letra.toUpperCase()} *
+                    </label>
+                    <input
+                      id={`qz-alt-${letra}`}
+                      className="campo__entrada"
+                      type="text"
+                      required
+                      value={formQuestao[letra]}
+                      onChange={(e) => setFormQuestao((p) => ({ ...p, [letra]: e.target.value }))}
+                    />
+                  </div>
+                ))}
+                <div className="campo">
+                  <span className="campo__rotulo">Resposta correta *</span>
+                  <div className="quiz-gabarito-opcoes" role="group" aria-label="Selecione a resposta correta">
+                    {["A", "B", "C", "D", "E"].map((letra) => (
+                      <button
+                        key={letra}
+                        type="button"
+                        className={`quiz-gabarito-btn${formQuestao.gabarito === letra ? " quiz-gabarito-btn--ativo" : ""}`}
+                        onClick={() => setFormQuestao((p) => ({ ...p, gabarito: letra }))}
+                        aria-pressed={formQuestao.gabarito === letra}
+                      >
+                        {letra}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="modal-rodape">
+                  <Botao
+                    variante="primario"
+                    type="submit"
+                    disabled={
+                      !formQuestao.titulo ||
+                      !formQuestao.enunciado ||
+                      !formQuestao.a || !formQuestao.b || !formQuestao.c || !formQuestao.d || !formQuestao.e ||
+                      !formQuestao.gabarito
+                    }
+                  >
+                    Salvar questão
+                  </Botao>
+                </div>
+              </form>
+            )}
+          </div>
+        </Modal>,
+        document.body
+      )}
+
+      {confirmarFechar && createPortal(
+        <Modal titulo="Sair mesmo assim?" onFechar={() => setConfirmarFechar(false)}>
+          <div className="modal-matricula-vitrine">
+            <p className="modal-matricula-vitrine__info">
+              Se você sair agora, as questões que ainda não foram salvas serão <strong>perdidas</strong>.
+            </p>
+            <div className="modal-rodape">
+              <Botao variante="perigo" onClick={() => setConfirmarFechar(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbX size={16} aria-hidden="true" /> Cancelar
+              </Botao>
+              <Botao variante="primario" onClick={fecharModalQuiz} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbCheck size={16} aria-hidden="true" /> Sair
+              </Botao>
+            </div>
+          </div>
+        </Modal>,
+        document.body
+      )}
 
       {/* Portal para modal — evita conflito de stacking context com o transform do carrossel */}
       {modalAberto && createPortal(
@@ -1129,9 +1396,7 @@ function SlideCursoGestao({ curso, tipo }) {
                         <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
-                      <div className="cartao-conteudo__meta">
-                        <Insignia texto={cont.tipo} variante="marca" />
-                      </div>
+
                       {podeEditar(tipo, "conteudos") && (
                         <div className="menu-contexto">
                           <button
@@ -1251,7 +1516,7 @@ function VistaGestao({ usuario }) {
 
 /* ── Componente principal — seleciona a vista pelo perfil ────── */
 
-export default function TelaConteudos({ usuario, quizzesAprovados, onQuizAprovado, onMudarSecao, onConteudoConcluido, conteudosConcluidos, onAlternarConclusao }) {
+export default function TelaConteudos({ usuario, quizzesAprovados, onQuizAprovado, onMudarSecao, onConteudoConcluido, conteudosConcluidos, onAlternarConclusao, onToast }) {
   if (usuario?.tipo === "Aluno") {
     return (
       <VistaAluno
@@ -1266,7 +1531,7 @@ export default function TelaConteudos({ usuario, quizzesAprovados, onQuizAprovad
     );
   }
   if (usuario?.tipo === "Professor") {
-    return <VistaProfessor usuario={usuario} />;
+    return <VistaProfessor usuario={usuario} onToast={onToast} />;
   }
   return <VistaGestao usuario={usuario} />;
 }

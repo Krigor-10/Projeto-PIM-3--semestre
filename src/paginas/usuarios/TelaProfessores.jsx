@@ -474,8 +474,8 @@ export default function TelaProfessores({ usuario, onToast }) {
                     <input id="edit-espec" className="campo__entrada" type="text" placeholder="Ex: Desenvolvimento Web" defaultValue={professorDetalhe.especializacao ?? ""} />
                   </div>
                   <footer className="modal-rodape">
-                    <Botao variante="perigo" type="button" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
-                    <Botao variante="primario" type="submit">Salvar alterações</Botao>
+                    <Botao variante="perigo" type="button" onClick={() => setModoEdicao(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+                    <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" />Salvar alterações</Botao>
                   </footer>
                 </form>
               </>
@@ -619,8 +619,8 @@ export default function TelaProfessores({ usuario, onToast }) {
               <Botao variante="perigo" onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }} style={{ marginRight: "auto" }}>
                 Fechar
               </Botao>
-              <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)}>
-                Editar dados
+              <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={15} aria-hidden="true" /></motion.span> Editar dados
               </Botao>
               <Botao variante="primario" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }}>
                 <MdSave size={19} aria-hidden="true" />Salvar
@@ -687,9 +687,9 @@ export default function TelaProfessores({ usuario, onToast }) {
               })}
             </ul>
             <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
-              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(atribuindoTurmas); setAtribuindoTurmas(null); }}>Cancelar</Botao>
-              <Botao variante="primario" onClick={salvarAtribuicao} disabled={temConflito}>
-                Salvar atribuições
+              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(atribuindoTurmas); setAtribuindoTurmas(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+              <Botao variante="primario" onClick={salvarAtribuicao} disabled={temConflito} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <MdSave size={17} aria-hidden="true" />Salvar atribuições
               </Botao>
             </footer>
           </Modal>
@@ -706,8 +706,8 @@ export default function TelaProfessores({ usuario, onToast }) {
             Tem certeza que deseja <strong>{confirmandoStatus.novoEstado ? "ativar" : "desativar"}</strong> a conta de <strong>{confirmandoStatus.nome}</strong>?
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }}>Confirmar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -719,7 +719,7 @@ export default function TelaProfessores({ usuario, onToast }) {
             Tem certeza que deseja remover <strong>{selecionados.size} {selecionados.size === 1 ? "professor" : "professores"}</strong>? Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
             <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
@@ -732,7 +732,7 @@ export default function TelaProfessores({ usuario, onToast }) {
             Deseja remover a turma <strong>{confirmandoRemocaoTurma.nomeTurma}</strong> deste professor?
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmandoRemocaoTurma(null)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmandoRemocaoTurma(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
             <Botao variante="sucesso" onClick={() => {
               setTurmasLista((prev) =>
                 prev.map((t) =>
@@ -743,8 +743,8 @@ export default function TelaProfessores({ usuario, onToast }) {
               );
               onToast?.(`Turma "${confirmandoRemocaoTurma.nomeTurma}" desatribuída.`, "aviso");
               setConfirmandoRemocaoTurma(null);
-            }}>
-              Confirmar
+            }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbCheck size={15} aria-hidden="true" />Confirmar
             </Botao>
           </footer>
         </Modal>
@@ -786,7 +786,7 @@ export default function TelaProfessores({ usuario, onToast }) {
               <input id="especializacao-prof" className="campo__entrada" type="text" placeholder="Ex: Desenvolvimento Web" />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>

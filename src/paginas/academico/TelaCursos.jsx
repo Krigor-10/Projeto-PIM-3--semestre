@@ -581,7 +581,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                   <dd>{valoresEdit.titulo ?? cursoDetalhe.titulo}</dd>
                 )}
                 {podeEditar(tipo, "cursos") && (
-                  <button className="btn-editar-linha" type="button" title="Editar título" onClick={() => setCampoEditando("titulo")}><TbPencil size={17} /></button>
+                  <button className="btn-editar-linha" type="button" title="Editar título" onClick={() => setCampoEditando("titulo")}><motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={17} /></motion.span></button>
                 )}
               </div>
 
@@ -614,7 +614,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                   <dd>{(valoresEdit.descricao ?? cursoDetalhe.descricao) || "—"}</dd>
                 )}
                 {podeEditar(tipo, "cursos") && (
-                  <button className="btn-editar-linha" type="button" title="Editar descrição" onClick={() => setCampoEditando("descricao")}><TbPencil size={17} /></button>
+                  <button className="btn-editar-linha" type="button" title="Editar descrição" onClick={() => setCampoEditando("descricao")}><motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={17} /></motion.span></button>
                 )}
               </div>
 

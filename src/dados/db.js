@@ -10,6 +10,7 @@ import {
   modulos    as modulosIniciais,
   usuarios   as usuariosIniciais,
   matriculas as matriculasIniciais,
+  avaliacoes as avaliacoesIniciais,
 } from "@/dados/dadosMock.js";
 
 const CHAVES = {
@@ -18,6 +19,8 @@ const CHAVES = {
   modulos:    "cdr_modulos",
   usuarios:   "cdr_usuarios",
   matriculas: "cdr_matriculas",
+  questoes:   "cdr_questoes",
+  avaliacoes: "cdr_avaliacoes",
   seed:       "cdr_seed_v1",
 };
 
@@ -35,13 +38,17 @@ function escrever(chave, dados) {
 
 /* Popula o localStorage com os dados mock apenas na primeira abertura */
 export function inicializar() {
-  if (ler(CHAVES.seed)) return;
-  escrever(CHAVES.cursos,     cursosIniciais);
-  escrever(CHAVES.turmas,     turmasIniciais);
-  escrever(CHAVES.modulos,    modulosIniciais);
-  escrever(CHAVES.usuarios,   usuariosIniciais);
-  escrever(CHAVES.matriculas, matriculasIniciais);
-  escrever(CHAVES.seed, "1");
+  if (!ler(CHAVES.seed)) {
+    escrever(CHAVES.cursos,     cursosIniciais);
+    escrever(CHAVES.turmas,     turmasIniciais);
+    escrever(CHAVES.modulos,    modulosIniciais);
+    escrever(CHAVES.usuarios,   usuariosIniciais);
+    escrever(CHAVES.matriculas, matriculasIniciais);
+    escrever(CHAVES.avaliacoes, avaliacoesIniciais);
+    escrever(CHAVES.seed, "1");
+  } else if (!ler(CHAVES.avaliacoes)) {
+    escrever(CHAVES.avaliacoes, avaliacoesIniciais);
+  }
 }
 
 /* Apaga tudo e força re-seed no próximo carregamento */
@@ -75,5 +82,13 @@ export const db = {
   matriculas: {
     listar: () => ler(CHAVES.matriculas) ?? [...matriculasIniciais],
     salvar: (lista) => escrever(CHAVES.matriculas, lista),
+  },
+  questoes: {
+    listar: () => ler(CHAVES.questoes) ?? [],
+    salvar: (lista) => escrever(CHAVES.questoes, lista),
+  },
+  avaliacoes: {
+    listar: () => ler(CHAVES.avaliacoes) ?? [...avaliacoesIniciais],
+    salvar: (lista) => escrever(CHAVES.avaliacoes, lista),
   },
 };

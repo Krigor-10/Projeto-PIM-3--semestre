@@ -296,7 +296,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
       ) : (
         <div className="carrossel-cursos">
           {/* Navegação */}
-          {total > 1 && (
+          {total > 0 && (
             <nav className="carrossel-cursos__nav" aria-label="Navegação entre turmas">
               <button
                 className="carrossel-cursos__seta"

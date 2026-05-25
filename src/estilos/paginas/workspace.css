@@ -1148,6 +1148,75 @@
   border-top: 1px solid var(--cor-borda);
 }
 
+.catalogo-card__rodape-acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+}
+
+.catalogo-card--pendente {
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2), 0 4px 16px rgba(245, 158, 11, 0.1);
+}
+
+.badge-pendente {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #d97706;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-solicitar-matricula {
+  padding: 5px 12px;
+  border-radius: var(--raio-md);
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #fff;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.btn-solicitar-matricula:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn-solicitar-matricula:active {
+  opacity: 1;
+  transform: none;
+}
+
+.modal-matricula-vitrine {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-md);
+  min-width: 340px;
+}
+
+.modal-matricula-vitrine__info {
+  font-size: var(--texto-md);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}
+
+.modal-matricula-vitrine__sem-turma {
+  font-size: var(--texto-sm);
+  color: var(--cor-erro);
+  text-align: center;
+}
+
 /* Toggle switch */
 .catalogo-toggle {
   display: inline-flex;
