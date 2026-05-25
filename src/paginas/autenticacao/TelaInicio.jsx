@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TbDotsVertical } from "react-icons/tb";
+import { TbDotsVertical, TbSend, TbChevronDown, TbX } from "react-icons/tb";
+import { MdPersonAdd, MdAdminPanelSettings, MdLogin } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import { cursos } from "@/dados/dadosMock.js";
@@ -73,22 +74,25 @@ export default function TelaInicio() {
               tamanho="pequeno"
               className="cabecalho-publico__acao-admin"
               onClick={() => navigate(ROTAS.LOGIN_STAFF)}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              Acesso administrativo
+              <MdAdminPanelSettings size={18} aria-hidden="true" /> Acesso administrativo
             </Botao>
             <Botao
               variante="secundario"
               tamanho="pequeno"
               onClick={() => navigate(ROTAS.LOGIN)}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              Entrar
+              <MdLogin size={18} aria-hidden="true" /> Entrar
             </Botao>
             <Botao
               variante="sucesso"
               tamanho="pequeno"
               onClick={() => navigate(ROTAS.CADASTRO)}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              Criar conta
+              <MdPersonAdd size={20} aria-hidden="true" /> Criar conta
             </Botao>
           </nav>
         </div>
@@ -115,11 +119,12 @@ export default function TelaInicio() {
                 variante="sucesso"
                 tamanho="grande"
                 onClick={() => navigate(ROTAS.CADASTRO)}
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
-                Solicitar matrícula
+                <TbSend size={18} aria-hidden="true" /> Solicitar matrícula
               </Botao>
-              <a href="#cursos" className="botao botao--fantasma botao--grande">
-                Ver cursos
+              <a href="#cursos" className="botao botao--fantasma botao--grande" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                Ver cursos <TbChevronDown size={18} aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -196,8 +201,9 @@ export default function TelaInicio() {
                           tamanho="pequeno"
                           onClick={() => navigate(`${ROTAS.CADASTRO}?curso=${curso.id}`)}
                           aria-label={`Cadastrar-se em ${curso.titulo}`}
+                          style={{ display: "flex", alignItems: "center", gap: "6px" }}
                         >
-                          Cadastrar-se
+                          <MdPersonAdd size={18} aria-hidden="true" /> Cadastrar-se
                         </Botao>
                       </footer>
                     </article>
@@ -236,9 +242,9 @@ export default function TelaInicio() {
             </div>
           </dl>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setCursoModal(null)}>Fechar</Botao>
-            <Botao variante="primario" onClick={() => { setCursoModal(null); navigate(`${ROTAS.CADASTRO}?curso=${cursoModal.id}`); }}>
-              Cadastrar-se
+            <Botao variante="perigo" onClick={() => setCursoModal(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
+            <Botao variante="primario" onClick={() => { setCursoModal(null); navigate(`${ROTAS.CADASTRO}?curso=${cursoModal.id}`); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <MdPersonAdd size={20} aria-hidden="true" /> Cadastrar-se
             </Botao>
           </footer>
         </Modal>

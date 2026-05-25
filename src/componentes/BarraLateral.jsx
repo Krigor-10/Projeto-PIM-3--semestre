@@ -2,62 +2,61 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { rotaPainelSecao } from "@/rotas.js";
 import {
-  TbLayoutDashboard,
-  TbUsers,
-  TbSchool,
-  TbChalkboard,
-  TbUserCog,
-  TbBook,
-  TbStack2,
-  TbUsersGroup,
-  TbClipboardList,
-  TbClipboardCheck,
-  TbFileText,
-  TbChartBar,
-  TbCertificate,
-  TbWorld,
-  TbChevronsLeft,
-  TbChevronsRight,
-  TbChevronRight,
-  TbBooks,
-  TbUser,
-  TbArrowUpRight,
-} from "react-icons/tb";
+  MdDashboard,
+  MdPeople,
+  MdSchool,
+  MdCastForEducation,
+  MdManageAccounts,
+  MdMenuBook,
+  MdLayers,
+  MdGroups,
+  MdAssignment,
+  MdAssignmentTurnedIn,
+  MdDescription,
+  MdBarChart,
+  MdWorkspacePremium,
+  MdPublic,
+  MdKeyboardDoubleArrowLeft,
+  MdKeyboardDoubleArrowRight,
+  MdChevronRight,
+  MdLibraryBooks,
+  MdOpenInNew,
+} from "react-icons/md";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
 import { matriculas, conteudos, avaliacoes } from "@/dados/dadosMock.js";
 
 const ICONES_SECAO = {
-  dashboard:     <TbLayoutDashboard size={18} />,
-  usuarios:      <TbUsers size={18} />,
-  alunos:        <TbSchool size={18} />,
-  professores:   <TbChalkboard size={18} />,
-  coordenadores: <TbUserCog size={18} />,
-  cursos:        <TbBook size={18} />,
-  modulos:       <TbStack2 size={18} />,
-  turmas:        <TbUsersGroup size={18} />,
-  matriculas:    <TbClipboardList size={18} />,
-  avaliacoes:    <TbClipboardCheck size={18} />,
-  conteudos:     <TbFileText size={18} />,
-  progresso:     <TbChartBar size={18} />,
-  certificados:  <TbCertificate size={18} />,
-  catalogo:      <TbWorld size={18} />,
+  dashboard:     <MdDashboard size={18} />,
+  usuarios:      <MdPeople size={18} />,
+  alunos:        <MdSchool size={18} />,
+  professores:   <MdCastForEducation size={18} />,
+  coordenadores: <MdManageAccounts size={18} />,
+  cursos:        <MdMenuBook size={18} />,
+  modulos:       <MdLayers size={18} />,
+  turmas:        <MdGroups size={18} />,
+  matriculas:    <MdAssignment size={18} />,
+  avaliacoes:    <MdAssignmentTurnedIn size={18} />,
+  conteudos:     <MdDescription size={18} />,
+  progresso:     <MdBarChart size={18} />,
+  certificados:  <MdWorkspacePremium size={18} />,
+  catalogo:      <MdPublic size={18} />,
 };
 
 /* Definição dos grupos accordion */
 export const GRUPOS_DEF = {
   pessoas: {
     rotulo: "Gestão",
-    Icone:  TbUsersGroup,
+    Icone:  MdGroups,
     filhos: ["usuarios", "alunos", "professores", "coordenadores", "matriculas"],
   },
   academico: {
     rotulo: "Acadêmico",
-    Icone:  TbBook,
+    Icone:  MdMenuBook,
     filhos: ["cursos", "modulos", "turmas", "conteudos", "avaliacoes"],
   },
   aprendizado: {
     rotulo: "Aprendizado",
-    Icone:  TbBooks,
+    Icone:  MdLibraryBooks,
     filhos: ["progresso", "certificados"],
   },
 };
@@ -249,8 +248,8 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
                         <Icone size={18} />
                       </span>
                       <span className="sidebar__item-rotulo">{rotulo}</span>
-                      <TbChevronRight
-                        size={14}
+                      <MdChevronRight
+                        size={16}
                         aria-hidden="true"
                         className={`sidebar__grupo-chevron${aberto ? " sidebar__grupo-chevron--aberto" : ""}`}
                       />
@@ -327,7 +326,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
               aria-label="Ver catálogo de cursos"
             >
               <span className="sidebar__item-icone" aria-hidden="true">
-                <TbArrowUpRight size={18} />
+                <MdOpenInNew size={18} />
               </span>
               <span className="sidebar__item-rotulo">Ver catálogo</span>
             </button>
@@ -341,8 +340,8 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
             type="button"
           >
             {recolhida
-              ? <TbChevronsRight size={16} aria-hidden="true" />
-              : <TbChevronsLeft  size={16} aria-hidden="true" />
+              ? <MdKeyboardDoubleArrowRight size={18} aria-hidden="true" />
+              : <MdKeyboardDoubleArrowLeft  size={18} aria-hidden="true" />
             }
           </button>
         </footer>

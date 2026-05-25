@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbX, TbLogout } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -220,8 +220,8 @@ function VistaGerencialCoordenador({ usuario }) {
             Há alterações não salvas na atribuição do professor. Se sair agora, as alterações serão perdidas.
           </p>
           <div className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
-            <Botao variante="perigo" onClick={() => { setCursoSelecionado(null); }}>Sair sem salvar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmarSaida(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={15} aria-hidden="true" /></motion.span> Continuar editando</Botao>
+            <Botao variante="perigo" onClick={() => { setCursoSelecionado(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbLogout size={15} aria-hidden="true" /> Sair sem salvar</Botao>
           </div>
         </Modal>
       )}

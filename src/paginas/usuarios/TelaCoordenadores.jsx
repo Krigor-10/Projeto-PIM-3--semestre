@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbChevronLeft, TbChevronRight, TbEye, TbPencil } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -352,11 +352,11 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             {inicio + 1}–{Math.min(inicio + ITENS_POR_PAGINA, listaProcessada.length)} de {listaProcessada.length}
           </span>
           <div className="paginacao__controles">
-            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1}>‹ Anterior</Botao>
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1} style={{ display: "flex", alignItems: "center", gap: "4px" }}><TbChevronLeft size={14} aria-hidden="true" /> Anterior</Botao>
             {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
               <button key={n} className={`paginacao__pagina${paginaSegura === n ? " paginacao__pagina--ativa" : ""}`} onClick={() => setPagina(n)} type="button" aria-current={paginaSegura === n ? "page" : undefined}>{n}</button>
             ))}
-            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas}>Próxima ›</Botao>
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas} style={{ display: "flex", alignItems: "center", gap: "4px" }}>Próxima <TbChevronRight size={14} aria-hidden="true" /></Botao>
           </div>
         </nav>
       )}
@@ -383,8 +383,8 @@ export default function TelaCoordenadores({ usuario, onToast }) {
       {kebabAberto && coordKebab && createPortal(
         <div className="kebab-menu" role="menu" style={{ top: kebabPos.top, left: kebabPos.left }} ref={kebabRef}>
           <button role="menuitem" className="kebab-menu__item" type="button"
-            onClick={() => { setCoordDetalhe(coordKebab); setKebabAberto(null); }}>
-            Ver detalhes
+            onClick={() => { setCoordDetalhe(coordKebab); setKebabAberto(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <TbEye size={15} aria-hidden="true" /> Ver detalhes
           </button>
         </div>,
         document.body
@@ -413,8 +413,8 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                     <input id="edit-email" className="campo__entrada" type="email" defaultValue={coordDetalhe.email} required />
                   </div>
                   <footer className="modal-rodape">
-                    <Botao variante="perigo" type="button" onClick={() => setModoEdicao(false)}>Cancelar</Botao>
-                    <Botao variante="primario" type="submit">Salvar alterações</Botao>
+                    <Botao variante="perigo" type="button" onClick={() => setModoEdicao(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+                    <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
                   </footer>
                 </form>
               </>
@@ -494,12 +494,12 @@ export default function TelaCoordenadores({ usuario, onToast }) {
 
                 <footer className="modal-rodape">
                   {podeEditar_ && (
-                    <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)}>Editar dados</Botao>
+                    <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={15} aria-hidden="true" /></motion.span> Editar dados</Botao>
                   )}
-                  <Botao variante="fantasma" tamanho="pequeno" onClick={() => abrirAtribuicaoCursos(coordDetalhe)}>
-                    Atribuir cursos
+                  <Botao variante="fantasma" tamanho="pequeno" onClick={() => abrirAtribuicaoCursos(coordDetalhe)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <TbPlus size={15} aria-hidden="true" /> Atribuir cursos
                   </Botao>
-                  <Botao variante="perigo" onClick={() => { setCoordDetalhe(null); setModoEdicao(false); }}>Fechar</Botao>
+                  <Botao variante="perigo" onClick={() => { setCoordDetalhe(null); setModoEdicao(false); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
                 </footer>
               </>
             )}
@@ -545,9 +545,9 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             })}
           </ul>
           <footer className="modal-rodape" style={{ marginTop: "var(--espaco-xl)" }}>
-            <button type="button" className="botao botao--perigo" onClick={() => { setCoordDetalhe(atribuindoCursos); setAtribuindoCursos(null); }}>Cancelar</button>
-            <button type="button" className="botao botao--primario" onClick={salvarAtribuicaoCursos}>
-              Salvar atribuições
+            <button type="button" className="botao botao--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setCoordDetalhe(atribuindoCursos); setAtribuindoCursos(null); }}><TbX size={15} aria-hidden="true" /> Cancelar</button>
+            <button type="button" className="botao botao--primario" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={salvarAtribuicaoCursos}>
+              <MdSave size={17} aria-hidden="true" /> Salvar atribuições
             </button>
           </footer>
         </Modal>
@@ -583,7 +583,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
               <input id="cpf-coord" className="campo__entrada" type="text" placeholder="000.000.000-00" required />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>
@@ -600,8 +600,8 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             Tem certeza que deseja <strong>{confirmandoStatus.novoEstado ? "ativar" : "desativar"}</strong> a conta de <strong>{confirmandoStatus.nome}</strong>?
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)}>Cancelar</Botao>
-            <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }}>Confirmar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" /> Confirmar</Botao>
           </footer>
         </Modal>
       )}
@@ -613,7 +613,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             Tem certeza que deseja remover <strong>{selecionados.size} {selecionados.size === 1 ? "coordenador" : "coordenadores"}</strong>? Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
             <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
@@ -628,7 +628,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
               Tem certeza que deseja remover <strong>{coord?.nome}</strong>? Esta ação não pode ser desfeita.
             </p>
             <footer className="modal-rodape">
-              <Botao variante="perigo" onClick={() => setCoordRemovendo(null)}>Cancelar</Botao>
+              <Botao variante="perigo" onClick={() => setCoordRemovendo(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocao}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
             </footer>
           </Modal>

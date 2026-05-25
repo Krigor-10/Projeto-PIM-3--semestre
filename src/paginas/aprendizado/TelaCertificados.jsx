@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbCertificate, TbLock, TbX, TbDownload } from "react-icons/tb";
+import { TbCertificate, TbLock, TbX, TbDownload, TbEye } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
@@ -185,8 +185,9 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
                         tamanho="pequeno"
                         onClick={() => setCertificadoAberto({ mat, cert, curso })}
                         aria-label={`Visualizar certificado de ${mat.cursoTitulo}`}
+                        style={{ display: "flex", alignItems: "center", gap: "6px" }}
                       >
-                        Visualizar
+                        <TbEye size={14} aria-hidden="true" /> Visualizar
                       </Botao>
                       <Botao
                         variante="primario"

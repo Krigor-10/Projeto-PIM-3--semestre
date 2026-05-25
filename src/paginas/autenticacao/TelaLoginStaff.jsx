@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TbArrowLeft } from "react-icons/tb";
+import { MdDashboard } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import { perfisDemo } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
@@ -82,10 +83,11 @@ export default function TelaLoginStaff({ onLogin }) {
             className="botao--bloco"
             onClick={handleEntrar}
             disabled={!selecionado || carregando}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
           >
             {carregando
               ? <><span className="icone-carregando" aria-hidden="true" /> Entrando...</>
-              : "Acessar o painel"
+              : <><MdDashboard size={20} aria-hidden="true" /> Acessar o painel</>
             }
           </Botao>
 

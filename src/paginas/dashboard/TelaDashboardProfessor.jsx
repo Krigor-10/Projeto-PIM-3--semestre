@@ -1,4 +1,4 @@
-import { TbCirclePlus } from "react-icons/tb";
+import { TbCirclePlus, TbArrowUpRight } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { turmas, avaliacoes, estatisticasProfessor } from "@/dados/dadosMock.js";
@@ -33,8 +33,8 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
         <section className="painel-secao" aria-labelledby="titulo-minhas-turmas">
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-minhas-turmas">Minhas Turmas</h2>
-            <Botao variante="fantasma" tamanho="pequeno" onClick={() => onMudarSecao("turmas")}>
-              Ver todas
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => onMudarSecao("turmas")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              Ver todas <TbArrowUpRight size={14} aria-hidden="true" />
             </Botao>
           </header>
           <div className="painel-secao__conteudo">

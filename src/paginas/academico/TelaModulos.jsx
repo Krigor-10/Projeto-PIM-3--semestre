@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbSettings } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings, TbX, TbPencil, TbLogout } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Modal from "@/componentes/Modal.jsx";
@@ -91,7 +91,7 @@ function ModalDetalhesModulo({ modulo, curso, onFechar }) {
         </section>
 
         <footer className="modal-rodape">
-          <Botao variante="perigo" onClick={onFechar}>Fechar</Botao>
+          <Botao variante="perigo" onClick={onFechar} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
         </footer>
       </div>
     </Modal>
@@ -378,7 +378,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
               {erroCursoModal && <span className="campo__mensagem-erro" role="alert">{erroCursoModal}</span>}
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>

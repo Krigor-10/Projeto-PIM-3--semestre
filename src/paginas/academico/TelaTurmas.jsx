@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbSettings } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings, TbX } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -377,7 +377,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
               )}
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalNova(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalNova(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>
@@ -425,8 +425,8 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
               />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setTurmaEditando(null)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Salvar alterações</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setTurmaEditando(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
             </footer>
           </form>
         </Modal>

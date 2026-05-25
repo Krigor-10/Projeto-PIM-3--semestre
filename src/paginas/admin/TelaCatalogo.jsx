@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbPlus, TbDotsVertical, TbSettings, TbCheck, TbClock } from "react-icons/tb";
+import { TbPlus, TbDotsVertical, TbSettings, TbCheck, TbClock, TbSend, TbX } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
@@ -143,8 +143,9 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
                         type="button"
                         className="btn-solicitar-matricula"
                         onClick={() => abrirModalMatricula(curso)}
+                        style={{ display: "flex", alignItems: "center", gap: "6px" }}
                       >
-                        Solicitar matrícula
+                        <TbSend size={14} aria-hidden="true" /> Solicitar matrícula
                       </button>
                     )}
                     {usuario?.tipo === "Aluno" && (
@@ -193,13 +194,14 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
               </p>
             )}
             <div className="modal-rodape">
-              <Botao variante="secundario" onClick={() => setModalMatricula(null)}>Cancelar</Botao>
+              <Botao variante="secundario" onClick={() => setModalMatricula(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao
                 variante="primario"
                 onClick={confirmarMatricula}
                 disabled={!modalMatricula.turma}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
-                Confirmar solicitação
+                <TbCheck size={15} aria-hidden="true" /> Confirmar solicitação
               </Botao>
             </div>
           </div>
@@ -473,7 +475,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
               </button>
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalNovo(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalNovo(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>
           </form>
@@ -513,11 +515,11 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
               />
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setCursoEditando(null)}>
-                Cancelar
+              <Botao variante="perigo" type="button" onClick={() => setCursoEditando(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbX size={15} aria-hidden="true" /> Cancelar
               </Botao>
-              <Botao variante="primario" type="submit">
-                Salvar
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <MdSave size={17} aria-hidden="true" /> Salvar
               </Botao>
             </footer>
           </form>

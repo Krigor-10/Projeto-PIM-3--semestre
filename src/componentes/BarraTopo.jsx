@@ -6,7 +6,7 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle,
+  TbUserCircle, TbX,
 } from "react-icons/tb";
 import { MdLogout, MdSettings } from "react-icons/md";
 import Insignia from "./Insignia.jsx";
@@ -251,12 +251,12 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
         <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
           Tem certeza que deseja sair? Você precisará fazer login novamente para acessar a plataforma.
         </p>
-        <footer style={{ display: "flex", gap: "var(--espaco-md)", justifyContent: "flex-end" }}>
-          <Botao variante="fantasma" onClick={() => setConfirmarSaida(false)}>
-            Cancelar
+        <footer className="modal-rodape">
+          <Botao variante="perigo" onClick={() => setConfirmarSaida(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <TbX size={15} aria-hidden="true" /> Cancelar
           </Botao>
-          <Botao variante="perigo" onClick={onLogout}>
-            Confirmar saída
+          <Botao variante="sucesso" onClick={onLogout} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <MdLogout size={16} aria-hidden="true" /> Confirmar saída
           </Botao>
         </footer>
       </Modal>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { TbArrowLeft } from "react-icons/tb";
+import { TbArrowLeft, TbLogin, TbX } from "react-icons/tb";
+import { MdPersonAdd } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { cursos } from "@/dados/dadosMock.js";
@@ -139,14 +140,17 @@ export default function TelaCadastro() {
               variante="primario"
               tamanho="grande"
               onClick={() => navigate(ROTAS.LOGIN)}
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
             >
-              Acessar a plataforma
+              <TbLogin size={20} aria-hidden="true" /> Acessar a plataforma
             </Botao>
             <Botao
               variante="fantasma"
+              tamanho="grande"
               onClick={() => navigate(ROTAS.INICIO)}
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
             >
-              Voltar à página inicial
+              <TbArrowLeft size={20} aria-hidden="true" /> Voltar à página inicial
             </Botao>
           </div>
         </div>
@@ -180,8 +184,8 @@ export default function TelaCadastro() {
           </a>
           <p className="cadastro-cabecalho__legenda">
             Já tem uma conta?{" "}
-            <Botao variante="secundario" tamanho="pequeno" onClick={() => navigate(ROTAS.LOGIN)}>
-              Entrar
+            <Botao variante="secundario" tamanho="pequeno" onClick={() => navigate(ROTAS.LOGIN)} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <TbLogin size={15} aria-hidden="true" /> Entrar
             </Botao>
           </p>
         </div>
@@ -453,12 +457,14 @@ export default function TelaCadastro() {
             <div className="formulario-cadastro__rodape">
               <Botao
                 variante="perigo"
+                tamanho="grande"
                 onClick={() => navigate(ROTAS.INICIO)}
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
-                Cancelar
+                <TbX size={18} aria-hidden="true" /> Cancelar
               </Botao>
-              <Botao variante="primario" tamanho="grande" type="submit">
-                Criar conta
+              <Botao variante="primario" tamanho="grande" type="submit" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <MdPersonAdd size={20} aria-hidden="true" /> Criar conta
               </Botao>
             </div>
           </form>
