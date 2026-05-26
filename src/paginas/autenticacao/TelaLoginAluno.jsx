@@ -15,7 +15,7 @@ export default function TelaLoginAluno({ onLogin }) {
   const cursoParam = searchParams.get("curso");
   const [carregando, setCarregando] = useState(false);
 
-  function handleEntrar() {
+  function entrar() {
     setCarregando(true);
     setTimeout(() => onLogin(perfilAluno.chave), 600);
   }
@@ -73,7 +73,7 @@ export default function TelaLoginAluno({ onLogin }) {
             variante="primario"
             tamanho="grande"
             className="botao--bloco"
-            onClick={handleEntrar}
+            onClick={entrar}
             disabled={carregando}
             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
           >

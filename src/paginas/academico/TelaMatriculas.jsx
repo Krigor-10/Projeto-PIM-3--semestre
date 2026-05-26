@@ -28,7 +28,7 @@ export default function TelaMatriculas({ usuario }) {
   const todosSelecionados = idsPendentes.length > 0 && idsPendentes.every((id) => selecionados.has(id));
   const alvos             = temSelecionados ? listaPendentes.filter((m) => selecionados.has(m.id)) : listaPendentes;
 
-  function toggleSelecionado(id) {
+  function alternarSelecionado(id) {
     setSelecionados((prev) => {
       const s = new Set(prev);
       s.has(id) ? s.delete(id) : s.add(id);
@@ -36,7 +36,7 @@ export default function TelaMatriculas({ usuario }) {
     });
   }
 
-  function toggleTodos() {
+  function alternarTodos() {
     setSelecionados(todosSelecionados ? new Set() : new Set(idsPendentes));
   }
 
@@ -194,7 +194,7 @@ export default function TelaMatriculas({ usuario }) {
                       type="checkbox"
                       className="tabela-checkbox"
                       checked={todosSelecionados}
-                      onChange={toggleTodos}
+                      onChange={alternarTodos}
                       disabled={idsPendentes.length === 0}
                       aria-label="Selecionar todos"
                     />
@@ -220,7 +220,7 @@ export default function TelaMatriculas({ usuario }) {
                         type="checkbox"
                         className="tabela-checkbox"
                         checked={selecionados.has(mat.id)}
-                        onChange={() => toggleSelecionado(mat.id)}
+                        onChange={() => alternarSelecionado(mat.id)}
                         aria-label={`Selecionar ${mat.alunoNome}`}
                       />
                     </td>

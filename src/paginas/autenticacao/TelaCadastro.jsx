@@ -110,7 +110,7 @@ export default function TelaCadastro() {
     return e;
   }
 
-  function handleSubmit(e) {
+  function enviarFormulario(e) {
     e.preventDefault();
     const errosEncontrados = validar();
     if (Object.keys(errosEncontrados).length > 0) {
@@ -202,7 +202,7 @@ export default function TelaCadastro() {
 
           <form
             className="formulario-cadastro"
-            onSubmit={handleSubmit}
+            onSubmit={enviarFormulario}
             noValidate
             aria-label="Formulário de cadastro"
           >

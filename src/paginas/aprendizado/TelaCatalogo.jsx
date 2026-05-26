@@ -260,13 +260,13 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
     return matchBusca && matchNivel && matchVisivel;
   });
 
-  function toggleVisivel(id) {
+  function alternarVisivel(id) {
     setLista((prev) =>
       prev.map((c) => c.id === id ? { ...c, visivelCatalogo: !c.visivelCatalogo } : c)
     );
   }
 
-  function toggleDestaque(id) {
+  function alternarDestaque(id) {
     setLista((prev) =>
       prev.map((c) => c.id === id ? { ...c, destaque: !c.destaque } : c)
     );
@@ -402,7 +402,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
               {/* Toggle de visibilidade: controla se o curso aparece na vitrine pública */}
               <button
                 className={`catalogo-toggle${curso.visivelCatalogo ? " catalogo-toggle--ativo" : ""}`}
-                onClick={() => toggleVisivel(curso.id)}
+                onClick={() => alternarVisivel(curso.id)}
                 aria-pressed={curso.visivelCatalogo}
                 aria-label={`${curso.visivelCatalogo ? "Ocultar" : "Publicar"} ${curso.titulo} no catálogo`}
                 type="button"
@@ -418,7 +418,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
               {/* Estrela de destaque: cursos em destaque aparecem primeiro na vitrine */}
               <button
                 className={`catalogo-card__btn-estrela${curso.destaque ? " catalogo-card__btn-estrela--ativo" : ""}`}
-                onClick={() => toggleDestaque(curso.id)}
+                onClick={() => alternarDestaque(curso.id)}
                 aria-label={curso.destaque ? `Remover ${curso.titulo} dos destaques` : `Destacar ${curso.titulo}`}
                 title={curso.destaque ? "Remover destaque" : "Marcar como destaque"}
                 type="button"

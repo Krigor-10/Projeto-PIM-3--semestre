@@ -31,18 +31,18 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
     estado:   usuario.estado   ?? "",
   });
 
-  function handleChange(e) {
+  function alterarCampo(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSalvar(e) {
+  function salvar(e) {
     e.preventDefault();
     setEditando(false);
     onToast?.("Perfil atualizado com sucesso.", "sucesso");
   }
 
-  function handleCancelar() {
+  function cancelar() {
     setForm({
       nome:     usuario.nome     ?? "",
       email:    usuario.email    ?? "",
@@ -126,7 +126,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
               )}
             </header>
             <div className="painel-secao__conteudo">
-              <form onSubmit={handleSalvar} className="formulario-perfil">
+              <form onSubmit={salvar} className="formulario-perfil">
                 <div className="formulario-perfil__grade">
                   <div className="campo formulario-perfil__campo--largo">
                     <label className="campo__rotulo" htmlFor="perfil-nome">Nome completo</label>
@@ -136,7 +136,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                       className="campo__entrada"
                       type="text"
                       value={form.nome}
-                      onChange={handleChange}
+                      onChange={alterarCampo}
                       disabled={!editando}
                       required
                     />
@@ -149,7 +149,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                       className="campo__entrada"
                       type="email"
                       value={form.email}
-                      onChange={handleChange}
+                      onChange={alterarCampo}
                       disabled={!editando}
                       required
                     />
@@ -162,7 +162,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                       className="campo__entrada"
                       type="tel"
                       value={form.telefone}
-                      onChange={handleChange}
+                      onChange={alterarCampo}
                       disabled={!editando}
                     />
                   </div>
@@ -174,7 +174,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                       className="campo__entrada"
                       type="text"
                       value={form.cidade}
-                      onChange={handleChange}
+                      onChange={alterarCampo}
                       disabled={!editando}
                     />
                   </div>
@@ -186,7 +186,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                       className="campo__entrada"
                       type="text"
                       value={form.estado}
-                      onChange={handleChange}
+                      onChange={alterarCampo}
                       disabled={!editando}
                       maxLength={2}
                       style={{ textTransform: "uppercase" }}
@@ -210,7 +210,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
 
                 {editando && (
                   <footer className="formulario-perfil__rodape">
-                    <Botao variante="perigo" type="button" onClick={handleCancelar}>
+                    <Botao variante="perigo" type="button" onClick={cancelar}>
                       Cancelar
                     </Botao>
                     <Botao variante="primario" type="submit">

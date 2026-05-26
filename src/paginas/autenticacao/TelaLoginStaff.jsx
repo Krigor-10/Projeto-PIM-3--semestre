@@ -14,7 +14,7 @@ export default function TelaLoginStaff({ onLogin }) {
   const [selecionado, setSelecionado] = useState(null);
   const [carregando, setCarregando] = useState(false);
 
-  function handleEntrar() {
+  function entrar() {
     if (!selecionado) return;
     setCarregando(true);
     setTimeout(() => onLogin(selecionado), 600);
@@ -81,7 +81,7 @@ export default function TelaLoginStaff({ onLogin }) {
             variante="primario"
             tamanho="grande"
             className="botao--bloco"
-            onClick={handleEntrar}
+            onClick={entrar}
             disabled={!selecionado || carregando}
             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
           >

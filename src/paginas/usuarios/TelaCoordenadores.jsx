@@ -100,7 +100,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
     setAtribuindoCursos(null);
   }
 
-  function toggleCurso(cursoId) {
+  function alternarCurso(cursoId) {
     setCursosSelecionados((prev) => {
       const prox = new Set(prev);
       prox.has(cursoId) ? prox.delete(cursoId) : prox.add(cursoId);
@@ -127,7 +127,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
     setModoEdicao(false);
   }
 
-  function toggleSelecionado(e, id) {
+  function alternarSelecionado(e, id) {
     e.stopPropagation();
     setSelecionados((prev) => {
       const prox = new Set(prev);
@@ -136,7 +136,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
     });
   }
 
-  function toggleTodos(e) {
+  function alternarTodos(e) {
     e.stopPropagation();
     const ids = itensPagina.map((c) => c.id);
     const todos = ids.every((id) => selecionados.has(id));
@@ -274,7 +274,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                     type="checkbox"
                     className="tabela-checkbox"
                     checked={todosSelecionados}
-                    onChange={toggleTodos}
+                    onChange={alternarTodos}
                     aria-label="Selecionar todos desta página"
                   />
                 </th>
@@ -307,7 +307,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                       type="checkbox"
                       className="tabela-checkbox"
                       checked={selecionados.has(coord.id)}
-                      onChange={(e) => toggleSelecionado(e, coord.id)}
+                      onChange={(e) => alternarSelecionado(e, coord.id)}
                       aria-label={`Selecionar ${coord.nome}`}
                     />
                   </td>
@@ -527,7 +527,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                       type="checkbox"
                       className="tabela-checkbox"
                       checked={marcado}
-                      onChange={() => toggleCurso(c.id)}
+                      onChange={() => alternarCurso(c.id)}
                     />
                     <div className="atribuicao-turma-item__info">
                       <strong className="atribuicao-turma-item__nome">{c.titulo}</strong>

@@ -104,7 +104,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
     localStorage.setItem("coderyse-sidebar-grupos", JSON.stringify([...expandidos]));
   }, [expandidos]);
 
-  function toggleGrupo(chave) {
+  function alternarGrupo(chave) {
     setExpandidos((prev) => {
       const prox = new Set(prev);
       prox.has(chave) ? prox.delete(chave) : prox.add(chave);
@@ -238,7 +238,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
                   <li key={chave}>
                     <button
                       className={`sidebar__item sidebar__grupo-btn${filhoAtivo && !aberto ? " sidebar__item--ativo" : ""}${filhoAtivo ? " sidebar__grupo-btn--filho-ativo" : ""}`}
-                      onClick={() => toggleGrupo(chave)}
+                      onClick={() => alternarGrupo(chave)}
                       aria-expanded={aberto}
                       aria-controls={`sidebar-grupo-${chave}`}
                       title={rotulo}
