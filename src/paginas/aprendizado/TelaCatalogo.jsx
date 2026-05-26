@@ -79,7 +79,7 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
     <div className="tela-catalogo">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Catálogo de Cursos</h2>
+          <h1 className="cabecalho-pagina__titulo">Catálogo de Cursos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {visiveis.length} curso{visiveis.length !== 1 ? "s" : ""} disponível{visiveis.length !== 1 ? "eis" : ""}
             {destaques.length > 0 && ` · ${destaques.length} em destaque`}
@@ -296,7 +296,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
     <div className="tela-catalogo">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Catálogo Público</h2>
+          <h1 className="cabecalho-pagina__titulo">Catálogo Público</h1>
           <p className="cabecalho-pagina__subtitulo">
             Gerencie quais cursos aparecem na homepage da plataforma
           </p>

@@ -52,7 +52,7 @@ export default function TelaUsuarios({ usuario }) {
     <div className="tela-usuarios">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Usuários</h2>
+          <h1 className="cabecalho-pagina__titulo">Usuários</h1>
           <p className="cabecalho-pagina__subtitulo">
             {contagem.total} usuários · {contagem.alunos} alunos · {contagem.professores} professores · {contagem.coordenadores} coordenadores
           </p>

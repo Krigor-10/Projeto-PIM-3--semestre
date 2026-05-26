@@ -75,7 +75,7 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
     <div className="dashboard-admin">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Painel Administrativo</h2>
+          <h1 className="cabecalho-pagina__titulo">Painel Administrativo</h1>
           <p className="cabecalho-pagina__subtitulo">Visão geral da plataforma</p>
         </div>
         <Insignia texto="Admin" variante="erro" />

@@ -1,17 +1,24 @@
+/* ============================================================
+   TelaDashboardProfessor — Painel inicial do professor
+   Exibe resumo de turmas do professor e avaliações recentes.
+   Estatísticas globais vêm de dadosMock.js (estatisticasProfessor).
+   ============================================================ */
 import { TbCirclePlus, TbArrowUpRight } from "react-icons/tb";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { turmas, avaliacoes, estatisticasProfessor } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
+  /* Filtra por professorId para exibir apenas as turmas deste professor */
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario.id).slice(0, 3);
+  /* Avaliações recentes — lista as 4 mais recentes do mock geral */
   const minhasAvaliacoes = avaliacoes.slice(0, 4);
 
   return (
-    <div className="dashboard-professor">
+    <main className="dashboard-professor">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Olá, Prof. {usuario.nome.split(" ")[0]}</h2>
+          <h1 className="cabecalho-pagina__titulo">Olá, Prof. {usuario.nome.split(" ")[0]}</h1>
           <p className="cabecalho-pagina__subtitulo">
             Gerencie suas turmas, avaliações e conteúdos didáticos.
           </p>
@@ -84,6 +91,6 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
           </div>
         </section>
       </div>
-    </div>
+    </main>
   );
 }

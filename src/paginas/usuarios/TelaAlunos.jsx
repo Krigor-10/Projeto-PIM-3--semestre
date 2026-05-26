@@ -179,7 +179,7 @@ export default function TelaAlunos({ usuario, onToast }) {
     <div className="tela-alunos">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Alunos</h2>
+          <h1 className="cabecalho-pagina__titulo">Alunos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
           </p>

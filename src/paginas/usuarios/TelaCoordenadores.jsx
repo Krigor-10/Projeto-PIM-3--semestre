@@ -218,7 +218,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
     <div className="tela-coordenadores">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Coordenadores</h2>
+          <h1 className="cabecalho-pagina__titulo">Coordenadores</h1>
           <p className="cabecalho-pagina__subtitulo">
             {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
           </p>

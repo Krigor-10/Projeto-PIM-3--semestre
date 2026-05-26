@@ -245,7 +245,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
     <div className="tela-turmas">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Turmas</h2>
+          <h1 className="cabecalho-pagina__titulo">Turmas</h1>
           <p className="cabecalho-pagina__subtitulo">
             {tipo === "Professor"
               ? `${total} turma${total !== 1 ? "s" : ""} sob sua responsabilidade`

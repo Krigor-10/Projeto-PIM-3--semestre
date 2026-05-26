@@ -240,7 +240,7 @@ export default function TelaProfessores({ usuario, onToast }) {
     <div className="tela-professores">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Professores</h2>
+          <h1 className="cabecalho-pagina__titulo">Professores</h1>
           <p className="cabecalho-pagina__subtitulo">
             {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
           </p>

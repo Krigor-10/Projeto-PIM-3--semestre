@@ -1,3 +1,8 @@
+/* ============================================================
+   TelaDashboardAluno — Painel inicial do aluno
+   Exibe resumo do progresso, card de retomada, ações rápidas
+   e lista de cursos favoritos.
+   ============================================================ */
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -8,16 +13,20 @@ import { TbPlayerPlay, TbArrowRight } from "react-icons/tb";
 import { progressoAluno, conteudos } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos = [], cursosFavoritos = new Set(), onAlternarFavorito }) {
+  /* Curso principal = primeiro da lista de matrículas aprovadas do aluno */
   const cursoPrincipal = progressoAluno.cursos[0];
 
   const conteudosConcluidos = conteudos.filter((c) => c.concluido).length;
+  /* normalize + replace remove acentos para comparar "Concluído" sem til */
   const modulosConcluidos = progressoAluno.modulos.filter((m) =>
     m.status.normalize("NFD").replace(/[̀-ͯ]/g, "") === "Concluido"
   ).length;
 
+  /* Módulo em andamento: base para o card "Continue de onde parou" */
   const moduloEmAndamento = progressoAluno.modulos.find(
     (m) => m.status === "Em andamento"
   );
+  /* Primeiro conteúdo não concluído do módulo ativo */
   const proximoConteudo = moduloEmAndamento
     ? conteudos.find((c) => c.moduloId === moduloEmAndamento.moduloId && !c.concluido)
     : null;
@@ -26,7 +35,7 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos 
     <main className="dashboard-aluno">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h2>
+          <h1 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h1>
           <p className="cabecalho-pagina__subtitulo">
             Continue de onde parou e acompanhe sua trilha acadêmica.
           </p>
@@ -49,7 +58,8 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos 
             </div>
           </div>
           <div className="cartao-retomar__acao">
-            <motion.div
+            {/* Animação de pulso no CTA principal para chamar atenção do aluno */}
+          <motion.div
               animate={{
                 scale: [1, 1.07, 1],
                 boxShadow: [

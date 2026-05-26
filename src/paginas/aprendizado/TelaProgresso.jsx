@@ -79,7 +79,7 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
     <div className="tela-progresso">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Meu Progresso</h2>
+          <h1 className="cabecalho-pagina__titulo">Meu Progresso</h1>
           <p className="cabecalho-pagina__subtitulo">
             Acompanhe seu desempenho e conquiste seu certificado.
           </p>
@@ -291,7 +291,7 @@ function VistaProfessor({ usuario }) {
     <div className="tela-progresso">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Progresso dos Alunos</h2>
+          <h1 className="cabecalho-pagina__titulo">Progresso dos Alunos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {minhasTurmas.length} turma{minhasTurmas.length !== 1 ? "s" : ""} ·{" "}
             {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} com matrícula ativa · média geral: {mediaGeral}%
@@ -383,7 +383,7 @@ function VistaCoordenador({ usuario }) {
     <div className="tela-progresso">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Progresso por Curso</h2>
+          <h1 className="cabecalho-pagina__titulo">Progresso por Curso</h1>
           <p className="cabecalho-pagina__subtitulo">
             {meusCursos.length} curso{meusCursos.length !== 1 ? "s" : ""} ·{" "}
             {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} com matrícula ativa · média geral: {mediaGeral}%
@@ -458,7 +458,7 @@ function VistaAdmin() {
     <div className="tela-progresso">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Progresso dos Alunos</h2>
+          <h1 className="cabecalho-pagina__titulo">Progresso dos Alunos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {matriculasAprovadas.length} aluno(s) com matrícula ativa — média geral: {mediaGeral}%
           </p>

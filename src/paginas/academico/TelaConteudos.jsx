@@ -1441,7 +1441,7 @@ function VistaGestao({ usuario }) {
     <div className="tela-conteudos">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Conteúdos Didáticos</h2>
+          <h1 className="cabecalho-pagina__titulo">Conteúdos Didáticos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {conteudos.length} conteúdo{conteudos.length !== 1 ? "s" : ""} cadastrados na plataforma
           </p>

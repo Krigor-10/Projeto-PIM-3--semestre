@@ -1,16 +1,22 @@
+/* ============================================================
+   TelaDashboardCoordenador — Painel inicial do coordenador
+   Exibe KPIs acadêmicos e lista resumida das turmas ativas.
+   Estatísticas vêm de dadosMock.js (estatisticasCoordenador).
+   ============================================================ */
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { turmas, estatisticasCoordenador } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
+  /* Limita a 4 turmas no painel — o restante fica em Turmas */
   const turmasAtivas = turmas.filter((t) => t.status === "Ativa").slice(0, 4);
 
   return (
-    <div className="dashboard-coordenador">
+    <main className="dashboard-coordenador">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h2>
+          <h1 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h1>
           <p className="cabecalho-pagina__subtitulo">
             Acompanhe turmas, cursos e indicadores acadêmicos.
           </p>
@@ -51,6 +57,6 @@ export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
           </ul>
         </div>
       </section>
-    </div>
+    </main>
   );
 }

@@ -258,7 +258,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
     <div className="tela-modulos">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Módulos</h2>
+          <h1 className="cabecalho-pagina__titulo">Módulos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {modulosBase.length} módulo{modulosBase.length !== 1 ? "s" : ""}{" "}
             {ehProfessor ? "nos seus cursos" : "cadastrados"}

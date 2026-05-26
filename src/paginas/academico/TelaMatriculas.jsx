@@ -81,7 +81,7 @@ export default function TelaMatriculas({ usuario }) {
       <div className="tela-matriculas">
         <header className="cabecalho-pagina">
           <div>
-            <h2 className="cabecalho-pagina__titulo">Minhas Matrículas</h2>
+            <h1 className="cabecalho-pagina__titulo">Minhas Matrículas</h1>
             <p className="cabecalho-pagina__subtitulo">{listaBase.length} matrícula(s) registrada(s)</p>
           </div>
         </header>
@@ -119,7 +119,7 @@ export default function TelaMatriculas({ usuario }) {
     <div className="tela-matriculas">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Matrículas</h2>
+          <h1 className="cabecalho-pagina__titulo">Matrículas</h1>
           <p className="cabecalho-pagina__subtitulo">
             {listaBase.length} no total — {listaPendentes.length} pendente{listaPendentes.length !== 1 ? "s" : ""}
           </p>

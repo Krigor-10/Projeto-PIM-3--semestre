@@ -696,7 +696,7 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis, ava
     <div className="criar-avaliacao">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">{avaliacaoInicial ? "Editar Avaliação" : "Nova Avaliação"}</h2>
+          <h1 className="cabecalho-pagina__titulo">{avaliacaoInicial ? "Editar Avaliação" : "Nova Avaliação"}</h1>
           <p className="cabecalho-pagina__subtitulo">
             {avaliacaoInicial ? "Atualize os dados e as questões da prova" : "Preencha os dados e as questões da prova"}
           </p>
@@ -1370,7 +1370,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
       <div className="tela-avaliacoes">
         <header className="cabecalho-pagina">
           <div>
-            <h2 className="cabecalho-pagina__titulo">Avaliações</h2>
+            <h1 className="cabecalho-pagina__titulo">Avaliações</h1>
             <p className="cabecalho-pagina__subtitulo">Gerencie as avaliações das suas turmas</p>
           </div>
         </header>
@@ -1567,7 +1567,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
     <div className="tela-avaliacoes">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Avaliações</h2>
+          <h1 className="cabecalho-pagina__titulo">Avaliações</h1>
           <p className="cabecalho-pagina__subtitulo">
             {avaliacoesFiltradas.length} avaliação
             {avaliacoesFiltradas.length !== 1 ? "ões" : ""} encontrada

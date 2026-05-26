@@ -57,7 +57,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
     <div className="tela-perfil">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Meu Perfil</h2>
+          <h1 className="cabecalho-pagina__titulo">Meu Perfil</h1>
           <p className="cabecalho-pagina__subtitulo">
             Visualize e edite suas informações pessoais.
           </p>

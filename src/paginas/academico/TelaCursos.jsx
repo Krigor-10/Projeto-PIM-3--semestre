@@ -61,7 +61,7 @@ function VistaGerencialCoordenador({ usuario }) {
     <div className="tela-cursos">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Cursos</h2>
+          <h1 className="cabecalho-pagina__titulo">Cursos</h1>
           <p className="cabecalho-pagina__subtitulo">Cursos sob sua coordenação</p>
         </div>
       </header>
@@ -374,7 +374,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
     <div className="tela-cursos">
       <header className="cabecalho-pagina">
         <div>
-          <h2 className="cabecalho-pagina__titulo">Cursos</h2>
+          <h1 className="cabecalho-pagina__titulo">Cursos</h1>
           <p className="cabecalho-pagina__subtitulo">{totalAtivos} cursos ativos na plataforma</p>
         </div>
         {podeCriar(tipo, "cursos") && (
