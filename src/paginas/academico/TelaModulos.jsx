@@ -1,3 +1,10 @@
+/* ============================================================
+   TelaModulos — Visualização e gestão de módulos por curso
+   Exibe um carrossel de cursos; cada slide lista os módulos
+   daquele curso com barra de progresso e desempenho médio.
+   Acesso: Professor (vê apenas seus cursos), Coordenador
+   (vê cursos sob sua responsabilidade) e Admin (vê todos).
+   ============================================================ */
 import { useState, useEffect } from "react";
 import { TbDotsVertical, TbPlus, TbSettings, TbX, TbPencil } from "react-icons/tb";
 import { motion } from "framer-motion";
@@ -11,6 +18,7 @@ import { turmas, avaliacoes, conteudos } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
 import { podeCriar } from "@/dados/permissoes.js";
 
+/* Dados de desempenho médio por módulo (mock estático, chaveado por moduloId) */
 const DESEMPENHO_MODULO = {
   1: 78, 2: 65, 3: 42, 4: 55, 5: 30,
   6: 70, 7: 58,
@@ -20,13 +28,16 @@ const DESEMPENHO_MODULO = {
   14: 50, 15: 38,
 };
 
+/* ── Modal de detalhes do módulo: KPIs + avaliações + conteúdos ── */
 function ModalDetalhesModulo({ modulo, curso, onFechar }) {
   const conteudosMod  = conteudos.filter((c) => c.moduloId === modulo.id);
   const avaliacoesMod = avaliacoes.filter((a) => a.moduloId === modulo.id);
+  /* Soma alunos de todas as turmas do curso para exibir o total */
   const totalAlunos   = turmas
     .filter((t) => t.cursoId === modulo.cursoId)
     .reduce((soma, t) => soma + t.totalAlunos, 0);
   const pct    = DESEMPENHO_MODULO[modulo.id] ?? 0;
+  /* Cor semáforo: verde ≥70%, amarelo ≥40%, vermelho abaixo */
   const corPct = pct >= 70 ? "var(--cor-sucesso)" : pct >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
   const TIPO_ICONE = { Video: "▶", Texto: "✦", Documento: "⬡" };
 
@@ -98,7 +109,9 @@ function ModalDetalhesModulo({ modulo, curso, onFechar }) {
   );
 }
 
+/* ── Slide de um curso no carrossel ─────────────────────────── */
 function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhes }) {
+  /* Média de desempenho dos módulos do curso */
   const media = itens.length > 0
     ? Math.round(itens.reduce((acc, m) => acc + (DESEMPENHO_MODULO[m.id] ?? 0), 0) / itens.length)
     : 0;
@@ -182,6 +195,7 @@ function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhe
   );
 }
 
+/* ── Componente principal ────────────────────────────────────── */
 export default function TelaModulos({ usuario, listaCursos, onToast }) {
   const [slideAtual, setSlideAtual]         = useState(0);
   const [modalAberto, setModalAberto]       = useState(false);
@@ -191,8 +205,10 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
   const [menuModuloAberto, setMenuModuloAberto] = useState(null);
   const [moduloDetalhe, setModuloDetalhe]   = useState(null);
 
+  /* Persiste alterações de módulos no localStorage a cada mudança */
   useEffect(() => { db.modulos.salvar(listaModulos); }, [listaModulos]);
 
+  /* Fecha menu kebab ao clicar em qualquer lugar fora dele */
   useEffect(() => {
     if (menuModuloAberto === null) return;
     function fechar() { setMenuModuloAberto(null); }
@@ -204,6 +220,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
   const ehProfessor   = tipo === "Professor";
   const ehCoordenador = tipo === "Coordenador";
 
+  /* Sets de IDs para filtrar cursos e módulos por perfil em O(1) */
   const cursosIdsProfessor = ehProfessor
     ? new Set(turmas.filter((t) => t.professorId === usuario?.id).map((t) => t.cursoId))
     : null;
@@ -212,6 +229,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
     ? new Set(listaCursos.filter((c) => c.coordenadorId === usuario?.id).map((c) => c.id))
     : null;
 
+  /* Admin vê todos; professor e coordenador veem apenas seus cursos */
   const cursosDisponiveis = ehProfessor
     ? listaCursos.filter((c) => cursosIdsProfessor.has(c.id))
     : ehCoordenador
@@ -224,12 +242,14 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
       ? listaModulos.filter((m) => cursosIdsCoordenador.has(m.cursoId))
       : listaModulos;
 
+  /* Agrupa módulos por curso para renderizar cada slide do carrossel */
   const grupos = cursosDisponiveis.map((curso) => ({
     curso,
     itens: modulosBase.filter((m) => m.cursoId === curso.id).sort((a, b) => a.ordem - b.ordem),
   }));
 
   const total     = grupos.length;
+  /* Clampeia o slide para nunca ficar fora dos limites após filtros */
   const slide     = Math.min(slideAtual, Math.max(0, total - 1));
 
   function irPara(idx) { setSlideAtual(idx); }
@@ -335,6 +355,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
         />
       )}
 
+      {/* ── Modal: criar novo módulo ── */}
       {modalAberto && (
         <Modal titulo="Novo Módulo" onFechar={() => setModalAberto(false)}>
           <form
@@ -344,6 +365,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
               if (!cursoIdModal) { setErroCursoModal("Selecione um curso."); return; }
               const f = e.target;
               setListaModulos((prev) => {
+                /* Calcula a próxima ordem sequencial dentro do curso */
                 const proximaOrdem = prev.filter((m) => m.cursoId === cursoIdModal).length + 1;
                 return [...prev, {
                   id: Date.now(),

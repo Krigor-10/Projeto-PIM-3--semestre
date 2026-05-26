@@ -1,3 +1,9 @@
+/* ============================================================
+   TelaQuiz — Quiz de múltipla escolha baseado no material CQA
+   Máquina de estados com 3 fases: inicio → questao → resultado
+   Questões importadas de dadosMock/questoesQuiz.js (banco estático).
+   Suporta navegação bidirecional e questões anuladas.
+   ============================================================ */
 import { useState } from "react";
 import { TbArrowLeft } from "react-icons/tb";
 import Botao from "@/componentes/Botao.jsx";
@@ -7,11 +13,15 @@ import { questoesQuiz } from "@/dados/questoesQuiz.js";
 const TOTAL = questoesQuiz.length;
 
 export default function TelaQuiz({ usuario, onMudarSecao }) {
+  /* fase controla qual tela renderizar: "inicio" | "questao" | "resultado" */
   const [fase, setFase] = useState("inicio");
   const [indice, setIndice] = useState(0);
   const [selecionada, setSelecionada] = useState(null);
+  /* confirmada = true após o aluno confirmar a resposta; bloqueia as alternativas */
   const [confirmada, setConfirmada] = useState(false);
+  /* respostas acumula { id, resposta, correta } para cada questão respondida */
   const [respostas, setRespostas] = useState([]);
+  /* apoioAberto controla a visibilidade do texto teórico colapsável */
   const [apoioAberto, setApoioAberto] = useState(true);
 
   const questao = questoesQuiz[indice];
@@ -27,6 +37,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
 
   function confirmar() {
     if (!selecionada) return;
+    /* Questões anuladas são sempre contadas como corretas */
     const correta = questao.anulada ? true : selecionada === questao.gabarito;
     setRespostas((prev) => [...prev, { id: questao.id, resposta: selecionada, correta }]);
     setConfirmada(true);
@@ -34,16 +45,18 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
 
   function voltarQuestao() {
     const idx = indice - 1;
+    /* Restaura a resposta já dada para a questão anterior */
     const anterior = respostas.find((r) => r.id === questoesQuiz[idx].id);
     setIndice(idx);
     setSelecionada(anterior?.resposta ?? null);
-    setConfirmada(true);
+    setConfirmada(true); /* exibe o feedback da resposta anterior */
     setApoioAberto(false);
   }
 
   function avancar() {
     const proxIdx = indice + 1;
     if (proxIdx < TOTAL) {
+      /* Permite rever questões já respondidas sem perder a resposta */
       const jaRespondida = respostas.find((r) => r.id === questoesQuiz[proxIdx].id);
       setIndice(proxIdx);
       setSelecionada(jaRespondida?.resposta ?? null);
@@ -57,6 +70,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
   const acertos = respostas.filter((r) => r.correta).length;
   const porcentagem = Math.round((acertos / TOTAL) * 100);
 
+  /* ── Fase: tela inicial com instruções ── */
   if (fase === "inicio") {
     return (
       <div className="tela-quiz">
@@ -87,6 +101,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
               style={{ display: "inline-block" }}
             >
+              {/* setTimeout de 150ms para a animação de tap terminar antes de mudar de tela */}
               <Botao
                 variante="primario"
                 tamanho="grande"
@@ -101,6 +116,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
     );
   }
 
+  /* ── Fase: tela de resultado com gabarito completo ── */
   if (fase === "resultado") {
     const nivel = porcentagem >= 70 ? "aprovado" : "reprovado";
     return (
@@ -120,6 +136,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
           </div>
           <p className="quiz-resultado__porcentagem">{porcentagem}%</p>
 
+          {/* Lista todas as questões com a resposta do aluno e o gabarito */}
           <ul className="quiz-resultado__lista" aria-label="Resumo das respostas">
             {questoesQuiz.map((q, i) => {
               const r = respostas[i];
@@ -163,6 +180,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
     );
   }
 
+  /* ── Fase: questão ativa ── */
   return (
     <div className="tela-quiz">
       <header className="quiz-cabecalho">
@@ -187,6 +205,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
       </header>
 
       <div className="quiz-corpo">
+        {/* Texto de apoio teórico colapsável — ajuda o aluno a contextualizar a questão */}
         <section className="quiz-apoio">
           <button
             className="quiz-apoio__toggle"
@@ -215,9 +234,11 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
           </div>
         </section>
 
+        {/* fieldset desabilitado após confirmar para impedir troca de resposta */}
         <fieldset className="quiz-alternativas" disabled={confirmada}>
           <legend className="visualmente-oculto">Alternativas</legend>
           {questao.alternativas.map((alt) => {
+            /* Após confirmar: verde = gabarito, vermelho = errada selecionada */
             let modificador = "";
             if (confirmada) {
               if (alt.letra === questao.gabarito) modificador = "quiz-alternativa--correta";
@@ -253,6 +274,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
           )}
           {confirmada && (
             <>
+              {/* Anterior só aparece após a 1ª questão */}
               {indice > 0 && (
                 <Botao
                   variante="fantasma"
@@ -271,6 +293,7 @@ export default function TelaQuiz({ usuario, onMudarSecao }) {
           )}
         </div>
 
+        {/* Feedback detalhado com análise das afirmativas — exibido após confirmar */}
         {confirmada && (
           <section className="quiz-feedback" aria-live="polite">
             <div className={`quiz-feedback__cabecalho quiz-feedback__cabecalho--${selecionada === questao.gabarito || questao.anulada ? "certo" : "errado"}`}>

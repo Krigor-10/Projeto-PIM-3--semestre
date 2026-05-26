@@ -4,7 +4,7 @@ import Botao from "@/componentes/Botao.jsx";
 import { turmas, avaliacoes, estatisticasProfessor } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
-  const minhasTurmas = turmas.filter((t) => t.professorNome === usuario.nome).slice(0, 3);
+  const minhasTurmas = turmas.filter((t) => t.professorId === usuario.id).slice(0, 3);
   const minhasAvaliacoes = avaliacoes.slice(0, 4);
 
   return (

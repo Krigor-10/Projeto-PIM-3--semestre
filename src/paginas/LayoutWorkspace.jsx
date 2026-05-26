@@ -25,7 +25,7 @@ import TelaProfessores from "./usuarios/TelaProfessores.jsx";
 import TelaCoordenadores from "./usuarios/TelaCoordenadores.jsx";
 import TelaQuiz from "./aprendizado/TelaQuiz.jsx";
 import TelaCertificados from "./aprendizado/TelaCertificados.jsx";
-import TelaCatalogo from "./admin/TelaCatalogo.jsx";
+import TelaCatalogo from "./aprendizado/TelaCatalogo.jsx";
 import TelaPerfilUsuario from "./perfil/TelaPerfilUsuario.jsx";
 import Toast from "@/componentes/Toast.jsx";
 

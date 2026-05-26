@@ -1,3 +1,9 @@
+/* ============================================================
+   TelaCatalogo — Catálogo público de cursos
+   Renderiza duas vistas distintas conforme o perfil do usuário:
+   • VitrineCatalogo → aluno e professor: leitura, favoritos, solicitar matrícula
+   • Vista admin (componente principal) → gerenciar visibilidade e destaque
+   ============================================================ */
 import { useState } from "react";
 import { TbPlus, TbDotsVertical, TbSettings, TbCheck, TbClock, TbSend, TbX } from "react-icons/tb";
 import { motion } from "framer-motion";
@@ -10,13 +16,16 @@ import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { db } from "@/dados/db.js";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
+/* ── Vista do aluno / professor: somente leitura ─────────────── */
 function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), onAlternarFavorito, onToast }) {
   const [busca, setBusca] = useState("");
   const [filtroNivel, setFiltroNivel] = useState("");
+  /* listaMatriculas e listaTurmas lidos do localStorage (db.js) */
   const [listaMatriculas, setListaMatriculas] = useState(() => db.matriculas.listar());
   const [listaTurmas] = useState(() => db.turmas.listar());
   const [modalMatricula, setModalMatricula] = useState(null);
 
+  /* Sets para lookup O(1) — evita .find() dentro do .map() da grade */
   const cursosMatriculados = usuario?.tipo === "Aluno"
     ? new Set(listaMatriculas.filter((m) => m.alunoId === usuario.id && m.status === "Aprovada").map((m) => m.cursoId))
     : new Set();
@@ -26,6 +35,7 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
     : new Set();
 
   function abrirModalMatricula(curso) {
+    /* Busca a primeira turma ativa do curso para pré-preencher o modal */
     const turma = listaTurmas.find((t) => t.cursoId === curso.id && t.status === "Ativa");
     setModalMatricula({ curso, turma: turma ?? null });
   }
@@ -41,8 +51,9 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
       cursoTitulo: curso.titulo,
       turmaId: turma.id,
       turmaNome: turma.nomeTurma,
+      /* Código gerado com timestamp para garantir unicidade no protótipo */
       codigoMatricula: `MAT-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
-      status: "Pendente",
+      status: "Pendente", /* aprovação fica a cargo da coordenação */
       dataSolicitacao: new Date().toISOString().split("T")[0],
     };
     const atualizada = [...listaMatriculas, novaMatricula];
@@ -52,6 +63,7 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
     onToast?.("Solicitação enviada! Aguarde aprovação.", "sucesso");
   }
 
+  /* Cursos visíveis: destaques sempre primeiro, depois os demais */
   const visiveis = listaCursos.filter((c) => c.visivelCatalogo);
   const destaques = visiveis.filter((c) => c.destaque);
   const demais = visiveis.filter((c) => !c.destaque);
@@ -138,6 +150,7 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
                     )}
                   </div>
                   <div className="catalogo-card__rodape-acoes">
+                    {/* Botão de matrícula só aparece para alunos sem matrícula ativa ou pendente */}
                     {!matriculado && !pendente && usuario?.tipo === "Aluno" && (
                       <button
                         type="button"
@@ -148,6 +161,7 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
                         <TbSend size={14} aria-hidden="true" /> Solicitar matrícula
                       </button>
                     )}
+                    {/* Favoritos disponíveis apenas para o perfil Aluno */}
                     {usuario?.tipo === "Aluno" && (
                       <button
                         type="button"
@@ -170,6 +184,7 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
         </ul>
       )}
 
+      {/* ── Modal de confirmação de matrícula ── */}
       {modalMatricula && (
         <Modal
           titulo="Confirmar solicitação de matrícula"
@@ -211,7 +226,9 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
   );
 }
 
+/* ── Vista do admin: gerenciar visibilidade e destaque ───────── */
 export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange, onToast, cursosFavoritos, onAlternarFavorito }) {
+  /* Aluno e Professor veem a vitrine de cursos (somente leitura) */
   if (["Professor", "Aluno"].includes(usuario?.tipo)) {
     return <VitrineCatalogo listaCursos={listaCursos ?? []} usuario={usuario} cursosFavoritos={cursosFavoritos} onAlternarFavorito={onAlternarFavorito} onToast={onToast} />;
   }
@@ -228,6 +245,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
   const [visivelNovo, setVisivelNovo]       = useState(false);
   const [menuAbertoId, setMenuAbertoId]     = useState(null);
 
+  /* KPIs calculados para os cards de estatística */
   const totalVisiveis = lista.filter((c) => c.visivelCatalogo).length;
   const totalDestaque = lista.filter((c) => c.destaque).length;
   const totalOcultos  = lista.filter((c) => !c.visivelCatalogo).length;
@@ -381,6 +399,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
             </div>
 
             <footer className="catalogo-card__rodape">
+              {/* Toggle de visibilidade: controla se o curso aparece na vitrine pública */}
               <button
                 className={`catalogo-toggle${curso.visivelCatalogo ? " catalogo-toggle--ativo" : ""}`}
                 onClick={() => toggleVisivel(curso.id)}
@@ -396,6 +415,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
                 </span>
               </button>
 
+              {/* Estrela de destaque: cursos em destaque aparecem primeiro na vitrine */}
               <button
                 className={`catalogo-card__btn-estrela${curso.destaque ? " catalogo-card__btn-estrela--ativo" : ""}`}
                 onClick={() => toggleDestaque(curso.id)}
@@ -416,6 +436,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
         </p>
       )}
 
+      {/* ── Modal: criar novo curso ── */}
       {modalNovo && (
         <Modal titulo="Novo Curso" onFechar={() => setModalNovo(false)}>
           <form
@@ -482,6 +503,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
         </Modal>
       )}
 
+      {/* ── Modal: editar informações do catálogo ── */}
       {cursoEditando && (
         <Modal titulo="Editar informações do catálogo" onFechar={() => setCursoEditando(null)}>
           <form className="formulario-modal" onSubmit={salvarEdicao}>
