@@ -262,7 +262,7 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
             <Botao
               variante="fantasma"
               onClick={() => setIndice((i) => i - 1)}
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}
             >
               <TbArrowLeft size={16} aria-hidden="true" />
               Anterior

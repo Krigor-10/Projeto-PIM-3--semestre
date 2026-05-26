@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbSettings } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbSettings, TbPencil } from "react-icons/tb";
 import { MdSave, MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
 import Insignia from "@/componentes/Insignia.jsx";

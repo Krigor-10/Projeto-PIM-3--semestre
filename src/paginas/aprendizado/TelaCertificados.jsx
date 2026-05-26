@@ -40,6 +40,7 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
 
   function imprimirCertificado() {
     const janela = window.open("", "_blank");
+    if (!janela) return;
     janela.document.write(`
       <!DOCTYPE html>
       <html lang="pt-BR">

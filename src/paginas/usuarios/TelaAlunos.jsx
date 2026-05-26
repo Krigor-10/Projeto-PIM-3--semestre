@@ -77,6 +77,7 @@ export default function TelaAlunos({ usuario, onToast }) {
 
   function alternarAtivo(id) {
     const alvo = lista.find((u) => u.id === id);
+    if (!alvo) return;
     const novoEstado = !alvo.ativo;
     setLista((prev) => prev.map((u) => u.id === id ? { ...u, ativo: novoEstado } : u));
     if (alunoDetalhe?.id === id) setAlunoDetalhe((prev) => ({ ...prev, ativo: novoEstado }));

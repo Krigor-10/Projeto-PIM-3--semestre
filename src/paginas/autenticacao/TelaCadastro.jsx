@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { TbArrowLeft, TbLogin, TbX } from "react-icons/tb";
-import { MdPersonAdd } from "react-icons/md";
+import { MdSend } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { cursos } from "@/dados/dadosMock.js";
@@ -464,7 +464,7 @@ export default function TelaCadastro() {
                 <TbX size={18} aria-hidden="true" /> Cancelar
               </Botao>
               <Botao variante="primario" tamanho="grande" type="submit" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <MdPersonAdd size={20} aria-hidden="true" /> Criar conta
+                <MdSend size={20} aria-hidden="true" /> Salvar dados
               </Botao>
             </div>
           </form>
