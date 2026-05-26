@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbX, TbLogout } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbLogout } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";

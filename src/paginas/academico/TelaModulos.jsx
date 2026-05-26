@@ -6,7 +6,7 @@
    (vê cursos sob sua responsabilidade) e Admin (vê todos).
    ============================================================ */
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbSettings, TbX, TbPencil } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings, TbX } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Modal from "@/componentes/Modal.jsx";

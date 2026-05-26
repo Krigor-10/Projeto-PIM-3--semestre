@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbDotsVertical, TbClock, TbHourglass, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
