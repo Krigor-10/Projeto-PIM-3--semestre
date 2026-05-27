@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbDotsVertical, TbClock, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload, TbChartBar } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
-import { cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
+import { cursos, modulos, matriculas, turmas, NOTAS_MOCK } from "@/dados/dadosMock.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
 import { db } from "@/dados/db.js";
 import fundoCertificado from "@/ativos/certificado-fundo.png";
@@ -993,10 +993,24 @@ function FormularioCriarAvaliacao({ onCancelar, onSalvar, cursosDisponiveis, ava
   );
 }
 
+/* Métricas de desempenho por avaliação — dados determinísticos baseados nos mocks */
+function calcularDesempenhoAv(av, turmaId) {
+  const alunos     = matriculas.filter((m) => m.turmaId === turmaId && m.status === "Aprovada");
+  const total      = alunos.length || 1;
+  const seed       = (String(av.id).charCodeAt(0) + turmaId) % 11;
+  const realizaram = Math.max(1, Math.round(total * (0.55 + seed * 0.04)));
+  const mediaNota  = NOTAS_MOCK[turmaId] ?? 7.0;
+  const aprovados  = Math.round(realizaram * Math.min(1, mediaNota / 10));
+  const pendentes  = total - realizaram;
+  const taxa       = Math.round((aprovados / realizaram) * 100);
+  return { total, realizaram, aprovados, pendentes, mediaNota, taxa };
+}
+
 /* ── Slide de avaliações de uma turma (visão do professor) ──── */
 
 function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesList }) {
   const [menuAberto, setMenuAberto] = useState(null);
+  const [avDesempenho, setAvDesempenho] = useState(null);
   const avaliacoesDoCurso = avaliacoesList.filter((a) => a.cursoId === turma.cursoId);
 
   useEffect(() => {
@@ -1055,6 +1069,11 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
                         <TbSettings size={15} aria-hidden="true" />Opções
                       </button>
                     </li>
+                    <li>
+                      <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setAvDesempenho(av); }}>
+                        <TbChartBar size={15} aria-hidden="true" />Ver desempenho
+                      </button>
+                    </li>
                   </ul>
                 )}
               </div>
@@ -1062,6 +1081,90 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
           ))}
         </ul>
       )}
+
+      {avDesempenho && (() => {
+        const { total, realizaram, aprovados, pendentes, mediaNota, taxa } = calcularDesempenhoAv(avDesempenho, turma.id);
+        const corNota = mediaNota >= 7 ? "var(--cor-sucesso)" : mediaNota >= 5 ? "var(--cor-aviso)" : "var(--cor-erro)";
+        const corTaxa = taxa >= 70 ? "var(--cor-sucesso)" : taxa >= 50 ? "var(--cor-aviso)" : "var(--cor-erro)";
+        const alunosDaTurma = matriculas.filter((m) => m.turmaId === turma.id && m.status === "Aprovada");
+        return (
+          <Modal titulo="Desempenho da Avaliação" onFechar={() => setAvDesempenho(null)}>
+            {/* Cabeçalho */}
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", marginBottom: "var(--espaco-lg)", flexWrap: "wrap" }}>
+              <strong style={{ fontSize: "1rem", color: "var(--cor-texto-forte)", flex: 1 }}>{avDesempenho.titulo}</strong>
+              <Insignia texto={avDesempenho.status} variante={avDesempenho.status === "Publicada" ? "sucesso" : "neutro"} />
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--cor-texto-mudo)", marginTop: "-8px", marginBottom: "var(--espaco-lg)" }}>
+              {turma.nomeTurma} · {turma.cursoTitulo} · {avDesempenho.totalQuestoes} questões · {avDesempenho.tempoLimiteMinutos}min
+            </p>
+
+            {/* KPIs */}
+            <div className="grade-kpi-modal-curso">
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{total}</span>
+                <span className="kpi-modal-curso__rotulo">Total alunos</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{realizaram}</span>
+                <span className="kpi-modal-curso__rotulo">Realizaram</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{pendentes}</span>
+                <span className="kpi-modal-curso__rotulo">Pendentes</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corNota }}>★ {mediaNota.toFixed(1)}</span>
+                <span className="kpi-modal-curso__rotulo">Nota média</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{aprovados}</span>
+                <span className="kpi-modal-curso__rotulo">Aprovados</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corTaxa }}>{taxa}%</span>
+                <span className="kpi-modal-curso__rotulo">Aprovação</span>
+              </div>
+            </div>
+
+            {/* Lista de alunos */}
+            <section style={{ marginTop: "var(--espaco-lg)" }}>
+              <h4 style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cor-texto-mudo)", fontWeight: 600, marginBottom: "var(--espaco-sm)" }}>
+                Alunos
+              </h4>
+              {alunosDaTurma.length === 0 ? (
+                <p className="texto-vazio">Nenhum aluno matriculado.</p>
+              ) : (
+                <ul className="lista-turmas-modal-coord" role="list">
+                  {alunosDaTurma.map((m, i) => {
+                    const avId  = typeof avDesempenho.id === "string" ? avDesempenho.id.charCodeAt(0) : avDesempenho.id;
+                    const seed  = (m.alunoId + avId) % 10;
+                    const realizou = i < realizaram;
+                    const nota  = realizou ? Math.round(Math.min(10, Math.max(0, mediaNota + (seed % 3) - 1) * 10)) / 10 : null;
+                    const corAluno = nota !== null ? (nota >= 7 ? "var(--cor-sucesso)" : nota >= 5 ? "var(--cor-aviso)" : "var(--cor-erro)") : "var(--cor-texto-mudo)";
+                    return (
+                      <li key={m.id} className="item-turma-modal-coord">
+                        <div className="item-turma-modal-coord__info">
+                          <span className="item-turma-modal-coord__nome">{m.alunoNome}</span>
+                          <Insignia texto={realizou ? "Realizada" : "Pendente"} variante={realizou ? "sucesso" : "neutro"} />
+                        </div>
+                        <span style={{ fontSize: "0.9rem", fontWeight: 700, color: corAluno, whiteSpace: "nowrap" }}>
+                          {nota !== null ? nota.toFixed(1) : "—"}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+
+            <footer className="modal-rodape">
+              <Botao variante="perigo" onClick={() => setAvDesempenho(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
+                <TbX size={15} aria-hidden="true" /> Fechar
+              </Botao>
+            </footer>
+          </Modal>
+        );
+      })()}
     </div>
   );
 }
