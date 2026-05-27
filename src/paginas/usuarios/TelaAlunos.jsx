@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbX, TbCheck, TbTrash, TbSettings, TbChevronLeft, TbChevronRight } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbX, TbCheck, TbTrash, TbSettings, TbChevronLeft, TbChevronRight, TbPencil } from "react-icons/tb";
+import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -55,6 +56,7 @@ export default function TelaAlunos({ usuario, onToast }) {
   const [kebabAberto,   setKebabAberto]   = useState(null);
   const [kebabPos,      setKebabPos]      = useState({ top: 0, left: 0 });
   const [alunoDetalhe,  setAlunoDetalhe]  = useState(null);
+  const [modoEdicao,    setModoEdicao]    = useState(false);
   const [confirmandoStatus, setConfirmandoStatus] = useState(null);
 
   const kebabRef = useRef(null);
@@ -85,6 +87,16 @@ export default function TelaAlunos({ usuario, onToast }) {
       novoEstado ? `${alvo.nome} foi ativado` : `${alvo.nome} foi desativado`,
       novoEstado ? "sucesso" : "aviso"
     );
+  }
+
+  function salvarEdicao(e) {
+    e.preventDefault();
+    const f = e.target;
+    const atualizado = { ...alunoDetalhe, nome: f["edit-nome"].value.trim(), email: f["edit-email"].value.trim() };
+    setLista((prev) => prev.map((u) => u.id === atualizado.id ? atualizado : u));
+    setAlunoDetalhe(atualizado);
+    setModoEdicao(false);
+    onToast?.("Dados do aluno atualizados.", "sucesso");
   }
 
   function toggleSelecionado(e, id) {
@@ -350,17 +362,49 @@ export default function TelaAlunos({ usuario, onToast }) {
 
       {/* Modal detalhes */}
       {alunoDetalhe && (
-        <Modal titulo="Detalhes do Aluno" onFechar={() => setAlunoDetalhe(null)}>
+        <Modal titulo={modoEdicao ? "Editar Aluno" : "Detalhes do Aluno"} onFechar={() => { setAlunoDetalhe(null); setModoEdicao(false); }}>
+          {modoEdicao ? (
+            <>
+              <div className="modal-edicao__avatar" aria-hidden="true">
+                {gerarIniciais(alunoDetalhe.nome)}
+              </div>
+              <form className="formulario-modal" onSubmit={salvarEdicao}>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="edit-nome">Nome completo *</label>
+                  <input id="edit-nome" className="campo__entrada" type="text" defaultValue={alunoDetalhe.nome} required />
+                </div>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="edit-email">E-mail *</label>
+                  <input id="edit-email" className="campo__entrada" type="email" defaultValue={alunoDetalhe.email} required />
+                </div>
+                <footer className="modal-rodape">
+                  <Botao variante="perigo" type="button" onClick={() => setModoEdicao(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+                  <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
+                </footer>
+              </form>
+            </>
+          ) : (
           <div className="detalhe-aluno">
             <div className="detalhe-aluno__perfil">
               <div className="topbar__avatar detalhe-aluno__avatar" aria-hidden="true">
                 {gerarIniciais(alunoDetalhe.nome)}
               </div>
-              <div>
+              <div style={{ flex: 1 }}>
                 <h3 className="detalhe-aluno__nome">{alunoDetalhe.nome}</h3>
                 <span className="detalhe-aluno__email">{alunoDetalhe.email}</span>
               </div>
               <Insignia texto={alunoDetalhe.ativo ? "Ativo" : "Inativo"} variante={alunoDetalhe.ativo ? "sucesso" : "erro"} />
+              {podeEditar_ && (
+                <button
+                  type="button"
+                  className="modal-cabecalho__btn-icone"
+                  onClick={() => setModoEdicao(true)}
+                  aria-label="Editar aluno"
+                  data-tooltip="Editar dados"
+                >
+                  <TbPencil size={15} aria-hidden="true" />
+                </button>
+              )}
             </div>
 
             <dl className="detalhe-aluno__dados">
@@ -389,6 +433,7 @@ export default function TelaAlunos({ usuario, onToast }) {
                   onClick={() => setConfirmandoStatus({ id: alunoDetalhe.id, nome: alunoDetalhe.nome, novoEstado: !alunoDetalhe.ativo })}
                   type="button"
                   aria-label={alunoDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
+                  data-tooltip={alunoDetalhe.ativo ? "Desativar conta" : "Ativar conta"}
                 >
                   <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
                   <span className="switch-ativo__thumb" aria-hidden="true" />
@@ -420,7 +465,7 @@ export default function TelaAlunos({ usuario, onToast }) {
               })()}
             </section>
           </div>
-
+          )}
         </Modal>
       )}
 

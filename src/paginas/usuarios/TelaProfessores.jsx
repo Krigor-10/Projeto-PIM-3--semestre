@@ -7,7 +7,7 @@ import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { db } from "@/dados/db.js";
-import { podeCriar } from "@/dados/permissoes.js";
+import { podeCriar, podeEditar } from "@/dados/permissoes.js";
 
 const ITENS_POR_PAGINA = 8;
 
@@ -32,6 +32,7 @@ function CelulaTurmas({ professorId, turmasLista }) {
 }
 
 export default function TelaProfessores({ usuario, onToast }) {
+  const podeEditar_ = podeEditar(usuario?.tipo, "professores");
   const [lista, setLista]               = useState(() => db.usuarios.listar().filter((u) => u.tipo === "Professor"));
   const [turmasLista, setTurmasLista]   = useState(() => db.turmas.listar());
   useEffect(() => { db.usuarios.salvarPorTipo("Professor", lista); }, [lista]);
@@ -246,9 +247,11 @@ export default function TelaProfessores({ usuario, onToast }) {
           </p>
         </div>
         {podeCriar(usuario?.tipo, "professores") && (
-          <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            variants={{ hover: { y: -1 } }} whileHover="hover"
+          >
             <motion.span
-              whileHover={{ scale: 1.15, rotate: 90 }}
+              variants={{ hover: { rotate: 90 } }}
               transition={{ type: "spring", stiffness: 400, damping: 18 }}
               style={{ display: "flex" }}
             >
@@ -433,19 +436,14 @@ export default function TelaProfessores({ usuario, onToast }) {
             onClick={() => { setProfessorDetalhe(profKebab); setKebabAberto(null); }}>
             <TbSettings size={15} aria-hidden="true" />Opções
           </button>
-          <button role="menuitem" className="kebab-menu__item" type="button"
-            onClick={() => abrirAtribuicao(profKebab)}>
-            Atribuir turmas
-          </button>
         </div>,
         document.body
       )}
 
       {/* ── Modal detalhes / edição inline ── */}
       {professorDetalhe && (() => {
-        const turmasPro    = turmasLista.filter((t) => t.professorId === professorDetalhe.id);
-        const totalAlunos  = turmasPro.reduce((acc, t) => acc + (t.totalAlunos ?? 0), 0);
-        const turmasAtivas = turmasPro.filter((t) => t.status === "Ativa").length;
+        const turmasPro   = turmasLista.filter((t) => t.professorId === professorDetalhe.id);
+        const totalAlunos = turmasPro.reduce((acc, t) => acc + (t.totalAlunos ?? 0), 0);
         return (
           <Modal
             titulo={modoEdicao ? "Editar Professor" : "Perfil do Professor"}
@@ -488,7 +486,8 @@ export default function TelaProfessores({ usuario, onToast }) {
                 <div className="topbar__avatar detalhe-prof__avatar" aria-hidden="true">
                   {gerarIniciais(professorDetalhe.nome)}
                 </div>
-                <div className="detalhe-prof__identidade">
+                <div className="detalhe-prof__identidade" style={{ flex: 1, minWidth: 0 }}>
+
                   <h3 className="detalhe-prof__nome">{professorDetalhe.nome}</h3>
                   <span className="detalhe-prof__email">{professorDetalhe.email}</span>
                   <div className="detalhe-prof__badges">
@@ -518,6 +517,18 @@ export default function TelaProfessores({ usuario, onToast }) {
                     )}
                   </dl>
                 </div>
+                {podeEditar_ && (
+                  <button
+                    type="button"
+                    className="modal-cabecalho__btn-icone"
+                    onClick={() => setModoEdicao(true)}
+                    aria-label="Editar professor"
+                    data-tooltip="Editar dados"
+                    style={{ alignSelf: "flex-start" }}
+                  >
+                    <TbPencil size={15} aria-hidden="true" />
+                  </button>
+                )}
               </div>
 
               {/* KPIs */}
@@ -530,10 +541,6 @@ export default function TelaProfessores({ usuario, onToast }) {
                   <span className="detalhe-prof__kpi-valor">{totalAlunos}</span>
                   <span className="detalhe-prof__kpi-rotulo">Alunos</span>
                 </div>
-                <div className="detalhe-prof__kpi">
-                  <span className="detalhe-prof__kpi-valor">{turmasAtivas}</span>
-                  <span className="detalhe-prof__kpi-rotulo">Ativas</span>
-                </div>
               </div>
 
               {/* Turmas */}
@@ -542,22 +549,26 @@ export default function TelaProfessores({ usuario, onToast }) {
                   <h4 className="detalhe-prof__secao-titulo" style={{ margin: 0 }}>
                     Turmas lecionadas {turmasPro.length > 0 && `(${turmasPro.length})`}
                   </h4>
-                  <button
+                  <motion.button
                     type="button"
                     title="Atribuir turma"
                     aria-label="Atribuir turma"
                     onClick={() => { abrirAtribuicao(professorDetalhe); setProfessorDetalhe(null); }}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#22c55e", display: "flex", alignItems: "center", padding: "2px" }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#22c55e", display: "flex", alignItems: "center", padding: "2px", gap: "4px" }}
+                    variants={{ hover: { scale: 1.06 } }}
+                    whileHover="hover"
+                    whileTap={{ scale: 0.94 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 18 }}
                   >
                     <motion.span
-                      whileHover={{ scale: 1.15, rotate: 90 }}
+                      variants={{ hover: { rotate: 90 } }}
                       transition={{ type: "spring", stiffness: 400, damping: 18 }}
                       style={{ display: "flex" }}
                     >
                       <TbPlus size={18} aria-hidden="true" />
                     </motion.span>
                     <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>Atribuir turma</span>
-                  </button>
+                  </motion.button>
                 </div>
                 {turmasPro.length === 0 ? (
                   <p className="texto-vazio">Nenhuma turma atribuída.</p>
@@ -607,6 +618,7 @@ export default function TelaProfessores({ usuario, onToast }) {
                   onClick={() => setConfirmandoStatus({ id: professorDetalhe.id, nome: professorDetalhe.nome, novoEstado: !professorDetalhe.ativo })}
                   type="button"
                   aria-label={professorDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
+                  data-tooltip={professorDetalhe.ativo ? "Desativar conta" : "Ativar conta"}
                 >
                   <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
                   <span className="switch-ativo__thumb" aria-hidden="true" />
@@ -616,11 +628,8 @@ export default function TelaProfessores({ usuario, onToast }) {
             </div>
 
             <footer className="modal-rodape">
-              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }} style={{ marginRight: "auto" }}>
-                Fechar
-              </Botao>
-              <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={15} aria-hidden="true" /></motion.span> Editar dados
+              <Botao variante="perigo" onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }} style={{ marginRight: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbX size={15} aria-hidden="true" />Fechar
               </Botao>
               <Botao variante="primario" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setProfessorDetalhe(null); setModoEdicao(false); }}>
                 <MdSave size={19} aria-hidden="true" />Salvar

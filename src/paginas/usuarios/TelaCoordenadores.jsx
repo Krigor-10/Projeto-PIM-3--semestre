@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbChevronLeft, TbChevronRight, TbEye, TbPencil } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbChevronLeft, TbChevronRight, TbSettings, TbPencil } from "react-icons/tb";
 import { motion } from "framer-motion";
-import { MdSave } from "react-icons/md";
+import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -47,8 +47,9 @@ export default function TelaCoordenadores({ usuario, onToast }) {
   const [coordRemovendo,     setCoordRemovendo]     = useState(null);
   const [confirmandoStatus,  setConfirmandoStatus]  = useState(null);
   const [modalNovoAberto,    setModalNovoAberto]    = useState(false);
-  const [atribuindoCursos,   setAtribuindoCursos]   = useState(null);
-  const [cursosSelecionados, setCursosSelecionados] = useState(new Set());
+  const [atribuindoCursos,        setAtribuindoCursos]        = useState(null);
+  const [cursosSelecionados,      setCursosSelecionados]      = useState(new Set());
+  const [confirmandoRemocaoCurso, setConfirmandoRemocaoCurso] = useState(null);
 
   const kebabRef = useRef(null);
 
@@ -224,8 +225,14 @@ export default function TelaCoordenadores({ usuario, onToast }) {
           </p>
         </div>
         {podeCriar(tipo, "coordenadores") && (
-          <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+          <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            variants={{ hover: { y: -1 } }} whileHover="hover"
+          >
+            <motion.span
+              variants={{ hover: { rotate: 90 } }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
+              style={{ display: "flex" }}
+            >
               <TbPlus size={20} aria-hidden="true" />
             </motion.span>
             Novo Coordenador
@@ -384,7 +391,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
         <div className="kebab-menu" role="menu" style={{ top: kebabPos.top, left: kebabPos.left }} ref={kebabRef}>
           <button role="menuitem" className="kebab-menu__item" type="button"
             onClick={() => { setCoordDetalhe(coordKebab); setKebabAberto(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <TbEye size={15} aria-hidden="true" /> Ver detalhes
+            <TbSettings size={15} aria-hidden="true" /> Opções
           </button>
         </div>,
         document.body
@@ -425,11 +432,22 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                     <div className="topbar__avatar detalhe-aluno__avatar" aria-hidden="true">
                       {gerarIniciais(coordDetalhe.nome)}
                     </div>
-                    <div>
+                    <div style={{ flex: 1 }}>
                       <h3 className="detalhe-aluno__nome">{coordDetalhe.nome}</h3>
                       <span className="detalhe-aluno__email">{coordDetalhe.email}</span>
                     </div>
                     <Insignia texto={coordDetalhe.ativo ? "Ativo" : "Inativo"} variante={coordDetalhe.ativo ? "sucesso" : "erro"} />
+                    {podeEditar_ && (
+                      <button
+                        type="button"
+                        className="modal-cabecalho__btn-icone"
+                        onClick={() => setModoEdicao(true)}
+                        aria-label="Editar coordenador"
+                        data-tooltip="Editar dados"
+                      >
+                        <TbPencil size={15} aria-hidden="true" />
+                      </button>
+                    )}
                   </div>
                   <dl className="detalhe-aluno__dados">
                     <div className="detalhe-aluno__dado">
@@ -450,21 +468,58 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                 </div>
 
                 <div className="coord-cursos-secao">
-                  <h4 className="coord-cursos-secao__titulo">
-                    Cursos sob coordenação
-                    <span className="coord-cursos-secao__contagem">{cursosCoord.length}</span>
-                  </h4>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--espaco-sm)" }}>
+                    <h4 className="coord-cursos-secao__titulo" style={{ margin: 0 }}>
+                      Cursos sob coordenação {cursosCoord.length > 0 && `(${cursosCoord.length})`}
+                    </h4>
+                    <motion.button
+                      type="button"
+                      title="Atribuir cursos"
+                      aria-label="Atribuir cursos"
+                      onClick={() => abrirAtribuicaoCursos(coordDetalhe)}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#22c55e", display: "flex", alignItems: "center", padding: "2px", gap: "4px" }}
+                      variants={{ hover: { scale: 1.06 } }}
+                      whileHover="hover"
+                      whileTap={{ scale: 0.94 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                    >
+                      <motion.span
+                        variants={{ hover: { rotate: 90 } }}
+                        transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                        style={{ display: "flex" }}
+                      >
+                        <TbPlus size={18} aria-hidden="true" />
+                      </motion.span>
+                      <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>Atribuir cursos</span>
+                    </motion.button>
+                  </div>
                   {cursosCoord.length === 0 ? (
                     <p className="texto-vazio">Nenhum curso atribuído a este coordenador.</p>
                   ) : (
-                    <ul className="coord-cursos-lista" role="list">
+                    <ul className="detalhe-prof__turmas-lista" role="list">
                       {cursosCoord.map((c) => (
-                        <li key={c.id} className="coord-cursos-lista__item">
-                          <div className="coord-cursos-lista__info">
-                            <span className="coord-cursos-lista__titulo">{c.titulo}</span>
-                            <span className="coord-cursos-lista__codigo">{c.codigoRegistro} · {c.nivel}</span>
+                        <li key={c.id} className="detalhe-prof__turma-item">
+                          <div className="detalhe-prof__turma-corpo">
+                            <span className="detalhe-prof__turma-curso">{c.titulo}</span>
+                            <span className="detalhe-prof__turma-meta">{c.codigoRegistro} · {c.nivel}</span>
                           </div>
-                          <Insignia texto={c.ativo ? "Ativo" : "Inativo"} variante={c.ativo ? "sucesso" : "erro"} />
+                          <span style={{ fontSize: "0.72rem", color: "var(--cor-texto-mudo)", fontWeight: 500 }}>
+                            {c.ativo ? "Ativo" : "Inativo"}
+                          </span>
+                          <button
+                            type="button"
+                            aria-label={`Remover curso ${c.titulo}`}
+                            style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", padding: "2px" }}
+                            onClick={() => setConfirmandoRemocaoCurso(c)}
+                          >
+                            <motion.span
+                              whileHover={{ scale: 1.3, rotate: -15 }}
+                              transition={{ type: "spring", stiffness: 500, damping: 10 }}
+                              style={{ display: "flex" }}
+                            >
+                              <MdDelete size={21} aria-hidden="true" />
+                            </motion.span>
+                          </button>
                         </li>
                       ))}
                     </ul>
@@ -485,6 +540,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                     onClick={() => setConfirmandoStatus({ id: coordDetalhe.id, nome: coordDetalhe.nome, novoEstado: !coordDetalhe.ativo })}
                     type="button"
                     aria-label={coordDetalhe.ativo ? "Ativo — clique para desativar" : "Inativo — clique para ativar"}
+                    data-tooltip={coordDetalhe.ativo ? "Desativar conta" : "Ativar conta"}
                   >
                     <TbX     size={10} className="switch-ativo__icone switch-ativo__icone--esq" aria-hidden="true" />
                     <span className="switch-ativo__thumb" aria-hidden="true" />
@@ -493,13 +549,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                 </div>
 
                 <footer className="modal-rodape">
-                  {podeEditar_ && (
-                    <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModoEdicao(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}><TbPencil size={15} aria-hidden="true" /></motion.span> Editar dados</Botao>
-                  )}
-                  <Botao variante="fantasma" tamanho="pequeno" onClick={() => abrirAtribuicaoCursos(coordDetalhe)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <TbPlus size={15} aria-hidden="true" /> Atribuir cursos
-                  </Botao>
-                  <Botao variante="perigo" onClick={() => { setCoordDetalhe(null); setModoEdicao(false); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
+                  <Botao variante="perigo" onClick={() => { setCoordDetalhe(null); setModoEdicao(false); }} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
                 </footer>
               </>
             )}
@@ -634,6 +684,27 @@ export default function TelaCoordenadores({ usuario, onToast }) {
           </Modal>
         );
       })()}
+
+      {/* Confirmação remoção de curso */}
+      {confirmandoRemocaoCurso && (
+        <Modal titulo="Remover curso" onFechar={() => setConfirmandoRemocaoCurso(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Deseja remover o curso <strong>{confirmandoRemocaoCurso.titulo}</strong> deste coordenador?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoRemocaoCurso(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => {
+              setCursosLista((prev) =>
+                prev.map((c) => c.id === confirmandoRemocaoCurso.id ? { ...c, coordenadorId: null } : c)
+              );
+              onToast?.(`Curso "${confirmandoRemocaoCurso.titulo}" desatribuído.`, "aviso");
+              setConfirmandoRemocaoCurso(null);
+            }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbCheck size={15} aria-hidden="true" />Confirmar
+            </Botao>
+          </footer>
+        </Modal>
+      )}
     </div>
   );
 }

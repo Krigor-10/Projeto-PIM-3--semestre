@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
-export default function Modal({ titulo, onFechar, children, className }) {
+export default function Modal({ titulo, onFechar, children, className, acoes }) {
   const refModal = useFocusTrap();
 
   useEffect(() => {
@@ -23,6 +23,7 @@ export default function Modal({ titulo, onFechar, children, className }) {
       <article ref={refModal} className={`modal-caixa${className ? ` ${className}` : ""}`}>
         <header className="modal-cabecalho">
           <h2 className="modal-titulo" id="modal-titulo">{titulo}</h2>
+          {acoes && <div className="modal-cabecalho__acoes">{acoes}</div>}
           <button
             className="modal-fechar"
             onClick={onFechar}

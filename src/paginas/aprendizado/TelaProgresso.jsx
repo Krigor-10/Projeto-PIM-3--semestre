@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { TbTrophy, TbCertificate } from "react-icons/tb";
+import { TbTrophy, TbCertificate, TbDotsVertical, TbX } from "react-icons/tb";
+import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -266,26 +267,29 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
 /* ── Vista do Professor ──────────────────────────────────────── */
 
 function VistaProfessor({ usuario }) {
+  const [turmaDetalhe, setTurmaDetalhe] = useState(null);
+
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario.id);
 
   const turmasComProgresso = minhasTurmas.map((turma) => {
-    const alunosDaTurma = matriculas.filter(
-      (m) => m.turmaId === turma.id && m.status === "Aprovada"
-    );
-    const total = alunosDaTurma.length;
-    const media = total > 0
+    const alunosDaTurma  = matriculas.filter((m) => m.turmaId === turma.id && m.status === "Aprovada");
+    const modulosDoCurso = modulos.filter((m) => m.cursoId === turma.cursoId).sort((a, b) => a.ordem - b.ordem);
+    const total      = alunosDaTurma.length;
+    const media      = total > 0
       ? Math.round(alunosDaTurma.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) / total)
       : 0;
-    const mediaNota = NOTAS_MOCK[turma.id] ?? 0;
-    return { turma, totalAlunos: total, media, mediaNota };
+    const concluidos  = alunosDaTurma.filter((m) => (PROGRESSO_MOCK[m.id] ?? 0) >= 100).length;
+    const txConclusao = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+    const mediaNota   = NOTAS_MOCK[turma.id] ?? 0;
+    return { turma, alunosDaTurma, modulosDoCurso, totalAlunos: total, totalModulos: modulosDoCurso.length, media, mediaNota, concluidos, txConclusao };
   });
 
-  const totalAlunos = turmasComProgresso.reduce((acc, t) => acc + t.totalAlunos, 0);
-  const mediaGeral  = totalAlunos > 0
-    ? Math.round(
-        turmasComProgresso.reduce((acc, t) => acc + t.media * t.totalAlunos, 0) / totalAlunos
-      )
+  const totalAlunos  = turmasComProgresso.reduce((acc, t) => acc + t.totalAlunos, 0);
+  const turmasAtivas = minhasTurmas.filter((t) => t.status === "Ativa").length;
+  const mediaGeral   = totalAlunos > 0
+    ? Math.round(turmasComProgresso.reduce((acc, t) => acc + t.media * t.totalAlunos, 0) / totalAlunos)
     : 0;
+  const corMediaGeral = mediaGeral >= 70 ? "var(--cor-sucesso)" : mediaGeral >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
 
   return (
     <div className="tela-progresso">
@@ -293,58 +297,146 @@ function VistaProfessor({ usuario }) {
         <div>
           <h1 className="cabecalho-pagina__titulo">Progresso dos Alunos</h1>
           <p className="cabecalho-pagina__subtitulo">
-            {minhasTurmas.length} turma{minhasTurmas.length !== 1 ? "s" : ""} ·{" "}
-            {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} com matrícula ativa · média geral: {mediaGeral}%
+            Acompanhe o desempenho das suas turmas e o progresso por módulo.
           </p>
         </div>
       </header>
 
+      {/* KPIs */}
+      <div className="grade-kpi-coord">
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor">{minhasTurmas.length}</span>
+          <span className="kpi-coord__rotulo">Turmas</span>
+        </div>
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor">{turmasAtivas}</span>
+          <span className="kpi-coord__rotulo">Ativas</span>
+        </div>
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor">{totalAlunos}</span>
+          <span className="kpi-coord__rotulo">Alunos</span>
+        </div>
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor" style={{ color: corMediaGeral }}>{mediaGeral}%</span>
+          <span className="kpi-coord__rotulo">Média geral</span>
+        </div>
+      </div>
+
+      {/* Lista de turmas */}
       {minhasTurmas.length === 0 ? (
         <p className="texto-vazio" role="status">Você não possui turmas atribuídas.</p>
       ) : (
-        <section className="painel-secao" aria-labelledby="titulo-progresso-turmas">
-          <header className="painel-secao__cabecalho">
-            <h3 className="painel-secao__titulo" id="titulo-progresso-turmas">
-              Progresso por Turma
-            </h3>
-          </header>
-          <div className="painel-secao__conteudo">
-            <ul className="lista-aproveitamento" role="list" aria-label="Progresso por turma">
-              {turmasComProgresso.map(({ turma, totalAlunos: total, media, mediaNota }) => {
-                const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
-                const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
-                return (
-                  <li key={turma.id} className="item-aproveitamento">
-                    <div className="item-aproveitamento__info">
-                      <span className="item-aproveitamento__titulo">
-                        {turma.nomeTurma}
-                        <span style={{ fontSize: "0.78rem", color: "var(--cor-texto-mudo)", marginLeft: "0.5rem" }}>
-                          {turma.cursoTitulo}
-                        </span>
-                      </span>
-                      <div className="item-aproveitamento__barra" aria-hidden="true">
-                        <BarraProgresso percentual={media} mostrarTexto={false} />
-                      </div>
-                    </div>
-                    <div className="item-aproveitamento__badges">
-                      <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
-                        {total} aluno{total !== 1 ? "s" : ""}
-                      </span>
-                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corPct, whiteSpace: "nowrap" }}>
-                        {media}%
-                      </span>
-                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corNota, whiteSpace: "nowrap" }} title="Média de notas">
-                        ★ {mediaNota.toFixed(1)}
-                      </span>
+        <ul className="lista-cursos-progresso" role="list" aria-label="Progresso por turma">
+          {turmasComProgresso.map(({ turma, totalAlunos: total, media, mediaNota }) => {
+            const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+            const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+            return (
+              <li key={turma.id} className="cartao-curso-progresso">
+                <div className="cartao-curso-progresso__info">
+                  <div className="cartao-curso-progresso__identidade">
+                    <span className="cartao-curso-progresso__titulo">{turma.nomeTurma}</span>
+                    <div className="cartao-curso-progresso__meta">
+                      <span>{turma.cursoTitulo}</span>
                       <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
+                      <span>{total} aluno{total !== 1 ? "s" : ""}</span>
                     </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
+                  </div>
+                  <div className="cartao-curso-progresso__barra" aria-hidden="true">
+                    <BarraProgresso percentual={media} mostrarTexto={false} />
+                  </div>
+                </div>
+                <div className="cartao-curso-progresso__direita">
+                  <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
+                  <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
+                  <button
+                    type="button"
+                    className="kebab-btn"
+                    onClick={() => setTurmaDetalhe(turmasComProgresso.find((t) => t.turma.id === turma.id))}
+                    aria-label={`Ver detalhes de ${turma.nomeTurma}`}
+                  >
+                    <TbDotsVertical size={16} aria-hidden="true" />
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       )}
+
+      {/* Modal detalhes da turma */}
+      {turmaDetalhe && (() => {
+        const { turma, modulosDoCurso, totalAlunos: total, totalModulos, media, mediaNota, concluidos, txConclusao } = turmaDetalhe;
+        const corPct  = media      >= 70 ? "var(--cor-sucesso)" : media      >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+        const corConc = txConclusao >= 70 ? "var(--cor-sucesso)" : txConclusao >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+        const corNota = mediaNota  >= 7  ? "var(--cor-sucesso)" : mediaNota  >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+        return (
+          <Modal titulo="Detalhes da Turma" onFechar={() => setTurmaDetalhe(null)}>
+            {/* Cabeçalho */}
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", marginBottom: "var(--espaco-lg)", flexWrap: "wrap" }}>
+              <strong style={{ fontSize: "1rem", color: "var(--cor-texto-forte)", flex: 1 }}>{turma.nomeTurma}</strong>
+              <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--cor-texto-mudo)", marginBottom: "var(--espaco-lg)" }}>
+              {turma.cursoTitulo}
+            </p>
+
+            {/* KPIs */}
+            <div className="grade-kpi-modal-curso">
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{total}</span>
+                <span className="kpi-modal-curso__rotulo">Alunos</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{totalModulos}</span>
+                <span className="kpi-modal-curso__rotulo">Módulos</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corPct }}>{media}%</span>
+                <span className="kpi-modal-curso__rotulo">Média</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corConc }}>{txConclusao}%</span>
+                <span className="kpi-modal-curso__rotulo">Conclusão</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{concluidos}</span>
+                <span className="kpi-modal-curso__rotulo">Concluídos</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corNota }}>★ {mediaNota.toFixed(1)}</span>
+                <span className="kpi-modal-curso__rotulo">Nota média</span>
+              </div>
+            </div>
+
+            {/* Módulos */}
+            <section style={{ marginTop: "var(--espaco-lg)" }}>
+              <h4 style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cor-texto-mudo)", fontWeight: 600, marginBottom: "var(--espaco-sm)" }}>
+                Módulos do curso
+              </h4>
+              {modulosDoCurso.length === 0 ? (
+                <p className="texto-vazio">Nenhum módulo cadastrado.</p>
+              ) : (
+                <ul className="lista-turmas-modal-coord" role="list">
+                  {modulosDoCurso.map((mod) => (
+                    <li key={mod.id} className="item-turma-modal-coord">
+                      <div className="item-turma-modal-coord__info">
+                        <span className="item-turma-modal-coord__nome">{mod.titulo}</span>
+                      </div>
+                      <Insignia texto={`Módulo ${mod.ordem}`} variante="neutro" />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <footer className="modal-rodape">
+              <Botao variante="perigo" onClick={() => setTurmaDetalhe(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
+                <TbX size={15} aria-hidden="true" /> Fechar
+              </Botao>
+            </footer>
+          </Modal>
+        );
+      })()}
     </div>
   );
 }
@@ -352,32 +444,34 @@ function VistaProfessor({ usuario }) {
 /* ── Vista do Coordenador ────────────────────────────────────── */
 
 function VistaCoordenador({ usuario }) {
+  const [cursoDetalhe, setCursoDetalhe] = useState(null);
+
   const meusCursos = cursos.filter((c) => c.coordenadorId === usuario.id);
 
   const cursosComProgresso = meusCursos.map((curso) => {
-    const turmasDoCurso = turmas.filter((t) => t.cursoId === curso.id);
-    const alunosDoCurso = matriculas.filter(
+    const turmasDoCurso  = turmas.filter((t) => t.cursoId === curso.id);
+    const modulosDoCurso = modulos.filter((m) => m.cursoId === curso.id);
+    const alunosDoCurso  = matriculas.filter(
       (m) => turmasDoCurso.some((t) => t.id === m.turmaId) && m.status === "Aprovada"
     );
-    const total = alunosDoCurso.length;
-    const media = total > 0
+    const total      = alunosDoCurso.length;
+    const media      = total > 0
       ? Math.round(alunosDoCurso.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) / total)
       : 0;
-    const mediaNota = turmasDoCurso.length > 0
-      ? Math.round(
-          turmasDoCurso.reduce((acc, t) => acc + (NOTAS_MOCK[t.id] ?? 0), 0) /
-          turmasDoCurso.length * 10
-        ) / 10
+    const concluidos = alunosDoCurso.filter((m) => (PROGRESSO_MOCK[m.id] ?? 0) >= 100).length;
+    const txConclusao = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+    const mediaNota  = turmasDoCurso.length > 0
+      ? Math.round(turmasDoCurso.reduce((acc, t) => acc + (NOTAS_MOCK[t.id] ?? 0), 0) / turmasDoCurso.length * 10) / 10
       : 0;
-    return { curso, totalTurmas: turmasDoCurso.length, totalAlunos: total, media, mediaNota };
+    return { curso, turmasDoCurso, modulosDoCurso, alunosDoCurso, totalTurmas: turmasDoCurso.length, totalModulos: modulosDoCurso.length, totalAlunos: total, media, mediaNota, concluidos, txConclusao };
   });
 
-  const totalAlunos = cursosComProgresso.reduce((acc, c) => acc + c.totalAlunos, 0);
-  const mediaGeral  = totalAlunos > 0
-    ? Math.round(
-        cursosComProgresso.reduce((acc, c) => acc + c.media * c.totalAlunos, 0) / totalAlunos
-      )
+  const totalAlunos  = cursosComProgresso.reduce((acc, c) => acc + c.totalAlunos, 0);
+  const cursosAtivos = meusCursos.filter((c) => c.ativo).length;
+  const mediaGeral   = totalAlunos > 0
+    ? Math.round(cursosComProgresso.reduce((acc, c) => acc + c.media * c.totalAlunos, 0) / totalAlunos)
     : 0;
+  const corMediaGeral = mediaGeral >= 70 ? "var(--cor-sucesso)" : mediaGeral >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
 
   return (
     <div className="tela-progresso">
@@ -385,60 +479,162 @@ function VistaCoordenador({ usuario }) {
         <div>
           <h1 className="cabecalho-pagina__titulo">Progresso por Curso</h1>
           <p className="cabecalho-pagina__subtitulo">
-            {meusCursos.length} curso{meusCursos.length !== 1 ? "s" : ""} ·{" "}
-            {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} com matrícula ativa · média geral: {mediaGeral}%
+            Acompanhe o desempenho dos alunos em cada curso sob sua coordenação.
           </p>
         </div>
       </header>
 
+      {/* KPIs */}
+      <div className="grade-kpi-coord">
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor">{meusCursos.length}</span>
+          <span className="kpi-coord__rotulo">Cursos</span>
+        </div>
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor">{cursosAtivos}</span>
+          <span className="kpi-coord__rotulo">Ativos</span>
+        </div>
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor">{totalAlunos}</span>
+          <span className="kpi-coord__rotulo">Alunos</span>
+        </div>
+        <div className="kpi-coord">
+          <span className="kpi-coord__valor" style={{ color: corMediaGeral }}>{mediaGeral}%</span>
+          <span className="kpi-coord__rotulo">Média geral</span>
+        </div>
+      </div>
+
+      {/* Lista de cursos */}
       {meusCursos.length === 0 ? (
         <p className="texto-vazio" role="status">Nenhum curso sob sua coordenação.</p>
       ) : (
-        <section className="painel-secao" aria-labelledby="titulo-progresso-cursos">
-          <header className="painel-secao__cabecalho">
-            <h3 className="painel-secao__titulo" id="titulo-progresso-cursos">
-              Progresso por Curso
-            </h3>
-          </header>
-          <div className="painel-secao__conteudo">
-            <ul className="lista-aproveitamento" role="list" aria-label="Progresso por curso">
-              {cursosComProgresso.map(({ curso, totalTurmas, totalAlunos: total, media, mediaNota }) => {
-                const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
-                const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
-                return (
-                  <li key={curso.id} className="item-aproveitamento">
-                    <div className="item-aproveitamento__info">
-                      <span className="item-aproveitamento__titulo">
-                        {curso.titulo}
-                        <span style={{ fontSize: "0.78rem", color: "var(--cor-texto-mudo)", marginLeft: "0.5rem" }}>
-                          {curso.codigoRegistro}
-                        </span>
-                      </span>
-                      <div className="item-aproveitamento__barra" aria-hidden="true">
-                        <BarraProgresso percentual={media} mostrarTexto={false} />
-                      </div>
+        <ul className="lista-cursos-progresso" role="list" aria-label="Progresso por curso">
+          {cursosComProgresso.map(({ curso, totalTurmas, totalAlunos: total, media, mediaNota }) => {
+            const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+            const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+            return (
+              <li key={curso.id} className="cartao-curso-progresso">
+                <div className="cartao-curso-progresso__info">
+                  <div className="cartao-curso-progresso__identidade">
+                    <span className="cartao-curso-progresso__titulo">{curso.titulo}</span>
+                    <div className="cartao-curso-progresso__meta">
+                      <span>{curso.codigoRegistro}</span>
+                      <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "neutro"} />
+                      <span>{totalTurmas} turma{totalTurmas !== 1 ? "s" : ""}</span>
+                      <span>{total} aluno{total !== 1 ? "s" : ""}</span>
                     </div>
-                    <div className="item-aproveitamento__badges">
-                      <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
-                        {totalTurmas} turma{totalTurmas !== 1 ? "s" : ""}
-                      </span>
-                      <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
-                        {total} aluno{total !== 1 ? "s" : ""}
-                      </span>
-                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corPct, whiteSpace: "nowrap" }}>
-                        {media}%
-                      </span>
-                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: corNota, whiteSpace: "nowrap" }} title="Média de notas">
-                        ★ {mediaNota.toFixed(1)}
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
+                  </div>
+                  <div className="cartao-curso-progresso__barra" aria-hidden="true">
+                    <BarraProgresso percentual={media} mostrarTexto={false} />
+                  </div>
+                </div>
+                <div className="cartao-curso-progresso__direita">
+                  <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
+                  <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
+                  <button
+                    type="button"
+                    className="kebab-btn"
+                    onClick={() => setCursoDetalhe(cursosComProgresso.find((c) => c.curso.id === curso.id))}
+                    aria-label={`Ver detalhes de ${curso.titulo}`}
+                  >
+                    <TbDotsVertical size={16} aria-hidden="true" />
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       )}
+
+      {/* Modal detalhes do curso */}
+      {cursoDetalhe && (() => {
+        const { curso, turmasDoCurso, modulosDoCurso, alunosDoCurso, totalTurmas, totalModulos, totalAlunos: total, media, mediaNota, concluidos, txConclusao } = cursoDetalhe;
+        const corPct  = media      >= 70 ? "var(--cor-sucesso)" : media      >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+        const corConc = txConclusao >= 70 ? "var(--cor-sucesso)" : txConclusao >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+        const corNota = mediaNota  >= 7  ? "var(--cor-sucesso)" : mediaNota  >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+        return (
+          <Modal titulo="Detalhes do Curso" onFechar={() => setCursoDetalhe(null)}>
+            {/* Cabeçalho do curso */}
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", marginBottom: "var(--espaco-lg)", flexWrap: "wrap" }}>
+              <strong style={{ fontSize: "1rem", color: "var(--cor-texto-forte)", flex: 1 }}>{curso.titulo}</strong>
+              <Insignia texto={curso.nivel ?? "—"} variante="info" />
+              <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "neutro"} />
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--cor-texto-mudo)", marginTop: "-var(--espaco-md)", marginBottom: "var(--espaco-lg)" }}>
+              {curso.codigoRegistro}
+            </p>
+
+            {/* KPIs do modal */}
+            <div className="grade-kpi-modal-curso">
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{totalTurmas}</span>
+                <span className="kpi-modal-curso__rotulo">Turmas</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{total}</span>
+                <span className="kpi-modal-curso__rotulo">Alunos</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor">{totalModulos}</span>
+                <span className="kpi-modal-curso__rotulo">Módulos</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corPct }}>{media}%</span>
+                <span className="kpi-modal-curso__rotulo">Média</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corConc }}>{txConclusao}%</span>
+                <span className="kpi-modal-curso__rotulo">Conclusão</span>
+              </div>
+              <div className="kpi-modal-curso">
+                <span className="kpi-modal-curso__valor" style={{ color: corNota }}>★ {mediaNota.toFixed(1)}</span>
+                <span className="kpi-modal-curso__rotulo">Nota média</span>
+              </div>
+            </div>
+
+            {/* Turmas */}
+            <section style={{ marginTop: "var(--espaco-lg)" }}>
+              <h4 style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cor-texto-mudo)", fontWeight: 600, marginBottom: "var(--espaco-sm)" }}>
+                Turmas
+              </h4>
+              {turmasDoCurso.length === 0 ? (
+                <p className="texto-vazio">Nenhuma turma vinculada.</p>
+              ) : (
+                <ul className="lista-turmas-modal-coord" role="list">
+                  {turmasDoCurso.map((t) => {
+                    const alunosTurma  = alunosDoCurso.filter((m) => m.turmaId === t.id);
+                    const mediaTurma   = alunosTurma.length > 0
+                      ? Math.round(alunosTurma.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) / alunosTurma.length)
+                      : 0;
+                    const corT = mediaTurma >= 70 ? "var(--cor-sucesso)" : mediaTurma >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+                    return (
+                      <li key={t.id} className="item-turma-modal-coord">
+                        <div className="item-turma-modal-coord__info">
+                          <span className="item-turma-modal-coord__nome">{t.nomeTurma}</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
+                            <span style={{ fontSize: "0.75rem", color: "var(--cor-texto-mudo)" }}>{alunosTurma.length} aluno{alunosTurma.length !== 1 ? "s" : ""}</span>
+                            <Insignia texto={t.status} variante={t.status === "Ativa" ? "sucesso" : "neutro"} />
+                          </div>
+                          <div aria-hidden="true" style={{ marginTop: "4px" }}>
+                            <BarraProgresso percentual={mediaTurma} mostrarTexto={false} />
+                          </div>
+                        </div>
+                        <span style={{ fontSize: "0.9rem", fontWeight: 700, color: corT, whiteSpace: "nowrap" }}>{mediaTurma}%</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+
+            <footer className="modal-rodape">
+              <Botao variante="perigo" onClick={() => setCursoDetalhe(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
+                <TbX size={15} aria-hidden="true" /> Fechar
+              </Botao>
+            </footer>
+          </Modal>
+        );
+      })()}
     </div>
   );
 }

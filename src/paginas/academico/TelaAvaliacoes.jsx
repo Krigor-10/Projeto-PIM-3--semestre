@@ -616,7 +616,7 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
             />
           </figure>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setCertificadoAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <Botao variante="perigo" onClick={() => setCertificadoAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
               <TbX size={15} aria-hidden="true" /> Fechar
             </Botao>
             <Botao variante="primario" onClick={() => imprimirCertificado(fundoCertificado)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -1852,7 +1852,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             <Botao
               variante="perigo"
               onClick={() => setModalAberto(false)}
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}
             >
               <TbX size={15} aria-hidden="true" /> Fechar
             </Botao>

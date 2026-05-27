@@ -253,8 +253,10 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
           </p>
         </div>
         {podeCriar(tipo, "turmas") && (
-          <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+          <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            variants={{ hover: { y: -1 } }} whileHover="hover"
+          >
+            <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
               <TbPlus size={20} aria-hidden="true" />
             </motion.span>
             Nova Turma

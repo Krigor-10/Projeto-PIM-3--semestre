@@ -998,7 +998,7 @@ function VistaProfessor({ usuario, onToast }) {
                   </ul>
                 )}
                 <div className="modal-rodape">
-                  <Botao variante="perigo" onClick={() => setConfirmarFechar(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Botao variante="perigo" onClick={() => setConfirmarFechar(true)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
                     <TbX size={16} aria-hidden="true" /> Fechar
                   </Botao>
                   <Botao variante="secundario" onClick={() => setFormQuestao({ ...FORM_VAZIO })} style={{ display: "flex", alignItems: "center", gap: "6px" }}>

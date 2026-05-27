@@ -102,7 +102,7 @@ function ModalDetalhesModulo({ modulo, curso, onFechar }) {
         </section>
 
         <footer className="modal-rodape">
-          <Botao variante="perigo" onClick={onFechar} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
+          <Botao variante="perigo" onClick={onFechar} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
         </footer>
       </div>
     </Modal>
@@ -265,8 +265,10 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
           </p>
         </div>
         {podeCriar(tipo, "modulos") && (
-          <Botao variante="primario" onClick={() => { setCursoIdModal(grupos[slide]?.curso.id ?? null); setErroCursoModal(""); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+          <Botao variante="primario" onClick={() => { setCursoIdModal(grupos[slide]?.curso.id ?? null); setErroCursoModal(""); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            variants={{ hover: { y: -1 } }} whileHover="hover"
+          >
+            <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
               <TbPlus size={20} aria-hidden="true" />
             </motion.span>
             Novo Módulo

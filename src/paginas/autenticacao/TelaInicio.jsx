@@ -242,7 +242,7 @@ export default function TelaInicio() {
             </div>
           </dl>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setCursoModal(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
+            <Botao variante="perigo" onClick={() => setCursoModal(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
             <Botao variante="primario" onClick={() => { setCursoModal(null); navigate(`${ROTAS.CADASTRO}?curso=${cursoModal.id}`); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <MdPersonAdd size={20} aria-hidden="true" /> Cadastrar-se
             </Botao>

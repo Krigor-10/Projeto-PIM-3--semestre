@@ -253,7 +253,7 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
             <Botao
               variante="perigo"
               onClick={() => setCertificadoAberto(null)}
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}
             >
               <TbX size={16} aria-hidden="true" /> Fechar
             </Botao>

@@ -301,8 +301,10 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
             Gerencie quais cursos aparecem na homepage da plataforma
           </p>
         </div>
-        <Botao variante="primario" onClick={() => { setModalNovo(true); setNivelNovo("Iniciante"); setVisivelNovo(false); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+        <Botao variante="primario" onClick={() => { setModalNovo(true); setNivelNovo("Iniciante"); setVisivelNovo(false); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+          variants={{ hover: { y: -1 } }} whileHover="hover"
+        >
+          <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
             <TbPlus size={20} aria-hidden="true" />
           </motion.span>
           Novo Curso

@@ -3056,3 +3056,189 @@
     align-items: flex-start;
   }
 }
+
+/* ------------------------------------------------------------
+   PROGRESSO COORDENADOR
+   ------------------------------------------------------------ */
+.grade-kpi-coord {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espaco-md);
+  margin-bottom: var(--espaco-xl);
+}
+
+.kpi-coord {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  text-align: center;
+}
+
+.kpi-coord__valor {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--cor-texto-forte);
+  line-height: 1;
+}
+
+.kpi-coord__rotulo {
+  font-size: 0.72rem;
+  color: var(--cor-texto-mudo);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+/* Lista de cards de curso */
+.lista-cursos-progresso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  list-style: none;
+}
+
+.cartao-curso-progresso {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  transition: border-color var(--transicao-rapida);
+}
+
+.cartao-curso-progresso:hover {
+  border-color: var(--cor-borda-forte);
+}
+
+.cartao-curso-progresso__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cartao-curso-progresso__identidade {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cartao-curso-progresso__titulo {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--cor-texto-forte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cartao-curso-progresso__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  font-size: 0.78rem;
+  color: var(--cor-texto-mudo);
+  flex-wrap: wrap;
+}
+
+.cartao-curso-progresso__direita {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  flex-shrink: 0;
+}
+
+/* KPIs do modal de detalhes */
+.grade-kpi-modal-curso {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--espaco-sm);
+  margin-bottom: var(--espaco-md);
+}
+
+.kpi-modal-curso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  text-align: center;
+}
+
+.kpi-modal-curso__valor {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--cor-texto-forte);
+  line-height: 1;
+}
+
+.kpi-modal-curso__rotulo {
+  font-size: 0.7rem;
+  color: var(--cor-texto-mudo);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Lista de turmas no modal */
+.lista-turmas-modal-coord {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  list-style: none;
+}
+
+.item-turma-modal-coord {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+}
+
+.item-turma-modal-coord__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-turma-modal-coord__nome {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+}
+
+@media (max-width: 768px) {
+  .grade-kpi-coord {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cartao-curso-progresso {
+    flex-wrap: wrap;
+  }
+
+  .cartao-curso-progresso__direita {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .grade-kpi-modal-curso {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+}
