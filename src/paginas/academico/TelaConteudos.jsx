@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbPencil, TbX, TbCheck, TbBrain } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbPencil, TbX, TbCheck, TbBrain, TbPaperclip, TbLink, TbUpload } from "react-icons/tb";
 import { MdSave, MdAdd, MdDelete } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -690,11 +690,12 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
 
 /* ── Slide de uma turma (visão do professor) ─────────────────── */
 
-function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExcluirQuiz, conteudosExtras = [] }) {
+function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExcluirQuiz, onExcluirConteudo, conteudosExtras = [], conteudosExcluidos = new Set() }) {
   const [modulosAbertos, setModulosAbertos]         = useState(() => new Set());
   const [menuConteudoAberto, setMenuConteudoAberto] = useState(null);
   const [modalOpcoesCont, setModalOpcoesCont]       = useState(null);
-  const [confirmarExcluirQuiz, setConfirmarExcluirQuiz] = useState(false);
+  const [confirmarExcluirQuiz, setConfirmarExcluirQuiz]     = useState(false);
+  const [confirmarExcluirCont, setConfirmarExcluirCont]     = useState(null);
 
   useEffect(() => {
     if (!menuConteudoAberto) return;
@@ -708,7 +709,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
     .sort((a, b) => a.ordem - b.ordem);
 
   const conteudosDoCurso = [...conteudos, ...conteudosExtras].filter((c) =>
-    modulosDoCurso.some((m) => m.id === c.moduloId)
+    modulosDoCurso.some((m) => m.id === c.moduloId) && !conteudosExcluidos.has(c.id)
   );
 
   const totalPorTipoProf = {};
@@ -878,7 +879,15 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
                               <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalOpcoesCont({ cont, modulo }); setMenuConteudoAberto(null); }}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
-                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
+                              {confirmarExcluirCont === cont.id ? (
+                                <li className="menu-contexto__confirmar">
+                                  <span>Excluir?</span>
+                                  <button type="button" className="menu-contexto__confirmar-sim" onClick={() => { onExcluirConteudo(cont); setMenuConteudoAberto(null); setConfirmarExcluirCont(null); }}>Sim</button>
+                                  <button type="button" className="menu-contexto__confirmar-nao" onClick={() => setConfirmarExcluirCont(null)}>Não</button>
+                                </li>
+                              ) : (
+                                <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={(e) => { e.stopPropagation(); setConfirmarExcluirCont(cont.id); }}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
+                              )}
                             </ul>
                           )}
                         </div>
@@ -919,6 +928,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                       type="button"
                       aria-label={`Excluir conteúdo ${cont.titulo}`}
                       style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", padding: "2px" }}
+                      onClick={() => { onExcluirConteudo(cont); setModalOpcoesCont(null); }}
                     >
                       <motion.span
                         whileHover={{ scale: 1.3, rotate: -15 }}
@@ -1019,13 +1029,15 @@ function VistaProfessor({ usuario, onToast }) {
   const [moduloIdProf, setModuloIdProf]     = useState(null);
   const [tipoContProf, setTipoContProf]     = useState(null);
   const [tituloContProf, setTituloContProf] = useState("");
-  const [conteudosLocais, setConteudosLocais] = useState([]);
+  const [anexoContProf, setAnexoContProf]   = useState("");
+  const [conteudosLocais, setConteudosLocais]       = useState([]);
+  const [conteudosExcluidos, setConteudosExcluidos] = useState(() => new Set());
   const [modalQuizModulo, setModalQuizModulo] = useState(null);
   const [questoesDb, setQuestoesDb]         = useState(() => db.questoes.listar());
   const [formQuestao, setFormQuestao]       = useState(null);
   const [confirmarFechar, setConfirmarFechar] = useState(false);
 
-  useEffect(() => { setModuloIdProf(moduloModal?.id ?? null); setTipoContProf(null); setTituloContProf(""); }, [moduloModal]);
+  useEffect(() => { setModuloIdProf(moduloModal?.id ?? null); setTipoContProf(null); setTituloContProf(""); setAnexoContProf(""); }, [moduloModal]);
 
   function abrirModalQuiz(modulo) {
     setQuestoesDb(db.questoes.listar());
@@ -1060,6 +1072,12 @@ function VistaProfessor({ usuario, onToast }) {
     setTipoContProf(null);
     setTituloContProf("");
     onToast?.("Conteúdo criado com sucesso!", "sucesso");
+  }
+
+  function excluirConteudo(cont) {
+    setConteudosExcluidos((prev) => new Set([...prev, cont.id]));
+    setConteudosLocais((prev) => prev.filter((c) => c.id !== cont.id));
+    onToast?.(`"${cont.titulo}" excluído.`, "aviso");
   }
 
   function excluirTodoQuiz(modulo) {
@@ -1203,7 +1221,9 @@ function VistaProfessor({ usuario, onToast }) {
           onNovoConteudo={(modulo = null) => { setModuloModal(modulo); setModalAberto(true); }}
           onAbrirQuiz={abrirModalQuiz}
           onExcluirQuiz={excluirTodoQuiz}
+          onExcluirConteudo={excluirConteudo}
           conteudosExtras={conteudosLocais}
+          conteudosExcluidos={conteudosExcluidos}
         />
       </div>
 
@@ -1414,10 +1434,12 @@ function VistaProfessor({ usuario, onToast }) {
                   </p>
                 </div>
 
-                {/* Seletor visual de tipo */}
+                {/* Seletor de tipo — clips de anexo */}
                 <div className="campo">
-                  <p className="campo__rotulo">Tipo de Conteúdo *</p>
-                  <div className="tipo-selector" role="group" aria-label="Tipo de conteúdo">
+                  <p className="campo__rotulo" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <TbPaperclip size={14} aria-hidden="true" /> Tipo de Anexo *
+                  </p>
+                  <div className="anexo-selector" role="group" aria-label="Tipo de conteúdo">
                     {Object.entries(TIPO_CONFIG).map(([valor, cfg]) => {
                       const Ic    = cfg.Icone;
                       const ativo = tipoContProf === valor;
@@ -1425,17 +1447,60 @@ function VistaProfessor({ usuario, onToast }) {
                         <button
                           key={valor}
                           type="button"
-                          className={`tipo-selector__opcao${ativo ? " tipo-selector__opcao--ativo" : ""}`}
+                          className={`anexo-clip${ativo ? " anexo-clip--ativo" : ""}`}
                           onClick={() => setTipoContProf(valor)}
                           aria-pressed={ativo}
                         >
-                          <Ic size={20} aria-hidden="true" />
-                          {cfg.rotulo}
+                          <span className="anexo-clip__icone">
+                            <Ic size={22} aria-hidden="true" />
+                          </span>
+                          <span className="anexo-clip__label">{cfg.rotulo}</span>
+                          {ativo && <span className="anexo-clip__check" aria-hidden="true">✓</span>}
                         </button>
                       );
                     })}
                   </div>
                 </div>
+
+                <AnimatePresence mode="wait">
+                  {tipoContProf && (
+                    <motion.div
+                      key={tipoContProf}
+                      className="campo"
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      {(() => {
+                        const ANEXO_CONFIG = {
+                          Video:     { label: "Anexar Vídeo",     accept: "video/*,.mp4,.mov,.avi", placeholder: "Clique para selecionar o vídeo" },
+                          Texto:     { label: "Anexar Texto",     accept: ".txt,.md,.html,.docx",   placeholder: "Clique para selecionar o arquivo de texto" },
+                          Documento: { label: "Anexar Documento", accept: ".pdf,.doc,.docx,.ppt,.pptx", placeholder: "Clique para selecionar o documento" },
+                        };
+                        const cfg = ANEXO_CONFIG[tipoContProf];
+                        return (
+                          <>
+                            <p className="campo__rotulo" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                              <TbUpload size={14} aria-hidden="true" /> {cfg.label}
+                            </p>
+                            <label htmlFor="anexo-cont" className="anexo-upload">
+                              <TbUpload size={20} aria-hidden="true" />
+                              <span>{anexoContProf || cfg.placeholder}</span>
+                              <input
+                                id="anexo-cont"
+                                type="file"
+                                accept={cfg.accept}
+                                style={{ display: "none" }}
+                                onChange={(e) => setAnexoContProf(e.target.files?.[0]?.name ?? "")}
+                              />
+                            </label>
+                          </>
+                        );
+                      })()}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 <div className="campo">
                   <label className="campo__rotulo" htmlFor="titulo-cont-prof">Título *</label>
