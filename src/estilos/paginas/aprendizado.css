@@ -330,6 +330,218 @@
 }
 
 /* ------------------------------------------------------------
+   MODAL NOVO CONTEÚDO — preview + seletor de tipo
+   ------------------------------------------------------------ */
+.novo-cont__preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-lg) 0 var(--espaco-md);
+}
+.novo-cont__icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7b2ff7 0%, #a855f7 100%);
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(123, 47, 247, 0.35);
+}
+.novo-cont__icone--vazio {
+  background: var(--cor-fundo-elevado);
+  color: var(--cor-texto-suave);
+  box-shadow: none;
+  border: 2px dashed var(--cor-borda);
+}
+.novo-cont__preview-label {
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+  font-weight: 500;
+}
+
+.tipo-selector {
+  display: flex;
+  gap: var(--espaco-sm);
+  margin-top: 4px;
+}
+.tipo-selector__opcao {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio-md);
+  border: 1.5px solid var(--cor-borda);
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.tipo-selector__opcao:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+.tipo-selector__opcao--ativo {
+  border-color: var(--cor-primaria);
+  background: rgba(123, 47, 247, 0.1);
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
+.novo-cont__separador {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  margin: var(--espaco-md) 0 var(--espaco-sm);
+  color: var(--cor-texto-suave);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.novo-cont__separador::before,
+.novo-cont__separador::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--cor-borda);
+}
+.novo-cont__quiz-acao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-md);
+  padding: var(--espaco-sm) 0 var(--espaco-md);
+}
+.novo-cont__quiz-desc {
+  font-size: 0.82rem;
+  color: var(--cor-texto-suave);
+}
+
+/* ------------------------------------------------------------
+   MODAL OPÇÕES DE CONTEÚDO (professor)
+   ------------------------------------------------------------ */
+.opcoes-cont__secao {
+  padding: var(--espaco-md) 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+.opcoes-cont__secao:last-of-type {
+  border-bottom: none;
+}
+.opcoes-cont__rotulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+  margin-bottom: var(--espaco-sm);
+}
+.opcoes-cont__linha {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+}
+.opcoes-cont__icone-estatico {
+  cursor: default !important;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.opcoes-cont__titulo {
+  font-size: 0.9rem;
+  display: block;
+}
+.opcoes-cont__meta {
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+  margin-top: 2px;
+}
+.opcoes-cont__quiz-contagem {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+.opcoes-cont__icone-acao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--raio-md);
+  border: 1px solid var(--cor-borda);
+  background: transparent;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.opcoes-cont__icone-acao:hover {
+  background: var(--cor-primaria);
+  color: #fff;
+  border-color: var(--cor-primaria);
+}
+.opcoes-cont__icone-acao::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--cor-fundo-elevado);
+  color: var(--cor-texto-forte);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: 3px 9px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 20;
+}
+.opcoes-cont__icone-acao:hover::after {
+  opacity: 1;
+}
+.opcoes-cont__confirmar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: aparecer 0.15s ease;
+}
+.opcoes-cont__confirmar-texto {
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+  white-space: nowrap;
+}
+.opcoes-cont__confirmar-sim,
+.opcoes-cont__confirmar-nao {
+  padding: 3px 10px;
+  border-radius: var(--raio-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 0.15s;
+}
+.opcoes-cont__confirmar-sim {
+  background: #dc2626;
+  color: #fff;
+}
+.opcoes-cont__confirmar-nao {
+  background: transparent;
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-suave);
+}
+.opcoes-cont__confirmar-sim:hover,
+.opcoes-cont__confirmar-nao:hover {
+  opacity: 0.8;
+}
+
+/* ------------------------------------------------------------
    TELA PROGRESSO — ALUNO
    ------------------------------------------------------------ */
 

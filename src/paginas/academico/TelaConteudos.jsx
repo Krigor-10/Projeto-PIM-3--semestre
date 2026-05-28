@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbPencil, TbX, TbCheck, TbBrain } from "react-icons/tb";
-import { MdSave } from "react-icons/md";
+import { MdSave, MdAdd, MdDelete } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
@@ -690,9 +690,11 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
 
 /* ── Slide de uma turma (visão do professor) ─────────────────── */
 
-function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
-  const [modulosAbertos, setModulosAbertos] = useState(() => new Set());
+function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExcluirQuiz, conteudosExtras = [] }) {
+  const [modulosAbertos, setModulosAbertos]         = useState(() => new Set());
   const [menuConteudoAberto, setMenuConteudoAberto] = useState(null);
+  const [modalOpcoesCont, setModalOpcoesCont]       = useState(null);
+  const [confirmarExcluirQuiz, setConfirmarExcluirQuiz] = useState(false);
 
   useEffect(() => {
     if (!menuConteudoAberto) return;
@@ -705,7 +707,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
     .filter((m) => m.cursoId === turma.cursoId)
     .sort((a, b) => a.ordem - b.ordem);
 
-  const conteudosDoCurso = conteudos.filter((c) =>
+  const conteudosDoCurso = [...conteudos, ...conteudosExtras].filter((c) =>
     modulosDoCurso.some((m) => m.id === c.moduloId)
   );
 
@@ -807,39 +809,21 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
                 </button>
               </h3>
               {podeCriar(tipo, "conteudos") && (
-                <>
-                  <button
-                    className="modulo-btn-quiz"
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onAbrirQuiz(modulo); }}
-                    aria-label={`Gerenciar quiz de ${modulo.titulo}`}
-                    data-tooltip="Adicionar Quiz"
+                <button
+                  className="modulo-btn-add"
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onNovoConteudo(modulo); }}
+                  aria-label={`Adicionar conteúdo em ${modulo.titulo}`}
+                  data-tooltip="Adicionar conteúdo"
+                >
+                  <motion.span
+                    whileHover={{ scale: 1.15, rotate: 90 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                    style={{ display: "flex" }}
                   >
-                    <motion.span
-                      whileHover={{ scale: 1.2, rotate: -12 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                      style={{ display: "flex" }}
-                    >
-                      <TbBrain size={30} aria-hidden="true" />
-                    </motion.span>
-                  </button>
-                  <span className="modulo-btn-separador" aria-hidden="true" />
-                  <button
-                    className="modulo-btn-add"
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onNovoConteudo(modulo); }}
-                    aria-label={`Adicionar conteúdo em ${modulo.titulo}`}
-                    data-tooltip="Adicionar conteúdo"
-                  >
-                    <motion.span
-                      whileHover={{ scale: 1.15, rotate: 90 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                      style={{ display: "flex" }}
-                    >
-                      <TbPlus size={30} aria-hidden="true" />
-                    </motion.span>
-                  </button>
-                </>
+                    <TbPlus size={30} aria-hidden="true" />
+                  </motion.span>
+                </button>
               )}
             </header>
 
@@ -849,14 +833,40 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
                   const config = TIPO_CONFIG[cont.tipo] || { icone: "◈", rotulo: cont.tipo };
                   return (
                     <li key={cont.id} className="cartao-conteudo">
-                      <span className="cartao-conteudo__icone" aria-hidden="true" title={config.rotulo}>
-                        {config.icone}
-                      </span>
+                      <button
+                        type="button"
+                        className="cartao-conteudo__icone-btn"
+                        aria-label={`Visualizar ${config.rotulo}: ${cont.titulo}`}
+                        data-tooltip={`Ver ${config.rotulo}`}
+                        onClick={() => {}}
+                      >
+                        {(() => { const Ic = config.Icone ?? IconePadrao; return <Ic size={18} aria-hidden="true" />; })()}
+                      </button>
                       <div className="cartao-conteudo__info">
                         <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
 
+                      {podeCriar(tipo, "conteudos") && (
+                        <button
+                          type="button"
+                          className="cartao-conteudo__quiz-btn"
+                          aria-label={`Gerenciar quiz de ${modulo.titulo}`}
+                          data-tooltip="Gerenciar Quiz"
+                          onClick={() => onAbrirQuiz(modulo)}
+                        >
+                          <span style={{ position: "relative", display: "inline-flex" }}>
+                            <TbBrain size={20} aria-hidden="true" />
+                            <span aria-hidden="true" style={{
+                              position: "absolute", top: -4, right: -5,
+                              background: "#fff", color: "#7c3aed",
+                              borderRadius: "50%", width: 13, height: 13,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              boxShadow: "0 0 0 1.5px #7c3aed"
+                            }}><MdAdd size={10} /></span>
+                          </span> Quiz
+                        </button>
+                      )}
                       {podeEditar(tipo, "conteudos") && (
                         <div className="menu-contexto">
                           <button
@@ -867,7 +877,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
                           ><TbDotsVertical size={18} aria-hidden="true" /></button>
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
-                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
+                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalOpcoesCont({ cont, modulo }); setMenuConteudoAberto(null); }}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
                               <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
                             </ul>
                           )}
@@ -881,6 +891,119 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
           </section>
         );
       })}
+
+      {modalOpcoesCont && createPortal(
+        <Modal
+          titulo={modalOpcoesCont.cont.titulo}
+          onFechar={() => setModalOpcoesCont(null)}
+        >
+          {(() => {
+            const { cont, modulo } = modalOpcoesCont;
+            const config  = TIPO_CONFIG[cont.tipo] || { Icone: IconePadrao, rotulo: cont.tipo };
+            const Ic      = config.Icone ?? IconePadrao;
+            const nQuestoes = db.questoes.listar().filter((q) => q.moduloId === modulo.id).length;
+            return (
+              <>
+                {/* Conteúdo */}
+                <div className="opcoes-cont__secao">
+                  <p className="opcoes-cont__rotulo">Conteúdo</p>
+                  <div className="opcoes-cont__linha">
+                    <span className="cartao-conteudo__icone-btn opcoes-cont__icone-estatico" aria-hidden="true">
+                      <Ic size={18} />
+                    </span>
+                    <div style={{ flex: 1 }}>
+                      <strong className="opcoes-cont__titulo">{cont.titulo}</strong>
+                      <p className="opcoes-cont__meta">{config.rotulo} · {cont.duracao}</p>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={`Excluir conteúdo ${cont.titulo}`}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", padding: "2px" }}
+                    >
+                      <motion.span
+                        whileHover={{ scale: 1.3, rotate: -15 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 10 }}
+                        style={{ display: "flex" }}
+                      >
+                        <MdDelete size={21} aria-hidden="true" />
+                      </motion.span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quiz */}
+                <div className="opcoes-cont__secao">
+                  <p className="opcoes-cont__rotulo">Quiz do Módulo</p>
+                  <div className="opcoes-cont__linha">
+                    <span className="cartao-conteudo__icone-btn opcoes-cont__icone-estatico" aria-hidden="true">
+                      <TbBrain size={18} />
+                    </span>
+                    <p className="opcoes-cont__quiz-contagem">
+                      {nQuestoes === 0
+                        ? "Nenhuma questão cadastrada"
+                        : `${nQuestoes} questão${nQuestoes !== 1 ? "ões" : ""} cadastrada${nQuestoes !== 1 ? "s" : ""}`}
+                    </p>
+                    {confirmarExcluirQuiz ? (
+                      <div className="opcoes-cont__confirmar">
+                        <span className="opcoes-cont__confirmar-texto">Excluir quiz?</span>
+                        <button
+                          type="button"
+                          className="opcoes-cont__confirmar-sim"
+                          onClick={() => { onExcluirQuiz(modulo); setConfirmarExcluirQuiz(false); setModalOpcoesCont(null); }}
+                        >Sim</button>
+                        <button
+                          type="button"
+                          className="opcoes-cont__confirmar-nao"
+                          onClick={() => setConfirmarExcluirQuiz(false)}
+                        >Não</button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="quiz-mgmt__editar"
+                          aria-label="Gerenciar quiz deste módulo"
+                          data-tooltip="Gerenciar Quiz"
+                          onClick={() => onAbrirQuiz(modulo)}
+                        >
+                          <TbPencil size={18} aria-hidden="true" />
+                        </button>
+                        {nQuestoes > 0 && (
+                          <button
+                            type="button"
+                            aria-label="Excluir quiz deste módulo"
+                            style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", padding: "2px" }}
+                            onClick={() => setConfirmarExcluirQuiz(true)}
+                          >
+                            <motion.span
+                              whileHover={{ scale: 1.3, rotate: -15 }}
+                              transition={{ type: "spring", stiffness: 500, damping: 10 }}
+                              style={{ display: "flex" }}
+                            >
+                              <MdDelete size={21} aria-hidden="true" />
+                            </motion.span>
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Gerenciamento */}
+                <div className="modal-rodape">
+                  <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
+                    <TbTrash size={15} aria-hidden="true" /> Excluir
+                  </Botao>
+                  <Botao variante="secundario" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <TbPencil size={15} aria-hidden="true" /> Editar
+                  </Botao>
+                </div>
+              </>
+            );
+          })()}
+        </Modal>,
+        document.body
+      )}
     </div>
   );
 }
@@ -895,12 +1018,14 @@ function VistaProfessor({ usuario, onToast }) {
   const [moduloModal, setModuloModal]       = useState(null);
   const [moduloIdProf, setModuloIdProf]     = useState(null);
   const [tipoContProf, setTipoContProf]     = useState(null);
+  const [tituloContProf, setTituloContProf] = useState("");
+  const [conteudosLocais, setConteudosLocais] = useState([]);
   const [modalQuizModulo, setModalQuizModulo] = useState(null);
   const [questoesDb, setQuestoesDb]         = useState(() => db.questoes.listar());
   const [formQuestao, setFormQuestao]       = useState(null);
   const [confirmarFechar, setConfirmarFechar] = useState(false);
 
-  useEffect(() => { setModuloIdProf(moduloModal?.id ?? null); setTipoContProf(null); }, [moduloModal]);
+  useEffect(() => { setModuloIdProf(moduloModal?.id ?? null); setTipoContProf(null); setTituloContProf(""); }, [moduloModal]);
 
   function abrirModalQuiz(modulo) {
     setQuestoesDb(db.questoes.listar());
@@ -917,6 +1042,31 @@ function VistaProfessor({ usuario, onToast }) {
   function salvarQuiz() {
     fecharModalQuiz();
     onToast?.("Quiz salvo com sucesso!", "sucesso");
+  }
+
+  function criarConteudo() {
+    if (!tituloContProf.trim() || !moduloIdProf || !tipoContProf) return;
+    const novo = {
+      id: Date.now(),
+      titulo: tituloContProf.trim(),
+      tipo: tipoContProf,
+      moduloId: moduloIdProf,
+      duracao: "—",
+      concluido: false,
+    };
+    setConteudosLocais((prev) => [...prev, novo]);
+    setModalAberto(false);
+    setModuloModal(null);
+    setTipoContProf(null);
+    setTituloContProf("");
+    onToast?.("Conteúdo criado com sucesso!", "sucesso");
+  }
+
+  function excluirTodoQuiz(modulo) {
+    const restantes = db.questoes.listar().filter((q) => q.moduloId !== modulo.id);
+    db.questoes.salvar(restantes);
+    setQuestoesDb(restantes);
+    onToast?.("Quiz excluído.", "aviso");
   }
 
   function salvarQuestao(e) {
@@ -1052,6 +1202,8 @@ function VistaProfessor({ usuario, onToast }) {
           tipo={usuario?.tipo}
           onNovoConteudo={(modulo = null) => { setModuloModal(modulo); setModalAberto(true); }}
           onAbrirQuiz={abrirModalQuiz}
+          onExcluirQuiz={excluirTodoQuiz}
+          conteudosExtras={conteudosLocais}
         />
       </div>
 
@@ -1064,6 +1216,9 @@ function VistaProfessor({ usuario, onToast }) {
           <div className="quiz-mgmt">
             {formQuestao === null ? (
               <>
+                <button type="button" className="quiz-mgmt__voltar" onClick={fecharModalQuiz}>
+                  <TbArrowLeft size={16} aria-hidden="true" /> Voltar
+                </button>
                 {questoesDb.filter((q) => q.moduloId === modalQuizModulo.id).length === 0 ? (
                   <p className="quiz-mgmt__vazio">Nenhuma questão cadastrada para este módulo.</p>
                 ) : (
@@ -1096,9 +1251,6 @@ function VistaProfessor({ usuario, onToast }) {
                   </ul>
                 )}
                 <div className="modal-rodape">
-                  <Botao variante="perigo" onClick={() => setConfirmarFechar(true)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
-                    <TbX size={16} aria-hidden="true" /> Fechar
-                  </Botao>
                   <Botao variante="secundario" onClick={() => setFormQuestao({ ...FORM_VAZIO })} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <TbPlus size={16} aria-hidden="true" /> Nova questão
                   </Botao>
@@ -1117,7 +1269,7 @@ function VistaProfessor({ usuario, onToast }) {
                   onClick={() => setFormQuestao(null)}
                 >
                   <TbArrowLeft size={16} aria-hidden="true" />
-                  Lista de questões
+                  Voltar
                 </button>
                 <div className="campo">
                   <label className="campo__rotulo" htmlFor="qz-titulo">Título *</label>
@@ -1216,53 +1368,143 @@ function VistaProfessor({ usuario, onToast }) {
       {/* Portal para modal — evita conflito de stacking context com o transform do carrossel */}
       {modalAberto && createPortal(
         <Modal
-          titulo={moduloModal ? `Novo Conteúdo — ${moduloModal.titulo}` : `Novo Conteúdo — ${minhasTurmas[slideAtual].nomeTurma}`}
-          onFechar={() => { setModalAberto(false); setModuloModal(null); }}
+          titulo={moduloModal ? `Novo Conteúdo — ${moduloModal.titulo}` : "Novo Conteúdo"}
+          onFechar={() => { setModalAberto(false); setModuloModal(null); setTipoContProf(null); }}
         >
-          <form
-            className="formulario-modal"
-            onSubmit={(e) => { e.preventDefault(); setModalAberto(false); setModuloModal(null); }}
-            noValidate
-          >
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="titulo-cont-prof">Título *</label>
-              <input id="titulo-cont-prof" className="campo__entrada" type="text" required />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="modulo-cont-prof">Módulo *</label>
-              <SelectSimples
-                id="modulo-cont-prof"
-                value={moduloIdProf ?? ""}
-                opcoes={modulosDaTurmaAtual.map((m) => ({ valor: m.id, rotulo: m.titulo }))}
-                onChange={(val) => setModuloIdProf(Number(val))}
-                placeholder="Selecione um módulo"
-                required
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="tipo-cont-prof">Tipo *</label>
-              <SelectSimples
-                id="tipo-cont-prof"
-                value={tipoContProf ?? ""}
-                opcoes={[
-                  { valor: "Video", rotulo: "Vídeo" },
-                  { valor: "Texto", rotulo: "Texto" },
-                  { valor: "Documento", rotulo: "Documento" },
-                ]}
-                onChange={setTipoContProf}
-                placeholder="Selecione o tipo"
-                required
-              />
-            </div>
-            <footer className="modal-rodape">
-              <Botao variante="perigo" onClick={() => setModalAberto(false)}>
-                Cancelar
-              </Botao>
-              <Botao variante="primario" type="submit">
-                Criar Conteúdo
-              </Botao>
-            </footer>
-          </form>
+          {(() => {
+            const tipoAtual   = tipoContProf;
+            const configAtual = TIPO_CONFIG[tipoAtual];
+            const IconeAtual  = configAtual?.Icone ?? null;
+            const moduloSelecionado = modulosDaTurmaAtual.find((m) => m.id === moduloIdProf);
+
+            return (
+              <form
+                className="formulario-modal"
+                onSubmit={(e) => { e.preventDefault(); criarConteudo(); }}
+                noValidate
+              >
+                {/* Preview do ícone */}
+                <div className="novo-cont__preview">
+                  <AnimatePresence mode="wait">
+                    {IconeAtual ? (
+                      <motion.span
+                        key={tipoAtual}
+                        className="novo-cont__icone"
+                        initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                        exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      >
+                        <IconeAtual size={32} aria-hidden="true" />
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="vazio"
+                        className="novo-cont__icone novo-cont__icone--vazio"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <TbFile size={32} aria-hidden="true" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                  <p className="novo-cont__preview-label">
+                    {configAtual ? configAtual.rotulo : "Selecione o tipo"}
+                  </p>
+                </div>
+
+                {/* Seletor visual de tipo */}
+                <div className="campo">
+                  <p className="campo__rotulo">Tipo de Conteúdo *</p>
+                  <div className="tipo-selector" role="group" aria-label="Tipo de conteúdo">
+                    {Object.entries(TIPO_CONFIG).map(([valor, cfg]) => {
+                      const Ic    = cfg.Icone;
+                      const ativo = tipoContProf === valor;
+                      return (
+                        <button
+                          key={valor}
+                          type="button"
+                          className={`tipo-selector__opcao${ativo ? " tipo-selector__opcao--ativo" : ""}`}
+                          onClick={() => setTipoContProf(valor)}
+                          aria-pressed={ativo}
+                        >
+                          <Ic size={20} aria-hidden="true" />
+                          {cfg.rotulo}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="titulo-cont-prof">Título *</label>
+                  <input
+                    id="titulo-cont-prof"
+                    className="campo__entrada"
+                    type="text"
+                    placeholder="Ex: Introdução ao módulo"
+                    value={tituloContProf}
+                    onChange={(e) => setTituloContProf(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="modulo-cont-prof">Módulo *</label>
+                  <SelectSimples
+                    id="modulo-cont-prof"
+                    value={moduloIdProf ?? ""}
+                    opcoes={modulosDaTurmaAtual.map((m) => ({ valor: m.id, rotulo: m.titulo }))}
+                    onChange={(val) => setModuloIdProf(Number(val))}
+                    placeholder="Selecione um módulo"
+                    required
+                  />
+                </div>
+
+                <div className="novo-cont__separador">
+                  <span>Quiz</span>
+                </div>
+
+                <div className="novo-cont__quiz-acao">
+                  <div>
+                    <p className="novo-cont__quiz-desc">
+                      {moduloSelecionado
+                        ? `Adicionar quiz ao módulo "${moduloSelecionado.titulo}"`
+                        : "Selecione um módulo para criar o quiz"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="cartao-conteudo__quiz-btn"
+                    disabled={!moduloSelecionado}
+                    onClick={() => { criarConteudo(); if (moduloSelecionado) abrirModalQuiz(moduloSelecionado); }}
+                    style={{ opacity: moduloSelecionado ? 1 : 0.4, cursor: moduloSelecionado ? "pointer" : "not-allowed", margin: 0 }}
+                  >
+                    <span style={{ position: "relative", display: "inline-flex" }}>
+                      <TbBrain size={20} aria-hidden="true" />
+                      <span aria-hidden="true" style={{
+                        position: "absolute", top: -4, right: -5,
+                        background: "#fff", color: "#7c3aed",
+                        borderRadius: "50%", width: 13, height: 13,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        boxShadow: "0 0 0 1.5px #7c3aed"
+                      }}><MdAdd size={10} /></span>
+                    </span> Criar Quiz
+                  </button>
+                </div>
+
+                <footer className="modal-rodape">
+                  <Botao variante="perigo" type="button" onClick={() => { setModalAberto(false); setModuloModal(null); setTipoContProf(null); setTituloContProf(""); }} style={{ marginRight: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <TbX size={15} aria-hidden="true" /> Cancelar
+                  </Botao>
+                  <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <TbPlus size={15} aria-hidden="true" /> Criar Conteúdo
+                  </Botao>
+                </footer>
+              </form>
+            );
+          })()}
         </Modal>,
         document.body
       )}
@@ -1487,9 +1729,15 @@ function SlideCursoGestao({ curso, tipo }) {
                   const config = TIPO_CONFIG[cont.tipo] || { icone: "◈", rotulo: cont.tipo };
                   return (
                     <li key={cont.id} className="cartao-conteudo">
-                      <span className="cartao-conteudo__icone" aria-hidden="true" title={config.rotulo}>
-                        {config.icone}
-                      </span>
+                      <button
+                        type="button"
+                        className="cartao-conteudo__icone-btn"
+                        aria-label={`Visualizar ${config.rotulo}: ${cont.titulo}`}
+                        data-tooltip={`Ver ${config.rotulo}`}
+                        onClick={() => {}}
+                      >
+                        {(() => { const Ic = config.Icone ?? IconePadrao; return <Ic size={18} aria-hidden="true" />; })()}
+                      </button>
                       <div className="cartao-conteudo__info">
                         <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
