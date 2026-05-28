@@ -394,6 +394,11 @@ select.campo__entrada option {
   max-width: min(720px, 100%);
 }
 
+.modal-caixa--preview {
+  width: min(780px, 95vw);
+  max-width: min(780px, 95vw);
+}
+
 .modal-caixa--largo {
   max-width: 640px;
 }

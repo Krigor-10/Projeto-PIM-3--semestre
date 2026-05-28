@@ -224,9 +224,9 @@ export const avaliacoes = [
 
 /* ── Conteúdos (ligados aos módulos do Desenvolvimento Web) ──── */
 export const conteudos = [
-  { id: 1, moduloId: 1, titulo: "Introdução ao HTML5",             tipo: "Video",     duracao: "18min", concluido: true  },
-  { id: 2, moduloId: 1, titulo: "Estrutura semântica",             tipo: "Video",     duracao: "22min", concluido: true  },
-  { id: 3, moduloId: 1, titulo: "Formulários e inputs",            tipo: "Texto",     duracao: "15min", concluido: true  },
+  { id: 1, moduloId: 1, titulo: "Introdução ao HTML5",             tipo: "Video",     duracao: "18min", concluido: false },
+  { id: 2, moduloId: 1, titulo: "Estrutura semântica",             tipo: "Video",     duracao: "22min", concluido: false },
+  { id: 3, moduloId: 1, titulo: "Formulários e inputs",            tipo: "Texto",     duracao: "15min", concluido: false },
   { id: 4, moduloId: 2, titulo: "Flexbox na prática",              tipo: "Video",     duracao: "30min", concluido: false },
   { id: 5, moduloId: 2, titulo: "CSS Grid",                        tipo: "Video",     duracao: "28min", concluido: false },
   { id: 6, moduloId: 2, titulo: "Media Queries e responsividade",  tipo: "Documento", duracao: "20min", concluido: false },
@@ -322,3 +322,237 @@ export const NOTAS_MOCK = {
   5: 9.0,
   6: 6.5,
 };
+
+/* ── Questões de quiz pré-criadas pelo professor (demo) ──────── */
+export const questoesProfessor = [
+
+  /* ── Quiz 1 — Módulo: Fundamentos de HTML5 (moduloId: 1) ───── */
+
+  {
+    id: 9001,
+    moduloId: 1,
+    tema: "Fundamentos de HTML5",
+    titulo: "Estrutura básica do HTML",
+    enunciado: "Qual tag define o conteúdo principal visível de uma página HTML?",
+    alternativas: [
+      { letra: "A", texto: "<head>" },
+      { letra: "B", texto: "<body>" },
+      { letra: "C", texto: "<main>" },
+      { letra: "D", texto: "<section>" },
+      { letra: "E", texto: "<article>" },
+    ],
+    gabarito: "B",
+  },
+  {
+    id: 9002,
+    moduloId: 1,
+    tema: "Fundamentos de HTML5",
+    titulo: "Semântica HTML5",
+    enunciado: "Qual das tags a seguir é considerada semântica no HTML5?",
+    alternativas: [
+      { letra: "A", texto: "<div>" },
+      { letra: "B", texto: "<span>" },
+      { letra: "C", texto: "<b>" },
+      { letra: "D", texto: "<nav>" },
+      { letra: "E", texto: "<i>" },
+    ],
+    gabarito: "D",
+  },
+  {
+    id: 9003,
+    moduloId: 1,
+    tema: "Fundamentos de HTML5",
+    titulo: "Links e âncoras",
+    enunciado: "Qual atributo da tag <a> define o destino de um link?",
+    alternativas: [
+      { letra: "A", texto: "src" },
+      { letra: "B", texto: "link" },
+      { letra: "C", texto: "href" },
+      { letra: "D", texto: "url" },
+      { letra: "E", texto: "target" },
+    ],
+    gabarito: "C",
+  },
+
+  /* ── Quiz 2 — Módulo: CSS3 e Responsividade (moduloId: 2) ───── */
+
+  {
+    id: 9004,
+    moduloId: 2,
+    tema: "CSS3 e Responsividade",
+    titulo: "Seletores CSS",
+    enunciado: "Qual seletor CSS aplica estilo a todos os elementos com a classe 'destaque'?",
+    alternativas: [
+      { letra: "A", texto: "#destaque" },
+      { letra: "B", texto: ".destaque" },
+      { letra: "C", texto: "destaque" },
+      { letra: "D", texto: "*destaque" },
+      { letra: "E", texto: "@destaque" },
+    ],
+    gabarito: "B",
+  },
+  {
+    id: 9005,
+    moduloId: 2,
+    tema: "CSS3 e Responsividade",
+    titulo: "Media Queries",
+    enunciado: "Qual regra CSS é usada para aplicar estilos condicionalmente com base no tamanho da tela?",
+    alternativas: [
+      { letra: "A", texto: "@keyframes" },
+      { letra: "B", texto: "@import" },
+      { letra: "C", texto: "@media" },
+      { letra: "D", texto: "@screen" },
+      { letra: "E", texto: "@viewport" },
+    ],
+    gabarito: "C",
+  },
+  {
+    id: 9006,
+    moduloId: 2,
+    tema: "CSS3 e Responsividade",
+    titulo: "Flexbox",
+    enunciado: "Qual propriedade CSS ativa o Flexbox em um container?",
+    alternativas: [
+      { letra: "A", texto: "display: block" },
+      { letra: "B", texto: "display: grid" },
+      { letra: "C", texto: "display: inline" },
+      { letra: "D", texto: "display: flex" },
+      { letra: "E", texto: "display: table" },
+    ],
+    gabarito: "D",
+  },
+
+];
+
+/* ── QUESTÕES UNIP (reserva — não usadas no seed) ────────────── */
+const _questoesUnip = [
+  {
+    id: 9001,
+    moduloId: 1,
+    tema: "Ciclo de Vida de Software",
+    titulo: "Modelo de ciclo de vida — Sistema de DVDs",
+    introducaoTeorica:
+      "1.1. Restrições de projeto\n\n" +
+      "As restrições de projeto são requisitos de sistema capturados durante a fase de requisitos, nas etapas de concepção e de elaboração do sistema. Essas restrições são limitações ou condições impostas ao sistema, que podem afetar hardware, software, dados e procedimentos operacionais. Exemplos de restrições de projeto incluem prazos de entrega, orçamento disponível, requisitos de qualidade e necessidade de usar tecnologias específicas.\n\n" +
+      "As restrições de projeto não podem ser confundidas com os objetivos do sistema, embora estejam diretamente relacionados. Um objetivo pode não ser alcançado devido a uma restrição que o limita ou que o impeça. Vejamos alguns exemplos:\n\n" +
+      "• É objetivo do sistema permitir o acesso de fornecedores externos via internet, mas restrições de segurança não o permitem.\n" +
+      "• O sistema deve ler dados de um leitor de cartão de um modelo específico, mas o fabricante não fornece o driver necessário para o sistema operacional no qual o sistema será executado.\n\n" +
+      "1.2. Protótipo do sistema\n\n" +
+      "O protótipo é uma simplificação do sistema a ser desenvolvido, feito para permitir ao usuário antever, verificar, experimentar e validar o sistema futuro antes que ele seja realmente construído. O protótipo pode ser usado para:\n\n" +
+      "• A demonstração de uma visão do sistema aos usuários;\n" +
+      "• A validação dos requisitos;\n" +
+      "• A clarificação de requisitos vagos, imprecisos ou indefinidos;\n" +
+      "• A comunicação entre os membros da equipe e os usuários.\n\n" +
+      "Um processo de engenharia de software é dividido em fases, que têm papel fundamental para que o objetivo seja cumprido. Em cada fase, são recomendadas as tarefas a serem distribuídas entre os vários integrantes das equipes.\n\n" +
+      "1.3. Processos iterativos\n\n" +
+      "Os processos iterativos de software dividem o projeto de um sistema de software em ciclos curtos e repetidos (iterações ou sprints), em que o código é desenvolvido, testado e refinado progressivamente, até que a versão final seja alcançada. Um processo iterativo é oposto ao antigo desenvolvimento sequencial. Cada passagem completa pelo processo é uma iteração, e cada nova iteração deve adicionar um ou vários novos incrementos. Desse modo, ao final de todas as iterações, o sistema estará pronto.\n\n" +
+      "Algumas vantagens do processo iterativo em relação ao processo sequencial são:\n\n" +
+      "• Redução dos riscos de se fazer toda uma etapa e não mais retornar a ela;\n" +
+      "• Aceleração no tempo de desenvolvimento porque serão trabalhados escopos menores e claros;\n" +
+      "• Possibilidade de sofrer menor impacto devido às constantes alterações e atualizações pedidas pelos usuários, facilitando a adaptação e a mudança dos requisitos.",
+    enunciado:
+      "Um analista foi contratado para desenvolver um sistema de pesquisa de DVDs em lojas virtuais. O sistema deverá solicitar ao usuário um título de DVD, que será usado para realizar a pesquisa nas bases de dados das lojas conveniadas. Ao detectar a disponibilidade do DVD solicitado, o sistema armazenará temporariamente os dados das lojas (nome, preço, data prevista para entrega do produto) e exibirá as informações ordenadas por preço. Após analisar as informações, o cliente poderá efetuar a compra. O contratante deverá testar algumas operações do sistema antes de ele ser finalizado. Há tempo suficiente para que o analista atenda a essa solicitação e efetue eventuais modificações exigidas pelo contratante.\n\n" +
+      "Com relação a essa situação, avalie as afirmativas a seguir quanto ao modelo de ciclo de vida.\n\n" +
+      "I. O entendimento do sistema como um todo e a execução sequencial das fases sem retorno produzem um sistema que pode ser validado pelo contratante.\n\n" +
+      "II. A elaboração do protótipo pode ser utilizada para resolver dúvidas de comunicação, o que aumenta os riscos de inclusão de novas funcionalidades não prioritárias.\n\n" +
+      "III. A definição das restrições deve ser a segunda fase a ser realizada no desenvolvimento do projeto, correspondendo à etapa de engenharia.\n\n" +
+      "IV. Um processo iterativo permite que versões progressivas mais completas do sistema sejam construídas e avaliadas.\n\n" +
+      "É correto apenas o que se afirma em",
+    alternativas: [
+      { letra: "A", texto: "I e II." },
+      { letra: "B", texto: "I e III." },
+      { letra: "C", texto: "II e III." },
+      { letra: "D", texto: "II e IV." },
+      { letra: "E", texto: "III e IV." },
+    ],
+    gabarito: "D",
+    analiseDasAfirmativas:
+      "I – Afirmativa incorreta.\n" +
+      "JUSTIFICATIVA. A execução sequencial das fases, sem retorno, não capturará as alterações nem as correções identificadas nas fases posteriores, sejam elas originadas internamente pelos usuários ou externamente por mudanças em legislações ou em regras.\n\n" +
+      "II – Afirmativa correta.\n" +
+      "JUSTIFICATIVA. O protótipo facilita a resolução de dúvidas de comunicação, mas, também, dá ao usuário a oportunidade de criar novas necessidades (prioritárias ou não), pois ele tem uma antevisão do que será o sistema.\n\n" +
+      "III – Afirmativa incorreta.\n" +
+      "JUSTIFICATIVA. Na etapa de engenharia, o objetivo é ter uma visão global do sistema, incluindo hardware, software, equipamentos e pessoas envolvidas. O detalhamento das restrições é feito em etapas posteriores.\n\n" +
+      "IV – Afirmativa correta.\n" +
+      "JUSTIFICATIVA. O processo iterativo permite versões progressivas mais completas por meio de incrementos. A cada iteração, uma nova versão produtiva é completada e se aproxima mais do objetivo de desenvolvimento do produto.",
+  },
+
+  {
+    id: 9002,
+    moduloId: 1,
+    tema: "Orientação a Objetos",
+    titulo: "Herança — Sistema da pizzaria",
+    introducaoTeorica:
+      "Conceitos de programação orientada a objetos\n\n" +
+      "A orientação a objetos é um paradigma de programação que modulariza o código-fonte de um sistema em torno de objetos, que são entidades que combinam características (atributos) e comportamentos (métodos) relacionados em uma única unidade.\n\n" +
+      "Os objetos são instanciados a partir de classes, que funcionam como \"receitas\" ou \"moldes\" para criar objetos. Por exemplo, a classe Caneta pode ser usada para criar os objetos esferografica e hidrografica, cada um com suas próprias características, mas definidos pela mesma estrutura.\n\n" +
+      "No contexto de orientação a objetos, a sobrecarga é a provisão de mais de uma versão para um mesmo método. A diferenciação entre as versões é feita por assinaturas dos métodos, isto é, na lista de parâmetros que o método possui. Isso pode ser feito tanto na quantidade de parâmetros como no tipo de parâmetro informado (exemplos: string, integer, double e float).\n\n" +
+      "A mensagem é uma solicitação feita de um objeto para outro. Os objetos se comunicam por mensagens que geralmente são uma chamada de um método em algum dos objetos envolvidos no processo.\n\n" +
+      "Exemplo de mensagem: um objeto FormularioCliente solicita uma consulta ao objeto PessoaFisica por meio do método ConsultarCliente(cpf).",
+    enunciado:
+      "Uma pizzaria fez uma ampliação de suas instalações e o gerente aproveitou para melhorar o sistema informatizado, que era limitado e não atendia a todas as funções necessárias. O gerente, então, contratou uma empresa para ampliar o software. No desenvolvimento do novo sistema, a empresa aproveitou partes do sistema antigo e estendeu os componentes de maneira a usar código validado, acrescentando as novas funções solicitadas.\n\n" +
+      "Que conceito de orientação a objetos está descrito na situação hipotética acima?",
+    alternativas: [
+      { letra: "A", texto: "Sobrecarga." },
+      { letra: "B", texto: "Herança." },
+      { letra: "C", texto: "Sobreposição." },
+      { letra: "D", texto: "Abstração." },
+      { letra: "E", texto: "Mensagem." },
+    ],
+    gabarito: "B",
+    analiseDasAfirmativas:
+      "A – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. A sobrecarga não permite o reaproveitamento nem a extensão de partes do sistema antigo, pois ela simplesmente gera novas versões dos métodos com assinaturas diferentes. Esses códigos terão de ser novamente testados e validados.\n\n" +
+      "B – Alternativa correta.\n" +
+      "JUSTIFICATIVA. A herança aproveita tudo que foi desenvolvido e aprovado na superclasse, possibilitando o uso nas subclasses como código já testado e validado.\n\n" +
+      "C – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. A sobreposição não aproveita partes antigas, mas as substitui. Esse novo código também terá de ser testado e validado.\n\n" +
+      "D – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. A abstração é um conceito que nada tem a ver com o reaproveitamento de código.\n\n" +
+      "E – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. A mensagem é um conceito que se refere à comunicação entre objetos, nada tendo a ver com o reaproveitamento de código em componentes já desenvolvidos.",
+  },
+
+  {
+    id: 9003,
+    moduloId: 1,
+    tema: "Máquinas Virtuais",
+    titulo: "Conceito de Máquina Virtual",
+    introducaoTeorica:
+      "Máquina virtual (MV)\n\n" +
+      "Uma máquina virtual (MV) é um software de ambiente computacional que permite a execução de sistemas operacionais e de aplicativos sobre um hardware hospedeiro. Ela é um ambiente operacional completo, que se comporta como se fosse um computador independente. É como se tivéssemos \"um computador dentro do outro\", sendo este último \"criado\" por softwares. Ela se comporta exatamente como se fosse uma máquina física, contendo CPU, memória e HD próprios.\n\n" +
+      "A máquina virtual é composta totalmente por softwares, não tendo componentes de hardware. Por isso, com a virtualização, um servidor pode manter vários sistemas operacionais em uso. A restrição para o número de máquinas virtuais possíveis é definida pelos limites físicos de memória, espaço em disco e poder de processamento da máquina hospedeira.\n\n" +
+      "Vantagens no uso de máquinas virtuais:\n\n" +
+      "• Ficam isoladas umas das outras, como se estivessem fisicamente separadas, gerando um ambiente de computação completo para cada uma.\n" +
+      "• Há independência do hardware real — no mesmo servidor físico, podemos executar diferentes sistemas operacionais, como Windows ou Linux.\n" +
+      "• Promovem aumento da segurança, pois cada MV é independente da outra, permitindo diferentes requisitos de segurança em diferentes ambientes virtualizados.\n" +
+      "• Há aumento da confiabilidade e da disponibilidade, pois a parada de um ambiente não interrompe os demais.\n" +
+      "• Promovem a redução do custo, pois podemos trocar vários servidores menores por um mais poderoso.\n" +
+      "• Há melhoria do suporte a aplicações legadas, mantendo o sistema operacional antigo funcionando em uma MV durante migrações.\n\n" +
+      "Desvantagens no uso de máquinas virtuais:\n\n" +
+      "• Como os ambientes se tornam mais complexos e heterogêneos, é necessária uma quantidade de produtos que permitam instanciar, monitorar, configurar e salvar os ambientes virtuais criados.\n" +
+      "• A introdução de uma camada extra de software entre o sistema operacional e o hardware gera um aumento na carga do processamento. A adição de mais MVs degrada o desempenho do hardware como um todo.",
+    enunciado:
+      "O conceito de máquina virtual (MV) foi usado, na década de 1970, no sistema operacional IBM System 370. Atualmente, centros de dados (datacenters) usam MVs para migrar tarefas entre servidores conectados em rede e, assim, equilibrar carga de processamento. Além disso, plataformas atuais de desenvolvimento de software empregam MVs (Java, .NET). Uma MV pode ser construída para emular um processador ou um computador completo. Um código desenvolvido para uma máquina real pode ser executado de forma transparente em uma MV.\n\n" +
+      "Com relação a essas informações, assinale a opção correta.",
+    alternativas: [
+      { letra: "A", texto: "O conceito de transparência mencionado indica que a MV permite que um aplicativo acesse diretamente o hardware da máquina." },
+      { letra: "B", texto: "Uma das vantagens mais significativas de uma MV é a economia de carga de CPU e de memória RAM na execução de um aplicativo." },
+      { letra: "C", texto: "Uma MV oferece maior controle de segurança, uma vez que aplicativos são executados em um ambiente controlado." },
+      { letra: "D", texto: "Para emular uma CPU dual-core, uma MV deve ser instalada e executada em um computador com CPU dual-core." },
+      { letra: "E", texto: "Como uma MV não é uma máquina real, um sistema operacional nela executado fica automaticamente imune a vírus." },
+    ],
+    gabarito: "C",
+    analiseDasAfirmativas:
+      "A – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. A MV é um software que não acessa diretamente o hardware da máquina. Essa função é mantida pelo sistema operacional com o qual ela interage.\n\n" +
+      "B – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. A MV não permite a economia de carga de CPU ou de memória RAM. Pelo contrário, como há uma camada adicional de software, existe uma sobrecarga (overhead) na máquina física hospedeira.\n\n" +
+      "C – Alternativa correta.\n" +
+      "JUSTIFICATIVA. Cada MV se comporta como um ambiente completamente independente, o que reforça a segurança na execução de um aplicativo. Cada MV pode ter suas restrições de segurança independentes em função dos aplicativos que rodam em seu ambiente. Por exemplo, um vírus adquirido na máquina virtual não contamina a máquina real.\n\n" +
+      "D – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. A MV não emula processador e RAM — ela usa o processador e a memória instalados. Os processadores com mais de um núcleo (dual-core ou demais) são de 64 bits e, para utilizá-los, é necessário que o sistema hospedeiro da MV suporte 64 bits.\n\n" +
+      "E – Alternativa incorreta.\n" +
+      "JUSTIFICATIVA. As MVs estão sujeitas às mesmas ameaças de um computador físico, mas os vírus adquiridos na máquina virtual não migram para a máquina real. As mesmas preocupações de segurança têm de ser mantidas nos dois ambientes (real e virtual): bom sistema de segurança, firewalls, antivírus etc.",
+  },
+]; void _questoesUnip;

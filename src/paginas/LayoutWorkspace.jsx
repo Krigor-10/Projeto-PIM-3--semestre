@@ -80,7 +80,7 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   const [listaCursos, setListaCursos] = useState(() => db.cursos.listar());
   useEffect(() => { db.cursos.salvar(listaCursos); }, [listaCursos]);
   /* Estado global de progresso — compartilhado entre TelaConteudos, TelaAvaliacoes e TelaProgresso */
-  const [quizzesAprovados, setQuizzesAprovados] = useState(() => new Set());
+  const [quizzesAprovados, setQuizzesAprovados] = useState(() => db.progresso.listarQuizzes());
   /* Percentual de acerto por módulo: { [moduloId]: número } */
   const [resultadosQuizzes, setResultadosQuizzes] = useState({});
   /* null enquanto não aprovada; objeto { porcentagem, nota, notaMaxima } após aprovação */
@@ -88,7 +88,7 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   const [conteudoConcluido, setConteudoConcluido] = useState(false);
   /* Set de IDs de conteúdos concluídos — compartilhado entre TelaConteudos e TelaProgresso */
   const [conteudosConcluidos, setConteudosConcluidos] = useState(
-    () => new Set(conteudosIniciais.filter((c) => c.concluido).map((c) => c.id))
+    () => db.progresso.listarConcluidos()
   );
   const [cursosFavoritos, setCursosFavoritos] = useState(() => {
     try { return new Set(JSON.parse(localStorage.getItem("coderyse-favoritos") ?? "[]")); }
@@ -110,6 +110,9 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   useEffect(() => {
     localStorage.setItem("coderyse-favoritos", JSON.stringify([...cursosFavoritos]));
   }, [cursosFavoritos]);
+
+  useEffect(() => { db.progresso.salvarConcluidos(conteudosConcluidos); }, [conteudosConcluidos]);
+  useEffect(() => { db.progresso.salvarQuizzes(quizzesAprovados); }, [quizzesAprovados]);
 
   function alternarFavorito(cursoId) {
     setCursosFavoritos((prev) => {

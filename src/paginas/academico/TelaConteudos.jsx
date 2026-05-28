@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbListCheck, TbPencil, TbX, TbCheck } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbPencil, TbX, TbCheck, TbBrain } from "react-icons/tb";
 import { MdSave } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -303,6 +303,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
   const concluidos = conteudosConcluidos ?? new Set(conteudosDoCurso.filter((c) => c.concluido).map((c) => c.id));
   const [modulosAbertos, setModulosAbertos] = useState(() => new Set());
   const [quizModulo, setQuizModulo] = useState(null);
+  const [previewConteudo, setPreviewConteudo] = useState(null);
   const refsModulos = useRef({});
 
   const totalConteudos  = conteudosDoCurso.length;
@@ -426,30 +427,6 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
         </div>
       </header>
 
-      {/* Banner dinâmico */}
-      {tudoConcluido ? (
-        <div className="banner-continuar banner-continuar--completo" role="status">
-          <span className="banner-continuar__icone" aria-hidden="true">✓</span>
-          <div className="banner-continuar__texto">
-            <strong className="banner-continuar__titulo">Parabéns! Todos os conteúdos foram concluídos.</strong>
-          </div>
-        </div>
-      ) : proximoConteudo ? (
-        <div className="banner-continuar" role="complementary" aria-label="Próximo conteúdo sugerido">
-          <span className="banner-continuar__icone" aria-hidden="true">
-            {(() => { const Ic = TIPO_CONFIG[proximoConteudo.tipo]?.Icone ?? IconePadrao; return <Ic size={20} />; })()}
-          </span>
-          <div className="banner-continuar__texto">
-            <p className="banner-continuar__rotulo">Continue de onde parou</p>
-            <strong className="banner-continuar__titulo">{proximoConteudo.titulo}</strong>
-            <p className="banner-continuar__modulo">{moduloProximo?.titulo}</p>
-          </div>
-          <Botao variante="primario" tamanho="pequeno" onClick={continuarConteudo}>
-            Continuar →
-          </Botao>
-        </div>
-      ) : null}
-
       {/* Módulos em acordeão */}
       {modulosDoCurso.map((modulo, idx) => {
         const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
@@ -520,35 +497,75 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                   )}
                 </button>
               </h3>
-              {!bloqueado && (
-                <BotaoQuizModulo
-                  percentual={percentualModulo}
-                  aprovado={quizzesAprovados.has(modulo.id)}
-                  onClick={() => abrirQuizModulo(modulo)}
-                />
-              )}
             </header>
 
             {estaAberto && (
               <ul className="lista-conteudos-completa conteudos-modulo__lista" role="list">
-                {itens.map((cont) => {
+                {(() => {
+                  const todosVideosConcluidos = itens
+                    .filter((c) => c.tipo === "Video")
+                    .every((c) => concluidos.has(c.id));
+                  return itens.map((cont) => {
                   const config        = TIPO_CONFIG[cont.tipo] || { icone: "◈", rotulo: cont.tipo };
                   const estaConcluido = concluidos.has(cont.id);
                   return (
                     <li key={cont.id} className={`cartao-conteudo ${estaConcluido ? "cartao-conteudo--concluido" : ""}`}>
-                      <span className="cartao-conteudo__icone" aria-hidden="true" title={config.rotulo}>{config.icone}</span>
+                      {estaConcluido && (
+                        <motion.span
+                          className="cartao-conteudo__badge-check"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                          aria-label="Concluído"
+                        >
+                          <TbCheck size={16} aria-hidden="true" />
+                        </motion.span>
+                      )}
+                      <button
+                        type="button"
+                        className="cartao-conteudo__icone-btn"
+                        aria-label={`Visualizar ${config.rotulo}: ${cont.titulo}`}
+                        data-tooltip={`Ver ${config.rotulo}`}
+                        onClick={() => setPreviewConteudo({ cont, config })}
+                      >
+                        {(() => { const Ic = config.Icone ?? IconePadrao; return <Ic size={18} aria-hidden="true" />; })()}
+                      </button>
                       <div className="cartao-conteudo__info">
                         <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
-                      <CheckCircular
-                        concluido={estaConcluido}
-                        onClick={() => alternarConclusao(cont.id)}
-                        label={`${estaConcluido ? "Desmarcar" : "Marcar"} "${cont.titulo}" como concluído`}
-                      />
+                      {cont.tipo === "Video" && (() => {
+                        const quizFeito     = quizzesAprovados.has(modulo.id);
+                        const quizBloqueado = !estaConcluido;
+                        return (
+                          <button
+                            type="button"
+                            className={`cartao-conteudo__quiz-btn${quizBloqueado ? " cartao-conteudo__quiz-btn--bloqueado" : quizFeito ? " cartao-conteudo__quiz-btn--feito" : ""}`}
+                            aria-label={quizFeito ? "Quiz concluído — clique para refazer" : quizBloqueado ? "Assista ao vídeo para desbloquear" : `Iniciar quiz de ${cont.titulo}`}
+                            data-tooltip={quizFeito ? "Clique para refazer" : quizBloqueado ? "Finalize o vídeo para desbloquear o quiz" : "Iniciar Quiz"}
+                            onClick={() => !quizBloqueado && abrirQuizModulo(modulo)}
+                            disabled={quizBloqueado}
+                          >
+                            {quizBloqueado
+                              ? <><TbLock size={15} aria-hidden="true" /> Quiz</>
+                              : quizFeito
+                                ? <><TbBrain size={18} aria-hidden="true" /> Quiz concluído</>
+                                : <><TbBrain size={18} aria-hidden="true" /> Quiz</>
+                            }
+                          </button>
+                        );
+                      })()}
+                      {cont.tipo !== "Video" && (
+                        <CheckCircular
+                          concluido={estaConcluido}
+                          onClick={() => alternarConclusao(cont.id)}
+                          label={`${estaConcluido ? "Desmarcar" : "Marcar"} "${cont.titulo}" como concluído`}
+                        />
+                      )}
                     </li>
                   );
-                })}
+                  });
+                })()}
               </ul>
             )}
           </section>
@@ -587,6 +604,84 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
             setTimeout(() => refsModulos.current[proximo.id]?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
           } : undefined}
         />,
+        document.body
+      )}
+
+      {previewConteudo && createPortal(
+        <Modal
+          titulo={previewConteudo.cont.titulo}
+          onFechar={() => setPreviewConteudo(null)}
+          className="modal-caixa--preview"
+        >
+          <div className="preview-conteudo">
+            <p className="preview-conteudo__meta">
+              {previewConteudo.config.rotulo} · {previewConteudo.cont.duracao}
+            </p>
+            {previewConteudo.cont.tipo === "Video" ? (
+              concluidos.has(previewConteudo.cont.id) ? (
+                <motion.div
+                  key="concluido"
+                  className="preview-conteudo__video-sucesso"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                >
+                  <motion.div
+                    className="preview-conteudo__sucesso-icone"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 18 }}
+                  >
+                    <TbCheck size={48} aria-hidden="true" />
+                  </motion.div>
+                  <p className="preview-conteudo__sucesso-titulo">Vídeo concluído!</p>
+                  <span className="preview-conteudo__sucesso-sub">Agora você pode iniciar o quiz do módulo</span>
+                  <button
+                    type="button"
+                    className="cartao-conteudo__quiz-btn"
+                    onClick={() => { setPreviewConteudo(null); abrirQuizModulo(modulosDoCurso.find((m) => m.id === previewConteudo.cont.moduloId)); }}
+                    style={{ marginTop: "0.5rem" }}
+                  >
+                    <TbBrain size={18} aria-hidden="true" /> Iniciar Quiz
+                  </button>
+                </motion.div>
+              ) : (
+                <div className="preview-conteudo__video-placeholder">
+                  <TbPlayerPlay size={64} aria-hidden="true" />
+                  <p>Pré-visualização de vídeo</p>
+                  <span>{previewConteudo.cont.titulo}</span>
+                </div>
+              )
+            ) : previewConteudo.cont.tipo === "Texto" ? (
+              <div className="preview-conteudo__texto-placeholder">
+                <TbAlignLeft size={36} aria-hidden="true" />
+                <p>Conteúdo em texto</p>
+                <span>{previewConteudo.cont.titulo}</span>
+              </div>
+            ) : (
+              <div className="preview-conteudo__doc-placeholder">
+                <TbFileDescription size={36} aria-hidden="true" />
+                <p>Documento disponível</p>
+                <span>{previewConteudo.cont.titulo}</span>
+              </div>
+            )}
+            <div className="preview-conteudo__rodape">
+              <Botao variante="perigo" tamanho="pequeno" onClick={() => setPreviewConteudo(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbX size={15} aria-hidden="true" /> Fechar
+              </Botao>
+              <div className="preview-conteudo__rodape-check">
+                <span className="preview-conteudo__rodape-label">
+                  {concluidos.has(previewConteudo.cont.id) ? "Concluído" : "Marcar como concluído"}
+                </span>
+                <CheckCircular
+                  concluido={concluidos.has(previewConteudo.cont.id)}
+                  onClick={() => alternarConclusao(previewConteudo.cont.id)}
+                  label={`${concluidos.has(previewConteudo.cont.id) ? "Desmarcar" : "Marcar"} "${previewConteudo.cont.titulo}" como concluído`}
+                />
+              </div>
+            </div>
+          </div>
+        </Modal>,
         document.body
       )}
     </div>
@@ -725,7 +820,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
                       transition={{ type: "spring", stiffness: 400, damping: 18 }}
                       style={{ display: "flex" }}
                     >
-                      <TbListCheck size={30} aria-hidden="true" />
+                      <TbBrain size={30} aria-hidden="true" />
                     </motion.span>
                   </button>
                   <span className="modulo-btn-separador" aria-hidden="true" />
@@ -772,8 +867,8 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz }) {
                           ><TbDotsVertical size={18} aria-hidden="true" /></button>
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
-                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={15} aria-hidden="true" />Opções</button></li>
-                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={15} aria-hidden="true" />Excluir</button></li>
+                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
+                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
                             </ul>
                           )}
                         </div>
@@ -808,6 +903,7 @@ function VistaProfessor({ usuario, onToast }) {
   useEffect(() => { setModuloIdProf(moduloModal?.id ?? null); setTipoContProf(null); }, [moduloModal]);
 
   function abrirModalQuiz(modulo) {
+    setQuestoesDb(db.questoes.listar());
     setModalQuizModulo(modulo);
     setFormQuestao(null);
   }
@@ -840,9 +936,10 @@ function VistaProfessor({ usuario, onToast }) {
       ],
       gabarito: formQuestao.gabarito,
     };
+    const atuais = db.questoes.listar();
     const atualizada = formQuestao.editandoId
-      ? questoesDb.map((q) => q.id === formQuestao.editandoId ? questaoEditada : q)
-      : [...questoesDb, questaoEditada];
+      ? atuais.map((q) => q.id === formQuestao.editandoId ? questaoEditada : q)
+      : [...atuais, questaoEditada];
     db.questoes.salvar(atualizada);
     setQuestoesDb(atualizada);
     setFormQuestao(null);
@@ -863,7 +960,8 @@ function VistaProfessor({ usuario, onToast }) {
   }
 
   function excluirQuestao(id) {
-    const atualizada = questoesDb.filter((q) => q.id !== id);
+    const atuais = db.questoes.listar();
+    const atualizada = atuais.filter((q) => q.id !== id);
     db.questoes.salvar(atualizada);
     setQuestoesDb(atualizada);
     onToast?.("Questão excluída.", "erro");
@@ -1409,8 +1507,8 @@ function SlideCursoGestao({ curso, tipo }) {
                           </button>
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
-                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={15} aria-hidden="true" />Opções</button></li>
-                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={15} aria-hidden="true" />Excluir</button></li>
+                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
+                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
                             </ul>
                           )}
                         </div>
