@@ -354,7 +354,7 @@ export default function TelaAlunos({ usuario, onToast }) {
         <div className="kebab-menu" role="menu" style={{ top: kebabPos.top, left: kebabPos.left }} ref={kebabRef}>
           <button role="menuitem" className="kebab-menu__item" type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }}
             onClick={() => { setAlunoDetalhe(alunoKebab); setKebabAberto(null); }}>
-            <TbSettings size={15} aria-hidden="true" />Opções
+            <TbSettings size={20} aria-hidden="true" />Opções
           </button>
         </div>,
         document.body

@@ -434,7 +434,7 @@ export default function TelaProfessores({ usuario, onToast }) {
         >
           <button role="menuitem" className="kebab-menu__item" type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }}
             onClick={() => { setProfessorDetalhe(profKebab); setKebabAberto(null); }}>
-            <TbSettings size={15} aria-hidden="true" />Opções
+            <TbSettings size={20} aria-hidden="true" />Opções
           </button>
         </div>,
         document.body

@@ -391,7 +391,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
         <div className="kebab-menu" role="menu" style={{ top: kebabPos.top, left: kebabPos.left }} ref={kebabRef}>
           <button role="menuitem" className="kebab-menu__item" type="button"
             onClick={() => { setCoordDetalhe(coordKebab); setKebabAberto(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <TbSettings size={15} aria-hidden="true" /> Opções
+            <TbSettings size={20} aria-hidden="true" /> Opções
           </button>
         </div>,
         document.body

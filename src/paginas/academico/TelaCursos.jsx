@@ -159,7 +159,7 @@ function VistaGerencialCoordenador({ usuario }) {
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
                       <button role="menuitem" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setCursoSelecionado(curso); setMenuAberto(null); }}>
-                        <TbSettings size={15} aria-hidden="true" />Opções
+                        <TbSettings size={20} aria-hidden="true" />Opções
                       </button>
                     </li>
                   </ul>
@@ -535,13 +535,13 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
                       <button role="menuitem" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setCursoDetalhe(curso); setMenuAberto(null); }}>
-                        <TbSettings size={15} aria-hidden="true" />Opções
+                        <TbSettings size={20} aria-hidden="true" />Opções
                       </button>
                     </li>
                     {podeExcluir(tipo, "cursos") && (
                       <li>
                         <button role="menuitem" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { abrirExclusao(curso); setMenuAberto(null); }}>
-                          <TbTrash size={15} aria-hidden="true" />Excluir
+                          <TbTrash size={20} aria-hidden="true" />Excluir
                         </button>
                       </li>
                     )}

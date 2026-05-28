@@ -382,7 +382,7 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
                     <li>
                       <button type="button" role="menuitem" style={{ display: "flex", alignItems: "center", gap: "6px" }}
                         onClick={() => { setCursoEditando({ ...curso }); setNivelEditando(curso.nivel ?? "Iniciante"); setMenuAbertoId(null); }}>
-                        <TbSettings size={15} aria-hidden="true" />Opções
+                        <TbSettings size={20} aria-hidden="true" />Opções
                       </button>
                     </li>
                   </ul>

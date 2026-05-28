@@ -180,7 +180,7 @@ function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhe
                           style={{ display: "flex", alignItems: "center", gap: "6px" }}
                           onClick={() => { onVerDetalhes(mod); onToggleMenu(null); }}
                         >
-                          <TbSettings size={15} aria-hidden="true" />Opções
+                          <TbSettings size={20} aria-hidden="true" />Opções
                         </button>
                       </li>
                     </ul>

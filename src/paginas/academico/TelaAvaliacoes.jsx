@@ -465,23 +465,32 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
 /* ── Impressão isolada do certificado ───────────────────────── */
 
 function imprimirCertificado(src) {
-  document.documentElement.dataset.imprimindoCertificado = "true";
-
-  const el = document.createElement("div");
-  el.id = "cert-print-temp";
-  const img = document.createElement("img");
-  img.src = src;
-  img.alt = "Certificado de conclusão";
-  el.appendChild(img);
-  document.body.appendChild(el);
-
-  function cleanup() {
-    delete document.documentElement.dataset.imprimindoCertificado;
-    if (document.body.contains(el)) document.body.removeChild(el);
-    window.removeEventListener("afterprint", cleanup);
-  }
-  window.addEventListener("afterprint", cleanup);
-  window.print();
+  const janela = window.open("", "_blank");
+  janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Certificado de Conclusão</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #fff; }
+    body { display: flex; align-items: center; justify-content: center; }
+    img { width: 100%; height: auto; display: block; }
+    @media print {
+      @page { margin: 0; size: landscape; }
+      body { display: block; }
+      img { width: 100vw; height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <img src="${src}" alt="Certificado de conclusão" />
+  <script>
+    window.onload = function () { window.print(); window.close(); };
+  </script>
+</body>
+</html>`);
+  janela.document.close();
 }
 
 /* ── Resultado da avaliação ──────────────────────────────────── */
@@ -1066,12 +1075,12 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
                   <ul className="menu-contexto__lista" role="menu">
                     <li>
                       <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); onVerDetalhes(av); }}>
-                        <TbSettings size={15} aria-hidden="true" />Opções
+                        <TbSettings size={20} aria-hidden="true" />Opções
                       </button>
                     </li>
                     <li>
                       <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setAvDesempenho(av); }}>
-                        <TbChartBar size={15} aria-hidden="true" />Ver desempenho
+                        <TbChartBar size={20} aria-hidden="true" />Ver desempenho
                       </button>
                     </li>
                   </ul>
@@ -1098,7 +1107,8 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
               {turma.nomeTurma} · {turma.cursoTitulo} · {avDesempenho.totalQuestoes} questões · {avDesempenho.tempoLimiteMinutos}min
             </p>
 
-            {/* KPIs */}
+            {/* KPIs — Participação */}
+            <p className="kpi-secao-rotulo">Participação</p>
             <div className="grade-kpi-modal-curso">
               <div className="kpi-modal-curso">
                 <span className="kpi-modal-curso__valor">{total}</span>
@@ -1112,8 +1122,13 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
                 <span className="kpi-modal-curso__valor">{pendentes}</span>
                 <span className="kpi-modal-curso__rotulo">Pendentes</span>
               </div>
+            </div>
+
+            {/* KPIs — Desempenho */}
+            <p className="kpi-secao-rotulo">Desempenho</p>
+            <div className="grade-kpi-modal-curso">
               <div className="kpi-modal-curso">
-                <span className="kpi-modal-curso__valor" style={{ color: corNota }}>★ {mediaNota.toFixed(1)}</span>
+                <span className="kpi-modal-curso__valor" style={{ color: corNota }}>{mediaNota.toFixed(1)}</span>
                 <span className="kpi-modal-curso__rotulo">Nota média</span>
               </div>
               <div className="kpi-modal-curso">
@@ -1122,40 +1137,9 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
               </div>
               <div className="kpi-modal-curso">
                 <span className="kpi-modal-curso__valor" style={{ color: corTaxa }}>{taxa}%</span>
-                <span className="kpi-modal-curso__rotulo">Aprovação</span>
+                <span className="kpi-modal-curso__rotulo">Taxa de aprovação</span>
               </div>
             </div>
-
-            {/* Lista de alunos */}
-            <section style={{ marginTop: "var(--espaco-lg)" }}>
-              <h4 style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cor-texto-mudo)", fontWeight: 600, marginBottom: "var(--espaco-sm)" }}>
-                Alunos
-              </h4>
-              {alunosDaTurma.length === 0 ? (
-                <p className="texto-vazio">Nenhum aluno matriculado.</p>
-              ) : (
-                <ul className="lista-turmas-modal-coord" role="list">
-                  {alunosDaTurma.map((m, i) => {
-                    const avId  = typeof avDesempenho.id === "string" ? avDesempenho.id.charCodeAt(0) : avDesempenho.id;
-                    const seed  = (m.alunoId + avId) % 10;
-                    const realizou = i < realizaram;
-                    const nota  = realizou ? Math.round(Math.min(10, Math.max(0, mediaNota + (seed % 3) - 1) * 10)) / 10 : null;
-                    const corAluno = nota !== null ? (nota >= 7 ? "var(--cor-sucesso)" : nota >= 5 ? "var(--cor-aviso)" : "var(--cor-erro)") : "var(--cor-texto-mudo)";
-                    return (
-                      <li key={m.id} className="item-turma-modal-coord">
-                        <div className="item-turma-modal-coord__info">
-                          <span className="item-turma-modal-coord__nome">{m.alunoNome}</span>
-                          <Insignia texto={realizou ? "Realizada" : "Pendente"} variante={realizou ? "sucesso" : "neutro"} />
-                        </div>
-                        <span style={{ fontSize: "0.9rem", fontWeight: 700, color: corAluno, whiteSpace: "nowrap" }}>
-                          {nota !== null ? nota.toFixed(1) : "—"}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </section>
 
             <footer className="modal-rodape">
               <Botao variante="perigo" onClick={() => setAvDesempenho(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>

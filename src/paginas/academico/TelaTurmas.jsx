@@ -100,7 +100,7 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
               ><TbDotsVertical size={18} aria-hidden="true" /></button>
               {menuAberto && (
                 <ul className="menu-contexto__lista" role="menu">
-                  <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(false); onEditar(); }}><TbSettings size={15} aria-hidden="true" />Opções</button></li>
+                  <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(false); onEditar(); }}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
                 </ul>
               )}
             </div>
