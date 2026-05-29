@@ -312,10 +312,61 @@
 }
 
 @media (max-width: 768px) {
+  /* Header volta a ser linha — cancela o column do 1100px */
+  .cabecalho-publico__inner {
+    flex-direction: row;
+    align-items: center;
+    height: 60px;
+    padding-block: 0;
+    gap: var(--espaco-sm);
+    padding-inline: var(--espaco-md);
+  }
+
+  /* Logo compacto: sem fundo/borda decorativos, tamanho reduzido */
+  .cabecalho-publico__logo {
+    background: none;
+    border: none;
+    padding: 0;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .cabecalho-publico__logo-marca {
+    font-size: 1.35rem;
+  }
+
+  .cabecalho-publico__logo-subtitulo {
+    display: none;
+  }
+
+  /* Nav: botões compactos sem min-width fixo */
+  .cabecalho-publico__nav {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .cabecalho-publico__nav .botao {
+    min-width: 0;
+    padding-inline: 12px;
+    font-size: 0.82rem;
+    min-height: 38px;
+  }
+
+  .cabecalho-publico__acao-admin {
+    min-width: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .cabecalho-publico__nav .cabecalho-publico__link {
+    display: none;
+  }
+
   .secao-hero {
     flex-direction: column;
     text-align: left;
-    padding-top: calc(64px + var(--espaco-xl));
+    padding-top: calc(60px + var(--espaco-xl));
   }
 
   .secao-hero__conteudo {
@@ -324,10 +375,6 @@
 
   .secao-hero__acoes {
     justify-content: flex-start;
-  }
-
-  .cabecalho-publico__nav .cabecalho-publico__link {
-    display: none;
   }
 
   .grade-pilares--publica {
@@ -346,8 +393,19 @@
 }
 
 @media (max-width: 480px) {
+  .cabecalho-publico__logo-marca {
+    font-size: 1.15rem;
+  }
+
+  /* No celular mais estreito, botões empilham abaixo do logo */
+  .cabecalho-publico__inner {
+    flex-wrap: nowrap;
+  }
+
   .cabecalho-publico__nav .botao {
-    width: 100%;
+    padding-inline: 10px;
+    font-size: 0.75rem;
+    min-height: 34px;
   }
 
   .secao-hero__titulo {
