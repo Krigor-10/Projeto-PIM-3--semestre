@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbPencil, TbX, TbCheck, TbBrain, TbPaperclip, TbLink, TbUpload } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbArrowRight, TbPencil, TbX, TbCheck, TbBrain, TbPaperclip, TbLink, TbUpload, TbRefresh, TbChartBar } from "react-icons/tb";
 import { MdSave, MdAdd, MdDelete } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -104,7 +104,7 @@ function BotaoQuizModulo({ percentual, aprovado = false, onClick }) {
 
 /* ── Modal de quiz rápido ────────────────────────────────────── */
 
-function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModulo }) {
+function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModulo, onUltimoModulo }) {
   const [indice, setIndice] = useState(0);
   const [respostas, setRespostas] = useState({});
   const [concluido, setConcluido] = useState(false);
@@ -187,16 +187,21 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
 
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={onFechar}>
-              Fechar
+              <TbX size={16} aria-hidden="true" /> Fechar
             </Botao>
             {!aprovado && (
               <Botao variante="primario" onClick={reiniciar}>
-                Refazer Quiz
+                <TbRefresh size={16} aria-hidden="true" /> Refazer Quiz
               </Botao>
             )}
             {aprovado && onProximoModulo && (
               <Botao variante="primario" onClick={onProximoModulo}>
-                Iniciar próximo módulo →
+                Iniciar próximo módulo <TbArrowRight size={16} aria-hidden="true" />
+              </Botao>
+            )}
+            {aprovado && !onProximoModulo && onUltimoModulo && (
+              <Botao variante="sucesso" onClick={onUltimoModulo}>
+                Ir para Avaliação Final <TbArrowRight size={16} aria-hidden="true" />
               </Botao>
             )}
           </footer>
@@ -209,6 +214,15 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
   return (
     <Modal titulo={`Quiz — ${modulo.titulo}`} onFechar={onFechar} className="modal-caixa--quiz">
       <div className="quiz-rapido">
+        {indice > 0 && (
+          <button
+            type="button"
+            className="quiz-btn-voltar"
+            onClick={() => setIndice((i) => i - 1)}
+          >
+            <TbArrowLeft size={17} aria-hidden="true" /> Voltar
+          </button>
+        )}
         {/* Barra de progresso do quiz */}
         <div
           className="quiz-rapido__progresso"
@@ -258,22 +272,16 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
         </fieldset>
 
         <footer className="modal-rodape">
-          {indice > 0 && (
-            <Botao
-              variante="fantasma"
-              onClick={() => setIndice((i) => i - 1)}
-              style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}
-            >
-              <TbArrowLeft size={16} aria-hidden="true" />
-              Anterior
-            </Botao>
-          )}
           <Botao
             variante="primario"
             onClick={avancar}
             disabled={!respostaSelecionada}
           >
-            {ehUltima ? "Ver resultado" : "Próxima →"}
+            {ehUltima ? (
+              <><TbChartBar size={16} aria-hidden="true" /> Ver resultado</>
+            ) : (
+              <>Próxima <TbArrowRight size={16} aria-hidden="true" /></>
+            )}
           </Botao>
         </footer>
       </div>
@@ -307,7 +315,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
   const refsModulos = useRef({});
 
   const totalConteudos  = conteudosDoCurso.length;
-  const totalConcluidos = concluidos.size;
+  const totalConcluidos = conteudosDoCurso.filter((c) => concluidos.has(c.id)).length;
 
   /* Apenas módulos que têm conteúdo — são os únicos que exibem botão de quiz */
   const modulosComConteudo = modulosDoCurso.filter((m) =>
@@ -327,8 +335,9 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
     if (idx === 0) return true;
     const anterior = modulosDoCurso[idx - 1];
     const itensAnteriores = conteudosDoCurso.filter((c) => c.moduloId === anterior.id);
+    /* Módulo sem conteúdo não pode ser concluído — pula para o anterior */
+    if (itensAnteriores.length === 0) return estaDesbloqueado(idx - 1);
     return (
-      itensAnteriores.length > 0 &&
       itensAnteriores.every((c) => concluidos.has(c.id)) &&
       quizzesAprovados.has(anterior.id)
     );
@@ -394,6 +403,11 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
     }, 50);
   }
 
+  function irParaModulo(id) {
+    setModulosAbertos(new Set([id]));
+    setTimeout(() => refsModulos.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  }
+
   return (
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
@@ -422,8 +436,27 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
           </p>
         </div>
         <div className="conteudos-aluno__progresso-geral">
-          <span className="conteudos-aluno__progresso-label">Progresso geral</span>
-          <BarraProgresso percentual={percentualGeral} />
+          <div className="anel-progresso" aria-label={`${percentualGeral} por cento concluído`}>
+            <svg className="anel-progresso__svg" viewBox="0 0 120 120" aria-hidden="true">
+              <defs>
+                <linearGradient id={`anel-grad-cont-${matricula.cursoId}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#b992ff" />
+                  <stop offset="100%" stopColor="#7b2ff7" />
+                </linearGradient>
+              </defs>
+              <circle className="anel-progresso__trilha" cx="60" cy="60" r="50" />
+              <circle
+                className="anel-progresso__arco"
+                cx="60" cy="60" r="50"
+                stroke={`url(#anel-grad-cont-${matricula.cursoId})`}
+                style={{ strokeDasharray: "314.16", strokeDashoffset: 314.16 * (1 - percentualGeral / 100) }}
+              />
+            </svg>
+            <span className="anel-progresso__texto" aria-hidden="true">{percentualGeral}%</span>
+          </div>
+          <p className="progresso-hero__legenda">
+            {passosFeitos}/{totalPassos} passos
+          </p>
         </div>
       </header>
 
@@ -499,18 +532,25 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
               </h3>
             </header>
 
+            <AnimatePresence initial={false}>
             {estaAberto && (
+              <motion.div
+                key={`lista-${modulo.id}`}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.28, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+              >
               <ul className="lista-conteudos-completa conteudos-modulo__lista" role="list">
-                {(() => {
-                  const todosVideosConcluidos = itens
-                    .filter((c) => c.tipo === "Video")
-                    .every((c) => concluidos.has(c.id));
-                  return itens.map((cont) => {
+                {itens.map((cont, i) => {
                   const config        = TIPO_CONFIG[cont.tipo] || { icone: "◈", rotulo: cont.tipo };
                   const estaConcluido = concluidos.has(cont.id);
+                  const itemBloqueado = i > 0 && !concluidos.has(itens[i - 1].id);
+                  const isAtual       = !estaConcluido && !itemBloqueado && cont.id === proximoConteudo?.id;
                   return (
-                    <li key={cont.id} className={`cartao-conteudo ${estaConcluido ? "cartao-conteudo--concluido" : ""}`}>
-                      {estaConcluido && (
+                    <li key={cont.id} className={`cartao-conteudo${estaConcluido ? " cartao-conteudo--concluido" : ""}${itemBloqueado ? " cartao-conteudo--bloqueado" : ""}${isAtual ? " cartao-conteudo--atual" : ""}`}>
+                      {estaConcluido && !itemBloqueado && (
                         <motion.span
                           className="cartao-conteudo__badge-check"
                           initial={{ scale: 0 }}
@@ -521,20 +561,30 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                           <TbCheck size={16} aria-hidden="true" />
                         </motion.span>
                       )}
-                      <button
-                        type="button"
-                        className="cartao-conteudo__icone-btn"
-                        aria-label={`Visualizar ${config.rotulo}: ${cont.titulo}`}
-                        data-tooltip={`Ver ${config.rotulo}`}
-                        onClick={() => setPreviewConteudo({ cont, config })}
-                      >
-                        {(() => { const Ic = config.Icone ?? IconePadrao; return <Ic size={18} aria-hidden="true" />; })()}
-                      </button>
+                      {itemBloqueado ? (
+                        <span
+                          className="cartao-conteudo__icone-btn cartao-conteudo__icone-btn--bloqueado"
+                          aria-label="Conteúdo bloqueado"
+                          data-tooltip="Conclua o conteúdo anterior"
+                        >
+                          <TbLock size={18} aria-hidden="true" />
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="cartao-conteudo__icone-btn"
+                          aria-label={`Visualizar ${config.rotulo}: ${cont.titulo}`}
+                          data-tooltip={`Ver ${config.rotulo}`}
+                          onClick={() => setPreviewConteudo({ cont, config })}
+                        >
+                          {(() => { const Ic = config.Icone ?? IconePadrao; return <Ic size={18} aria-hidden="true" />; })()}
+                        </button>
+                      )}
                       <div className="cartao-conteudo__info">
                         <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
-                      {cont.tipo === "Video" && (() => {
+                      {(cont.tipo === "Video" || i === itens.length - 1) && !itemBloqueado && (() => {
                         const quizFeito     = quizzesAprovados.has(modulo.id);
                         const quizBloqueado = !estaConcluido;
                         return (
@@ -555,7 +605,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                           </button>
                         );
                       })()}
-                      {cont.tipo !== "Video" && (
+                      {cont.tipo !== "Video" && !itemBloqueado && i !== itens.length - 1 && (
                         <CheckCircular
                           concluido={estaConcluido}
                           onClick={() => alternarConclusao(cont.id)}
@@ -564,10 +614,11 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                       )}
                     </li>
                   );
-                  });
-                })()}
+                })}
               </ul>
+              </motion.div>
             )}
+            </AnimatePresence>
           </section>
         );
       })}
@@ -603,6 +654,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
             setModulosAbertos((prev) => { const c = new Set(prev); c.add(proximo.id); return c; });
             setTimeout(() => refsModulos.current[proximo.id]?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
           } : undefined}
+          onUltimoModulo={!quizModulo.proximoModulo ? () => { setQuizModulo(null); onMudarSecao?.("avaliacoes"); } : undefined}
         />,
         document.body
       )}
@@ -665,21 +717,40 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                 <span>{previewConteudo.cont.titulo}</span>
               </div>
             )}
-            <div className="preview-conteudo__rodape">
-              <Botao variante="perigo" tamanho="pequeno" onClick={() => setPreviewConteudo(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <TbX size={15} aria-hidden="true" /> Fechar
-              </Botao>
-              <div className="preview-conteudo__rodape-check">
-                <span className="preview-conteudo__rodape-label">
-                  {concluidos.has(previewConteudo.cont.id) ? "Concluído" : "Marcar como concluído"}
-                </span>
-                <CheckCircular
-                  concluido={concluidos.has(previewConteudo.cont.id)}
-                  onClick={() => alternarConclusao(previewConteudo.cont.id)}
-                  label={`${concluidos.has(previewConteudo.cont.id) ? "Desmarcar" : "Marcar"} "${previewConteudo.cont.titulo}" como concluído`}
-                />
-              </div>
-            </div>
+            {(() => {
+              const idxModPreview   = modulosDoCurso.findIndex(m => m.id === previewConteudo.cont.moduloId);
+              const itensDoMod      = conteudosDoCurso.filter(c => c.moduloId === previewConteudo.cont.moduloId);
+              const isUltimo        = itensDoMod[itensDoMod.length - 1]?.id === previewConteudo.cont.id;
+              const proxMod         = modulosDoCurso[idxModPreview + 1] ?? null;
+              return (
+                <div className="preview-conteudo__rodape">
+                  <Botao variante="perigo" tamanho="pequeno" onClick={() => setPreviewConteudo(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <TbX size={15} aria-hidden="true" /> Fechar
+                  </Botao>
+                  <div className="preview-conteudo__rodape-check">
+                    <span className="preview-conteudo__rodape-label">
+                      {concluidos.has(previewConteudo.cont.id) ? "Concluído" : "Marcar como concluído"}
+                    </span>
+                    <CheckCircular
+                      concluido={concluidos.has(previewConteudo.cont.id)}
+                      onClick={() => alternarConclusao(previewConteudo.cont.id)}
+                      label={`${concluidos.has(previewConteudo.cont.id) ? "Desmarcar" : "Marcar"} "${previewConteudo.cont.titulo}" como concluído`}
+                    />
+                    {isUltimo && proxMod && (
+                      <button
+                        type="button"
+                        className={`btn-proximo-modulo${!concluidos.has(previewConteudo.cont.id) ? " btn-proximo-modulo--bloqueado" : ""}`}
+                        onClick={() => { if (concluidos.has(previewConteudo.cont.id)) { setPreviewConteudo(null); irParaModulo(proxMod.id); } }}
+                        disabled={!concluidos.has(previewConteudo.cont.id)}
+                        aria-disabled={!concluidos.has(previewConteudo.cont.id)}
+                      >
+                        Ir para próximo conteúdo <TbArrowRight size={14} aria-hidden="true" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </Modal>,
         document.body

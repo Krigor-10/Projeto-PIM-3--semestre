@@ -996,6 +996,28 @@
   }
 }
 
+@media (max-width: 600px) {
+  /* Avaliação — título pode quebrar linha no mobile */
+  .cartao-avaliacao__titulo {
+    white-space: normal;
+  }
+
+  /* Corpo do cartão empilha meta + botão em coluna */
+  .cartao-avaliacao__corpo {
+    flex-wrap: wrap;
+  }
+
+  .cartao-avaliacao__rodape {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Reduz padding do card em telas estreitas */
+  .cartao-avaliacao {
+    padding: var(--espaco-md);
+  }
+}
+
 @media (max-width: 480px) {
   .barra-filtros {
     flex-direction: column;

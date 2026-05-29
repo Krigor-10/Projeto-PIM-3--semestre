@@ -14,107 +14,58 @@ function resolverStatusModulo(concluidosModulo, totalItens) {
   return                                      { texto: "Em andamento", variante: "info"    };
 }
 
-/* ── Vista do Aluno ──────────────────────────────────────────── */
+/* ── Vista do Aluno — slide de um curso ──────────────────────── */
 
-function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {}, onMudarSecao, conteudosConcluidos }) {
-  const matriculasAprovadas = matriculas.filter(
-    (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
+function SlideProgressoCurso({ matricula, avaliacaoAprovada, resultadosQuizzes = {}, onMudarSecao, conteudosConcluidos }) {
+  const curso = cursos.find((c) => c.id === matricula.cursoId);
+
+  const modulosDoCurso = modulos
+    .filter((m) => m.cursoId === matricula.cursoId)
+    .sort((a, b) => a.ordem - b.ordem);
+
+  const conteudosDoCurso = conteudos.filter((c) =>
+    modulosDoCurso.some((m) => m.id === c.moduloId)
   );
-  const [cursoAtivo, setCursoAtivo] = useState(0);
-  const matricula = matriculasAprovadas[cursoAtivo] ?? null;
-  const curso = matricula ? cursos.find((c) => c.id === matricula.cursoId) : null;
-
-  const modulosDoCurso = matricula
-    ? modulos.filter((m) => m.cursoId === matricula.cursoId).sort((a, b) => a.ordem - b.ordem)
-    : [];
-
-  const conteudosDoCurso = matricula
-    ? conteudos.filter((c) => modulosDoCurso.some((m) => m.id === c.moduloId))
-    : [];
 
   const concluidos = conteudosConcluidos ?? new Set(conteudosDoCurso.filter((c) => c.concluido).map((c) => c.id));
 
   const totalConteudos  = conteudosDoCurso.length;
   const totalConcluidos = conteudosDoCurso.filter((c) => concluidos.has(c.id)).length;
 
-  /* Quiz conta como um passo extra por módulo — igual a TelaConteudos */
   const modulosComConteudo = modulosDoCurso.filter((m) => conteudosDoCurso.some((c) => c.moduloId === m.id));
   const quizzesFeitos = modulosComConteudo.filter((m) => resultadosQuizzes[m.id] !== undefined).length;
   const totalPassos   = totalConteudos + modulosComConteudo.length;
   const passosFeitos  = totalConcluidos + quizzesFeitos;
   const percentualGeral = totalPassos > 0 ? Math.round((passosFeitos / totalPassos) * 100) : 0;
 
-  /* Módulo concluído = todos os conteúdos + quiz aprovado */
   const modulosConcluidos = modulosDoCurso.filter((modulo) => {
     const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
     return itens.length > 0 && itens.every((c) => concluidos.has(c.id)) && resultadosQuizzes[modulo.id] !== undefined;
   }).length;
 
-  /* ── Desempenho: média das notas dos quizzes de módulo realizados ── */
-  const quizzesRealizados = modulosComConteudo.filter((m) => resultadosQuizzes[m.id] !== undefined);
-  const desempenhoMedio   = quizzesRealizados.length > 0
-    ? Math.round(quizzesRealizados.reduce((acc, m) => acc + resultadosQuizzes[m.id], 0) / quizzesRealizados.length)
-    : null;
-  const desempenhoNota = desempenhoMedio !== null ? parseFloat((desempenhoMedio / 10).toFixed(1)) : null;
-  const desempenhoOk   = desempenhoNota !== null && desempenhoNota >= 7;
-  const corDesempenho  = desempenhoNota === null   ? "var(--cor-texto-mudo)"
-    : desempenhoNota >= 7 ? "var(--cor-sucesso)"
-    : desempenhoNota >= 5 ? "var(--cor-aviso)"
-    : "var(--cor-erro)";
+  const todosConcluidos   = modulosConcluidos === modulosComConteudo.length && modulosComConteudo.length > 0;
+  const avaliacaoLiberada = todosConcluidos;
 
-  const todosConcluidos    = modulosConcluidos === modulosDoCurso.length && modulosDoCurso.length > 0;
-  const avaliacaoLiberada  = todosConcluidos && desempenhoOk;
-
-  const certAtivo = avaliacaoAprovada ?? (matricula ? certificadosDemo[matricula.cursoId] ?? null : null);
+  const certAtivo = (avaliacaoAprovada?.[matricula.cursoId]) ?? (certificadosDemo[matricula.cursoId] ?? null);
   const certificadoDesbloqueado = Boolean(certAtivo);
 
-  if (!matricula) {
-    return (
-      <p className="texto-vazio texto-vazio--central" role="status">
-        Você não possui matrícula aprovada. Solicite sua matrícula para acompanhar o progresso.
-      </p>
-    );
-  }
-
   return (
-    <div className="tela-progresso">
-      <header className="cabecalho-pagina">
-        <div>
-          <h1 className="cabecalho-pagina__titulo">Meu Progresso</h1>
-          <p className="cabecalho-pagina__subtitulo">
-            Acompanhe seu desempenho e conquiste seu certificado.
+    <>
+      {/* ── Hero do curso ── */}
+      <header className="conteudos-aluno__cabecalho" aria-label="Visão geral do curso">
+        <div className="conteudos-aluno__curso-info">
+          <p className="conteudos-aluno__turma">{matricula.turmaNome}</p>
+          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
+          <h2 className="conteudos-aluno__curso-titulo">{curso?.titulo}</h2>
+          <p className="conteudos-aluno__curso-meta">
+            {passosFeitos}/{totalPassos} passos · {modulosConcluidos}/{modulosComConteudo.length} módulos
           </p>
         </div>
-      </header>
-
-      {matriculasAprovadas.length > 1 && (
-        <nav className="tabs-cursos" aria-label="Selecionar curso">
-          {matriculasAprovadas.map((mat, idx) => (
-            <button
-              key={mat.id}
-              className={`tabs-cursos__tab${idx === cursoAtivo ? " tabs-cursos__tab--ativo" : ""}`}
-              onClick={() => setCursoAtivo(idx)}
-              aria-current={idx === cursoAtivo ? "true" : undefined}
-            >
-              <span className="tabs-cursos__nome">{mat.cursoTitulo}</span>
-              <span className="tabs-cursos__turma">{mat.turmaNome}</span>
-            </button>
-          ))}
-        </nav>
-      )}
-
-      {/* ── Curso ── */}
-      <section className="progresso-hero" aria-label="Visão geral do curso">
-        <div className="progresso-hero__info">
-          <p className="progresso-hero__turma">{matricula.turmaNome}</p>
-          <h3 className="progresso-hero__titulo">{curso?.titulo}</h3>
-          <p className="progresso-hero__codigo">{matricula.codigoMatricula}</p>
-        </div>
-        <div className="progresso-hero__direita">
+        <div className="conteudos-aluno__progresso-geral">
           <div className="anel-progresso" aria-label={`${percentualGeral} por cento concluído`}>
             <svg className="anel-progresso__svg" viewBox="0 0 120 120" aria-hidden="true">
               <defs>
-                <linearGradient id="anel-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id={`anel-grad-${matricula.cursoId}`} x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#b992ff" />
                   <stop offset="100%" stopColor="#7b2ff7" />
                 </linearGradient>
@@ -123,42 +74,28 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
               <circle
                 className="anel-progresso__arco"
                 cx="60" cy="60" r="50"
-                stroke="url(#anel-grad)"
-                style={{
-                  strokeDasharray: "314.16",
-                  strokeDashoffset: 314.16 * (1 - percentualGeral / 100),
-                }}
+                stroke={`url(#anel-grad-${matricula.cursoId})`}
+                style={{ strokeDasharray: "314.16", strokeDashoffset: 314.16 * (1 - percentualGeral / 100) }}
               />
             </svg>
             <span className="anel-progresso__texto" aria-hidden="true">{percentualGeral}%</span>
           </div>
-          <p className="progresso-hero__legenda">
-            {passosFeitos}/{totalPassos} passos · {modulosConcluidos}/{modulosComConteudo.length} módulos
-          </p>
-          <div className="progresso-hero__desempenho">
-            <span className="progresso-hero__desempenho-rotulo">Desempenho</span>
-            <span className="progresso-hero__desempenho-valor" style={{ color: corDesempenho }}>
-              {desempenhoNota !== null ? `${desempenhoNota.toFixed(1)}/10` : "—"}
-            </span>
-          </div>
         </div>
-      </section>
+      </header>
 
-      {/* ── Aproveitamento ── */}
-      <section aria-labelledby="titulo-aproveitamento">
-        <h3 className="secao-progresso__titulo" id="titulo-aproveitamento">Aproveitamento</h3>
-
+      {/* ── Trilha de módulos ── */}
+      <section aria-labelledby={`titulo-aproveitamento-${matricula.cursoId}`}>
+        <h3 className="secao-progresso__titulo" id={`titulo-aproveitamento-${matricula.cursoId}`}>Aproveitamento</h3>
         <ol className="trilha-modulos" aria-label="Jornada por módulo">
-          {modulosDoCurso.map((modulo, idx) => {
+          {modulosDoCurso.map((modulo) => {
             const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
             const concluidosModulo = itens.filter((c) => concluidos.has(c.id)).length;
             const quizPercentual = resultadosQuizzes[modulo.id];
             const quizFeito = quizPercentual !== undefined;
-            /* Progresso do step = conteúdos + quiz (cada um vale 1 passo) */
-            const totalPassosModulo = itens.length + 1;
+            const totalPassosModulo = itens.length + (itens.length > 0 ? 1 : 0);
             const passosModulo = concluidosModulo + (quizFeito ? 1 : 0);
-            const percentualModulo = Math.round((passosModulo / totalPassosModulo) * 100);
-            const concluido = passosModulo === totalPassosModulo;
+            const percentualModulo = totalPassosModulo > 0 ? Math.round((passosModulo / totalPassosModulo) * 100) : 0;
+            const concluido = totalPassosModulo > 0 && passosModulo === totalPassosModulo;
             const emAndamento = passosModulo > 0 && !concluido;
 
             return (
@@ -175,37 +112,48 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
                 <div className="passo-modulo__corpo">
                   <div className="passo-modulo__cabecalho">
                     <span className="passo-modulo__titulo">{modulo.titulo}</span>
+                    <Insignia
+                      texto={concluido ? "Concluído" : emAndamento ? `${percentualModulo}%` : "Não iniciado"}
+                      variante={concluido ? "sucesso" : emAndamento ? "info" : "neutro"}
+                    />
                   </div>
                   {itens.length > 0 && (
-                    <div className="passo-modulo__progresso">
-                      <BarraProgresso percentual={percentualModulo} mostrarTexto={false} />
-                      <span className="passo-modulo__pct">{percentualModulo}%</span>
-                    </div>
-                  )}
-                  {quizPercentual !== undefined && (
-                    <p className="passo-modulo__quiz">
-                      Quiz · nota {(quizPercentual / 10).toFixed(1)} · {quizPercentual}%
-                    </p>
+                    <ul className="passo-modulo__itens" role="list">
+                      {itens.map((c) => {
+                        const feito = concluidos.has(c.id);
+                        return (
+                          <li key={c.id} className={`passo-modulo__item${feito ? " passo-modulo__item--feito" : ""}`}>
+                            <span className="passo-modulo__item-icone" aria-hidden="true">{feito ? "✓" : "○"}</span>
+                            <span className="passo-modulo__item-titulo">{c.titulo}</span>
+                            <span className="passo-modulo__item-meta">{c.tipo} · {c.duracao}</span>
+                          </li>
+                        );
+                      })}
+                      <li className={`passo-modulo__item passo-modulo__item--quiz${quizFeito ? " passo-modulo__item--feito" : ""}`}>
+                        <span className="passo-modulo__item-icone" aria-hidden="true">{quizFeito ? "✓" : "○"}</span>
+                        <span className="passo-modulo__item-titulo">Quiz</span>
+                        <span className="passo-modulo__item-meta">
+                          {quizFeito ? `nota ${(quizPercentual / 10).toFixed(1)} · ${quizPercentual}%` : "Pendente"}
+                        </span>
+                      </li>
+                    </ul>
                   )}
                 </div>
               </li>
             );
           })}
-          <li
-            className={`passo-modulo passo-modulo--avaliacao${certAtivo ? " passo-modulo--concluido" : avaliacaoLiberada ? " passo-modulo--andamento" : ""}`}
-          >
+
+          {/* Avaliação final */}
+          <li className={`passo-modulo passo-modulo--avaliacao${certAtivo ? " passo-modulo--concluido" : avaliacaoLiberada ? " passo-modulo--andamento" : ""}`}>
             <div className="passo-modulo__esquerda">
-              <div className="passo-modulo__indicador" aria-hidden="true">
-                {certAtivo ? "✓" : "★"}
-              </div>
+              <div className="passo-modulo__indicador" aria-hidden="true">{certAtivo ? "✓" : "★"}</div>
             </div>
             <div className="passo-modulo__corpo">
               <div className="passo-modulo__cabecalho">
                 <span className="passo-modulo__titulo">Avaliação Final</span>
                 {certAtivo
                   ? <Insignia texto="Aprovado" variante="sucesso" />
-                  : <Insignia texto="Pendente" variante="neutro" />
-                }
+                  : <Insignia texto="Pendente" variante="neutro" />}
               </div>
               {certAtivo ? (
                 <div className="cartao-avaliacao-resultado__nota">
@@ -215,11 +163,10 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
               ) : (
                 <p className="passo-modulo__quiz" style={{ color: "var(--cor-texto-mudo)" }}>
                   {!todosConcluidos
-                    ? `Conclua os módulos — ${modulosConcluidos}/${modulosDoCurso.length} concluídos`
+                    ? `Conclua os módulos — ${modulosConcluidos}/${modulosComConteudo.length} concluídos`
                     : !desempenhoOk
-                      ? `Desempenho insuficiente (${desempenhoNota !== null ? desempenhoNota.toFixed(1) : "—"}/10) — mínimo 7.0 nos quizzes para liberar`
-                      : "Módulos concluídos — faça a avaliação para obter o certificado"
-                  }
+                      ? `Desempenho insuficiente (${desempenhoNota !== null ? desempenhoNota.toFixed(1) : "—"}/10) — mínimo 7.0`
+                      : "Módulos concluídos — faça a avaliação para obter o certificado"}
                 </p>
               )}
             </div>
@@ -230,16 +177,10 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
       {/* ── Certificado ── */}
       {certificadoDesbloqueado ? (
         <div className="cartao-certificado-link cartao-certificado-link--desbloqueado" role="status" aria-label="Certificado disponível">
-          <span className="cartao-certificado-link__trofeu" aria-hidden="true">
-            <TbTrophy size={28} />
-          </span>
+          <span className="cartao-certificado-link__trofeu" aria-hidden="true"><TbTrophy size={28} /></span>
           <div className="cartao-certificado-link__info">
             <strong>Parabéns! Certificado disponível</strong>
-            <p>
-              Nota{" "}
-              <strong className="cartao-certificado-link__nota-valor">{certAtivo.nota}</strong>
-              /{certAtivo.notaMaxima ?? 10} · {certAtivo.porcentagem}% de aproveitamento
-            </p>
+            <p>Nota <strong className="cartao-certificado-link__nota-valor">{certAtivo.nota}</strong>/{certAtivo.notaMaxima ?? 10} · {certAtivo.porcentagem}% de aproveitamento</p>
           </div>
           <Botao variante="primario" tamanho="pequeno" onClick={() => onMudarSecao?.("certificados")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <TbCertificate size={15} aria-hidden="true" /> Ver meu certificado
@@ -260,6 +201,85 @@ function VistaAluno({ usuario, avaliacaoAprovada = null, resultadosQuizzes = {},
           </span>
         </div>
       )}
+    </>
+  );
+}
+
+/* ── Vista do Aluno — carrossel de cursos ────────────────────── */
+
+function VistaAluno({ usuario, avaliacaoAprovada, resultadosQuizzes, onMudarSecao, conteudosConcluidos }) {
+  const matriculasAprovadas = matriculas.filter(
+    (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
+  );
+  const [slideAtual, setSlideAtual] = useState(0);
+
+  if (matriculasAprovadas.length === 0) {
+    return (
+      <div className="tela-progresso">
+        <p className="texto-vazio texto-vazio--central" role="status">
+          Você não possui matrícula aprovada. Solicite sua matrícula para acompanhar o progresso.
+        </p>
+      </div>
+    );
+  }
+
+  const total      = matriculasAprovadas.length;
+  const temAnterior = slideAtual > 0;
+  const temProximo  = slideAtual < total - 1;
+
+  return (
+    <div className="tela-progresso">
+      <div className="carrossel-cursos">
+        {total > 1 && (
+          <nav className="carrossel-cursos__nav" aria-label="Navegação entre cursos">
+            <button
+              className="carrossel-cursos__seta"
+              onClick={() => setSlideAtual((i) => i - 1)}
+              disabled={!temAnterior}
+              aria-label="Curso anterior"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <div className="carrossel-cursos__indicadores" role="tablist" aria-label="Cursos matriculados">
+              {matriculasAprovadas.map((mat, idx) => (
+                <button
+                  key={mat.id}
+                  className={`carrossel-cursos__bolinha ${idx === slideAtual ? "carrossel-cursos__bolinha--ativa" : ""}`}
+                  onClick={() => setSlideAtual(idx)}
+                  role="tab"
+                  aria-selected={idx === slideAtual}
+                  aria-label={`Curso ${idx + 1}: ${mat.cursoTitulo}`}
+                  type="button"
+                />
+              ))}
+            </div>
+            <button
+              className="carrossel-cursos__seta"
+              onClick={() => setSlideAtual((i) => i + 1)}
+              disabled={!temProximo}
+              aria-label="Próximo curso"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </nav>
+        )}
+
+        <div className="carrossel-cursos__janela">
+          <SlideProgressoCurso
+            matricula={matriculasAprovadas[slideAtual]}
+            avaliacaoAprovada={avaliacaoAprovada}
+            resultadosQuizzes={resultadosQuizzes}
+            onMudarSecao={onMudarSecao}
+            conteudosConcluidos={conteudosConcluidos}
+          />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbDotsVertical, TbClock, TbArrowLeft, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload, TbChartBar } from "react-icons/tb";
-import { motion } from "framer-motion";
+import { TbDotsVertical, TbClock, TbArrowLeft, TbArrowRight, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload, TbChartBar, TbEye, TbChevronDown } from "react-icons/tb";
+import { motion, AnimatePresence } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
-import { cursos, modulos, matriculas, turmas, NOTAS_MOCK } from "@/dados/dadosMock.js";
+import { cursos, modulos, conteudos, matriculas, turmas, NOTAS_MOCK } from "@/dados/dadosMock.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
 import { db } from "@/dados/db.js";
 import fundoCertificado from "@/ativos/certificado-fundo.png";
@@ -212,6 +212,15 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
     <section className="quiz-embutido quiz-embutido--sem-cabecalho" aria-labelledby="quiz-avaliacao-titulo">
 
       <div className="quiz-corpo">
+        {indice > 0 && (
+          <button
+            type="button"
+            className="quiz-btn-voltar"
+            onClick={() => navegarParaQuestao(indice - 1)}
+          >
+            <TbArrowLeft size={17} aria-hidden="true" /> Voltar
+          </button>
+        )}
         {/* Texto de apoio teórico colapsável */}
         <section className="quiz-apoio">
           <button
@@ -280,24 +289,13 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
 
         {!confirmada && !eRevisando && (
           <div className="quiz-acoes">
-            {indice > 0 && (
-              <Botao
-                variante="fantasma"
-                tamanho="grande"
-                onClick={() => navegarParaQuestao(indice - 1)}
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <TbArrowLeft size={16} aria-hidden="true" />
-                Anterior
-              </Botao>
-            )}
             <Botao
               variante="primario"
               tamanho="grande"
               onClick={confirmarResposta}
               disabled={!selecionada}
             >
-              Confirmar resposta
+              <TbCheck size={16} aria-hidden="true" /> Confirmar resposta
             </Botao>
           </div>
         )}
@@ -337,21 +335,12 @@ function QuizEmbutido({ avaliacao, onConcluir }) {
 
         {confirmada && (
           <div className="quiz-acoes">
-            {indice > 0 && (
-              <Botao
-                variante="fantasma"
-                tamanho="grande"
-                onClick={() => navegarParaQuestao(indice - 1)}
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <TbArrowLeft size={16} aria-hidden="true" />
-                Anterior
-              </Botao>
-            )}
             <Botao variante="primario" tamanho="grande" onClick={avancarQuestao}>
-              {respostas.length < totalQuestoes
-                ? "Próxima questão"
-                : "Ver resultado"}
+              {respostas.length < totalQuestoes ? (
+                <>Próxima questão <TbArrowRight size={16} aria-hidden="true" /></>
+              ) : (
+                <><TbChartBar size={16} aria-hidden="true" /> Ver resultado</>
+              )}
             </Botao>
           </div>
         )}
@@ -521,7 +510,7 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
             onClick={() => onMudarSecao?.("certificados")}
             style={{ display: "flex", alignItems: "center", gap: "8px" }}
           >
-            <TbCertificate size={20} aria-hidden="true" /> Ver meu Certificado
+            <TbCertificate size={20} aria-hidden="true" /> Ir para Certificados
           </Botao>
         </div>
       )}
@@ -578,14 +567,13 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
       </dl>
 
       <footer className="quiz-resultado__acoes">
-        <Botao
-          variante="fantasma"
+        <button
+          type="button"
+          className="quiz-btn-voltar"
           onClick={onVoltar}
-          style={{ display: "flex", alignItems: "center", gap: "6px" }}
         >
-          <TbArrowLeft size={16} aria-hidden="true" />
-          Voltar às avaliações
-        </Botao>
+          <TbArrowLeft size={17} aria-hidden="true" /> Voltar às avaliações
+        </button>
         {/* Exibe contador de tentativas e botão de refazer se ainda houver saldo */}
         <span className="resultado-tentativas">
           {tentativasUsadas} / {LIMITE_TENTATIVAS} tentativas usadas
@@ -596,7 +584,7 @@ function ResultadoAvaliacao({ avaliacao, resultado, tentativasUsadas, onVoltar, 
             onClick={() => setCertificadoAberto(true)}
             style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            <TbCertificate size={16} aria-hidden="true" /> Visualizar Certificado
+            <TbEye size={20} aria-hidden="true" /> Visualizar Certificado
           </Botao>
         ) : podeRefazer ? (
           <Botao
@@ -1224,7 +1212,7 @@ function VistaProfessorAvaliacoes({ usuario, onCriar, onVerDetalhes, avaliacoesL
 
 /* ── Componente principal ────────────────────────────────────── */
 
-export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados = new Set(), onAvaliacaoAprovada, conteudoConcluido = false, onToast }) {
+export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados = new Set(), onAvaliacaoAprovada, conteudoConcluido = false, conteudosConcluidos = new Set(), onToast }) {
   /* modo: "lista" | "criar" | "quiz" | "resultado" */
   const [modo, setModo] = useState("lista");
   const [avaliacaoAtiva, setAvaliacaoAtiva] = useState(null);
@@ -1242,6 +1230,15 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   const [tentativas, setTentativas] = useState({});
 
   const [avaliacoesList, setAvaliacoesList] = useState(() => db.avaliacoes.listar());
+  const [gruposRecolhidos, setGruposRecolhidos] = useState(new Set());
+
+  function alternarGrupo(cursoId) {
+    setGruposRecolhidos((prev) => {
+      const copia = new Set(prev);
+      copia.has(cursoId) ? copia.delete(cursoId) : copia.add(cursoId);
+      return copia;
+    });
+  }
 
   const [modalConfirmarInicio, setModalConfirmarInicio] = useState(null);
   const [confirmandoStatusAv, setConfirmandoStatusAv] = useState(null);
@@ -1263,20 +1260,28 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
     ? cursos.filter((c) => cursosIdsProfessor.has(c.id))
     : cursos;
 
-  /* Busca a matrícula aprovada do aluno para filtrar avaliações do seu curso */
-  const matriculaAluno = ehAluno
-    ? matriculas.find(
-        (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
-      )
-    : null;
+  /* Todas as matrículas aprovadas do aluno — pode estar em mais de um curso */
+  const matriculasAluno = ehAluno
+    ? matriculas.filter((m) => m.alunoId === usuario?.id && m.status === "Aprovada")
+    : [];
+  const cursoIdsAluno = new Set(matriculasAluno.map((m) => m.cursoId));
 
-  /* Módulos do curso do aluno — usados apenas para o banner informativo */
-  const modulosDoCursoAluno = ehAluno && matriculaAluno
-    ? modulos.filter((m) => m.cursoId === matriculaAluno.cursoId)
+  /* Módulos de todos os cursos do aluno — usados para verificar desbloqueio */
+  const modulosDoCursoAluno = ehAluno && cursoIdsAluno.size > 0
+    ? modulos.filter((m) => cursoIdsAluno.has(m.cursoId))
     : [];
 
-  /* Avaliação final liberada quando todo o conteúdo do curso foi concluído */
-  const avaliacaoLiberada = !ehAluno || conteudoConcluido;
+  /* Retorna true se o aluno já concluiu todo o conteúdo do curso (conteúdos + quizzes) */
+  function cursoEstaLiberado(cursoId) {
+    if (!ehAluno) return true;
+    const modulosDoCurso = modulos.filter((m) => m.cursoId === cursoId);
+    if (modulosDoCurso.length === 0) return false;
+    const todosQuizzesDoCurso = modulosDoCurso.every((m) => quizzesAprovados.has(m.id));
+    if (todosQuizzesDoCurso) return true;
+    const conteudosDoCurso = conteudos.filter((c) => modulosDoCurso.some((m) => m.id === c.moduloId));
+    if (conteudosDoCurso.length === 0) return false;
+    return conteudosDoCurso.every((c) => conteudosConcluidos.has(c.id));
+  }
 
   /* Ativa blur no layout enquanto o quiz ou resultado estiver aberto */
   useEffect(() => {
@@ -1340,7 +1345,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                     [avaliacaoAtiva.id]: (prev[avaliacaoAtiva.id] || 0) + 1,
                   }));
                   setResultadoAtual(resultado);
-                  if (resultado.porcentagem >= 70) onAvaliacaoAprovada?.({
+                  if (resultado.porcentagem >= 70) onAvaliacaoAprovada?.(avaliacaoAtiva.cursoId, {
                     porcentagem: resultado.porcentagem,
                     nota: resultado.nota,
                     notaMaxima: avaliacaoAtiva.notaMaxima,
@@ -1370,7 +1375,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   const avaliacoesFiltradas = avaliacoesList.filter((a) => {
     /* Aluno só vê avaliações publicadas do seu curso matriculado */
     if (ehAluno && a.status !== "Publicada") return false;
-    if (ehAluno && matriculaAluno && a.cursoId !== matriculaAluno.cursoId) return false;
+    if (ehAluno && cursoIdsAluno.size > 0 && !cursoIdsAluno.has(a.cursoId)) return false;
     /* Professor só vê avaliações dos cursos em que ministra aulas */
     if (ehProfessor && !cursosIdsProfessor.has(a.cursoId)) return false;
     if (filtroStatus && a.status !== filtroStatus) return false;
@@ -1708,12 +1713,12 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
       )}
 
       {/* Alerta de bloqueio: conteúdo do curso ainda não foi totalmente concluído */}
-      {ehAluno && !avaliacaoLiberada && (
+      {ehAluno && avaliacoesFiltradas.some((av) => !cursoEstaLiberado(av.cursoId)) && (
         <div className="aviso-bloqueio" role="alert">
           <span className="aviso-bloqueio__icone" aria-hidden="true">⊘</span>
           <div className="aviso-bloqueio__texto">
             <strong>Avaliação bloqueada</strong>
-            <p>Conclua todos os conteúdos do curso para liberar a avaliação final.</p>
+            <p>Conclua todos os conteúdos e quizzes do curso para liberar a avaliação final.</p>
           </div>
         </div>
       )}
@@ -1724,26 +1729,49 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
         </p>
       )}
 
-      {grupos.map((grupo) => (
+      {grupos.map((grupo) => {
+        const recolhido = gruposRecolhidos.has(grupo.cursoId);
+        return (
         <section
           key={grupo.cursoId}
           className="avaliacoes-grupo"
           aria-labelledby={`curso-${grupo.cursoId}`}
         >
-          <h3
+          <button
+            type="button"
             className="avaliacoes-grupo__titulo"
             id={`curso-${grupo.cursoId}`}
+            onClick={() => alternarGrupo(grupo.cursoId)}
+            aria-expanded={!recolhido}
+            aria-controls={`grupo-lista-${grupo.cursoId}`}
           >
             {grupo.cursoTitulo}
             <span className="avaliacoes-grupo__contagem">
               {grupo.itens.length}
             </span>
-          </h3>
+            <motion.span
+              className="avaliacoes-grupo__chevron"
+              animate={{ rotate: recolhido ? -90 : 0 }}
+              transition={{ type: "spring", stiffness: 320, damping: 24 }}
+              aria-hidden="true"
+            >
+              <TbChevronDown size={17} />
+            </motion.span>
+          </button>
 
-          <ul
+          <AnimatePresence initial={false}>
+          {!recolhido && (
+          <motion.ul
+            key="lista"
+            id={`grupo-lista-${grupo.cursoId}`}
             className="grade-avaliacoes"
             role="list"
             aria-label={`Avaliações de ${grupo.cursoTitulo}`}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
           >
             {grupo.itens.map((av) => {
               const jaRealizada = Boolean(resultados[av.id]);
@@ -1752,9 +1780,10 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               const resultado = resultados[av.id];
               const aprovado = resultado?.porcentagem >= 70;
 
+              const liberado = cursoEstaLiberado(av.cursoId);
               const classesCartao = [
                 "cartao-avaliacao",
-                ehAluno && !avaliacaoLiberada && "cartao-avaliacao--bloqueado",
+                ehAluno && !liberado && "cartao-avaliacao--bloqueado",
                 ehAluno && resultado && (aprovado ? "cartao-avaliacao--aprovado" : "cartao-avaliacao--reprovado"),
               ].filter(Boolean).join(" ");
 
@@ -1796,7 +1825,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
                       <footer className="cartao-avaliacao__rodape">
                         {ehAluno && badgeRealizacao(av.id)}
-                        {ehAluno && !avaliacaoLiberada ? (
+                        {ehAluno && !liberado ? (
                           <span className="cartao-avaliacao__bloqueado-info">
                             <TbLock size={13} aria-hidden="true" />
                             Bloqueado
@@ -1835,9 +1864,12 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                 </li>
               );
             })}
-          </ul>
+          </motion.ul>
+          )}
+          </AnimatePresence>
         </section>
-      ))}
+        );
+      })}
 
       {portalQuiz}
 
@@ -1943,7 +1975,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             >
               <TbX size={15} aria-hidden="true" /> Fechar
             </Botao>
-            {ehAluno && avaliacaoLiberada && (
+            {ehAluno && cursoEstaLiberado(avaliacaoAtiva?.cursoId) && (
               <Botao
                 variante="primario"
                 onClick={() => {

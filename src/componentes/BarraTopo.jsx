@@ -2,12 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROTAS, rotaPainelSecao } from "@/rotas.js";
 import {
-  TbTrophy, TbSun, TbMoon, TbChevronDown,
+  TbTrophy, TbSun, TbMoon, TbChevronDown, TbMenu2,
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle, TbX,
+  TbUserCircle, TbX, TbRefresh,
 } from "react-icons/tb";
+import { resetar } from "@/dados/db.js";
 import { MdLogout, MdSettings } from "react-icons/md";
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
@@ -64,6 +65,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
   const navigate = useNavigate();
   const [popupAberto, setPopupAberto] = useState(false);
   const [confirmarSaida, setConfirmarSaida] = useState(false);
+  const [confirmandoReset, setConfirmandoReset] = useState(false);
   const [temaClaro, setTemaClaro] = useState(
     () => localStorage.getItem("coderyse-tema") === "claro"
   );
@@ -99,15 +101,14 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
     <header className={`topbar${comTabs ? " topbar--com-tabs" : ""}`}>
       <div className="topbar__principal">
       <div className="topbar__esquerda">
-        <Botao
-          variante="fantasma"
-          tamanho="pequeno"
-          className="topbar__menu-mobile"
+        <button
+          className="topbar__menu-mobile topbar__hamburger"
           onClick={onAbrirSidebar}
           aria-label="Abrir menu de navegação"
+          type="button"
         >
-          Menu
-        </Botao>
+          <TbMenu2 size={22} aria-hidden="true" />
+        </button>
 
         <div className="topbar__contexto">
           <nav className="topbar__breadcrumb" aria-label="Localização atual">
@@ -133,6 +134,25 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
               <TbTrophy size={18} aria-hidden="true" />
               <span className="topbar__atalho-certificados-label">Certificados</span>
             </button>
+            <span className="topbar__separador" aria-hidden="true" />
+            {!confirmandoReset ? (
+              <button
+                type="button"
+                className="topbar__btn-reset"
+                onClick={() => setConfirmandoReset(true)}
+                aria-label="Resetar dados de teste"
+                title="Resetar dados"
+              >
+                <TbRefresh size={15} aria-hidden="true" />
+                <span>Reset</span>
+              </button>
+            ) : (
+              <div className="topbar__reset-confirm">
+                <span>Resetar?</span>
+                <button type="button" className="topbar__btn-reset topbar__btn-reset--sim" onClick={() => { resetar(); window.location.reload(); }}>Sim</button>
+                <button type="button" className="topbar__btn-reset topbar__btn-reset--nao" onClick={() => setConfirmandoReset(false)}>Não</button>
+              </div>
+            )}
             <span className="topbar__separador" aria-hidden="true" />
           </>
         )}

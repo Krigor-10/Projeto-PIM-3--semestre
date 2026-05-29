@@ -529,7 +529,7 @@
   }
 
   .layout-principal {
-    padding: calc(var(--altura-topbar) + var(--espaco-md)) var(--espaco-md) var(--espaco-md);
+    padding: calc(var(--altura-topbar) + var(--espaco-md)) var(--espaco-md) calc(70px + var(--espaco-md));
   }
 
   .modal-caixa {
@@ -1045,6 +1045,54 @@
   }
 }
 
+/* ── Hamburger button ────────────────────────────────────────── */
+.topbar__hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background: transparent;
+  color: var(--cor-texto-forte);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transicao-rapida), border-color var(--transicao-rapida);
+}
+
+.topbar__hamburger:hover {
+  background: var(--cor-fundo-elevado);
+  border-color: var(--cor-borda-forte);
+}
+
+@media (max-width: 768px) {
+  .topbar__hamburger {
+    display: flex;
+  }
+}
+
+/* ── Mobile: oculta itens que causam overflow ────────────────── */
+@media (max-width: 600px) {
+  .topbar__atalho-certificados,
+  .topbar__separador,
+  .topbar__btn-reset,
+  .topbar__reset-confirm {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar__breadcrumb-raiz,
+  .topbar__breadcrumb-sep {
+    display: none;
+  }
+
+  .topbar__breadcrumb-secao {
+    font-size: 0.85rem;
+  }
+}
+
 /* ── Atalho certificados ─────────────────────────────────────── */
 .topbar__atalho-certificados {
   display: flex;
@@ -1074,6 +1122,49 @@
   background: rgba(123, 47, 247, 0.12);
   border-color: var(--cor-marca);
   color: var(--cor-marca);
+}
+
+.topbar__btn-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.25rem 0.6rem;
+  background: transparent;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-sm);
+  color: var(--cor-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.topbar__btn-reset:hover {
+  border-color: var(--cor-aviso);
+  color: var(--cor-aviso);
+}
+
+.topbar__btn-reset--sim {
+  border-color: var(--cor-erro);
+  color: var(--cor-erro);
+}
+
+.topbar__btn-reset--sim:hover {
+  background: var(--cor-erro);
+  color: #fff;
+}
+
+.topbar__btn-reset--nao:hover {
+  border-color: var(--cor-texto-suave);
+  color: var(--cor-texto-forte);
+}
+
+.topbar__reset-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--cor-texto-suave);
 }
 
 .topbar__separador {

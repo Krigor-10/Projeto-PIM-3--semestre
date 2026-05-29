@@ -57,6 +57,68 @@
   opacity: 0.55;
 }
 
+/* Botão "Ir para próximo conteúdo" no modal de preview */
+.btn-proximo-modulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.3rem 0.85rem;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: var(--raio-circular);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-proximo-modulo:hover {
+  background: #15803d;
+  transform: translateX(3px);
+}
+
+.btn-proximo-modulo:active {
+  transform: translateX(1px);
+}
+
+.btn-proximo-modulo--bloqueado,
+.btn-proximo-modulo:disabled {
+  background: var(--cor-fundo-elevado);
+  color: var(--cor-texto-mudo);
+  border: 1px solid var(--cor-borda);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-proximo-modulo--bloqueado:hover,
+.btn-proximo-modulo:disabled:hover {
+  background: var(--cor-fundo-elevado);
+  transform: none;
+}
+
+/* Conteúdo bloqueado — aguarda o anterior ser concluído */
+.cartao-conteudo--bloqueado {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.cartao-conteudo__icone-btn--bloqueado {
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto-mudo);
+  cursor: not-allowed;
+  pointer-events: all;
+}
+
+.cartao-conteudo__icone-btn--bloqueado:hover {
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
 /* Ícone de tipo clicável */
 .cartao-conteudo__icone-btn {
   position: relative;
@@ -293,12 +355,14 @@
 }
 
 .cartao-conteudo__quiz-btn--feito {
-  background: #16a34a !important;
-  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.45) !important;
+  background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important;
+  opacity: 0.88;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3) !important;
 }
 
 .cartao-conteudo__quiz-btn--feito:hover {
-  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.6) !important;
+  opacity: 1;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.45) !important;
 }
 
 .cartao-conteudo__quiz-btn {
@@ -601,13 +665,13 @@
 /* Hero do curso */
 .progresso-hero {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--espaco-lg);
-  background: rgba(123, 47, 247, 0.07);
+  background: rgba(123, 47, 247, 0.06);
   border: 1px solid var(--cor-borda-forte);
-  border-radius: var(--raio-xl);
-  padding: var(--espaco-lg) var(--espaco-xl);
+  border-radius: var(--raio-lg);
+  padding: var(--espaco-lg);
   flex-wrap: wrap;
 }
 
@@ -626,7 +690,7 @@
 }
 
 .progresso-hero__titulo {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   font-weight: 800;
   background: linear-gradient(120deg, var(--cor-texto-forte) 40%, var(--cor-marca-clara));
   -webkit-background-clip: text;
@@ -643,52 +707,14 @@
 
 .progresso-hero__direita {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   gap: var(--espaco-md);
-  min-width: 160px;
-}
-
-.progresso-hero__percentual {
-  font-size: 3rem;
-  font-weight: 900;
-  line-height: 1;
-  background: linear-gradient(135deg, var(--cor-marca-clara), var(--cor-marca));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-family: var(--fonte-display);
 }
 
 .progresso-hero__legenda {
   font-size: 0.8rem;
   color: var(--cor-texto-suave);
-  text-align: center;
-}
-
-.progresso-hero__desempenho {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--espaco-sm);
-  width: 100%;
-  padding: var(--espaco-sm) var(--espaco-md);
-  background: var(--cor-fundo-elevado);
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-md);
-}
-
-.progresso-hero__desempenho-rotulo {
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--cor-texto-mudo);
-}
-
-.progresso-hero__desempenho-valor {
-  font-size: 1.1rem;
-  font-weight: 800;
 }
 
 /* Tabs de seleção de curso */
@@ -741,8 +767,8 @@
 /* Anel de progresso circular */
 .anel-progresso {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   flex-shrink: 0;
 }
 
@@ -1154,6 +1180,61 @@
   margin: var(--espaco-xs) 0 0;
 }
 
+.passo-modulo__itens {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  list-style: none;
+  margin: var(--espaco-sm) 0 0;
+  padding: 0;
+}
+
+.passo-modulo__item {
+  align-items: center;
+  border-radius: var(--raio-sm);
+  color: var(--cor-texto-mudo);
+  display: flex;
+  font-size: 0.81rem;
+  gap: var(--espaco-sm);
+  padding: 4px 6px;
+}
+
+.passo-modulo__item--feito {
+  color: var(--cor-texto-forte);
+}
+
+.passo-modulo__item-icone {
+  color: var(--cor-texto-mudo);
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  width: 14px;
+  text-align: center;
+}
+
+.passo-modulo__item--feito .passo-modulo__item-icone {
+  color: var(--cor-sucesso);
+}
+
+.passo-modulo__item-titulo {
+  flex: 1;
+}
+
+.passo-modulo__item-meta {
+  font-size: 0.74rem;
+  color: var(--cor-texto-mudo);
+  white-space: nowrap;
+}
+
+.passo-modulo__item--feito .passo-modulo__item-meta {
+  color: var(--cor-sucesso);
+}
+
+.passo-modulo__item--quiz {
+  border-top: 1px solid var(--cor-borda);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
 .passo-modulo--avaliacao .passo-modulo__indicador {
   background: rgba(239, 68, 68, 0.12);
   border-color: rgba(239, 68, 68, 0.4);
@@ -1309,6 +1390,59 @@
 .cartao-avaliacao-resultado__nota-max {
   font-size: 0.85rem;
   color: var(--cor-texto-suave);
+}
+
+/* Botão ícone olho — visualizar certificado */
+.cert-btn-visualizar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--cor-marca);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+}
+.cert-btn-visualizar:hover { color: var(--cor-marca-hover, var(--cor-marca)); }
+
+.cert-btn-baixar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--cor-marca);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+}
+.cert-btn-baixar:hover { color: var(--cor-marca-hover, var(--cor-marca)); }
+
+.item-certificado__check {
+  position: absolute;
+  top: -11px;
+  right: -11px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px var(--cor-fundo-elevado), 0 2px 6px rgba(22, 163, 74, 0.5);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.cert-separador {
+  display: inline-block;
+  width: 1px;
+  height: 22px;
+  background: var(--cor-borda);
+  align-self: center;
+  border-radius: 1px;
 }
 
 /* Certificado bloqueado */
@@ -1516,6 +1650,21 @@
 
   .item-check-conteudo__meta {
     display: none;
+  }
+
+  /* Trilha de módulos: oculta duração/meta para ganhar espaço */
+  .passo-modulo__item-meta {
+    display: none;
+  }
+
+  /* Carrossel de cursos — setas menores, pontos mais afastados */
+  .carrossel-cursos__nav {
+    gap: var(--espaco-sm);
+  }
+
+  .carrossel-cursos__seta {
+    width: 28px;
+    height: 28px;
   }
 }
 
@@ -2128,6 +2277,7 @@
 }
 
 .item-certificado {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--espaco-lg);
@@ -2136,8 +2286,6 @@
   border-radius: var(--raio-lg);
   padding: var(--espaco-md) var(--espaco-lg);
   transition: border-color var(--transicao-normal);
-  position: relative;
-  overflow: hidden;
 }
 
 .item-certificado--desbloqueado {
