@@ -322,12 +322,26 @@
     padding-inline: var(--espaco-md);
   }
 
-  /* Logo compacto: sem fundo/borda decorativos, tamanho reduzido */
+  /* Cancela min-height: 96px do desktop */
+  .cabecalho-publico {
+    min-height: 0;
+  }
+
+  .cabecalho-publico__inner {
+    min-height: 0;
+  }
+
+  /* Logo compacto: cancela min-width: 320px, fundo e borda decorativos */
   .cabecalho-publico__logo {
+    min-width: 0;
     background: none;
     border: none;
+    box-shadow: none;
+    border-radius: 0;
     padding: 0;
-    gap: 4px;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
     flex-shrink: 0;
   }
 
@@ -339,7 +353,7 @@
     display: none;
   }
 
-  /* Nav: botões compactos, botão admin oculto (não cabe em mobile) */
+  /* Nav: botões compactos — cancela min-width: 128px e min-height: 44px */
   .cabecalho-publico__nav {
     flex-wrap: nowrap;
     gap: 6px;
@@ -351,9 +365,9 @@
 
   .cabecalho-publico__nav .botao {
     min-width: 0;
+    min-height: 38px;
     padding-inline: 14px;
     font-size: 0.84rem;
-    min-height: 38px;
   }
 
   .cabecalho-publico__nav .cabecalho-publico__link {
