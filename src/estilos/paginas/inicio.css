@@ -339,24 +339,21 @@
     display: none;
   }
 
-  /* Nav: botões compactos sem min-width fixo */
+  /* Nav: botões compactos, botão admin oculto (não cabe em mobile) */
   .cabecalho-publico__nav {
     flex-wrap: nowrap;
     gap: 6px;
   }
 
-  .cabecalho-publico__nav .botao {
-    min-width: 0;
-    padding-inline: 12px;
-    font-size: 0.82rem;
-    min-height: 38px;
+  .cabecalho-publico__acao-admin {
+    display: none;
   }
 
-  .cabecalho-publico__acao-admin {
+  .cabecalho-publico__nav .botao {
     min-width: 0;
-    font-size: 0.78rem;
-    letter-spacing: 0;
-    text-transform: none;
+    padding-inline: 14px;
+    font-size: 0.84rem;
+    min-height: 38px;
   }
 
   .cabecalho-publico__nav .cabecalho-publico__link {
@@ -395,17 +392,6 @@
 @media (max-width: 480px) {
   .cabecalho-publico__logo-marca {
     font-size: 1.15rem;
-  }
-
-  /* No celular mais estreito, botões empilham abaixo do logo */
-  .cabecalho-publico__inner {
-    flex-wrap: nowrap;
-  }
-
-  .cabecalho-publico__nav .botao {
-    padding-inline: 10px;
-    font-size: 0.75rem;
-    min-height: 34px;
   }
 
   .secao-hero__titulo {
