@@ -3,9 +3,11 @@
    Exibe resumo de turmas do professor e avaliações recentes.
    Estatísticas globais vêm de dadosMock.js (estatisticasProfessor).
    ============================================================ */
-import { TbCirclePlus, TbArrowUpRight } from "react-icons/tb";
+import { TbCirclePlus, TbArrowUpRight, TbStar } from "react-icons/tb";
+import { MdGroups, MdSchool, MdAssignmentTurnedIn } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import { turmas, avaliacoes, estatisticasProfessor } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
@@ -28,12 +30,12 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
 
       <section aria-labelledby="titulo-stats-prof">
         <h2 className="visualmente-oculto" id="titulo-stats-prof">Resumo do professor</h2>
-        <dl className="gerencial-stats-barra" aria-label="Resumo do professor">
-          <div><dt>Turmas ativas</dt><dd>{estatisticasProfessor.totalTurmas}</dd></div>
-          <div><dt>Alunos</dt><dd>{estatisticasProfessor.totalAlunos}</dd></div>
-          <div><dt>Avaliações</dt><dd>{estatisticasProfessor.avaliacoesPublicadas}</dd></div>
-          <div><dt>Média de notas</dt><dd>{estatisticasProfessor.mediaNotas}</dd></div>
-        </dl>
+        <div className="grade-estatisticas">
+          <CartaoEstatistica icone={<MdGroups size={22} />}            valor={estatisticasProfessor.totalTurmas}          rotulo="Turmas ativas" />
+          <CartaoEstatistica icone={<MdSchool size={22} />}            valor={estatisticasProfessor.totalAlunos}          rotulo="Total de alunos"      corBorda="var(--cor-info)" />
+          <CartaoEstatistica icone={<MdAssignmentTurnedIn size={22} />} valor={estatisticasProfessor.avaliacoesPublicadas} rotulo="Avaliações publicadas" corBorda="var(--cor-sucesso)" />
+          <CartaoEstatistica icone={<TbStar size={22} />}              valor={estatisticasProfessor.mediaNotas}           rotulo="Média de notas"       corBorda="var(--cor-aviso)" />
+        </div>
       </section>
 
       <div className="grade-2" style={{ marginTop: "var(--espaco-xl)" }}>

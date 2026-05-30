@@ -2196,7 +2196,7 @@
   gap: 5px;
   font-size: var(--texto-xs);
   font-weight: 700;
-  color: var(--cor-texto-mudo);
+  color: var(--cor-texto-forte);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   white-space: nowrap;
@@ -2205,7 +2205,7 @@
 
 .nav-grupo__label--destaque {
   font-size: var(--texto-sm);
-  color: var(--cor-texto-suave);
+  color: var(--cor-texto-forte);
   text-transform: none;
   letter-spacing: 0;
   font-weight: 600;
@@ -2236,27 +2236,26 @@
   align-items: center;
   gap: 6px;
   padding: 5px var(--espaco-sm);
-  border-radius: var(--raio-sm);
-  border: 1px solid transparent;
+  border-radius: 0;
+  border: none;
+  border-bottom: 2px solid transparent;
   background: transparent;
   color: var(--cor-texto-suave);
   font-size: var(--texto-sm);
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: all var(--transicao-rapida);
+  transition: color var(--transicao-rapida), border-color var(--transicao-rapida);
 }
 
 .nav-grupo__tab:hover {
-  background: rgba(123, 47, 247, 0.08);
   color: var(--cor-texto-forte);
-  border-color: var(--cor-borda);
+  border-bottom-color: var(--cor-borda-forte);
 }
 
 .nav-grupo__tab--ativo {
-  background: rgba(123, 47, 247, 0.14);
-  color: var(--cor-marca-clara);
-  border-color: var(--cor-borda-forte);
+  color: #fff;
+  border-bottom-color: var(--cor-marca);
   font-weight: 600;
 }
 
@@ -2467,7 +2466,7 @@
 .perfil-seguranca-item__info strong {
   display: block;
   font-size: var(--texto-sm);
-  color: var(--cor-texto);
+  color: var(--cor-texto-forte);
 }
 
 .perfil-seguranca-item__info p {

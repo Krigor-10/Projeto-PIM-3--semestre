@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { MdPeople, MdSchool, MdAssignment, MdBarChart, MdMenuBook, MdLayers, MdGroups, MdAssignmentTurnedIn, MdDescription } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import { db, resetar } from "@/dados/db.js";
 import { estatisticasAdmin } from "@/dados/dadosMock.js";
 
@@ -35,40 +37,23 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
   }
 
   const kpis = [
-    {
-      rotulo: "Usuários",
-      valor: todosUsuarios.length,
-      detalhe: `${totalAtivos} ativos`,
-    },
-    {
-      rotulo: "Alunos ativos",
-      valor: todosUsuarios.filter((u) => u.tipo === "Aluno" && u.ativo).length,
-      detalhe: `de ${todosUsuarios.filter((u) => u.tipo === "Aluno").length} matriculados`,
-    },
-    {
-      rotulo: "Matrículas pend.",
-      valor: matriculasPendentes.length,
-      detalhe: "aguardando análise",
-      destaque: matriculasPendentes.length > 0,
-    },
-    {
-      rotulo: "Taxa de conclusão",
-      valor: `${estatisticasAdmin.taxaConclusao}%`,
-      detalhe: "média geral",
-    },
+    { rotulo: "Usuários",         valor: todosUsuarios.length,                                             detalhe: `${totalAtivos} ativos`,           icone: <MdPeople size={22} /> },
+    { rotulo: "Alunos ativos",    valor: todosUsuarios.filter((u) => u.tipo === "Aluno" && u.ativo).length, detalhe: `de ${todosUsuarios.filter((u) => u.tipo === "Aluno").length} matriculados`, icone: <MdSchool size={22} />, corBorda: "var(--cor-info)" },
+    { rotulo: "Matrículas pend.", valor: matriculasPendentes.length,                                       detalhe: "aguardando análise",              icone: <MdAssignment size={22} />, corBorda: matriculasPendentes.length > 0 ? "var(--cor-aviso)" : undefined, destaque: matriculasPendentes.length > 0 },
+    { rotulo: "Taxa de conclusão",valor: `${estatisticasAdmin.taxaConclusao}%`,                            detalhe: "média geral",                     icone: <MdBarChart size={22} />, corBorda: "var(--cor-sucesso)" },
   ];
 
   const dadosGrafico = gerarDados6Meses(listaMatriculas);
   const maxTotal = Math.max(...dadosGrafico.map((d) => d.total), 1);
 
   const acessoRapido = [
-    { secao: "usuarios",   icone: "US", rotulo: "Usuários"   },
-    { secao: "cursos",     icone: "CU", rotulo: "Cursos"     },
-    { secao: "modulos",    icone: "MO", rotulo: "Módulos"    },
-    { secao: "turmas",     icone: "TU", rotulo: "Turmas"     },
-    { secao: "matriculas", icone: "MA", rotulo: "Matrículas" },
-    { secao: "avaliacoes", icone: "AV", rotulo: "Avaliações" },
-    { secao: "conteudos",  icone: "KD", rotulo: "Conteúdos" },
+    { secao: "usuarios",   icone: <MdPeople size={20} />,            rotulo: "Usuários"   },
+    { secao: "cursos",     icone: <MdMenuBook size={20} />,          rotulo: "Cursos"     },
+    { secao: "modulos",    icone: <MdLayers size={20} />,            rotulo: "Módulos"    },
+    { secao: "turmas",     icone: <MdGroups size={20} />,            rotulo: "Turmas"     },
+    { secao: "matriculas", icone: <MdAssignment size={20} />,        rotulo: "Matrículas" },
+    { secao: "avaliacoes", icone: <MdAssignmentTurnedIn size={20} />,rotulo: "Avaliações" },
+    { secao: "conteudos",  icone: <MdDescription size={20} />,       rotulo: "Conteúdos" },
   ];
 
   return (
@@ -78,20 +63,21 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
           <h1 className="cabecalho-pagina__titulo">Painel Administrativo</h1>
           <p className="cabecalho-pagina__subtitulo">Visão geral da plataforma</p>
         </div>
-        <Insignia texto="Admin" variante="erro" />
       </header>
 
       {/* KPI cards */}
       <section aria-label="Métricas gerais da plataforma">
-        <dl className="admin-kpis">
+        <div className="grade-estatisticas">
           {kpis.map((kpi) => (
-            <div key={kpi.rotulo} className={`admin-kpi${kpi.destaque ? " admin-kpi--destaque" : ""}`}>
-              <dt className="admin-kpi__rotulo">{kpi.rotulo}</dt>
-              <dd className="admin-kpi__valor">{kpi.valor}</dd>
-              <p className="admin-kpi__detalhe">{kpi.detalhe}</p>
-            </div>
+            <CartaoEstatistica
+              key={kpi.rotulo}
+              icone={kpi.icone}
+              valor={kpi.valor}
+              rotulo={kpi.rotulo}
+              corBorda={kpi.corBorda}
+            />
           ))}
-        </dl>
+        </div>
       </section>
 
       {/* Matrículas pendentes + Acesso Rápido */}

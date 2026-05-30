@@ -207,9 +207,9 @@
 }
 
 .sidebar__item--ativo {
-  color: var(--cor-marca-clara);
-  background: rgba(123, 47, 247, 0.12);
-  border-color: var(--cor-borda-forte);
+  color: #fff;
+  background: linear-gradient(135deg, #7b2ff7 0%, rgba(168, 85, 247, 0.4) 100%);
+  border-color: rgba(123, 47, 247, 0.6);
 }
 
 .sidebar__item-icone {
@@ -252,8 +252,9 @@
   border-radius: var(--raio-lg);
   padding: var(--espaco-lg);
   display: flex;
-  flex-direction: column;
-  gap: var(--espaco-sm);
+  flex-direction: row;
+  align-items: center;
+  gap: var(--espaco-md);
   transition: transform var(--transicao-normal), box-shadow var(--transicao-normal);
 }
 
@@ -263,12 +264,28 @@
 }
 
 .cartao-estatistica__icone {
-  font-size: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cor-marca-clara);
+  flex-shrink: 0;
+}
+
+.cartao-estatistica__icone svg {
+  width: 30px;
+  height: 30px;
+}
+
+.cartao-estatistica__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .cartao-estatistica__valor {
   font-family: var(--fonte-display);
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--cor-texto-forte);
   line-height: 1;
@@ -539,17 +556,12 @@
 
   .cartao-estatistica {
     padding: var(--espaco-sm) var(--espaco-md);
-    gap: 4px;
+    gap: var(--espaco-sm);
   }
+
 
   .cartao-estatistica__valor {
     font-size: 1.4rem;
-  }
-
-  .cartao-estatistica__icone {
-    font-size: 1rem;
-    width: 28px;
-    height: 28px;
   }
 
   .cartao-estatistica__rotulo {
@@ -784,10 +796,9 @@
 }
 
 .sidebar__item--ativo {
-  background: rgba(123, 47, 247, 0.16);
-  border-color: rgba(123, 47, 247, 0.34);
-  box-shadow: inset 3px 0 rgba(134, 239, 172, 0.68);
-  color: var(--cor-texto-forte);
+  color: #fff;
+  background: linear-gradient(135deg, #7b2ff7 0%, rgba(168, 85, 247, 0.4) 100%);
+  border-color: rgba(123, 47, 247, 0.6);
 }
 
 .sidebar__item-icone {
@@ -960,20 +971,6 @@
   border-radius: var(--raio-md);
 }
 
-.cartao-estatistica__icone {
-  align-items: center;
-  background: rgba(185, 153, 255, 0.12);
-  border: 1px solid rgba(185, 153, 255, 0.18);
-  border-radius: 999px;
-  color: #dcfce7;
-  display: inline-flex;
-  font-size: 0.72rem;
-  font-weight: 900;
-  height: 34px;
-  justify-content: center;
-  letter-spacing: 0.04em;
-  width: 42px;
-}
 
 /* ── Abas de navegação — segmented control ───────────────────── */
 .abas-matriculas {
@@ -1142,12 +1139,13 @@
   gap: 6px;
   height: 34px;
   padding: 0 10px;
-  border-radius: var(--raio-md);
-  border: 1px solid transparent;
+  border-radius: 0;
+  border: none;
+  border-bottom: 2px solid transparent;
   background: transparent;
   cursor: pointer;
   color: var(--cor-texto-suave);
-  transition: background var(--transicao-rapida), border-color var(--transicao-rapida), color var(--transicao-rapida);
+  transition: color var(--transicao-rapida), border-color var(--transicao-rapida);
 }
 
 .topbar__atalho-certificados-label {
@@ -1156,14 +1154,13 @@
   white-space: nowrap;
 }
 .topbar__atalho-certificados:hover {
-  background: var(--cor-fundo-elevado);
-  border-color: var(--cor-borda);
   color: var(--cor-texto-forte);
+  border-bottom-color: var(--cor-borda-forte);
 }
 .topbar__atalho-certificados--ativo {
-  background: rgba(123, 47, 247, 0.12);
-  border-color: var(--cor-marca);
-  color: var(--cor-marca);
+  color: #fff;
+  border-bottom-color: var(--cor-marca);
+  font-weight: 600;
 }
 
 .topbar__btn-reset {
@@ -1327,8 +1324,7 @@
   align-items: center;
   gap: var(--espaco-md);
   padding-bottom: var(--espaco-md);
-  margin-bottom: var(--espaco-md);
-  border-bottom: 1px solid var(--cor-borda);
+  margin-bottom: 0;
 }
 
 .popup-perfil__avatar {

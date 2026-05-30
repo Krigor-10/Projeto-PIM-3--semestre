@@ -165,20 +165,6 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             <span className="topbar__separador" aria-hidden="true" />
           </>
         )}
-        <button
-          role="switch"
-          aria-checked={temaClaro}
-          className={`switch-tema${temaClaro ? " switch-tema--claro" : ""}`}
-          onClick={() => setTemaClaro((v) => !v)}
-          aria-label={temaClaro ? "Ativar tema escuro" : "Ativar tema claro"}
-          title={temaClaro ? "Tema escuro" : "Tema claro"}
-          type="button"
-        >
-          <TbMoon size={12} className="switch-tema__lua" aria-hidden="true" />
-          <span className="switch-tema__thumb" aria-hidden="true" />
-          <TbSun  size={12} className="switch-tema__sol" aria-hidden="true" />
-        </button>
-        <span className="topbar__separador" aria-hidden="true" />
         {/* Wrapper relativo para posicionar o popup abaixo do perfil */}
         <div className="topbar__perfil-wrapper" ref={refWrapper}>
           <button
@@ -226,7 +212,16 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
                 <Botao
                   variante="fantasma"
                   className="popup-perfil__editar"
-                  onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil")); }}
+                  onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil"), { state: { aba: "informacoes" } }); }}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                >
+                  <TbUserCircle size={15} aria-hidden="true" />
+                  Meu Perfil
+                </Botao>
+                <Botao
+                  variante="fantasma"
+                  className="popup-perfil__editar"
+                  onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil"), { state: { aba: "seguranca" } }); }}
                   style={{ display: "flex", alignItems: "center", gap: "6px" }}
                 >
                   <MdSettings size={15} aria-hidden="true" />

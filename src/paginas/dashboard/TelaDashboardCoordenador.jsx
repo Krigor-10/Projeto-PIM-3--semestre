@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
+import { MdMenuBook, MdGroups, MdSchool } from "react-icons/md";
 import { turmas, cursos, modulos, matriculas, PROGRESSO_MOCK, estatisticasCoordenador } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
@@ -46,9 +47,9 @@ export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
       <section aria-labelledby="titulo-stats-coord">
         <h2 className="visualmente-oculto" id="titulo-stats-coord">Indicadores acadêmicos</h2>
         <div className="grade-estatisticas">
-          <CartaoEstatistica icone="CU" valor={estatisticasCoordenador.totalCursos}  rotulo="Cursos disponíveis" />
-          <CartaoEstatistica icone="TU" valor={estatisticasCoordenador.totalTurmas}  rotulo="Turmas ativas"      corBorda="var(--cor-sucesso)" />
-          <CartaoEstatistica icone="AL" valor={estatisticasCoordenador.totalAlunos}  rotulo="Total de alunos"    corBorda="var(--cor-info)" />
+          <CartaoEstatistica icone={<MdMenuBook size={22} />} valor={estatisticasCoordenador.totalCursos} rotulo="Cursos disponíveis" />
+          <CartaoEstatistica icone={<MdGroups size={22} />}  valor={estatisticasCoordenador.totalTurmas} rotulo="Turmas ativas"     corBorda="var(--cor-sucesso)" />
+          <CartaoEstatistica icone={<MdSchool size={22} />}  valor={estatisticasCoordenador.totalAlunos} rotulo="Total de alunos"   corBorda="var(--cor-info)" />
         </div>
       </section>
 

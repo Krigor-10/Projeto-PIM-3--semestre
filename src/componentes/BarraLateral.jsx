@@ -122,7 +122,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, on
     });
   }
 
-  const ORDEM_ALUNO = ["dashboard", "conteudos", "avaliacoes", "progresso", "certificados", "matriculas"];
+  const ORDEM_ALUNO = ["dashboard", "catalogo", "conteudos", "avaliacoes", "progresso", "certificados", "matriculas"];
 
   const itensMenu = (() => {
     const ocultas = SECOES_OCULTAS_SIDEBAR[usuario.tipo] ?? new Set();
@@ -318,7 +318,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, on
         </nav>
 
         <footer className="sidebar__rodape">
-          {["Professor", "Aluno"].includes(usuario.tipo) && (
+          {usuario.tipo === "Professor" && (
             <button
               className="sidebar__item sidebar__item--home-publica"
               onClick={() => { irPara("catalogo"); onFechar?.(); }}
