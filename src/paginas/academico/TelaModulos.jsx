@@ -6,7 +6,7 @@
    (vê cursos sob sua responsabilidade) e Admin (vê todos).
    ============================================================ */
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbSettings, TbX } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings, TbX, TbStack, TbFileText, TbTrash } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Modal from "@/componentes/Modal.jsx";
@@ -110,25 +110,53 @@ function ModalDetalhesModulo({ modulo, curso, onFechar }) {
 }
 
 /* ── Slide de um curso no carrossel ─────────────────────────── */
-function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhes }) {
-  /* Média de desempenho dos módulos do curso */
+function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhes, onExcluir }) {
   const media = itens.length > 0
     ? Math.round(itens.reduce((acc, m) => acc + (DESEMPENHO_MODULO[m.id] ?? 0), 0) / itens.length)
     : 0;
+  const totalConteudos = itens.reduce((acc, m) => acc + (m.totalConteudos ?? 0), 0);
 
   return (
-    <div className="slide-turma">
-      <header className="slide-turma__cabecalho">
-        <div className="slide-turma__identidade">
-          <h3 className="slide-turma__nome">{curso.titulo}</h3>
-          <span className="slide-turma__curso">
-            {itens.length} módulo{itens.length !== 1 ? "s" : ""} · média {media}%
-          </span>
+    <div className="conteudos-aluno">
+      <header className="conteudos-aluno__cabecalho">
+        <div className="conteudos-aluno__curso-info">
+          <h2 className="conteudos-aluno__curso-titulo">{curso.titulo}</h2>
+          <div className="conteudos-aluno__meta-chips">
+            <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
+              <TbStack size={12} aria-hidden="true" />
+              {itens.length} módulo{itens.length !== 1 ? "s" : ""}
+            </span>
+            <span className="conteudos-aluno__meta-chip">
+              <TbFileText size={12} aria-hidden="true" />
+              {totalConteudos} conteúdo{totalConteudos !== 1 ? "s" : ""}
+            </span>
+            {curso.codigoRegistro && (
+              <span className="conteudos-aluno__meta-chip">
+                {curso.codigoRegistro}
+              </span>
+            )}
+          </div>
         </div>
-        <div className="slide-turma__meta">
-          <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)" }}>
-            {curso.codigoRegistro}
-          </span>
+        <div className="conteudos-aluno__progresso-geral">
+          <p className="progresso-hero__legenda">desempenho médio</p>
+          <div className="anel-progresso" aria-label={`${media} por cento de desempenho médio`}>
+            <svg className="anel-progresso__svg" viewBox="0 0 120 120" aria-hidden="true">
+              <defs>
+                <linearGradient id={`anel-grad-mod-${curso.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#b992ff" />
+                  <stop offset="100%" stopColor="#7b2ff7" />
+                </linearGradient>
+              </defs>
+              <circle className="anel-progresso__trilha" cx="60" cy="60" r="50" />
+              <circle
+                className="anel-progresso__arco"
+                cx="60" cy="60" r="50"
+                stroke={`url(#anel-grad-mod-${curso.id})`}
+                style={{ strokeDasharray: "314.16", strokeDashoffset: 314.16 * (1 - media / 100) }}
+              />
+            </svg>
+            <span className="anel-progresso__texto" aria-hidden="true">{media}%</span>
+          </div>
         </div>
       </header>
 
@@ -184,6 +212,17 @@ function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhe
                           <TbSettings size={20} aria-hidden="true" />Opções
                         </button>
                       </li>
+                      <li>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className="menu-item--perigo"
+                          style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                          onClick={() => { onExcluir(mod); onToggleMenu(null); }}
+                        >
+                          <TbTrash size={20} aria-hidden="true" />Excluir
+                        </button>
+                      </li>
                     </ul>
                   )}
                 </div>
@@ -205,6 +244,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
   const [listaModulos, setListaModulos]     = useState(() => db.modulos.listar());
   const [menuModuloAberto, setMenuModuloAberto] = useState(null);
   const [moduloDetalhe, setModuloDetalhe]   = useState(null);
+  const [moduloParaExcluir, setModuloParaExcluir] = useState(null);
 
   /* Persiste alterações de módulos no localStorage a cada mudança */
   useEffect(() => { db.modulos.salvar(listaModulos); }, [listaModulos]);
@@ -255,11 +295,17 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
 
   function irPara(idx) { setSlideAtual(idx); }
 
+  function confirmarExclusao() {
+    if (!moduloParaExcluir) return;
+    setListaModulos((prev) => prev.filter((m) => m.id !== moduloParaExcluir.id));
+    setModuloParaExcluir(null);
+  }
+
   return (
     <div className="tela-modulos">
       <header className="cabecalho-pagina">
         <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-lg)", flexWrap: "wrap" }}>
             <h1 className="cabecalho-pagina__titulo">Módulos</h1>
             {total > 0 && (
               <>
@@ -278,22 +324,25 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
                 </select>
               </>
             )}
+            {podeCriar(tipo, "modulos") && (
+              <>
+                <span style={{ width: "1px", height: "24px", background: "var(--cor-borda)", flexShrink: 0 }} aria-hidden="true" />
+                <Botao variante="primario" onClick={() => { setCursoIdModal(grupos[slide]?.curso.id ?? null); setErroCursoModal(""); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  variants={{ hover: { y: -1 } }} whileHover="hover"
+                >
+                  <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+                    <TbPlus size={20} aria-hidden="true" />
+                  </motion.span>
+                  Novo Módulo
+                </Botao>
+              </>
+            )}
           </div>
           <p className="cabecalho-pagina__subtitulo">
             {modulosBase.length} módulo{modulosBase.length !== 1 ? "s" : ""}{" "}
             {ehProfessor ? "nos seus cursos" : "cadastrados"}
           </p>
         </div>
-        {podeCriar(tipo, "modulos") && (
-          <Botao variante="primario" onClick={() => { setCursoIdModal(grupos[slide]?.curso.id ?? null); setErroCursoModal(""); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
-            variants={{ hover: { y: -1 } }} whileHover="hover"
-          >
-            <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
-              <TbPlus size={20} aria-hidden="true" />
-            </motion.span>
-            Novo Módulo
-          </Botao>
-        )}
       </header>
 
       {total === 0 ? (
@@ -349,9 +398,26 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
               menuModuloAberto={menuModuloAberto}
               onToggleMenu={(id) => setMenuModuloAberto((prev) => (prev === id ? null : id))}
               onVerDetalhes={(mod) => setModuloDetalhe(mod)}
+              onExcluir={(mod) => setModuloParaExcluir(mod)}
             />
           </div>
         </div>
+      )}
+
+      {moduloParaExcluir && (
+        <Modal titulo="Excluir módulo" onFechar={() => setModuloParaExcluir(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Deseja excluir o módulo <strong>{moduloParaExcluir.titulo}</strong>? Esta ação não pode ser desfeita.
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setModuloParaExcluir(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao variante="sucesso" onClick={confirmarExclusao} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
+              <TbTrash size={15} aria-hidden="true" /> Confirmar
+            </Botao>
+          </footer>
+        </Modal>
       )}
 
       {moduloDetalhe && (

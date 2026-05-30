@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { TbMail, TbPhone, TbMapPin, TbUser, TbEdit, TbLock } from "react-icons/tb";
+import { motion } from "framer-motion";
+import { TbMail, TbPhone, TbMapPin, TbUser, TbEdit, TbLock, TbX } from "react-icons/tb";
+import { MdSave } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 
@@ -114,15 +116,18 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                 Informações pessoais
               </h3>
               {!editando && (
-                <Botao
-                  variante="fantasma"
-                  tamanho="pequeno"
+                <motion.button
+                  type="button"
                   onClick={() => setEditando(true)}
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  aria-label="Editar perfil"
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cor-texto-mudo)", display: "flex", alignItems: "center", padding: "4px" }}
+                  data-tooltip="Editar perfil"
+                  whileHover={{ scale: 1.2, rotate: -15, color: "var(--cor-marca-clara)" }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
                 >
-                  <TbEdit size={15} aria-hidden="true" />
-                  Editar
-                </Botao>
+                  <TbEdit size={18} aria-hidden="true" />
+                </motion.button>
               )}
             </header>
             <div className="painel-secao__conteudo">
@@ -210,11 +215,11 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
 
                 {editando && (
                   <footer className="formulario-perfil__rodape">
-                    <Botao variante="perigo" type="button" onClick={cancelar}>
-                      Cancelar
+                    <Botao variante="perigo" type="button" onClick={cancelar} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <TbX size={15} aria-hidden="true" /> Cancelar
                     </Botao>
-                    <Botao variante="primario" type="submit">
-                      Salvar alterações
+                    <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <MdSave size={15} aria-hidden="true" /> Salvar alterações
                     </Botao>
                   </footer>
                 )}
@@ -241,8 +246,9 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                   variante="fantasma"
                   tamanho="pequeno"
                   onClick={() => onToast?.("Funcionalidade disponível em breve.", "info")}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
                 >
-                  Alterar senha
+                  <TbLock size={15} aria-hidden="true" /> Alterar senha
                 </Botao>
               </div>
             </div>

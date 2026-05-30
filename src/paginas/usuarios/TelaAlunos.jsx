@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbX, TbCheck, TbTrash, TbSettings, TbChevronLeft, TbChevronRight, TbPencil } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbX, TbCheck, TbTrash, TbSettings, TbChevronLeft, TbChevronRight, TbPencil, TbSearch } from "react-icons/tb";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
@@ -191,26 +191,30 @@ export default function TelaAlunos({ usuario, onToast }) {
 
   return (
     <div className="tela-alunos">
-      <header className="cabecalho-pagina">
+      <header className="cabecalho-pagina" style={{ alignItems: "center" }}>
         <div>
           <h1 className="cabecalho-pagina__titulo">Alunos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
           </p>
         </div>
+        <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
+          <TbSearch size={15} aria-hidden="true" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--cor-texto-mudo)", pointerEvents: "none" }} />
+          <label htmlFor="busca-alunos" className="visualmente-oculto">Buscar aluno</label>
+          <input
+            id="busca-alunos"
+            type="search"
+            className="campo__entrada barra-filtros__busca"
+            placeholder="Buscar por nome ou e-mail…"
+            value={busca}
+            onChange={(e) => { setBusca(e.target.value); setPagina(1); }}
+            style={{ width: "100%", paddingLeft: "32px" }}
+          />
+        </div>
       </header>
 
       {/* Filtros */}
       <div className="barra-filtros">
-        <label htmlFor="busca-alunos" className="visualmente-oculto">Buscar aluno</label>
-        <input
-          id="busca-alunos"
-          type="search"
-          className="campo__entrada barra-filtros__busca"
-          placeholder="Buscar por nome ou e-mail…"
-          value={busca}
-          onChange={(e) => { setBusca(e.target.value); setPagina(1); }}
-        />
         <div className="segmented-control" role="group" aria-label="Filtrar por status">
           {[
             { valor: "todos",    rotulo: "Todos"    },

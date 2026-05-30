@@ -60,7 +60,7 @@ export const SECOES = [
     chave: "conteudos",
     rotulo: "Conteúdos",
     icone: "CT",
-    perfis: ["Admin", "Professor", "Aluno"],
+    perfis: ["Admin", "Coordenador", "Professor", "Aluno"],
   },
   {
     chave: "avaliacoes",

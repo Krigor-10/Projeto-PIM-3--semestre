@@ -42,7 +42,7 @@ const metadadosPorSecao = {
   cursos:       { titulo: "Catálogo Acadêmico",  descricao: "A mesma base alimenta a home, o cadastro e o painel."       },
   modulos:      { titulo: "Módulos por Curso",   descricao: "Estrutura acadêmica para conteúdos, avaliações e progresso."},
   turmas:       { titulo: "Mapa de Turmas",      descricao: "Turmas organizadas para acompanhamento da plataforma."      },
-  matriculas:   { titulo: "Fluxo de Matrículas", descricao: "Solicitações e status acadêmico simulados."                 },
+  matriculas:   { titulo: "Cursos",                descricao: "Solicitações e status acadêmico simulados."                 },
   avaliacoes:   { titulo: "Avaliações",          descricao: "Provas, quizzes e exercícios por perfil."                   },
   conteudos:    { titulo: "Conteúdos",           descricao: "Materiais publicados para a jornada acadêmica."             },
   progresso:    { titulo: "Meu Progresso",       descricao: "Acompanhamento visual da trilha do aluno."                  },
@@ -112,8 +112,8 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
 
         <div className="topbar__contexto">
           <nav className="topbar__breadcrumb" aria-label="Localização atual">
-            <span className="topbar__breadcrumb-raiz">CodeRyse Academy</span>
-            <span className="topbar__breadcrumb-sep" aria-hidden="true">›</span>
+            <span className="topbar__breadcrumb-raiz" style={{ color: "var(--cor-marca-clara)" }}>CodeRyse Academy</span>
+            <span className="topbar__breadcrumb-sep" aria-hidden="true" style={{ color: "var(--cor-marca-clara)", fontSize: "1rem" }}>›</span>
             <span className="topbar__breadcrumb-secao">
               <IconeSecao size={16} aria-hidden="true" />
               {meta.titulo}
@@ -125,6 +125,16 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
       <div className="topbar__acoes">
         {usuario.tipo === "Aluno" && (
           <>
+            <button
+              className={`topbar__atalho-certificados${secaoAtual === "matriculas" ? " topbar__atalho-certificados--ativo" : ""}`}
+              onClick={() => navigate(rotaPainelSecao("matriculas"))}
+              aria-label="Ir para Meus Cursos"
+              type="button"
+            >
+              <TbBooks size={18} aria-hidden="true" />
+              <span className="topbar__atalho-certificados-label">Meus Cursos</span>
+            </button>
+            <span className="topbar__separador" aria-hidden="true" />
             <button
               className={`topbar__atalho-certificados${secaoAtual === "certificados" ? " topbar__atalho-certificados--ativo" : ""}`}
               onClick={() => navigate(ROTAS.PAINEL_CERTIFICADOS)}
@@ -141,7 +151,6 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
                 className="topbar__btn-reset"
                 onClick={() => setConfirmandoReset(true)}
                 aria-label="Resetar dados de teste"
-                title="Resetar dados"
               >
                 <TbRefresh size={15} aria-hidden="true" />
                 <span>Reset</span>
@@ -208,34 +217,10 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
                 </div>
                 <div className="popup-perfil__identidade">
                   <h2 className="popup-perfil__nome">{usuario.nome}</h2>
-                  <Insignia texto={usuario.tipo} variante={variantePorTipo[usuario.tipo] ?? "neutro"} />
+                  <div><Insignia texto={usuario.tipo} variante={variantePorTipo[usuario.tipo] ?? "neutro"} /></div>
                 </div>
               </div>
 
-              <dl className="popup-perfil__dados">
-                <div className="popup-perfil__linha">
-                  <dt className="popup-perfil__chave">E-mail</dt>
-                  <dd className="popup-perfil__valor">{usuario.email}</dd>
-                </div>
-                {usuario.telefone && (
-                  <div className="popup-perfil__linha">
-                    <dt className="popup-perfil__chave">Telefone</dt>
-                    <dd className="popup-perfil__valor">{usuario.telefone}</dd>
-                  </div>
-                )}
-                {usuario.cidade && (
-                  <div className="popup-perfil__linha">
-                    <dt className="popup-perfil__chave">Localização</dt>
-                    <dd className="popup-perfil__valor">{usuario.cidade}, {usuario.estado}</dd>
-                  </div>
-                )}
-                {usuario.codigoAluno && (
-                  <div className="popup-perfil__linha">
-                    <dt className="popup-perfil__chave">Código do aluno</dt>
-                    <dd className="popup-perfil__valor">{usuario.codigoAluno}</dd>
-                  </div>
-                )}
-              </dl>
 
               <div className="popup-perfil__rodape">
                 <Botao

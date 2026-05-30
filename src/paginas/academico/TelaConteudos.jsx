@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbArrowRight, TbPencil, TbX, TbCheck, TbBrain, TbPaperclip, TbLink, TbUpload, TbRefresh, TbChartBar } from "react-icons/tb";
+import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbArrowRight, TbPencil, TbX, TbCheck, TbBrain, TbPaperclip, TbLink, TbUpload, TbRefresh, TbChartBar, TbSearch, TbUsers } from "react-icons/tb";
 import { MdSave, MdAdd, MdDelete } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -10,7 +10,7 @@ import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
-import { podeCriar, podeEditar } from "@/dados/permissoes.js";
+import { podeCriar, podeEditar, podeExcluir } from "@/dados/permissoes.js";
 
 /* Ícones e rótulos semânticos por tipo de conteúdo */
 const TIPO_CONFIG = {
@@ -764,6 +764,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
   const [modalOpcoesCont, setModalOpcoesCont]       = useState(null);
   const [confirmarExcluirQuiz, setConfirmarExcluirQuiz]     = useState(false);
   const [confirmarExcluirCont, setConfirmarExcluirCont]     = useState(null);
+  const [conteudoEditando, setConteudoEditando]             = useState(null);
 
   useEffect(() => {
     if (!menuConteudoAberto) return;
@@ -931,15 +932,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
                               <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalOpcoesCont({ cont, modulo }); setMenuConteudoAberto(null); }}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
-                              {confirmarExcluirCont === cont.id ? (
-                                <li className="menu-contexto__confirmar">
-                                  <span>Excluir?</span>
-                                  <button type="button" className="menu-contexto__confirmar-sim" onClick={() => { onExcluirConteudo(cont); setMenuConteudoAberto(null); setConfirmarExcluirCont(null); }}>Sim</button>
-                                  <button type="button" className="menu-contexto__confirmar-nao" onClick={() => setConfirmarExcluirCont(null)}>Não</button>
-                                </li>
-                              ) : (
-                                <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={(e) => { e.stopPropagation(); setConfirmarExcluirCont(cont.id); }}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
-                              )}
+                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={(e) => { e.stopPropagation(); setConfirmarExcluirCont(cont); setMenuConteudoAberto(null); }}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
                             </ul>
                           )}
                         </div>
@@ -952,6 +945,111 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
           </section>
         );
       })}
+
+      {conteudoEditando && createPortal(
+        <Modal
+          titulo={`Editar — ${conteudoEditando.cont.titulo}`}
+          onFechar={() => setConteudoEditando(null)}
+        >
+          <form
+            className="formulario-modal"
+            onSubmit={(e) => { e.preventDefault(); setConteudoEditando(null); }}
+            noValidate
+          >
+            <div className="novo-cont__preview">
+              <AnimatePresence mode="wait">
+                {(() => {
+                  const cfg = TIPO_CONFIG[conteudoEditando.tipo];
+                  const Ic  = cfg?.Icone ?? null;
+                  return Ic ? (
+                    <motion.span
+                      key={conteudoEditando.tipo}
+                      className="novo-cont__icone"
+                      initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                      animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                      exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    >
+                      <Ic size={32} aria-hidden="true" />
+                    </motion.span>
+                  ) : (
+                    <motion.span key="vazio" className="novo-cont__icone novo-cont__icone--vazio" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      <TbFile size={32} aria-hidden="true" />
+                    </motion.span>
+                  );
+                })()}
+              </AnimatePresence>
+              <p className="novo-cont__preview-label">
+                {TIPO_CONFIG[conteudoEditando.tipo]?.rotulo ?? "Tipo"}
+              </p>
+            </div>
+
+            <div className="campo">
+              <p className="campo__rotulo" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <TbPaperclip size={14} aria-hidden="true" /> Tipo de Anexo
+              </p>
+              <div className="anexo-selector" role="group" aria-label="Tipo de conteúdo">
+                {Object.entries(TIPO_CONFIG).map(([valor, cfg]) => {
+                  const Ic    = cfg.Icone;
+                  const ativo = conteudoEditando.tipo === valor;
+                  return (
+                    <button
+                      key={valor}
+                      type="button"
+                      className={`anexo-clip${ativo ? " anexo-clip--ativo" : ""}`}
+                      onClick={() => setConteudoEditando((p) => ({ ...p, tipo: valor }))}
+                      aria-pressed={ativo}
+                    >
+                      <span className="anexo-clip__icone"><Ic size={22} aria-hidden="true" /></span>
+                      <span className="anexo-clip__label">{cfg.rotulo}</span>
+                      {ativo && <span className="anexo-clip__check" aria-hidden="true">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="campo">
+              <label className="campo__rotulo" htmlFor="edit-titulo-cont">Título *</label>
+              <input
+                id="edit-titulo-cont"
+                className="campo__entrada"
+                type="text"
+                placeholder="Ex: Introdução ao módulo"
+                value={conteudoEditando.titulo}
+                onChange={(e) => setConteudoEditando((p) => ({ ...p, titulo: e.target.value }))}
+                required
+              />
+            </div>
+
+            <footer className="modal-rodape">
+              <Botao variante="perigo" type="button" onClick={() => setConteudoEditando(null)} style={{ marginRight: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbX size={15} aria-hidden="true" /> Cancelar
+              </Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <MdSave size={15} aria-hidden="true" /> Salvar
+              </Botao>
+            </footer>
+          </form>
+        </Modal>,
+        document.body
+      )}
+
+      {confirmarExcluirCont && (
+        <Modal titulo="Excluir conteúdo" onFechar={() => setConfirmarExcluirCont(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Deseja excluir <strong>{confirmarExcluirCont.titulo}</strong>? Esta ação não pode ser desfeita.
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmarExcluirCont(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao variante="sucesso" onClick={() => { onExcluirConteudo(confirmarExcluirCont); setConfirmarExcluirCont(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
+              <TbTrash size={15} aria-hidden="true" /> Confirmar
+            </Botao>
+          </footer>
+        </Modal>
+      )}
 
       {modalOpcoesCont && createPortal(
         <Modal
@@ -976,6 +1074,20 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                       <strong className="opcoes-cont__titulo">{cont.titulo}</strong>
                       <p className="opcoes-cont__meta">{config.rotulo} · {cont.duracao}</p>
                     </div>
+                    <button
+                      type="button"
+                      aria-label={`Editar conteúdo ${cont.titulo}`}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cor-texto-mudo)", display: "flex", alignItems: "center", padding: "2px" }}
+                      onClick={() => { setConteudoEditando({ cont, tipo: cont.tipo, titulo: cont.titulo }); setModalOpcoesCont(null); }}
+                    >
+                      <motion.span
+                        whileHover={{ scale: 1.3, rotate: -10 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 10 }}
+                        style={{ display: "flex" }}
+                      >
+                        <TbPencil size={19} aria-hidden="true" />
+                      </motion.span>
+                    </button>
                     <button
                       type="button"
                       aria-label={`Excluir conteúdo ${cont.titulo}`}
@@ -1051,15 +1163,14 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                   </div>
                 </div>
 
-                {/* Gerenciamento */}
-                <div className="modal-rodape">
-                  <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
-                    <TbTrash size={15} aria-hidden="true" /> Excluir
+                <footer className="modal-rodape">
+                  <Botao variante="perigo" tamanho="pequeno" onClick={() => setModalOpcoesCont(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
+                    <TbX size={15} aria-hidden="true" /> Cancelar
                   </Botao>
-                  <Botao variante="secundario" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <TbPencil size={15} aria-hidden="true" /> Editar
+                  <Botao variante="primario" tamanho="pequeno" onClick={() => setModalOpcoesCont(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <MdSave size={15} aria-hidden="true" /> Salvar
                   </Botao>
-                </div>
+                </footer>
               </>
             );
           })()}
@@ -1641,7 +1752,7 @@ function VistaProfessor({ usuario, onToast }) {
                     <TbX size={15} aria-hidden="true" /> Cancelar
                   </Botao>
                   <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <TbPlus size={15} aria-hidden="true" /> Criar Conteúdo
+                    <MdSave size={15} aria-hidden="true" /> Salvar
                   </Botao>
                 </footer>
               </form>
@@ -1754,9 +1865,12 @@ function VistaAluno({ usuario, quizzesAprovados = new Set(), onQuizAprovado, onM
 
 /* ── Slide de um curso (visão da gestão) ─────────────────────── */
 
-function SlideCursoGestao({ curso, tipo }) {
-  const [modulosAbertos, setModulosAbertos]         = useState(() => new Set());
-  const [menuConteudoAberto, setMenuConteudoAberto] = useState(null);
+function SlideCursoGestao({ curso, tipo, busca = "" }) {
+  const [modulosAbertos, setModulosAbertos]           = useState(() => new Set());
+  const [menuConteudoAberto, setMenuConteudoAberto]   = useState(null);
+  const [conteudoParaExcluir, setConteudoParaExcluir] = useState(null);
+  const [excluidos, setExcluidos]                     = useState(() => new Set());
+  const [modalOpcoesVer, setModalOpcoesVer]           = useState(null);
 
   useEffect(() => {
     if (!menuConteudoAberto) return;
@@ -1773,16 +1887,23 @@ function SlideCursoGestao({ curso, tipo }) {
     .filter((t) => t.cursoId === curso.id)
     .reduce((soma, t) => soma + t.totalAlunos, 0);
 
+  const termoBusca = busca.trim().toLowerCase();
   const conteudosDoCurso = conteudos.filter((c) =>
-    modulosDoCurso.some((m) => m.id === c.moduloId)
+    modulosDoCurso.some((m) => m.id === c.moduloId) &&
+    !excluidos.has(c.id) &&
+    (!termoBusca || c.titulo.toLowerCase().includes(termoBusca))
   );
 
-  /* Sugestão 2 — resumo de tipos para o cabeçalho do curso */
+  /* Contagens para o hero — usa lista sem filtro de busca para não distorcer os totais */
+  const conteudosTodos = conteudos.filter((c) => modulosDoCurso.some((m) => m.id === c.moduloId) && !excluidos.has(c.id));
   const totalPorTipo = {};
-  for (const c of conteudosDoCurso) {
+  for (const c of conteudosTodos) {
     totalPorTipo[c.tipo] = (totalPorTipo[c.tipo] ?? 0) + 1;
   }
   const resumoCursoItens = ["Video", "Texto", "Documento"].filter((t) => totalPorTipo[t]);
+
+  const modulosComConteudo = modulosDoCurso.filter((m) => conteudosTodos.some((c) => c.moduloId === m.id)).length;
+  const percentualModulos  = modulosDoCurso.length > 0 ? Math.round((modulosComConteudo / modulosDoCurso.length) * 100) : 0;
 
   function alternarModulo(id) {
     setModulosAbertos((prev) => {
@@ -1792,31 +1913,56 @@ function SlideCursoGestao({ curso, tipo }) {
     });
   }
 
+  function confirmarExclusaoConteudo() {
+    if (!conteudoParaExcluir) return;
+    setExcluidos((prev) => new Set([...prev, conteudoParaExcluir.id]));
+    setConteudoParaExcluir(null);
+  }
+
   return (
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
-          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
           <h2 className="conteudos-aluno__curso-titulo">{curso.titulo}</h2>
-          <p className="conteudos-aluno__curso-meta" style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-            {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} · {conteudosDoCurso.length} conteúdo{conteudosDoCurso.length !== 1 ? "s" : ""}
-            {resumoCursoItens.length > 0 && (
-              <>
-                <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>
-                {resumoCursoItens.map((t, i) => {
-                  const { Icone, rotulo } = TIPO_CONFIG[t];
-                  const n = totalPorTipo[t];
-                  return (
-                    <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                      {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
-                      <Icone size={14} aria-hidden="true" />
-                      {n} {rotulo.toLowerCase()}{n !== 1 ? "s" : ""}
-                    </span>
-                  );
-                })}
-              </>
-            )}
+          <div className="conteudos-aluno__meta-chips">
+            <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
+              <TbUsers size={12} aria-hidden="true" />
+              {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""}
+            </span>
+            {resumoCursoItens.map((t) => {
+              const { Icone, rotulo } = TIPO_CONFIG[t];
+              const n = totalPorTipo[t];
+              return (
+                <span key={t} className="conteudos-aluno__meta-chip">
+                  <Icone size={12} aria-hidden="true" />
+                  {n} {rotulo.toLowerCase()}{n !== 1 ? "s" : ""}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+        <div className="conteudos-aluno__progresso-geral">
+          <p className="progresso-hero__legenda">
+            {modulosComConteudo}/{modulosDoCurso.length} módulos
           </p>
+          <div className="anel-progresso" aria-label={`${percentualModulos} por cento dos módulos preenchidos`}>
+            <svg className="anel-progresso__svg" viewBox="0 0 120 120" aria-hidden="true">
+              <defs>
+                <linearGradient id={`anel-grad-gest-${curso.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#b992ff" />
+                  <stop offset="100%" stopColor="#7b2ff7" />
+                </linearGradient>
+              </defs>
+              <circle className="anel-progresso__trilha" cx="60" cy="60" r="50" />
+              <circle
+                className="anel-progresso__arco"
+                cx="60" cy="60" r="50"
+                stroke={`url(#anel-grad-gest-${curso.id})`}
+                style={{ strokeDasharray: "314.16", strokeDashoffset: 314.16 * (1 - percentualModulos / 100) }}
+              />
+            </svg>
+            <span className="anel-progresso__texto" aria-hidden="true">{percentualModulos}%</span>
+          </div>
         </div>
       </header>
 
@@ -1896,7 +2042,7 @@ function SlideCursoGestao({ curso, tipo }) {
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
 
-                      {podeEditar(tipo, "conteudos") && (
+                      {(podeEditar(tipo, "conteudos") || tipo === "Coordenador") && (
                         <div className="menu-contexto">
                           <button
                             className="menu-contexto__botao"
@@ -1908,8 +2054,10 @@ function SlideCursoGestao({ curso, tipo }) {
                           </button>
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
-                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
-                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setMenuConteudoAberto(null)}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
+                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalOpcoesVer({ cont, modulo }); setMenuConteudoAberto(null); }}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
+                              {podeExcluir(tipo, "conteudos") && (
+                                <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setConteudoParaExcluir(cont); setMenuConteudoAberto(null); }}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
+                              )}
                             </ul>
                           )}
                         </div>
@@ -1922,6 +2070,63 @@ function SlideCursoGestao({ curso, tipo }) {
           </section>
         );
       })}
+
+      {modalOpcoesVer && createPortal(
+        <Modal titulo={modalOpcoesVer.cont.titulo} onFechar={() => setModalOpcoesVer(null)}>
+          {(() => {
+            const { cont, modulo } = modalOpcoesVer;
+            const config = TIPO_CONFIG[cont.tipo] || { Icone: IconePadrao, rotulo: cont.tipo };
+            const Ic = config.Icone ?? IconePadrao;
+            const nQuestoes = db.questoes.listar().filter((q) => q.moduloId === modulo.id).length;
+            return (
+              <>
+                <div className="opcoes-cont__secao">
+                  <p className="opcoes-cont__rotulo">Conteúdo</p>
+                  <div className="opcoes-cont__linha">
+                    <span className="cartao-conteudo__icone-btn opcoes-cont__icone-estatico" aria-hidden="true">
+                      <Ic size={18} />
+                    </span>
+                    <div style={{ flex: 1 }}>
+                      <strong className="opcoes-cont__titulo">{cont.titulo}</strong>
+                      <p className="opcoes-cont__meta">{config.rotulo} · {cont.duracao}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="opcoes-cont__secao">
+                  <p className="opcoes-cont__rotulo">Quiz do Módulo</p>
+                  <div className="opcoes-cont__linha">
+                    <span className="cartao-conteudo__icone-btn opcoes-cont__icone-estatico" aria-hidden="true">
+                      <TbBrain size={18} />
+                    </span>
+                    <p className="opcoes-cont__quiz-contagem">
+                      {nQuestoes === 0
+                        ? "Nenhuma questão cadastrada"
+                        : `${nQuestoes} questão${nQuestoes !== 1 ? "ões" : ""} cadastrada${nQuestoes !== 1 ? "s" : ""}`}
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+        </Modal>,
+        document.body
+      )}
+
+      {conteudoParaExcluir && (
+        <Modal titulo="Excluir conteúdo" onFechar={() => setConteudoParaExcluir(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Deseja excluir <strong>{conteudoParaExcluir.titulo}</strong>? Esta ação não pode ser desfeita.
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConteudoParaExcluir(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao variante="sucesso" onClick={confirmarExclusaoConteudo} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
+              <TbTrash size={15} aria-hidden="true" /> Confirmar
+            </Botao>
+          </footer>
+        </Modal>
+      )}
     </div>
   );
 }
@@ -1930,6 +2135,7 @@ function SlideCursoGestao({ curso, tipo }) {
 
 function VistaGestao({ usuario }) {
   const [slideAtual, setSlideAtual] = useState(0);
+  const [busca, setBusca] = useState("");
 
   const tipo  = usuario?.tipo;
   const total = cursos.length;
@@ -1938,17 +2144,14 @@ function VistaGestao({ usuario }) {
 
   return (
     <div className="tela-conteudos">
-      <header className="cabecalho-pagina">
+      <header className="cabecalho-pagina" style={{ alignItems: "center" }}>
         <div>
           <h1 className="cabecalho-pagina__titulo">Conteúdos Didáticos</h1>
           <p className="cabecalho-pagina__subtitulo">
             {conteudos.length} conteúdo{conteudos.length !== 1 ? "s" : ""} cadastrados na plataforma
           </p>
         </div>
-      </header>
-
-      <div className="carrossel-cursos">
-        <div className="barra-filtros" style={{ marginBottom: "var(--espaco-md)" }}>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "var(--espaco-lg)" }}>
           <label htmlFor="filtro-curso-cont" className="visualmente-oculto">Selecionar curso</label>
           <select
             id="filtro-curso-cont"
@@ -1956,12 +2159,29 @@ function VistaGestao({ usuario }) {
             value={slide}
             onChange={(e) => setSlideAtual(Number(e.target.value))}
             aria-label="Navegar para curso"
+            style={{ width: "auto", minWidth: "180px" }}
           >
             {cursos.map((c, idx) => (
               <option key={c.id} value={idx}>{c.titulo}</option>
             ))}
           </select>
+          <span style={{ width: "1px", height: "24px", background: "var(--cor-borda)", flexShrink: 0 }} aria-hidden="true" />
+          <div style={{ position: "relative", width: "260px", flexShrink: 0 }}>
+            <TbSearch size={15} aria-hidden="true" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--cor-texto-mudo)", pointerEvents: "none" }} />
+            <input
+              type="search"
+              className="campo__entrada"
+              placeholder="Buscar conteúdo…"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              aria-label="Buscar conteúdo"
+              style={{ width: "100%", paddingLeft: "32px" }}
+            />
+          </div>
         </div>
+      </header>
+
+      <div className="carrossel-cursos">
 
         {total > 1 && (
           <nav className="carrossel-cursos__nav" aria-label="Navegação entre cursos">
@@ -2006,7 +2226,7 @@ function VistaGestao({ usuario }) {
         )}
 
         <div className="carrossel-cursos__janela">
-          <SlideCursoGestao curso={cursoAtual} tipo={tipo} />
+          <SlideCursoGestao curso={cursoAtual} tipo={tipo} busca={busca} />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbLogout, TbX } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbLogout, TbX, TbSearch } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -64,16 +64,19 @@ function VistaGerencialCoordenador({ usuario }) {
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)", flexWrap: "wrap" }}>
             <h1 className="cabecalho-pagina__titulo">Cursos</h1>
-            <label htmlFor="busca-cursos-coord" className="visualmente-oculto">Buscar curso</label>
-            <input
-              id="busca-cursos-coord"
-              type="search"
-              className="campo__entrada barra-filtros__busca"
-              placeholder="Buscar curso..."
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              style={{ marginLeft: "auto", maxWidth: "200px" }}
-            />
+            <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
+              <TbSearch size={15} aria-hidden="true" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--cor-texto-mudo)", pointerEvents: "none" }} />
+              <label htmlFor="busca-cursos-coord" className="visualmente-oculto">Buscar curso</label>
+              <input
+                id="busca-cursos-coord"
+                type="search"
+                className="campo__entrada barra-filtros__busca"
+                placeholder="Buscar curso..."
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                style={{ width: "100%", paddingLeft: "32px" }}
+              />
+            </div>
           </div>
           <p className="cabecalho-pagina__subtitulo">Cursos sob sua coordenação</p>
         </div>
@@ -104,8 +107,6 @@ function VistaGerencialCoordenador({ usuario }) {
                 </div>
                 <div className="desempenho-curso-item__meta">
                   <span className="desempenho-curso-item__codigo">{curso.codigoRegistro}</span>
-                  <Insignia texto={curso.nivel} variante="neutro" />
-
                 </div>
               </div>
 
@@ -245,6 +246,9 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
   const [coordSelecionadoId, setCoordSelecionadoId] = useState(null);
   const [selecionados, setSelecionados]           = useState(new Set());
   const [excluindoEmMassa, setExcluindoEmMassa]  = useState(false);
+  const [modalGerenciarAberto, setModalGerenciarAberto] = useState(false);
+  const [gerenciarProfId, setGerenciarProfId]           = useState(null);
+  const [gerenciarCoordId, setGerenciarCoordId]         = useState(null);
 
   useEffect(() => {
     setFormSujo(false);
@@ -346,6 +350,24 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
     }
   }
 
+  function aplicarGerenciamento() {
+    const prof  = professoresAtivos.find((p) => p.id === gerenciarProfId);
+    const coord = coordenadoresAtivos.find((c) => c.id === gerenciarCoordId);
+    onListaCursosChange((prev) => prev.map((c) => {
+      if (!selecionados.has(c.id)) return c;
+      return {
+        ...c,
+        ...(gerenciarProfId  !== null && { professorId: prof?.id ?? null,  professorNome: prof?.nome  ?? null }),
+        ...(gerenciarCoordId !== null && { coordenadorId: coord?.id ?? null, coordenadorNome: coord?.nome ?? null }),
+      };
+    }));
+    onToast?.(`${selecionados.size} ${selecionados.size === 1 ? "curso atualizado" : "cursos atualizados"}.`, "sucesso");
+    setModalGerenciarAberto(false);
+    setGerenciarProfId(null);
+    setGerenciarCoordId(null);
+    setSelecionados(new Set());
+  }
+
   function confirmarExclusaoEmMassa() {
     const ids = new Set(selecionados);
     onListaCursosChange((prev) => prev.filter((c) => !ids.has(c.id)));
@@ -368,11 +390,24 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
 
   return (
     <div className="tela-cursos">
-      <header className="cabecalho-pagina">
+      <header className="cabecalho-pagina" style={{ alignItems: "center" }}>
         <div>
           <h1 className="cabecalho-pagina__titulo">Cursos</h1>
-          <p className="cabecalho-pagina__subtitulo">{totalAtivos} cursos ativos na plataforma</p>
         </div>
+        <label htmlFor="busca-cursos" className="visualmente-oculto">Buscar curso</label>
+        <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
+          <TbSearch size={15} aria-hidden="true" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--cor-texto-mudo)", pointerEvents: "none" }} />
+          <input
+            id="busca-cursos"
+            type="search"
+            className="campo__entrada"
+            placeholder="Buscar por título ou nível..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            style={{ width: "100%", paddingLeft: "32px" }}
+          />
+        </div>
+        <span style={{ width: "1px", height: "24px", background: "var(--cor-borda)", flexShrink: 0 }} aria-hidden="true" />
         {podeCriar(tipo, "cursos") && (
           <Botao variante="primario" onClick={() => { setCursoSelecionado(null); setModoEdicao(false); setNivelModal("Iniciante"); setVisivelNovo(false); setModalAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
             variants={{ hover: { y: -1 } }} whileHover="hover"
@@ -405,29 +440,46 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
         </li>
       </ul>
 
-      {/* Filtro + ação em massa */}
+      {/* Ações em massa */}
       <div className="barra-filtros">
-        <label htmlFor="busca-cursos" className="visualmente-oculto">Buscar curso</label>
-        <input
-          id="busca-cursos"
-          type="search"
-          className="campo__entrada barra-filtros__busca"
-          placeholder="Buscar por título ou nível..."
-          value={filtro}
-          onChange={(e) => setFiltro(e.target.value)}
-        />
-        {podeExcluir(tipo, "cursos") && (
-          <Botao
-            variante="perigo"
-            tamanho="pequeno"
-            disabled={selecionados.size === 0}
-            style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}
-            onClick={() => setExcluindoEmMassa(true)}
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)", marginLeft: "auto", flexShrink: 0 }}>
+          {podeExcluir(tipo, "cursos") && (
+            <>
+              <motion.button
+                type="button"
+                disabled={selecionados.size === 0}
+                onClick={() => setExcluindoEmMassa(true)}
+                style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: selecionados.size > 0 ? "#f87171" : "#fff", background: "none", border: "none", cursor: selecionados.size > 0 ? "pointer" : "default", padding: 0, opacity: selecionados.size > 0 ? 1 : 0.4 }}
+                variants={{ hover: { color: "#f87171", scale: 1.05 } }}
+                whileHover={selecionados.size > 0 ? "hover" : undefined}
+                whileTap={selecionados.size > 0 ? { scale: 0.93 } : undefined}
+                transition={{ type: "spring", stiffness: 400, damping: 18 }}
+              >
+                <TbTrash size={13} aria-hidden="true" />
+                {selecionados.size > 0 ? `Excluir (${selecionados.size})` : "Excluir selecionados"}
+              </motion.button>
+              <span style={{ width: "1px", height: "14px", background: "var(--cor-borda)", flexShrink: 0 }} aria-hidden="true" />
+            </>
+          )}
+          <motion.button
+            type="button"
+            onClick={() => { setGerenciarProfId(null); setGerenciarCoordId(null); setModalGerenciarAberto(true); }}
+            style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#fff", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+            variants={{ hover: { color: "var(--cor-marca)", scale: 1.05 } }}
+            whileHover="hover"
+            whileTap={{ scale: 0.93 }}
+            transition={{ type: "spring", stiffness: 400, damping: 18 }}
           >
-            <TbTrash size={15} aria-hidden="true" />
-            {selecionados.size > 0 ? `Excluir (${selecionados.size})` : "Excluir selecionados"}
-          </Botao>
-        )}
+            <motion.span
+              variants={{ hover: { rotate: 90 } }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              style={{ display: "flex" }}
+            >
+              <TbSettings size={13} aria-hidden="true" />
+            </motion.span>
+            Gerenciar selecionados
+          </motion.button>
+        </div>
       </div>
 
       {/* Cabeçalho da listagem */}
@@ -479,8 +531,6 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                 </div>
                 <div className="desempenho-curso-item__meta">
                   <span className="desempenho-curso-item__codigo">{curso.codigoRegistro}</span>
-                  <Insignia texto={curso.nivel} variante="neutro" />
-
                 </div>
               </div>
 
@@ -742,6 +792,65 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {/* Modal — Gerenciar selecionados */}
+      {modalGerenciarAberto && (
+        <Modal titulo="Gerenciar selecionados" onFechar={() => setModalGerenciarAberto(false)}>
+          {selecionados.size === 0 ? (
+            <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-lg)" }}>
+              Nenhum curso selecionado. Marque os cursos na lista antes de gerenciar.
+            </p>
+          ) : (
+            <>
+              <p style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-md)" }}>
+                {selecionados.size} {selecionados.size === 1 ? "curso selecionado" : "cursos selecionados"}
+              </p>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, marginBottom: "var(--espaco-lg)", display: "flex", flexDirection: "column", gap: "var(--espaco-xs)" }}>
+                {listaCursos.filter((c) => selecionados.has(c.id)).map((c) => (
+                  <li key={c.id} style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", padding: "var(--espaco-sm) var(--espaco-md)", background: "var(--cor-fundo)", borderRadius: "var(--raio-sm)", border: "1px solid var(--cor-borda)" }}>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--cor-marca)", flexShrink: 0 }} aria-hidden="true" />
+                    <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "var(--cor-texto-forte)" }}>{c.titulo}</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--cor-texto-mudo)", marginLeft: "auto" }}>{c.codigoRegistro}</span>
+                  </li>
+                ))}
+              </ul>
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--espaco-md)", marginBottom: "var(--espaco-xl)" }}>
+                <div>
+                  <label className="campo__rotulo" htmlFor="gerenciar-professor">Professor</label>
+                  <SelectUsuario
+                    id="gerenciar-professor"
+                    opcoes={professoresAtivos}
+                    value={gerenciarProfId}
+                    onChange={setGerenciarProfId}
+                    placeholder="Manter atual / sem alteração"
+                  />
+                </div>
+                <div>
+                  <label className="campo__rotulo" htmlFor="gerenciar-coordenador">Coordenador</label>
+                  <SelectUsuario
+                    id="gerenciar-coordenador"
+                    opcoes={coordenadoresAtivos}
+                    value={gerenciarCoordId}
+                    onChange={setGerenciarCoordId}
+                    placeholder="Manter atual / sem alteração"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          <footer className="modal-rodape">
+            <Botao variante="perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setModalGerenciarAberto(false)}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao
+              variante="sucesso"
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              disabled={selecionados.size === 0 || (gerenciarProfId === null && gerenciarCoordId === null)}
+              onClick={aplicarGerenciamento}
+            >
+              <MdSave size={16} aria-hidden="true" /> Salvar
+            </Botao>
+          </footer>
         </Modal>
       )}
 

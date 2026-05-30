@@ -222,6 +222,18 @@
 .sidebar__rodape {
   padding: var(--espaco-md);
   border-top: 1px solid var(--cor-borda);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar__item--sair {
+  color: var(--cor-erro) !important;
+}
+
+.sidebar__item--sair:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--cor-erro) !important;
 }
 
 /* ------------------------------------------------------------
@@ -275,7 +287,6 @@
   background: var(--cor-cartao);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-lg);
-  overflow: hidden;
 }
 
 .painel-secao__cabecalho {
@@ -284,6 +295,7 @@
   justify-content: space-between;
   padding: var(--espaco-lg);
   border-bottom: 1px solid var(--cor-borda);
+  overflow: visible;
 }
 
 .painel-secao__titulo {
@@ -655,22 +667,23 @@
   display: flex;
   align-items: center;
   gap: 0.45em;
-  font-size: 0.95rem;
-  font-weight: 500;
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: var(--fonte-display);
 }
 
 .topbar__breadcrumb-raiz {
-  color: var(--cor-texto-suave);
-  font-weight: 400;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
 }
 
 .topbar__breadcrumb-sep {
-  color: var(--cor-texto-mudo);
   font-weight: 300;
+  opacity: 0.7;
 }
 
 .topbar__breadcrumb-secao {
@@ -678,6 +691,7 @@
   align-items: center;
   gap: 0.35em;
   color: var(--cor-texto-forte);
+  font-size: 1.05rem;
   font-weight: 700;
 }
 
@@ -778,18 +792,10 @@
 
 .sidebar__item-icone {
   align-items: center;
-  background: rgba(185, 153, 255, 0.12);
-  border: 1px solid rgba(185, 153, 255, 0.18);
-  border-radius: 999px;
-  color: #dcfce7;
   display: inline-flex;
-  font-size: 0.68rem;
-  font-weight: 900;
-  height: 28px;
   justify-content: center;
-  letter-spacing: 0.02em;
   position: relative;
-  width: 34px;
+  width: 20px;
   flex-shrink: 0;
 }
 
@@ -1397,9 +1403,35 @@
   border-top: 1px solid var(--cor-borda);
 }
 
-.popup-perfil__sair {
+.popup-perfil__sair,
+.popup-perfil__editar {
   width: 100%;
-  justify-content: center;
+  justify-content: flex-start;
+  border-radius: var(--raio-md) !important;
+  border: 1px solid transparent !important;
+  background: none !important;
+  padding: 0.6rem var(--espaco-sm) !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+.popup-perfil__editar {
+  color: var(--cor-texto-suave) !important;
+}
+
+.popup-perfil__editar:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--cor-texto-forte) !important;
+}
+
+.popup-perfil__sair {
+  color: var(--cor-erro) !important;
+}
+
+.popup-perfil__sair:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--cor-erro) !important;
 }
 
 /* ------------------------------------------------------------

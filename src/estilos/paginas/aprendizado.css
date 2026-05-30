@@ -2907,7 +2907,6 @@
   flex-direction: column;
   gap: var(--espaco-md);
   min-height: 300px;
-  background: var(--cor-fundo-elevado);
 }
 
 .slide-turma__cabecalho {

@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   TbLayoutDashboard,
@@ -91,21 +92,25 @@ export default function NavGrupo({ usuario, secaoAtual }) {
       <div className="nav-grupo__divisor" aria-hidden="true" />
 
       <div className="nav-grupo__tabs" role="tablist" aria-label={rotulo}>
-        {filhos.map((filho) => {
+        {filhos.map((filho, idx) => {
           const Ic = ICONE_COMP[filho.chave];
           const ativo = secaoAtual === filho.chave;
           return (
-            <button
-              key={filho.chave}
-              role="tab"
-              aria-selected={ativo}
-              className={`nav-grupo__tab${ativo ? " nav-grupo__tab--ativo" : ""}`}
-              onClick={() => navigate(rotaPainelSecao(filho.chave))}
-              type="button"
-            >
-              {Ic && <Ic size={15} />}
-              <span>{filho.rotulo}</span>
-            </button>
+            <React.Fragment key={filho.chave}>
+              {idx > 0 && (
+                <span className="nav-grupo__sep" aria-hidden="true">›</span>
+              )}
+              <button
+                role="tab"
+                aria-selected={ativo}
+                className={`nav-grupo__tab${ativo ? " nav-grupo__tab--ativo" : ""}`}
+                onClick={() => navigate(rotaPainelSecao(filho.chave))}
+                type="button"
+              >
+                {Ic && <Ic size={15} />}
+                <span>{filho.rotulo}</span>
+              </button>
+            </React.Fragment>
           );
         })}
       </div>

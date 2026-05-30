@@ -157,6 +157,7 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
         secaoAtual={secaoAtual}
         aberta={sidebarAberta}
         onFechar={() => setSidebarAberta(false)}
+        onLogout={onLogout}
       />
 
       <div className="layout-conteudo">

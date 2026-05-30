@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbChevronLeft, TbChevronRight, TbSettings, TbPencil } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbChevronLeft, TbChevronRight, TbSettings, TbPencil, TbSearch } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -217,13 +217,27 @@ export default function TelaCoordenadores({ usuario, onToast }) {
 
   return (
     <div className="tela-coordenadores">
-      <header className="cabecalho-pagina">
+      <header className="cabecalho-pagina" style={{ alignItems: "center" }}>
         <div>
           <h1 className="cabecalho-pagina__titulo">Coordenadores</h1>
           <p className="cabecalho-pagina__subtitulo">
             {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
           </p>
         </div>
+        <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
+          <TbSearch size={15} aria-hidden="true" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--cor-texto-mudo)", pointerEvents: "none" }} />
+          <label htmlFor="busca-coord" className="visualmente-oculto">Buscar coordenador</label>
+          <input
+            id="busca-coord"
+            type="search"
+            className="campo__entrada barra-filtros__busca"
+            placeholder="Buscar por nome ou e-mail…"
+            value={busca}
+            onChange={(e) => { setBusca(e.target.value); setPagina(1); }}
+            style={{ width: "100%", paddingLeft: "32px" }}
+          />
+        </div>
+        <span style={{ width: "1px", height: "24px", background: "var(--cor-borda)", flexShrink: 0 }} aria-hidden="true" />
         {podeCriar(tipo, "coordenadores") && (
           <Botao variante="primario" onClick={() => setModalNovoAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}
             variants={{ hover: { y: -1 } }} whileHover="hover"
@@ -242,15 +256,6 @@ export default function TelaCoordenadores({ usuario, onToast }) {
 
       {/* Filtros */}
       <div className="barra-filtros">
-        <label htmlFor="busca-coord" className="visualmente-oculto">Buscar coordenador</label>
-        <input
-          id="busca-coord"
-          type="search"
-          className="campo__entrada barra-filtros__busca"
-          placeholder="Buscar por nome ou e-mail…"
-          value={busca}
-          onChange={(e) => { setBusca(e.target.value); setPagina(1); }}
-        />
         <div className="segmented-control" role="group" aria-label="Filtrar por status">
           {[
             { valor: "todos",    rotulo: "Todos"    },
@@ -474,7 +479,6 @@ export default function TelaCoordenadores({ usuario, onToast }) {
                     </h4>
                     <motion.button
                       type="button"
-                      title="Atribuir cursos"
                       aria-label="Atribuir cursos"
                       onClick={() => abrirAtribuicaoCursos(coordDetalhe)}
                       style={{ background: "none", border: "none", cursor: "pointer", color: "#22c55e", display: "flex", alignItems: "center", padding: "2px", gap: "4px" }}

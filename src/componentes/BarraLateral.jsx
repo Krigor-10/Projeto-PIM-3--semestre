@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
+import { TbX } from "react-icons/tb";
+import Modal from "@/componentes/Modal.jsx";
+import Botao from "@/componentes/Botao.jsx";
 import { rotaPainelSecao } from "@/rotas.js";
 import {
   MdDashboard,
@@ -21,6 +25,7 @@ import {
   MdChevronRight,
   MdLibraryBooks,
   MdOpenInNew,
+  MdLogout,
 } from "react-icons/md";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
 import { matriculas, conteudos, avaliacoes } from "@/dados/dadosMock.js";
@@ -76,7 +81,11 @@ export const FILHO_PARA_GRUPO = {
   certificados:  "aprendizado",
 };
 
-export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) {
+const SECOES_OCULTAS_SIDEBAR = {
+  Aluno: new Set(["matriculas"]),
+};
+
+export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, onLogout }) {
   const navigate = useNavigate();
 
   function irPara(secao) {
@@ -86,6 +95,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
     () => localStorage.getItem("coderyse-sidebar") === "recolhida"
   );
   const [hovering, setHovering] = useState(false);
+  const [confirmarSaida, setConfirmarSaida] = useState(false);
   const [expandidos, setExpandidos] = useState(() => {
     try {
       return new Set(JSON.parse(localStorage.getItem("coderyse-sidebar-grupos") ?? '["pessoas","academico"]'));
@@ -115,7 +125,8 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
   const ORDEM_ALUNO = ["dashboard", "conteudos", "avaliacoes", "progresso", "certificados", "matriculas"];
 
   const itensMenu = (() => {
-    const base = obterSecoesPermitidas(usuario.tipo);
+    const ocultas = SECOES_OCULTAS_SIDEBAR[usuario.tipo] ?? new Set();
+    const base = obterSecoesPermitidas(usuario.tipo).filter((s) => !ocultas.has(s.chave));
     if (usuario.tipo !== "Aluno") return base;
     return [...base].sort((a, b) => {
       const ia = ORDEM_ALUNO.indexOf(a.chave);
@@ -307,16 +318,6 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
         </nav>
 
         <footer className="sidebar__rodape">
-          <div className="sidebar__usuario">
-            <div className="topbar__avatar" aria-hidden="true">
-              {gerarIniciais(usuario.nome)}
-            </div>
-            <div className="sidebar__usuario-info">
-              <span className="sidebar__usuario-nome">{usuario.nome.split(" ")[0]}</span>
-              <span className="sidebar__usuario-tipo">{usuario.tipo}</span>
-            </div>
-          </div>
-
           {["Professor", "Aluno"].includes(usuario.tipo) && (
             <button
               className="sidebar__item sidebar__item--home-publica"
@@ -333,6 +334,19 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
           )}
 
           <button
+            className="sidebar__item sidebar__item--sair"
+            onClick={() => setConfirmarSaida(true)}
+            title="Sair da conta"
+            type="button"
+            aria-label="Sair da conta"
+          >
+            <span className="sidebar__item-icone" aria-hidden="true">
+              <MdLogout size={18} />
+            </span>
+            <span className="sidebar__item-rotulo">Sair</span>
+          </button>
+
+          <button
             className="sidebar__toggle"
             onClick={() => setRecolhida((v) => !v)}
             aria-label={recolhida ? "Expandir menu lateral" : "Recolher menu lateral"}
@@ -346,6 +360,23 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar }) 
           </button>
         </footer>
       </aside>
+
+      {confirmarSaida && createPortal(
+        <Modal titulo="Sair da conta" onFechar={() => setConfirmarSaida(false)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Tem certeza que deseja sair? Você precisará fazer login novamente para acessar a plataforma.
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmarSaida(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao variante="sucesso" onClick={onLogout} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <MdLogout size={16} aria-hidden="true" /> Confirmar saída
+            </Botao>
+          </footer>
+        </Modal>,
+        document.body
+      )}
     </>
   );
 }

@@ -1607,7 +1607,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               </div>
             </div>
             <footer className="modal-rodape">
-              <Botao variante="perigo" style={{ marginRight: "auto" }} onClick={() => { setModalAberto(false); setCampoEditando(null); }}>Fechar</Botao>
+              <Botao variante="perigo" style={{ marginRight: "auto", display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalAberto(false); setCampoEditando(null); }}><TbX size={15} aria-hidden="true" />Fechar</Botao>
               <Botao variante="perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setConfirmandoExclusao(true)}><MdDelete size={19} aria-hidden="true" />Excluir</Botao>
               <Botao variante="primario" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalAberto(false); setCampoEditando(null); onToast?.("Alterações salvas.", "sucesso"); }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </footer>

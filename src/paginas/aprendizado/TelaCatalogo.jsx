@@ -5,7 +5,22 @@
    • Vista admin (componente principal) → gerenciar visibilidade e destaque
    ============================================================ */
 import { useState } from "react";
-import { TbPlus, TbDotsVertical, TbSettings, TbCheck, TbClock, TbSend, TbX } from "react-icons/tb";
+import { TbPlus, TbDotsVertical, TbSettings, TbCheck, TbClock, TbSend, TbX, TbTrash } from "react-icons/tb";
+import imgDevWeb     from "@/ativos/curso-dev-web.png";
+import imgCiencia    from "@/ativos/curso-ciencia-dados.png";
+import imgIA         from "@/ativos/curso-ia.png";
+import imgCyber      from "@/ativos/curso-cyber.png";
+import imgUxUi       from "@/ativos/curso-ux-ui.png";
+import imgRobotica   from "@/ativos/curso-robotica.png";
+
+const IMAGEM_CURSO = {
+  "Desenvolvimento Web":     imgDevWeb,
+  "Ciência de Dados":        imgCiencia,
+  "Inteligência Artificial": imgIA,
+  "Cybersegurança":          imgCyber,
+  "UX e UI Design":          imgUxUi,
+  "Robótica":                imgRobotica,
+};
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
@@ -127,6 +142,11 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
                   curso.destaque && !matriculado && !pendente ? "catalogo-card--destaque" : "",
                 ].filter(Boolean).join(" ")}
               >
+                {IMAGEM_CURSO[curso.titulo] && (
+                  <div className="cartao-curso__topo" aria-hidden="true">
+                    <img src={IMAGEM_CURSO[curso.titulo]} alt="" aria-hidden="true" className="cartao-curso__imagem" loading="lazy" />
+                  </div>
+                )}
                 <div className="catalogo-card__topo">
                   <h3 className="catalogo-card__titulo">{curso.titulo}</h3>
                   <span className="menu-contexto__botao" aria-hidden="true">
@@ -244,6 +264,8 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
   const [nivelNovo, setNivelNovo]           = useState("Iniciante");
   const [visivelNovo, setVisivelNovo]       = useState(false);
   const [menuAbertoId, setMenuAbertoId]     = useState(null);
+  const [cursoParaExcluir, setCursoParaExcluir] = useState(null);
+  const [cursoParaToggle, setCursoParaToggle]   = useState(null);
 
   /* KPIs calculados para os cards de estatística */
   const totalVisiveis = lista.filter((c) => c.visivelCatalogo).length;
@@ -260,10 +282,24 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
     return matchBusca && matchNivel && matchVisivel;
   });
 
+  function confirmarExclusao() {
+    if (!cursoParaExcluir) return;
+    setLista((prev) => prev.filter((c) => c.id !== cursoParaExcluir.id));
+    setCursoParaExcluir(null);
+  }
+
   function alternarVisivel(id) {
+    const curso = lista.find((c) => c.id === id);
+    setCursoParaToggle(curso ?? null);
+  }
+
+  function confirmarToggle() {
+    if (!cursoParaToggle) return;
+    const novoEstado = !cursoParaToggle.visivelCatalogo;
     setLista((prev) =>
-      prev.map((c) => c.id === id ? { ...c, visivelCatalogo: !c.visivelCatalogo } : c)
+      prev.map((c) => c.id === cursoParaToggle.id ? { ...c, visivelCatalogo: novoEstado } : c)
     );
+    setCursoParaToggle(null);
   }
 
   function alternarDestaque(id) {
@@ -362,6 +398,11 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
               curso.destaque ? "catalogo-card--destaque" : "",
             ].filter(Boolean).join(" ")}
           >
+            {IMAGEM_CURSO[curso.titulo] && (
+              <div className="cartao-curso__topo" aria-hidden="true">
+                <img src={IMAGEM_CURSO[curso.titulo]} alt="" aria-hidden="true" className="cartao-curso__imagem" loading="lazy" />
+              </div>
+            )}
             <div className="catalogo-card__topo">
               <div className="catalogo-card__identidade">
                 <h3 className="catalogo-card__titulo">{curso.titulo}</h3>
@@ -383,6 +424,12 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
                       <button type="button" role="menuitem" style={{ display: "flex", alignItems: "center", gap: "6px" }}
                         onClick={() => { setCursoEditando({ ...curso }); setNivelEditando(curso.nivel ?? "Iniciante"); setMenuAbertoId(null); }}>
                         <TbSettings size={20} aria-hidden="true" />Opções
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button" role="menuitem" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                        onClick={() => { setCursoParaExcluir(curso); setMenuAbertoId(null); }}>
+                        <TbTrash size={20} aria-hidden="true" />Excluir
                       </button>
                     </li>
                   </ul>
@@ -436,6 +483,50 @@ export default function TelaCatalogo({ usuario, listaCursos, onListaCursosChange
         <p className="texto-vazio texto-vazio--central" role="status">
           Nenhum curso encontrado.
         </p>
+      )}
+
+      {cursoParaToggle && (
+        <Modal
+          titulo={cursoParaToggle.visivelCatalogo ? "Ocultar do catálogo" : "Publicar no catálogo"}
+          onFechar={() => setCursoParaToggle(null)}
+        >
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            {cursoParaToggle.visivelCatalogo
+              ? <>O curso <strong>{cursoParaToggle.titulo}</strong> será ocultado da vitrine pública.</>
+              : <>O curso <strong>{cursoParaToggle.titulo}</strong> ficará visível para todos na vitrine pública.</>
+            }
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setCursoParaToggle(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao
+              variante="sucesso"
+              onClick={confirmarToggle}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              variants={{ hover: { y: -1 } }} whileHover="hover"
+            >
+              <TbCheck size={15} aria-hidden="true" />
+              Confirmar
+            </Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {cursoParaExcluir && (
+        <Modal titulo="Excluir curso" onFechar={() => setCursoParaExcluir(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Deseja excluir o curso <strong>{cursoParaExcluir.titulo}</strong>? Esta ação não pode ser desfeita.
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="fantasma" onClick={() => setCursoParaExcluir(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao variante="perigo" onClick={confirmarExclusao} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbTrash size={15} aria-hidden="true" /> Excluir permanentemente
+            </Botao>
+          </footer>
+        </Modal>
       )}
 
       {/* ── Modal: criar novo curso ── */}

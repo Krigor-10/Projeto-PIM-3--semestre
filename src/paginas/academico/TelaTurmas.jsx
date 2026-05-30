@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbSettings, TbX } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings, TbX, TbSearch, TbUsers, TbChalkboard, TbCheck } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -35,58 +35,57 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
     : 0;
   const mediaNota      = NOTAS_MOCK[turma.id] ?? null;
 
-  const corProgresso = progressoMedio >= 70 ? "var(--cor-sucesso)" : progressoMedio >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
-  const corNota      = mediaNota === null    ? "var(--cor-texto-mudo)"
-    : mediaNota >= 7 ? "var(--cor-sucesso)"
-    : mediaNota >= 5 ? "var(--cor-aviso)"
-    : "var(--cor-erro)";
-
-  const RAIO = 30;
-  const CIRCUNFERENCIA = 2 * Math.PI * RAIO;
-
   return (
-    <div className="slide-turma">
-      {/* Cabeçalho da turma com métricas integradas */}
-      <header className="slide-turma__cabecalho">
-        <div className="slide-turma__identidade">
-          <div className="slide-turma__nome-linha">
-            <h3 className="slide-turma__nome">{turma.nomeTurma}</h3>
-            <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
+    <div className="conteudos-aluno">
+      <header className="conteudos-aluno__cabecalho">
+        <div className="conteudos-aluno__curso-info">
+          <h2 className="conteudos-aluno__curso-titulo">{turma.nomeTurma}</h2>
+          <div className="conteudos-aluno__meta-chips">
+            <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
+              <TbCheck size={12} aria-hidden="true" />
+              {turma.status}
+            </span>
+            <span className="conteudos-aluno__meta-chip">
+              <TbUsers size={12} aria-hidden="true" />
+              {alunos.length} aluno{alunos.length !== 1 ? "s" : ""}
+            </span>
+            {mediaNota !== null && (
+              <span className="conteudos-aluno__meta-chip">
+                Média {mediaNota.toFixed(1)}
+              </span>
+            )}
+            <span className="conteudos-aluno__meta-chip">
+              <TbChalkboard size={12} aria-hidden="true" />
+              {turma.professorNome}
+            </span>
           </div>
-          <span className="slide-turma__curso">{turma.cursoTitulo}</span>
+          <p style={{ fontSize: "0.8rem", color: "var(--cor-texto-mudo)", marginTop: "4px" }}>
+            {turma.cursoTitulo}
+          </p>
         </div>
 
-        <div className="slide-turma__metricas">
-          <div className="anel-turma" aria-label={`${progressoMedio}% de progresso médio`}>
-            <svg viewBox="0 0 80 80" aria-hidden="true">
-              <circle cx="40" cy="40" r={RAIO} fill="none" stroke="rgba(123,47,247,0.1)" strokeWidth="7" />
-              <circle
-                cx="40" cy="40" r={RAIO} fill="none"
-                stroke={corProgresso}
-                strokeWidth="7"
-                strokeDasharray={CIRCUNFERENCIA}
-                strokeDashoffset={CIRCUNFERENCIA * (1 - progressoMedio / 100)}
-                strokeLinecap="round"
-                style={{ transform: "rotate(-90deg)", transformOrigin: "40px 40px" }}
-              />
-            </svg>
-            <span className="anel-turma__texto">{progressoMedio}%</span>
-          </div>
-
-          <div className="slide-turma__kpis">
-            <div className="slide-turma__kpi slide-turma__kpi--alunos">
-              <span className="slide-turma__kpi-valor">{alunos.length}</span>
-              <span className="slide-turma__kpi-rotulo">alunos</span>
-            </div>
-            <div className="slide-turma__kpi slide-turma__kpi--media">
-              <span className="slide-turma__kpi-valor" style={{ color: corNota }}>
-                {mediaNota !== null ? mediaNota.toFixed(1) : "—"}
-              </span>
-              <span className="slide-turma__kpi-rotulo">média</span>
-            </div>
-            <div className="slide-turma__kpi slide-turma__kpi--aprovados">
-              <span className="slide-turma__kpi-valor">{aprovados}</span>
-              <span className="slide-turma__kpi-rotulo">aprovados</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
+          <div className="conteudos-aluno__progresso-geral">
+            <p className="progresso-hero__legenda">
+              {aprovados}/{alunos.length} aprovados
+            </p>
+            <div className="anel-progresso" aria-label={`${progressoMedio} por cento de progresso médio`}>
+              <svg className="anel-progresso__svg" viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                  <linearGradient id={`anel-grad-turma-${turma.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#b992ff" />
+                    <stop offset="100%" stopColor="#7b2ff7" />
+                  </linearGradient>
+                </defs>
+                <circle className="anel-progresso__trilha" cx="60" cy="60" r="50" />
+                <circle
+                  className="anel-progresso__arco"
+                  cx="60" cy="60" r="50"
+                  stroke={`url(#anel-grad-turma-${turma.id})`}
+                  style={{ strokeDasharray: "314.16", strokeDashoffset: 314.16 * (1 - progressoMedio / 100) }}
+                />
+              </svg>
+              <span className="anel-progresso__texto" aria-hidden="true">{progressoMedio}%</span>
             </div>
           </div>
 
@@ -122,14 +121,12 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
               </div>
               <div className="slide-alunos__linha-info">
                 <strong className="slide-alunos__linha-nome">{aluno.nome}</strong>
-                <span className="slide-alunos__linha-email">{aluno.email}</span>
               </div>
               <div className="slide-alunos__media-col">
                 <span className="dado-rotulo" aria-hidden="true">Média</span>
                 <span
                   className="slide-alunos__media"
                   style={{ color: corMedia(aluno.media) }}
-                  title={`Média: ${aluno.media.toFixed(1)}`}
                 >
                   {aluno.media.toFixed(1)}
                 </span>
@@ -259,7 +256,7 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
     <div className="tela-turmas">
       <header className="cabecalho-pagina">
         <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-lg)", flexWrap: "wrap" }}>
             <h1 className="cabecalho-pagina__titulo">Turmas</h1>
             {total > 0 && (
               <>
@@ -277,16 +274,33 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
                 </select>
               </>
             )}
-            <label htmlFor="busca-aluno" className="visualmente-oculto">Buscar aluno</label>
-            <input
-              id="busca-aluno"
-              type="search"
-              className="campo__entrada barra-filtros__busca"
-              placeholder="Buscar aluno..."
-              value={buscaAluno}
-              onChange={(e) => setBuscaAluno(e.target.value)}
-              style={{ maxWidth: "180px" }}
-            />
+            <span style={{ width: "1px", height: "24px", background: "var(--cor-borda)", flexShrink: 0 }} aria-hidden="true" />
+            <div style={{ position: "relative", width: "260px", flexShrink: 0 }}>
+              <TbSearch size={15} aria-hidden="true" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--cor-texto-mudo)", pointerEvents: "none" }} />
+              <label htmlFor="busca-aluno" className="visualmente-oculto">Buscar aluno</label>
+              <input
+                id="busca-aluno"
+                type="search"
+                className="campo__entrada barra-filtros__busca"
+                placeholder="Buscar aluno..."
+                value={buscaAluno}
+                onChange={(e) => setBuscaAluno(e.target.value)}
+                style={{ width: "100%", paddingLeft: "32px" }}
+              />
+            </div>
+            {podeCriar(tipo, "turmas") && (
+              <>
+                <span style={{ width: "1px", height: "24px", background: "var(--cor-borda)", flexShrink: 0 }} aria-hidden="true" />
+                <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  variants={{ hover: { y: -1 } }} whileHover="hover"
+                >
+                  <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+                    <TbPlus size={20} aria-hidden="true" />
+                  </motion.span>
+                  Nova Turma
+                </Botao>
+              </>
+            )}
           </div>
           <p className="cabecalho-pagina__subtitulo">
             {tipo === "Professor"
@@ -294,16 +308,6 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
               : `${total} turma${total !== 1 ? "s" : ""} cadastrada${total !== 1 ? "s" : ""}`}
           </p>
         </div>
-        {podeCriar(tipo, "turmas") && (
-          <Botao variante="primario" onClick={() => { setModalNova(true); setErroNovaTurma(""); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}
-            variants={{ hover: { y: -1 } }} whileHover="hover"
-          >
-            <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
-              <TbPlus size={20} aria-hidden="true" />
-            </motion.span>
-            Nova Turma
-          </Botao>
-        )}
       </header>
 
       {total === 0 ? (
