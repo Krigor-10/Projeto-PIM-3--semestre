@@ -75,6 +75,7 @@ export default function TelaInicio() {
               className="cabecalho-publico__acao-admin"
               onClick={() => navigate(ROTAS.LOGIN_STAFF)}
               aria-label="Acesso administrativo"
+              data-tooltip="Acesso administrativo"
               style={{ display: "flex", alignItems: "center" }}
             >
               <MdAdminPanelSettings size={22} aria-hidden="true" />

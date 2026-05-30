@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { TbX } from "react-icons/tb";
+import { TbX, TbTrophy } from "react-icons/tb";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { rotaPainelSecao } from "@/rotas.js";
@@ -18,13 +18,11 @@ import {
   MdAssignmentTurnedIn,
   MdDescription,
   MdBarChart,
-  MdWorkspacePremium,
   MdPublic,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
   MdChevronRight,
   MdLibraryBooks,
-  MdOpenInNew,
   MdLogout,
 } from "react-icons/md";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
@@ -43,7 +41,7 @@ const ICONES_SECAO = {
   avaliacoes:    <MdAssignmentTurnedIn size={18} />,
   conteudos:     <MdDescription size={18} />,
   progresso:     <MdBarChart size={18} />,
-  certificados:  <MdWorkspacePremium size={18} />,
+  certificados:  <TbTrophy size={18} />,
   catalogo:      <MdPublic size={18} />,
 };
 
@@ -318,21 +316,6 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, on
         </nav>
 
         <footer className="sidebar__rodape">
-          {usuario.tipo === "Professor" && (
-            <button
-              className="sidebar__item sidebar__item--home-publica"
-              onClick={() => { irPara("catalogo"); onFechar?.(); }}
-              title="Ver catálogo de cursos"
-              type="button"
-              aria-label="Ver catálogo de cursos"
-            >
-              <span className="sidebar__item-icone" aria-hidden="true">
-                <MdOpenInNew size={18} />
-              </span>
-              <span className="sidebar__item-rotulo">Ver catálogo</span>
-            </button>
-          )}
-
           <button
             className="sidebar__item sidebar__item--sair"
             onClick={() => setConfirmarSaida(true)}

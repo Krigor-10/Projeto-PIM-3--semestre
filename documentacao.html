@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Documentação Técnica — CodeRyse Academy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  :root {
+    --roxo: #7b2ff7;
+    --roxo-claro: #b992ff;
+    --roxo-fundo: rgba(123,47,247,0.08);
+    --verde: #22c55e;
+    --azul: #3b82f6;
+    --laranja: #f59e0b;
+    --vermelho: #ef4444;
+    --cinza-fundo: #f4f5f9;
+    --cinza-borda: #e2e4ef;
+    --texto: #0d0f18;
+    --texto-suave: #4a5068;
+    --branco: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--texto);
+    background: var(--cinza-fundo);
+  }
+
+  /* ── CAPA ── */
+  .capa {
+    background: linear-gradient(135deg, #0d0f18 0%, #1a0533 50%, #0d0f18 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 40px;
+    page-break-after: always;
+  }
+  .capa__logo {
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .capa__logo span { color: var(--roxo-claro); }
+  .capa__subtitulo {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 48px;
+  }
+  .capa__titulo-doc {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .capa__desc {
+    color: rgba(255,255,255,0.55);
+    font-size: 15px;
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+  .capa__meta {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .capa__meta-item {
+    text-align: center;
+  }
+  .capa__meta-rotulo {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 4px;
+  }
+  .capa__meta-valor {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--roxo-claro);
+  }
+  .capa__linha {
+    width: 60px;
+    height: 3px;
+    background: var(--roxo);
+    border-radius: 2px;
+    margin: 32px auto;
+  }
+
+  /* ── SUMÁRIO ── */
+  .sumario {
+    background: var(--branco);
+    padding: 60px 80px;
+    page-break-after: always;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .sumario h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--texto);
+    margin-bottom: 32px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--roxo);
+  }
+  .sumario ol {
+    list-style: none;
+    counter-reset: sumario;
+  }
+  .sumario > ol > li {
+    counter-increment: sumario;
+    margin-bottom: 6px;
+  }
+  .sumario > ol > li > a::before {
+    content: counter(sumario) ". ";
+    font-weight: 700;
+    color: var(--roxo);
+    min-width: 28px;
+    display: inline-block;
+  }
+  .sumario a {
+    color: var(--texto);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .sumario a:hover { color: var(--roxo); }
+  .sumario .dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--cinza-borda);
+    margin: 0 8px;
+    transform: translateY(-3px);
+  }
+  .sumario .pg { font-size: 12px; color: var(--texto-suave); }
+  .sumario .sub {
+    list-style: none;
+    padding-left: 28px;
+    margin-top: 4px;
+  }
+  .sumario .sub li { margin-bottom: 3px; }
+  .sumario .sub a { font-size: 13px; color: var(--texto-suave); }
+  .sumario .sub a::before { content: "— "; color: var(--roxo-claro); }
+
+  /* ── CONTEÚDO ── */
+  .conteudo {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+    background: var(--branco);
+  }
+
+  /* ── SEÇÃO ── */
+  .secao {
+    padding-top: 60px;
+    page-break-before: always;
+  }
+  .secao:first-child { page-break-before: avoid; }
+
+  .secao__cabecalho {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--cinza-borda);
+  }
+  .secao__numero {
+    background: var(--roxo);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .secao__titulo {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--texto);
+    line-height: 1.2;
+  }
+  .secao__desc {
+    font-size: 13px;
+    color: var(--texto-suave);
+    margin-top: 4px;
+  }
+
+  /* ── SUBSEÇÃO ── */
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--texto);
+    margin: 28px 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--roxo);
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--roxo);
+    margin: 20px 0 8px;
+  }
+
+  /* ── PASTA BOX ── */
+  .pasta-box {
+    background: var(--cinza-fundo);
+    border: 1px solid var(--cinza-borda);
+    border-left: 4px solid var(--roxo);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .pasta-box__nome {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--roxo);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 6px;
+  }
+  .pasta-box__desc {
+    font-size: 13px;
+    color: var(--texto-suave);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .pasta-box__arquivos {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pasta-box__arquivo {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .pasta-box__arquivo-nome {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--texto);
+    min-width: 200px;
+    flex-shrink: 0;
+  }
+  .pasta-box__arquivo-desc {
+    color: var(--texto-suave);
+    line-height: 1.5;
+  }
+
+  /* ── TABELA ── */
+  .tabela-wrap { overflow-x: auto; margin: 16px 0 24px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr { background: var(--roxo); color: #fff; }
+  thead th {
+    padding: 10px 14px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+  }
+  tbody tr:nth-child(even) { background: var(--cinza-fundo); }
+  tbody tr:hover { background: var(--roxo-fundo); }
+  tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--cinza-borda);
+    vertical-align: top;
+  }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .tag--verde  { background: rgba(34,197,94,0.12);  color: #15803d; }
+  .tag--roxo   { background: rgba(123,47,247,0.12); color: #6d28d9; }
+  .tag--azul   { background: rgba(59,130,246,0.12); color: #1d4ed8; }
+  .tag--laranja{ background: rgba(245,158,11,0.12); color: #b45309; }
+  .tag--cinza  { background: rgba(100,116,139,0.1); color: #475569; }
+
+  /* ── CÓDIGO ── */
+  pre, code {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 12px;
+  }
+  pre {
+    background: #0d0f18;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    line-height: 1.6;
+  }
+  code {
+    background: rgba(123,47,247,0.08);
+    color: var(--roxo);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+
+  /* ── DESTAQUE ── */
+  .destaque {
+    background: var(--roxo-fundo);
+    border: 1px solid rgba(123,47,247,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 12px 0 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .destaque strong { color: var(--roxo); }
+
+  /* ── LISTA ── */
+  ul.lista, ol.lista {
+    padding-left: 20px;
+    margin: 8px 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 13px;
+    color: var(--texto-suave);
+  }
+  ul.lista li::marker { color: var(--roxo); }
+  ol.lista { list-style: decimal; }
+  ol.lista li::marker { color: var(--roxo); font-weight: 700; }
+
+  /* ── FLUXO ── */
+  .fluxo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 12px 0 20px;
+    font-size: 13px;
+  }
+  .fluxo__passo {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .fluxo__num {
+    background: var(--roxo);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .fluxo__seta {
+    color: var(--roxo-claro);
+    font-size: 16px;
+    padding-left: 22px;
+    opacity: 0.5;
+  }
+
+  /* ── GRID DE PERFIS ── */
+  .grid-perfis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 12px 0 24px;
+  }
+  .card-perfil {
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--cinza-borda);
+  }
+  .card-perfil__icone {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .card-perfil__nome {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .card-perfil__desc {
+    font-size: 11px;
+    color: var(--texto-suave);
+  }
+
+  /* ── DIVISOR ── */
+  hr { border: none; border-top: 1px solid var(--cinza-borda); margin: 28px 0; }
+
+  p { margin-bottom: 12px; font-size: 13.5px; color: var(--texto-suave); line-height: 1.75; }
+  strong { color: var(--texto); font-weight: 700; }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .capa { min-height: auto; padding: 40px; }
+    .sumario, .conteudo { padding: 20px 40px; }
+    .secao { padding-top: 40px; }
+    pre { font-size: 10px; }
+    h3 { margin: 20px 0 8px; }
+    .pasta-box { padding: 14px 18px; }
+  }
+
+  @page { margin: 15mm 12mm; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     CAPA
+══════════════════════════════════════════ -->
+<div class="capa">
+  <div class="capa__logo">Code<span>Ryse</span></div>
+  <div class="capa__subtitulo">Academy</div>
+  <div class="capa__linha"></div>
+  <div class="capa__titulo-doc">Documentação Técnica Completa</div>
+  <p class="capa__desc">
+    Descrição detalhada de todas as pastas, arquivos, funcionalidades, fluxos de dados,
+    componentes, estilos e arquitetura do projeto para apresentação acadêmica PIM3 — UNIP.
+  </p>
+  <div class="capa__meta">
+    <div class="capa__meta-item">
+      <div class="capa__meta-rotulo">Curso</div>
+      <div class="capa__meta-valor">Análise e Desenv. de Sistemas</div>
+    </div>
+    <div class="capa__meta-item">
+      <div class="capa__meta-rotulo">Projeto</div>
+      <div class="capa__meta-valor">PIM3 — UNIP</div>
+    </div>
+    <div class="capa__meta-item">
+      <div class="capa__meta-rotulo">Stack</div>
+      <div class="capa__meta-valor">React + Vite + JavaScript</div>
+    </div>
+    <div class="capa__meta-item">
+      <div class="capa__meta-rotulo">Versão</div>
+      <div class="capa__meta-valor">1.0.0 — 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SUMÁRIO
+══════════════════════════════════════════ -->
+<div class="sumario">
+  <h2>Sumário</h2>
+  <ol>
+    <li><a href="#s1">Visão Geral do Projeto<span class="dots"></span><span class="pg">3</span></a></li>
+    <li><a href="#s2">Arquivos Raiz (Configuração)<span class="dots"></span><span class="pg">4</span></a></li>
+    <li><a href="#s3">Como o Vite Serve a Aplicação<span class="dots"></span><span class="pg">5</span></a></li>
+    <li><a href="#s4">Pasta <code>src/dados/</code> — Camada de Dados<span class="dots"></span><span class="pg">6</span></a>
+      <ul class="sub">
+        <li><a href="#s4a">dadosMock.js — Dados de Demonstração</a></li>
+        <li><a href="#s4b">db.js — Persistência com localStorage</a></li>
+        <li><a href="#s4c">permissoes.js — Controle de Acesso (RBAC)</a></li>
+        <li><a href="#s4d">questoesQuiz.js — Banco de Questões</a></li>
+      </ul>
+    </li>
+    <li><a href="#s5">Pasta <code>src/paginas/</code> — Telas da Aplicação<span class="dots"></span><span class="pg">9</span></a>
+      <ul class="sub">
+        <li><a href="#s5a">autenticacao/ — Telas Públicas</a></li>
+        <li><a href="#s5b">dashboard/ — Painéis por Perfil</a></li>
+        <li><a href="#s5c">usuarios/ — Gestão de Pessoas</a></li>
+        <li><a href="#s5d">academico/ — Gestão Acadêmica</a></li>
+        <li><a href="#s5e">aprendizado/ — Jornada do Aluno</a></li>
+        <li><a href="#s5f">perfil/ — Perfil do Usuário</a></li>
+      </ul>
+    </li>
+    <li><a href="#s6">Pasta <code>src/componentes/</code> — Reutilizáveis<span class="dots"></span><span class="pg">14</span></a></li>
+    <li><a href="#s7">Pasta <code>src/estilos/</code> — Sistema de Design CSS<span class="dots"></span><span class="pg">16</span></a></li>
+    <li><a href="#s8">Pasta <code>src/hooks/</code> — Hooks Customizados<span class="dots"></span><span class="pg">18</span></a></li>
+    <li><a href="#s9">Pasta <code>src/ativos/</code> — Imagens e Recursos<span class="dots"></span><span class="pg">18</span></a></li>
+    <li><a href="#s10">Pasta <code>src/impressao/</code> — Versão para PDF<span class="dots"></span><span class="pg">19</span></a></li>
+    <li><a href="#s11">Entrada da Aplicação (principal.jsx + Aplicacao.jsx)<span class="dots"></span><span class="pg">19</span></a></li>
+    <li><a href="#s12">Roteamento (rotas.js)<span class="dots"></span><span class="pg">20</span></a></li>
+    <li><a href="#s13">Fluxos Principais da Plataforma<span class="dots"></span><span class="pg">21</span></a></li>
+    <li><a href="#s14">Permissões por Perfil — Tabela Completa<span class="dots"></span><span class="pg">22</span></a></li>
+    <li><a href="#s15">Estrutura Completa de Arquivos<span class="dots"></span><span class="pg">23</span></a></li>
+  </ol>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CONTEÚDO
+══════════════════════════════════════════ -->
+<div class="conteudo">
+
+<!-- ── SEÇÃO 1 ── -->
+<div class="secao" id="s1">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">01</div>
+    <div>
+      <div class="secao__titulo">Visão Geral do Projeto</div>
+      <div class="secao__desc">O que é, para que serve e como está estruturado</div>
+    </div>
+  </div>
+
+  <p><strong>CodeRyse Academy</strong> é uma plataforma de ensino online desenvolvida como protótipo funcional para o PIM3 (Projeto Integrado Multidisciplinar) do curso de Análise e Desenvolvimento de Sistemas da UNIP. Simula um ambiente completo de gestão acadêmica com quatro perfis de acesso distintos.</p>
+
+  <div class="grid-perfis">
+    <div class="card-perfil" style="border-top:3px solid #7b2ff7">
+      <div class="card-perfil__icone">🎓</div>
+      <div class="card-perfil__nome">Aluno</div>
+      <div class="card-perfil__desc">Acessa cursos, conteúdos, quizzes, progresso e certificados</div>
+    </div>
+    <div class="card-perfil" style="border-top:3px solid #3b82f6">
+      <div class="card-perfil__icone">👨‍🏫</div>
+      <div class="card-perfil__nome">Professor</div>
+      <div class="card-perfil__desc">Cria avaliações, conteúdos, gerencia turmas e alunos</div>
+    </div>
+    <div class="card-perfil" style="border-top:3px solid #f59e0b">
+      <div class="card-perfil__icone">📋</div>
+      <div class="card-perfil__nome">Coordenador</div>
+      <div class="card-perfil__desc">Supervisiona cursos, módulos, turmas e matrículas</div>
+    </div>
+    <div class="card-perfil" style="border-top:3px solid #ef4444">
+      <div class="card-perfil__icone">🔐</div>
+      <div class="card-perfil__nome">Admin</div>
+      <div class="card-perfil__desc">Controle total: usuários, cursos, matrículas, catálogo</div>
+    </div>
+  </div>
+
+  <h3>Stack Tecnológico</h3>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Tecnologia</th><th>Versão</th><th>Função no Projeto</th></tr></thead>
+      <tbody>
+        <tr><td><strong>React</strong></td><td>latest (18+)</td><td>Framework de UI baseado em componentes e hooks</td></tr>
+        <tr><td><strong>Vite</strong></td><td>latest</td><td>Build tool e servidor de desenvolvimento ultrarrápido</td></tr>
+        <tr><td><strong>React Router DOM</strong></td><td>^7.15.1</td><td>Roteamento SPA (Single Page Application)</td></tr>
+        <tr><td><strong>Framer Motion</strong></td><td>^12.38.0</td><td>Animações declarativas: hover, tap, spring, layout</td></tr>
+        <tr><td><strong>Recharts</strong></td><td>^3.8.1</td><td>Gráficos de barras nos dashboards</td></tr>
+        <tr><td><strong>React Icons</strong></td><td>^5.6.0</td><td>Ícones (Material Design + Tabler Icons)</td></tr>
+        <tr><td><strong>vite-plugin-html</strong></td><td>^3.2.2</td><td>Injeção de HTML estático no index.html (impressão)</td></tr>
+        <tr><td><strong>localStorage</strong></td><td>—</td><td>Banco de dados do navegador (persistência de dados)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Tipo de Aplicação</h3>
+  <p>O projeto é uma <strong>SPA (Single Page Application)</strong> — ou seja, o navegador carrega uma única página HTML e toda a navegação acontece via JavaScript, sem recarregar a página. O Vite compila os arquivos JSX/CSS em módulos JavaScript que o navegador entende nativamente.</p>
+</div>
+
+<!-- ── SEÇÃO 2 ── -->
+<div class="secao" id="s2">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">02</div>
+    <div>
+      <div class="secao__titulo">Arquivos Raiz — Configuração</div>
+      <div class="secao__desc">Os três arquivos na raiz do projeto que definem como tudo funciona</div>
+    </div>
+  </div>
+
+  <div class="pasta-box">
+    <div class="pasta-box__nome">📄 package.json</div>
+    <div class="pasta-box__desc">Manifesto do projeto Node.js. Define nome, versão, scripts de terminal e todas as dependências instaladas via npm.</div>
+  </div>
+
+  <h4>Scripts disponíveis no terminal</h4>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Comando</th><th>O que faz</th></tr></thead>
+      <tbody>
+        <tr><td><code>npm run dev</code></td><td>Inicia o servidor de desenvolvimento na porta 5173 com hot reload (atualiza o navegador automaticamente ao salvar)</td></tr>
+        <tr><td><code>npm run build</code></td><td>Gera a versão de produção otimizada na pasta <code>dist/</code></td></tr>
+        <tr><td><code>npm run preview</code></td><td>Serve localmente o build de produção para teste final</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pasta-box">
+    <div class="pasta-box__nome">⚙️ vite.config.js</div>
+    <div class="pasta-box__desc">Arquivo de configuração central do Vite. Define plugins, aliases de importação e porta do servidor.</div>
+  </div>
+
+  <h4>Configurações importantes</h4>
+  <ul class="lista">
+    <li><strong>Alias <code>@</code>:</strong> qualquer import com <code>@/</code> aponta para a pasta <code>src/</code>. Exemplo: <code>import Modal from "@/componentes/Modal.jsx"</code> em vez de <code>../../componentes/Modal.jsx"</code></li>
+    <li><strong>Plugin React:</strong> habilita o suporte a JSX (sintaxe HTML dentro do JavaScript)</li>
+    <li><strong>Plugin HTML:</strong> lê o arquivo <code>src/impressao/versao-impressao.html</code> e injeta dentro do <code>index.html</code> no build</li>
+    <li><strong>Porta fixa:</strong> servidor sempre sobe na porta <code>5173</code></li>
+  </ul>
+
+  <div class="pasta-box">
+    <div class="pasta-box__nome">🌐 index.html</div>
+    <div class="pasta-box__desc">O único arquivo HTML real da aplicação. Serve como casca — o React preenche o conteúdo dinamicamente via JavaScript.</div>
+  </div>
+
+  <h4>O que contém</h4>
+  <ul class="lista">
+    <li>Meta tags de SEO: título, descrição, viewport</li>
+    <li>Open Graph (og:title, og:description) para compartilhamento em redes sociais</li>
+    <li>Link para Google Fonts (Inter)</li>
+    <li><code>&lt;div id="raiz"&gt;&lt;/div&gt;</code> — ponto de montagem do React</li>
+    <li><code>&lt;script type="module" src="/src/principal.jsx"&gt;</code> — carrega a aplicação</li>
+    <li>Bloco <code>#versao-impressao</code> injetado pelo vite-plugin-html (visível apenas ao imprimir)</li>
+  </ul>
+</div>
+
+<!-- ── SEÇÃO 3 ── -->
+<div class="secao" id="s3">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">03</div>
+    <div>
+      <div class="secao__titulo">Como o Vite Serve a Aplicação</div>
+      <div class="secao__desc">O caminho desde o npm run dev até o navegador exibir a tela</div>
+    </div>
+  </div>
+
+  <div class="fluxo">
+    <div class="fluxo__passo">
+      <div class="fluxo__num">1</div>
+      <div><strong>npm run dev</strong> — inicia o Vite Dev Server na porta 5173. O Vite não empacota os arquivos, serve cada módulo individualmente via HTTP/2 de forma nativa (ES Modules nativos do navegador).</div>
+    </div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo">
+      <div class="fluxo__num">2</div>
+      <div><strong>index.html</strong> — o navegador recebe o HTML. Encontra o <code>&lt;script type="module"&gt;</code> apontando para <code>/src/principal.jsx</code>.</div>
+    </div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo">
+      <div class="fluxo__num">3</div>
+      <div><strong>principal.jsx</strong> — o Vite transforma o JSX em JavaScript puro em tempo real (via esbuild, compilador ultraveloz). Importa todos os arquivos CSS e chama <code>inicializar()</code> do db.js.</div>
+    </div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo">
+      <div class="fluxo__num">4</div>
+      <div><strong>db.js</strong> — verifica se o localStorage já tem dados (<code>cdr_seed_v2</code>). Se não, popula com todos os dados do <code>dadosMock.js</code>. Cada visita posterior lê do localStorage.</div>
+    </div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo">
+      <div class="fluxo__num">5</div>
+      <div><strong>React monta</strong> — <code>createRoot(document.getElementById("raiz")).render()</code> substitui a div vazia pelo componente <code>&lt;Aplicacao /&gt;</code> dentro de um <code>&lt;BrowserRouter&gt;</code>.</div>
+    </div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo">
+      <div class="fluxo__num">6</div>
+      <div><strong>Aplicacao.jsx</strong> — verifica localStorage em busca de <code>coderyse-perfil</code>. Se existe, mantém usuário logado e renderiza o painel. Se não, mostra as rotas públicas.</div>
+    </div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo">
+      <div class="fluxo__num">7</div>
+      <div><strong>Hot Module Replacement (HMR)</strong> — ao salvar qualquer arquivo .jsx ou .css durante o desenvolvimento, o Vite atualiza somente o módulo alterado no navegador sem recarregar a página, preservando o estado.</div>
+    </div>
+  </div>
+
+  <div class="destaque">
+    <strong>Por que o Vite é rápido?</strong> Diferente do Webpack (que empacota tudo antes de servir), o Vite usa os <strong>ES Modules nativos do navegador moderno</strong>. Cada arquivo é servido individualmente sob demanda. O servidor inicia em menos de 1 segundo mesmo em projetos grandes.
+  </div>
+</div>
+
+<!-- ── SEÇÃO 4 ── -->
+<div class="secao" id="s4">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">04</div>
+    <div>
+      <div class="secao__titulo">Pasta src/dados/</div>
+      <div class="secao__desc">Toda a inteligência de dados da aplicação — mock, persistência e controle de acesso</div>
+    </div>
+  </div>
+
+  <p>Esta pasta é o <strong>coração da aplicação</strong>. Como não há back-end real, todos os dados vivem aqui — primeiro como JavaScript puro (mock), depois migram para o <code>localStorage</code> do navegador via <code>db.js</code>.</p>
+
+  <h3 id="s4a">dadosMock.js — Dados de Demonstração</h3>
+  <p>Arquivo de aproximadamente 600 linhas que exporta todos os dados iniciais do sistema. É a "semente" (seed) do banco de dados local.</p>
+
+  <h4>O que exporta</h4>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Export</th><th>Tipo</th><th>Conteúdo</th></tr></thead>
+      <tbody>
+        <tr><td><code>perfisDemo</code></td><td>Array[4]</td><td>4 cards de login rápido (Aluno, Professor, Coordenador, Admin)</td></tr>
+        <tr><td><code>usuariosPorPerfil</code></td><td>Objeto</td><td>Mapa chave→usuário completo. Usado em Aplicacao.jsx para login</td></tr>
+        <tr><td><code>cursos</code></td><td>Array[6]</td><td>6 cursos com id, código, título, nível, preço, módulos, alunos, destaque, ativo</td></tr>
+        <tr><td><code>modulos</code></td><td>Array[16]</td><td>16 módulos vinculados a cursos por <code>cursoId</code></td></tr>
+        <tr><td><code>turmas</code></td><td>Array[6]</td><td>6 turmas com nome, curso, professor, status, lista de alunos</td></tr>
+        <tr><td><code>usuarios</code></td><td>Array[21]</td><td>21 usuários: 1 Admin, 4 Professores, 1 Coordenador, 15 Alunos</td></tr>
+        <tr><td><code>matriculas</code></td><td>Array[8]</td><td>8 matrículas relacionando alunos a turmas com status</td></tr>
+        <tr><td><code>avaliacoes</code></td><td>Array[8]</td><td>8 avaliações com tempo, tentativas, questões, curso/módulo</td></tr>
+        <tr><td><code>conteudos</code></td><td>Array[10]</td><td>10 conteúdos por módulo: vídeos, textos, documentos</td></tr>
+        <tr><td><code>questoesProfessor</code></td><td>Array</td><td>Questões criadas pelo professor (IDs fora do range 9001-9999)</td></tr>
+        <tr><td><code>PROGRESSO_MOCK</code></td><td>Objeto</td><td>Percentual de progresso por matrícula (fallback se sem dados reais)</td></tr>
+        <tr><td><code>certificadosDesbloqueados</code></td><td>Array</td><td>Cursos com certificado disponível, nota e data de conclusão</td></tr>
+        <tr><td><code>estatisticas</code></td><td>Objeto</td><td>KPIs por perfil: Admin, Professor e Coordenador</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Os 6 Cursos em Detalhe</h4>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Curso</th><th>Nível</th><th>Módulos</th><th>Alunos</th><th>Preço</th><th>Destaque</th></tr></thead>
+      <tbody>
+        <tr><td>Desenvolvimento Web</td><td><span class="tag tag--verde">Iniciante</span></td><td>8</td><td>142</td><td>R$ 1.299,90</td><td>✓</td></tr>
+        <tr><td>Ciência de Dados</td><td><span class="tag tag--azul">Intermediário</span></td><td>10</td><td>98</td><td>R$ 1.499,90</td><td>✓</td></tr>
+        <tr><td>Inteligência Artificial</td><td><span class="tag tag--roxo">Avançado</span></td><td>11</td><td>54</td><td>R$ 1.890,00</td><td>—</td></tr>
+        <tr><td>Cybersegurança</td><td><span class="tag tag--roxo">Avançado</span></td><td>9</td><td>67</td><td>R$ 1.750,00</td><td>✓</td></tr>
+        <tr><td>UX e UI Design</td><td><span class="tag tag--verde">Iniciante</span></td><td>6</td><td>115</td><td>R$ 999,90</td><td>—</td></tr>
+        <tr><td>Robótica</td><td><span class="tag tag--azul">Intermediário</span></td><td>8</td><td>38</td><td>R$ 1.590,00</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s4b">db.js — Persistência com localStorage</h3>
+  <p>Camada de abstração que usa o <strong>localStorage do navegador</strong> como banco de dados. Todas as mudanças feitas na plataforma (criar curso, aprovar matrícula, marcar conteúdo como concluído) são salvas aqui e sobrevivem ao fechar/abrir o navegador.</p>
+
+  <h4>Chaves no localStorage</h4>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Chave</th><th>Prefixo</th><th>O que armazena</th></tr></thead>
+      <tbody>
+        <tr><td><code>cdr_cursos</code></td><td>cdr_</td><td>Array de cursos (mutável — Admin pode editar)</td></tr>
+        <tr><td><code>cdr_turmas</code></td><td>cdr_</td><td>Array de turmas com alunos matriculados</td></tr>
+        <tr><td><code>cdr_modulos</code></td><td>cdr_</td><td>Array de módulos por curso</td></tr>
+        <tr><td><code>cdr_usuarios</code></td><td>cdr_</td><td>Array completo de todos os usuários do sistema</td></tr>
+        <tr><td><code>cdr_matriculas</code></td><td>cdr_</td><td>Relacionamento aluno-turma com status</td></tr>
+        <tr><td><code>cdr_questoes</code></td><td>cdr_</td><td>Banco de questões (pré-criadas + customizadas pelo professor)</td></tr>
+        <tr><td><code>cdr_avaliacoes</code></td><td>cdr_</td><td>Avaliações criadas/editadas</td></tr>
+        <tr><td><code>cdr_seed_v2</code></td><td>cdr_</td><td>Flag booleana: "já foi populado?" (evita re-seed)</td></tr>
+        <tr><td><code>cdr_concluidos</code></td><td>cdr_</td><td>Array de IDs de conteúdos que o aluno marcou como concluídos</td></tr>
+        <tr><td><code>cdr_quizzes</code></td><td>cdr_</td><td>Set de moduloIds cujos quizzes foram aprovados</td></tr>
+        <tr><td><code>cdr_resultados_quizzes</code></td><td>cdr_</td><td>Objeto {moduloId: percentual} com resultado de cada quiz</td></tr>
+        <tr><td><code>cdr_avaliacao_aprovada</code></td><td>cdr_</td><td>Objeto {cursoId: {nota, notaMaxima, porcentagem}} para certificados</td></tr>
+        <tr><td><code>coderyse-perfil</code></td><td>coderyse-</td><td>Chave do perfil logado ("aluno", "professor", etc)</td></tr>
+        <tr><td><code>coderyse-tema</code></td><td>coderyse-</td><td>"claro" ou "escuro" — preferência de tema</td></tr>
+        <tr><td><code>coderyse-favoritos</code></td><td>coderyse-</td><td>Array de cursoIds favoritados pelo aluno</td></tr>
+        <tr><td><code>coderyse-sidebar</code></td><td>coderyse-</td><td>"recolhida" ou "expandida" — estado da sidebar</td></tr>
+        <tr><td><code>coderyse-sidebar-grupos</code></td><td>coderyse-</td><td>JSON de grupos accordion abertos na sidebar</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Funções exportadas</h4>
+  <ul class="lista">
+    <li><code>inicializar()</code> — chamada no startup. Se <code>cdr_seed_v2</code> não existe, popula tudo. Se existe, garante que questões padrão estejam atualizadas.</li>
+    <li><code>resetar()</code> — remove todas as chaves <code>cdr_*</code>. Na próxima visita, <code>inicializar()</code> popula tudo novamente do zero.</li>
+    <li><code>db.cursos.listar()</code> / <code>db.cursos.salvar(lista)</code> — lê/escreve cursos</li>
+    <li><code>db.usuarios.salvarPorTipo(tipo, lista)</code> — atualiza apenas usuários de um tipo (ex: "Aluno"), preservando os demais</li>
+    <li><code>db.progresso.listarConcluidos()</code> — retorna um <code>Set</code> com IDs de conteúdos concluídos</li>
+    <li><code>db.progresso.listarResultados()</code> — retorna objeto com resultados de quizzes</li>
+  </ul>
+
+  <div class="destaque">
+    <strong>Por que localStorage e não um banco de dados real?</strong> O projeto é um protótipo frontend-only. O localStorage simula a persistência que um banco de dados real (MySQL, PostgreSQL) faria — mas sem servidor. Ao "resetar", é como "dropar e recriar" o banco.
+  </div>
+
+  <h3 id="s4c">permissoes.js — Controle de Acesso (RBAC)</h3>
+  <p>Implementa o padrão <strong>RBAC (Role-Based Access Control)</strong> — cada perfil de usuário tem um conjunto definido de seções visíveis e ações permitidas.</p>
+
+  <h4>Como funciona na prática</h4>
+  <ul class="lista">
+    <li>A <strong>BarraLateral</strong> chama <code>obterSecoesPermitidas(usuario.tipo)</code> para saber quais itens renderizar no menu</li>
+    <li>Cada tela chama <code>podeCriar()</code>, <code>podeEditar()</code>, <code>podeExcluir()</code> para mostrar ou esconder botões de ação</li>
+    <li><code>eGestor()</code> retorna <code>true</code> para Admin e Coordenador — usado para liberar visões gerenciais</li>
+  </ul>
+
+  <h3 id="s4d">questoesQuiz.js — Banco de Questões</h3>
+  <p>Contém questões reais de provas CQA/UNIP do curso de ADS. Cada questão tem estrutura completa para uso didático.</p>
+
+  <h4>Estrutura de uma questão</h4>
+  <pre><code>{
+  id: 9001,
+  tema: "Ciclo de Vida de Software",
+  introducaoTeorica: "Texto explicativo extenso sobre o tema...",
+  enunciado: "Sobre o ciclo de vida de software, analise as afirmativas...",
+  alternativas: [
+    { letra: "A", texto: "Apenas as afirmativas I e II estão corretas." },
+    { letra: "B", texto: "Apenas as afirmativas I e III estão corretas." },
+    // ...
+  ],
+  gabarito: "D",
+  analiseDasAfirmativas: "Análise detalhada explicando cada afirmativa...",
+  anulada: false
+}</code></pre>
+</div>
+
+<!-- ── SEÇÃO 5 ── -->
+<div class="secao" id="s5">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">05</div>
+    <div>
+      <div class="secao__titulo">Pasta src/paginas/</div>
+      <div class="secao__desc">Todas as telas da aplicação organizadas por contexto</div>
+    </div>
+  </div>
+
+  <p>Cada arquivo dentro de <code>paginas/</code> é um <strong>componente de tela</strong> — renderiza uma página completa. O arquivo <code>LayoutWorkspace.jsx</code> é a casca que contém sidebar, topbar e renderiza a tela correta conforme a URL.</p>
+
+  <div class="pasta-box">
+    <div class="pasta-box__nome">📄 LayoutWorkspace.jsx</div>
+    <div class="pasta-box__desc">O "esqueleto" do painel autenticado. Fica sempre visível após o login e muda apenas o conteúdo central conforme a seção ativa.</div>
+    <ul class="pasta-box__arquivos">
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Estado compartilhado</span>
+        <span class="pasta-box__arquivo-desc">Mantém em memória: conteúdos concluídos, quizzes aprovados, resultados de avaliações, favoritos, lista de cursos e toasts. Passa esses dados como props para as telas filhas.</span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Mapa de telas</span>
+        <span class="pasta-box__arquivo-desc">Um objeto JavaScript mapeia cada seção da URL para seu componente de tela. Ex: <code>"alunos" → TelaAlunos</code>, <code>"dashboard" → TelaDashboardAluno|Professor|etc</code></span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">mostrarToast(msg, tipo)</span>
+        <span class="pasta-box__arquivo-desc">Cria notificações flutuantes (sucesso/erro/aviso). Auto-remove após 3,5 segundos. Máximo 3 toasts simultâneos.</span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">alternarConclusaoConteudo(id)</span>
+        <span class="pasta-box__arquivo-desc">Marca/desmarca um conteúdo como concluído, salva no localStorage e atualiza o estado global.</span>
+      </li>
+    </ul>
+  </div>
+
+  <h3 id="s5a">autenticacao/ — Telas Públicas</h3>
+  <p>Acessadas sem login. São as únicas telas que não usam o <code>LayoutWorkspace</code>.</p>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Arquivo</th><th>Rota</th><th>Funcionalidade Principal</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>TelaInicio.jsx</strong></td>
+          <td><code>/</code></td>
+          <td>Landing page pública. Exibe banner hero, 3 pilares da plataforma, grade de cursos com cards e imagens, modal de detalhes do curso, rodapé com links. Tooltip "Acesso administrativo" no botão admin.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaLoginAluno.jsx</strong></td>
+          <td><code>/login</code></td>
+          <td>Login simplificado do aluno. Um clique no card "Aluno" + botão "Acessar". Painel visual lateral com logo. Aceita parâmetro <code>?curso=ID</code> via URL.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaLoginStaff.jsx</strong></td>
+          <td><code>/login-staff</code></td>
+          <td>Login para equipe (Professor, Coordenador, Admin). Seleciona um dos 3 cards de perfil, botão ativa. Delay de 600ms simula autenticação. Estado: <code>selecionado</code>, <code>carregando</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaCadastro.jsx</strong></td>
+          <td><code>/cadastro</code></td>
+          <td>Formulário completo de registro. Valida: nome, email, CPF (máscara XXX.XXX.XXX-XX), telefone, CEP (busca automática na API ViaCEP), senha mínimo 8 chars. Após envio, exibe tela de confirmação.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s5b">dashboard/ — Painéis por Perfil</h3>
+  <p>Cada perfil tem seu próprio dashboard com informações relevantes. O <code>LayoutWorkspace</code> decide qual renderizar com base em <code>usuario.tipo</code>.</p>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Arquivo</th><th>Perfil</th><th>Conteúdo Principal</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>TelaDashboardAluno.jsx</strong></td>
+          <td><span class="tag tag--roxo">Aluno</span></td>
+          <td>
+            <strong>Hero inteligente:</strong> Se primeira visita → "Iniciar Jornada". Se tem progresso → módulo em andamento + barra de progresso + "Continuar agora".<br>
+            <strong>KPIs:</strong> conteúdos concluídos, módulos concluídos (dados reais do db).<br>
+            <strong>Grade de módulos</strong> com progresso real.<br>
+            <strong>Detecção de primeira visita:</strong> <code>temDadosReais = concluidos.size > 0 || Object.keys(resultados).length > 0</code>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>TelaDashboardProfessor.jsx</strong></td>
+          <td><span class="tag tag--azul">Professor</span></td>
+          <td>KPIs: turmas ativas, total alunos, avaliações criadas, média geral. Suas turmas (máx 3) + suas avaliações (máx 4). Filtra por <code>professorId === usuario.id</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaDashboardCoordenador.jsx</strong></td>
+          <td><span class="tag tag--laranja">Coordenador</span></td>
+          <td>KPIs: cursos, turmas, alunos. Gráfico Recharts de progresso médio por curso. Semáforo de cores: verde ≥70%, amarelo ≥40%, vermelho &lt;40%. Filtra por <code>coordenadorId === usuario.id</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaDashboardAdmin.jsx</strong></td>
+          <td><span class="tag tag--cinza">Admin</span></td>
+          <td>4 KPI cards: total usuários, alunos ativos, matrículas pendentes, taxa de conclusão. Gráfico Recharts de matrículas por mês (últimos 6 meses). 7 ações rápidas. Botão Reset com confirmação.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s5c">usuarios/ — Gestão de Pessoas</h3>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Arquivo</th><th>Acesso</th><th>Funcionalidades</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>TelaAlunos.jsx</strong></td>
+          <td>Admin, Coord</td>
+          <td>Tabela de alunos com busca, filtro por status, paginação. Colunas: avatar, nome, email, código, status, matrículas. Menu kebab (⋮): editar, ativar/desativar. Ações em massa: ativar/desativar selecionados. Persiste via <code>db.usuarios.salvarPorTipo("Aluno")</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaProfessores.jsx</strong></td>
+          <td>Admin, Coord</td>
+          <td>Tabela de professores. Criar novo professor. Atribuir/remover turmas (modal com checkboxes). Modal de edição com campos pessoais. Ativar/desativar.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaCoordenadores.jsx</strong></td>
+          <td>Admin</td>
+          <td>Tabela de coordenadores. Criar novo. Atribuir/remover cursos. Modal de edição. Apenas Admin pode acessar.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaUsuarios.jsx</strong></td>
+          <td>Admin</td>
+          <td>Visão consolidada de todos os tipos. Filtros por tipo e status. Contadores por categoria. Modal genérico de criação/edição (<code>ModalEdicaoUsuario</code>).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s5d">academico/ — Gestão Acadêmica</h3>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Arquivo</th><th>Acesso</th><th>Funcionalidades</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>TelaCursos.jsx</strong></td>
+          <td>Admin, Coord</td>
+          <td>Carrossel de cursos (1 slide por curso). Detalhes: código, título, nível, módulos, alunos, preço. Toggle visibilidade no catálogo público. Toggle destaque. Coordenador vê apenas seus cursos.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaModulos.jsx</strong></td>
+          <td>Admin, Coord, Prof</td>
+          <td>Carrossel agrupado por curso. Cada módulo mostra barra de progresso e desempenho médio. Modal de detalhes: KPIs (alunos, conteúdos, desempenho), lista de conteúdos e avaliações do módulo.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaTurmas.jsx</strong></td>
+          <td>Admin, Coord, Prof</td>
+          <td>Cards por turma com: nome, curso, professor, status, total alunos. Lista de alunos com busca. KPIs: progresso médio, nota média. Professor vê apenas suas turmas (<code>professorId</code>).</td>
+        </tr>
+        <tr>
+          <td><strong>TelaMatriculas.jsx</strong></td>
+          <td>Admin, Aluno</td>
+          <td>3 abas: Pendentes / Rejeitadas / Aprovadas. Busca por nome/curso. Ações em massa: aprovar/rejeitar (Admin). Aluno vê apenas suas próprias matrículas. Modal de progresso (gráfico + certificado se concluído).</td>
+        </tr>
+        <tr>
+          <td><strong>TelaConteudos.jsx</strong></td>
+          <td>Todos</td>
+          <td>Carrossel de módulos. Conteúdos por módulo: vídeo (▶), texto (✦), documento (⬡). CheckCircular: aluno marca como concluído (animação spring). BotãoQuiz: acessa quiz do módulo. Professor pode criar/editar conteúdos.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaAvaliacoes.jsx</strong></td>
+          <td>Prof, Aluno</td>
+          <td>Professor: criar avaliação (formulário com questões dinâmicas), editar, publicar/rascunho, excluir. Aluno: iniciar avaliação com timer, responder, ver resultado. Nota calculada e salva via <code>onAvaliacaoAprovada</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s5e">aprendizado/ — Jornada do Aluno</h3>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Arquivo</th><th>Acesso</th><th>Funcionalidades</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>TelaCatalogo.jsx</strong></td>
+          <td>Admin, Aluno, Prof</td>
+          <td>
+            <strong>Aluno/Professor:</strong> grade de cursos com imagens, busca, filtro por nível, favoritos (coração), status visual (matriculado/pendente/disponível), modal de detalhes, botão "Solicitar matrícula" (cria matrícula Pendente no db).<br>
+            <strong>Admin:</strong> mesmo grid com overlays de edição, toggle visibilidade e destaque.
+          </td>
+        </tr>
+        <tr>
+          <td><strong>TelaProgresso.jsx</strong></td>
+          <td>Aluno, Prof, Coord</td>
+          <td>Slide por matrícula aprovada. Hero com % geral do curso. Módulos em cards com status (não iniciado / em andamento / concluído). Detalhes por módulo: conteúdos e quizzes. Botão "Iniciar avaliação" se tudo concluído. Certificado se avaliação aprovada.</td>
+        </tr>
+        <tr>
+          <td><strong>TelaCertificados.jsx</strong></td>
+          <td>Aluno</td>
+          <td>Lista de certificados desbloqueados por curso. Exibe nota, data de conclusão. Botão "Imprimir" abre janela de impressão com o certificado formatado (background <code>certificado-fundo.png</code>). Seção de conquistas (badges desbloqueadas).</td>
+        </tr>
+        <tr>
+          <td><strong>TelaQuiz.jsx</strong></td>
+          <td>Aluno</td>
+          <td>
+            <strong>3 fases:</strong> 1) Tela inicial (explicação + botão iniciar). 2) Questão: introdução teórica colapsável, 5 alternativas, feedback visual (verde/vermelho), navegação bidirecional. 3) Resultado: pontuação, análise de cada questão.<br>
+            Questões anuladas contam como corretas automaticamente.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="s5f">perfil/ — Perfil do Usuário</h3>
+
+  <div class="pasta-box">
+    <div class="pasta-box__nome">📄 TelaPerfilUsuario.jsx</div>
+    <div class="pasta-box__desc">Tela de perfil acessível por todos os perfis. Dividida em 2 abas navegáveis via React Router state.</div>
+    <ul class="pasta-box__arquivos">
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Aba Informações</span>
+        <span class="pasta-box__arquivo-desc">Exibe e edita: nome, email, telefone, cidade, estado. Avatar com iniciais do nome. Modo edição: formulário ativo. Cancelar descarta mudanças. Salvar atualiza estado local.</span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Aba Configurações</span>
+        <span class="pasta-box__arquivo-desc">Toggle de tema claro/escuro (salva em localStorage "coderyse-tema"). Seção de troca de senha com ícone de edição animado (Framer Motion: hover rotate -15°).</span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Navegação por state</span>
+        <span class="pasta-box__arquivo-desc">A BarraTopo passa <code>location.state = &#123; aba: "informacoes" | "seguranca" &#125;</code> ao navegar. A tela lê esse estado para abrir a aba correta automaticamente.</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── SEÇÃO 6 ── -->
+<div class="secao" id="s6">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">06</div>
+    <div>
+      <div class="secao__titulo">Pasta src/componentes/</div>
+      <div class="secao__desc">Blocos reutilizáveis usados em múltiplas telas</div>
+    </div>
+  </div>
+
+  <p>Os componentes são peças de UI isoladas que recebem dados via <strong>props</strong> e não dependem de nenhuma tela específica. Podem ser reusados em qualquer lugar.</p>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Componente</th><th>Props principais</th><th>O que faz</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Botao.jsx</strong></td>
+          <td><code>variante, tamanho, disabled, onClick</code></td>
+          <td>Botão com Framer Motion. Variantes: primario, secundario, fantasma, sucesso, perigo. Animação: hover (sobe 1px), tap (pressiona). Passa todos os props extras ao elemento HTML.</td>
+        </tr>
+        <tr>
+          <td><strong>Modal.jsx</strong></td>
+          <td><code>titulo, onFechar, children</code></td>
+          <td>Dialog acessível com foco preso dentro (useFocusTrap). Fecha com ESC, clique no overlay ou botão X. Atributos ARIA: role="dialog", aria-modal, aria-labelledby.</td>
+        </tr>
+        <tr>
+          <td><strong>Toast.jsx</strong></td>
+          <td><code>toasts[], onFechar(id)</code></td>
+          <td>Notificações flutuantes no canto da tela. Tipos: sucesso (verde), erro (vermelho), aviso (amarelo), info (azul). Auto-dismiss após 3,5s. Máximo 3 simultâneos.</td>
+        </tr>
+        <tr>
+          <td><strong>Insignia.jsx</strong></td>
+          <td><code>texto, variante?</code></td>
+          <td>Badge colorido. Mapeamento automático de texto para cor: "Aprovada"→verde, "Pendente"→amarelo, "Rejeitada"→vermelho, "Ativo"→verde, "Inativo"→cinza.</td>
+        </tr>
+        <tr>
+          <td><strong>CartaoEstatistica.jsx</strong></td>
+          <td><code>icone, valor, rotulo, corBorda?</code></td>
+          <td>Card de KPI. Layout: ícone à esquerda, valor grande + rótulo à direita. Borda superior com cor customizável. Usado nos dashboards.</td>
+        </tr>
+        <tr>
+          <td><strong>BarraProgresso.jsx</strong></td>
+          <td><code>percentual, mostrarTexto?</code></td>
+          <td>Barra de progresso visual (0-100%). Acessível: role="progressbar", aria-valuenow, aria-valuemin, aria-valuemax. Clamp automático. Cor roxa degradando para roxo claro.</td>
+        </tr>
+        <tr>
+          <td><strong>SelectSimples.jsx</strong></td>
+          <td><code>value, opcoes, onChange, placeholder, erro</code></td>
+          <td>Dropdown customizado (substitui o select nativo). Posicionamento fixed para não ser cortado por overflow. Navegável por teclado. Aceita array de strings ou objetos {valor, rotulo}.</td>
+        </tr>
+        <tr>
+          <td><strong>SelectUsuario.jsx</strong></td>
+          <td><code>value, opcoes (usuários), onChange</code></td>
+          <td>Versão do SelectSimples especializada para selecionar usuários. Exibe iniciais do nome como avatar. Inclui opção "Nenhum" (null).</td>
+        </tr>
+        <tr>
+          <td><strong>NavGrupo.jsx</strong></td>
+          <td><code>usuario, secaoAtual</code></td>
+          <td>Barra de abas horizontal abaixo da topbar. Aparece quando a seção tem subgrupos (ex: Gestão tem Alunos, Professores, etc). Função temNavGrupo() detecta quando renderizar.</td>
+        </tr>
+        <tr>
+          <td><strong>ModalEdicaoUsuario.jsx</strong></td>
+          <td><code>usuario, onSalvar, onFechar</code></td>
+          <td>Modal completo para editar dados de qualquer usuário. Campos: nome, email, telefone, cidade, estado, status. Validação básica. Usado em TelaUsuarios, TelaAlunos, TelaProfessores.</td>
+        </tr>
+        <tr>
+          <td><strong>BarraLateral.jsx</strong></td>
+          <td><code>usuario, secaoAtual, aberta, onFechar, onLogout</code></td>
+          <td>Sidebar de navegação. Grupos accordion (Gestão, Acadêmico, Aprendizado) com ícones. Recolhível com hover peek. Badges de notificação. Botão sair com modal de confirmação. Salva estado em localStorage.</td>
+        </tr>
+        <tr>
+          <td><strong>BarraTopo.jsx</strong></td>
+          <td><code>usuario, secaoAtual, onLogout, onAbrirSidebar</code></td>
+          <td>Header fixo. Breadcrumb (CodeRyse Academy › Seção). Para Aluno: atalhos Meus Cursos e Certificados com sublinhado ativo. Popup de perfil: Meu Perfil, Configurações, Sair. Botão hamburger para mobile.</td>
+        </tr>
+        <tr>
+          <td><strong>BarraNavMobile.jsx</strong></td>
+          <td><code>usuario, secaoAtual</code></td>
+          <td>Barra de navegação inferior em telas pequenas. Exibe as seções principais do perfil com ícones e labels. Visível apenas em mobile (max-width: 768px).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── SEÇÃO 7 ── -->
+<div class="secao" id="s7">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">07</div>
+    <div>
+      <div class="secao__titulo">Pasta src/estilos/</div>
+      <div class="secao__desc">Sistema de design CSS — variáveis, reset, componentes e telas</div>
+    </div>
+  </div>
+
+  <p>Todos os estilos são <strong>CSS puro</strong>, sem bibliotecas como Tailwind ou Bootstrap. Organizado em camadas: variáveis globais → reset → componentes → layout → telas específicas.</p>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Arquivo</th><th>O que define</th><th>Classes principais</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>variaveis.css</strong></td>
+          <td>Tokens de design (CSS Custom Properties em :root)</td>
+          <td>
+            Cores: <code>--cor-marca (#7b2ff7)</code>, <code>--cor-fundo (#191b21)</code>, <code>--cor-texto-forte</code><br>
+            Espaçamento: <code>--espaco-xs/sm/md/lg/xl/2xl</code><br>
+            Tipografia: <code>--texto-xs/sm/md/lg</code>, <code>--fonte-principal</code><br>
+            Sombras: <code>--sombra-sm/md/lg/acento</code><br>
+            Tema claro: bloco <code>[data-tema="claro"]</code> sobrescreve variáveis
+          </td>
+        </tr>
+        <tr>
+          <td><strong>base.css</strong></td>
+          <td>Reset global e estilos base de elementos HTML</td>
+          <td>
+            Reset: <code>*</code> box-sizing, margin, padding zero<br>
+            Scrollbar customizada: thumb roxo<br>
+            <code>:focus-visible</code>: outline roxo acessível<br>
+            Headings com <code>letter-spacing</code> por nível<br>
+            <code>font-variant-numeric: tabular-nums</code> (dígitos alinhados)<br>
+            <code>.visualmente-oculto</code>: esconde para visual, mantém acessível<br>
+            <code>.pular-para-conteudo</code>: skip link WCAG
+          </td>
+        </tr>
+        <tr>
+          <td><strong>componentes.css</strong></td>
+          <td>Estilos de todos os componentes reutilizáveis</td>
+          <td>
+            <code>.botao</code>, <code>.botao--primario/secundario/fantasma/sucesso/perigo</code><br>
+            <code>.botao--pequeno/grande</code><br>
+            <code>.modal-overlay</code>, <code>.modal</code>, <code>.modal-rodape</code><br>
+            <code>.insignia</code>, <code>.insignia--sucesso/aviso/erro</code><br>
+            <code>.barra-progresso</code>, <code>.barra-progresso__preenchimento</code><br>
+            <code>.select-wrapper</code>, <code>.select-opcoes</code><br>
+            <code>.toast</code>, <code>.toast--sucesso/erro</code><br>
+            <code>.cartao-estatistica</code>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>layout.css</strong></td>
+          <td>Layout do workspace autenticado</td>
+          <td>
+            <code>.layout-workspace</code>: flex, full height<br>
+            <code>.sidebar</code>: fixed left, gradiente escuro, largura variável<br>
+            <code>.sidebar--recolhida</code>: 64px (ícones apenas)<br>
+            <code>.sidebar--peek</code>: expande ao hover quando recolhida<br>
+            <code>.sidebar__item--ativo</code>: gradiente roxo→transparente<br>
+            <code>.topbar</code>: fixed top, backdrop-filter blur<br>
+            <code>.topbar__atalho-certificados--ativo</code>: border-bottom roxo<br>
+            <code>.popup-perfil</code>: dropdown do usuário<br>
+            <code>.nav-grupo__tab--ativo</code>: border-bottom roxo
+          </td>
+        </tr>
+        <tr>
+          <td><strong>paginas/publico.css</strong></td>
+          <td>Estilos da TelaInicio (landing page)</td>
+          <td>
+            <code>.cabecalho-publico</code>: header fixo público<br>
+            <code>.secao-hero</code>: hero com banner e conteúdo sobreposto<br>
+            <code>.grade-cursos</code>: grid responsivo de cards de curso<br>
+            <code>.cartao-curso</code>: card com imagem, corpo, rodapé<br>
+            <code>.rodape-publico</code>: rodapé com nav links
+          </td>
+        </tr>
+        <tr>
+          <td><strong>paginas/autenticacao.css</strong></td>
+          <td>Telas de login e cadastro</td>
+          <td>
+            <code>.tela-login</code>: layout dois painéis (visual + formulário)<br>
+            <code>.tela-login__visual</code>: painel esquerdo decorativo<br>
+            <code>.cartao-perfil</code>: card selecionável de perfil<br>
+            <code>.cartao-perfil--selecionado</code>: borda roxa + fundo roxo suave
+          </td>
+        </tr>
+        <tr>
+          <td><strong>paginas/workspace.css</strong></td>
+          <td>Layout interno das telas do painel</td>
+          <td>
+            <code>.secao-cabecalho</code>: header de seção com etiqueta + título<br>
+            <code>.cartao-retomar</code>: hero do dashboard do aluno<br>
+            <code>.abas-matriculas</code>: navegação por abas<br>
+            <code>.abas-matriculas__aba--ativa</code>: underline roxo<br>
+            <code>.perfil-seguranca-item</code>: item da aba Configurações
+          </td>
+        </tr>
+        <tr>
+          <td><strong>paginas/usuarios.css</strong></td>
+          <td>Tabelas e formulários de gestão</td>
+          <td>
+            <code>.tabela-usuarios</code>: table responsiva com sticky header<br>
+            <code>.tabela-usuarios__linha--selecionada</code>: linha marcada<br>
+            <code>.kebab-menu</code>: dropdown de ações por linha<br>
+            <code>.barra-acoes-massa</code>: barra flutuante de ações em massa
+          </td>
+        </tr>
+        <tr>
+          <td><strong>paginas/avaliacoes.css</strong></td>
+          <td>Tela de avaliações e quiz overlay</td>
+          <td>
+            <code>.quiz-overlay</code>: modo imersivo (blura sidebar e topbar)<br>
+            <code>.alternativa</code>: botão de alternativa do quiz<br>
+            <code>.alternativa--correta/errada</code>: feedback visual<br>
+            <code>.cartao-avaliacao</code>: card da avaliação na lista
+          </td>
+        </tr>
+        <tr>
+          <td><strong>paginas/aprendizado.css</strong></td>
+          <td>Catálogo, progresso e certificados</td>
+          <td>
+            <code>.vitrine-catalogo</code>: grid de cards com imagens de curso<br>
+            <code>.card-catalogo__favoritado</code>: coração ativo<br>
+            <code>.banner-certificados</code>: gradiente roxo suave no topo<br>
+            <code>.check-circular</code>: botão de conclusão de conteúdo<br>
+            <code>.modulo-card--concluido</code>: estado visual concluído
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── SEÇÃO 8 ── -->
+<div class="secao" id="s8">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">08</div>
+    <div>
+      <div class="secao__titulo">Pasta src/hooks/</div>
+      <div class="secao__desc">Hooks customizados do React</div>
+    </div>
+  </div>
+
+  <div class="pasta-box">
+    <div class="pasta-box__nome">📄 useFocusTrap.js</div>
+    <div class="pasta-box__desc">Hook de acessibilidade WCAG 2.1 que prende o foco do teclado dentro de um modal aberto.</div>
+    <ul class="pasta-box__arquivos">
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">O que faz</span>
+        <span class="pasta-box__arquivo-desc">Quando um Modal abre, captura todos os elementos focáveis dentro dele (buttons, inputs, links, selects, tabindex). Tab/Shift+Tab circula apenas entre esses elementos, nunca sai do modal.</span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Restauração</span>
+        <span class="pasta-box__arquivo-desc">Salva qual elemento estava focado antes do modal abrir. Ao fechar, devolve o foco para ele — importante para usuários de leitor de tela.</span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Por que é necessário</span>
+        <span class="pasta-box__arquivo-desc">Requisito WCAG 2.1 AA (critério 2.1.2 No Keyboard Trap). Sem o trap, ao pressionar Tab dentro de um modal o foco pode escapar para elementos atrás do overlay.</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── SEÇÃO 9 ── -->
+<div class="secao" id="s9">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">09</div>
+    <div>
+      <div class="secao__titulo">Pasta src/ativos/</div>
+      <div class="secao__desc">Imagens e recursos visuais estáticos</div>
+    </div>
+  </div>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Arquivo</th><th>Usado em</th><th>Descrição</th></tr></thead>
+      <tbody>
+        <tr><td><code>banner-home.png</code></td><td>TelaInicio</td><td>Imagem de fundo do hero da landing page</td></tr>
+        <tr><td><code>curso-dev-web.png</code></td><td>TelaInicio, TelaCatalogo</td><td>Capa do curso Desenvolvimento Web</td></tr>
+        <tr><td><code>curso-ciencia-dados.png</code></td><td>TelaInicio, TelaCatalogo</td><td>Capa do curso Ciência de Dados</td></tr>
+        <tr><td><code>curso-ia.png</code></td><td>TelaInicio, TelaCatalogo</td><td>Capa do curso Inteligência Artificial</td></tr>
+        <tr><td><code>curso-cyber.png</code></td><td>TelaInicio, TelaCatalogo</td><td>Capa do curso Cybersegurança</td></tr>
+        <tr><td><code>curso-ux-ui.png</code></td><td>TelaInicio, TelaCatalogo</td><td>Capa do curso UX e UI Design</td></tr>
+        <tr><td><code>curso-robotica.png</code></td><td>TelaInicio, TelaCatalogo</td><td>Capa do curso Robótica</td></tr>
+        <tr><td><code>certificado-fundo.png</code></td><td>TelaCertificados</td><td>Background do certificado imprimível</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>As imagens são importadas no topo dos componentes JSX (<code>import imgDevWeb from "@/ativos/curso-dev-web.png"</code>) e o Vite as processa como assets com hash no nome para cache-busting no build de produção.</p>
+</div>
+
+<!-- ── SEÇÃO 10 ── -->
+<div class="secao" id="s10">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">10</div>
+    <div>
+      <div class="secao__titulo">Pasta src/impressao/</div>
+      <div class="secao__desc">Conteúdo estático visível apenas ao imprimir a página</div>
+    </div>
+  </div>
+
+  <div class="pasta-box">
+    <div class="pasta-box__nome">📄 versao-impressao.html</div>
+    <div class="pasta-box__desc">Fragmento HTML injetado pelo vite-plugin-html dentro do index.html. Visível APENAS em @media print — quando o usuário aciona Ctrl+P ou "Salvar como PDF".</div>
+    <ul class="pasta-box__arquivos">
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Conteúdo</span>
+        <span class="pasta-box__arquivo-desc">Header com logo CodeRyse Academy + slogan. Introdução à plataforma. Lista dos 3 pilares. Tabela dos 6 cursos com nível e preço. Rodapé com copyright.</span>
+      </li>
+      <li class="pasta-box__arquivo">
+        <span class="pasta-box__arquivo-nome">Técnica</span>
+        <span class="pasta-box__arquivo-desc">O elemento <code>#versao-impressao</code> tem <code>display: none</code> em tela normal. A media query <code>@media print</code> muda para <code>display: block</code>. Todo o restante do site é ocultado ao imprimir.</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── SEÇÃO 11 ── -->
+<div class="secao" id="s11">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">11</div>
+    <div>
+      <div class="secao__titulo">Entrada da Aplicação</div>
+      <div class="secao__desc">principal.jsx e Aplicacao.jsx — como tudo começa</div>
+    </div>
+  </div>
+
+  <h3>principal.jsx — Ponto de entrada</h3>
+  <p>Primeiro arquivo JavaScript executado pelo navegador. Três responsabilidades:</p>
+  <ul class="lista">
+    <li><strong>Inicializar dados:</strong> chama <code>inicializar()</code> do db.js antes de qualquer render</li>
+    <li><strong>Importar estilos:</strong> carrega todos os 10 arquivos CSS na ordem correta (variáveis → base → componentes → layout → páginas)</li>
+    <li><strong>Montar React:</strong> <code>createRoot(document.getElementById("raiz")).render()</code> dentro de <code>&lt;BrowserRouter&gt;</code></li>
+  </ul>
+
+  <h3>Aplicacao.jsx — Roteador e Autenticação</h3>
+  <pre><code>// Estado global: quem está logado
+const [usuarioLogado, setUsuarioLogado] = useState(() => {
+  const chave = localStorage.getItem("coderyse-perfil");
+  return chave ? (usuariosPorPerfil[chave] ?? null) : null;
+});
+
+// Login: salva no localStorage, navega para /painel
+function fazerLogin(chave) {
+  localStorage.setItem("coderyse-perfil", chave);
+  setUsuarioLogado(usuariosPorPerfil[chave]);
+  navigate(ROTAS.PAINEL);
+}
+
+// Logout: remove do localStorage, volta para /
+function fazerLogout() {
+  localStorage.removeItem("coderyse-perfil");
+  setUsuarioLogado(null);
+  navigate(ROTAS.INICIO, { replace: true });
+}</code></pre>
+
+  <div class="destaque">
+    <strong>RotaProtegida</strong> — componente simples: se <code>usuario</code> é <code>null</code>, redireciona para <code>/</code> com <code>Navigate replace</code>. Caso contrário, renderiza os filhos. Isso impede acesso ao painel sem login.
+  </div>
+</div>
+
+<!-- ── SEÇÃO 12 ── -->
+<div class="secao" id="s12">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">12</div>
+    <div>
+      <div class="secao__titulo">Roteamento — rotas.js</div>
+      <div class="secao__desc">Todas as URLs da aplicação e como navegação funciona</div>
+    </div>
+  </div>
+
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Constante</th><th>URL</th><th>Tela</th><th>Acesso</th></tr></thead>
+      <tbody>
+        <tr><td><code>ROTAS.INICIO</code></td><td><code>/</code></td><td>TelaInicio</td><td>Público</td></tr>
+        <tr><td><code>ROTAS.LOGIN</code></td><td><code>/login</code></td><td>TelaLoginAluno</td><td>Público</td></tr>
+        <tr><td><code>ROTAS.LOGIN_STAFF</code></td><td><code>/login-staff</code></td><td>TelaLoginStaff</td><td>Público</td></tr>
+        <tr><td><code>ROTAS.CADASTRO</code></td><td><code>/cadastro</code></td><td>TelaCadastro</td><td>Público</td></tr>
+        <tr><td><code>ROTAS.PAINEL</code></td><td><code>/painel</code></td><td>Dashboard do perfil logado</td><td>Autenticado</td></tr>
+        <tr><td><code>rotaPainelSecao("alunos")</code></td><td><code>/painel/alunos</code></td><td>TelaAlunos</td><td>Admin/Coord</td></tr>
+        <tr><td><code>rotaPainelSecao("cursos")</code></td><td><code>/painel/cursos</code></td><td>TelaCursos</td><td>Admin/Coord</td></tr>
+        <tr><td><code>rotaPainelSecao("quiz")</code></td><td><code>/painel/quiz</code></td><td>TelaQuiz</td><td>Aluno</td></tr>
+        <tr><td><code>rotaPainelSecao("perfil")</code></td><td><code>/painel/perfil</code></td><td>TelaPerfilUsuario</td><td>Todos</td></tr>
+        <tr><td><code>ROTAS.PAINEL_CERTIFICADOS</code></td><td><code>/painel/certificados</code></td><td>TelaCertificados</td><td>Aluno</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>A função <code>rotaPainelSecao(secao)</code> gera o caminho: se <code>secao === "dashboard"</code> retorna <code>"/painel"</code>, caso contrário retorna <code>"/painel/secao"</code>. O <code>LayoutWorkspace</code> usa <code>useParams()</code> para extrair a seção da URL e renderizar a tela correta.</p>
+</div>
+
+<!-- ── SEÇÃO 13 ── -->
+<div class="secao" id="s13">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">13</div>
+    <div>
+      <div class="secao__titulo">Fluxos Principais da Plataforma</div>
+      <div class="secao__desc">Como as funcionalidades se conectam de ponta a ponta</div>
+    </div>
+  </div>
+
+  <h3>Fluxo de Login</h3>
+  <div class="fluxo">
+    <div class="fluxo__passo"><div class="fluxo__num">1</div><div>Usuário acessa <code>/</code> (TelaInicio) e clica em "Entrar"</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">2</div><div>TelaLoginAluno ou TelaLoginStaff — seleciona perfil e clica no botão de acesso</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">3</div><div><code>fazerLogin("aluno")</code> em Aplicacao.jsx: salva <code>localStorage.setItem("coderyse-perfil", "aluno")</code></div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">4</div><div>Navega para <code>/painel</code>, LayoutWorkspace recebe o objeto <code>usuariosPorPerfil["aluno"]</code> como prop</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">5</div><div>Dashboard do Aluno é renderizado com dados reais do localStorage</div></div>
+  </div>
+
+  <h3>Fluxo de Progresso do Aluno</h3>
+  <div class="fluxo">
+    <div class="fluxo__passo"><div class="fluxo__num">1</div><div>Aluno acessa TelaConteudos — vê lista de conteúdos do módulo</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">2</div><div>Clica no CheckCircular — dispara <code>onAlternarConclusao(conteudoId)</code></div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">3</div><div>LayoutWorkspace atualiza o Set <code>conteudosConcluidos</code> e chama <code>db.progresso.salvarConcluidos(set)</code></div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">4</div><div>localStorage <code>cdr_concluidos</code> é atualizado</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">5</div><div>TelaProgresso e TelaDashboardAluno releem o Set e recalculam percentuais automaticamente</div></div>
+  </div>
+
+  <h3>Fluxo de Matrícula</h3>
+  <div class="fluxo">
+    <div class="fluxo__passo"><div class="fluxo__num">1</div><div>Aluno acessa TelaCatalogo — clica em "Solicitar matrícula" em um curso</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">2</div><div>Nova matrícula é criada com <code>status: "Pendente"</code> no <code>db.matriculas</code></div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">3</div><div>Admin acessa TelaMatriculas — aba "Pendentes" — aprova individualmente ou em massa</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">4</div><div>Status muda para "Aprovada" — aluno agora vê o curso em TelaProgresso e TelaConteudos</div></div>
+  </div>
+
+  <h3>Fluxo de Certificado</h3>
+  <div class="fluxo">
+    <div class="fluxo__passo"><div class="fluxo__num">1</div><div>Aluno conclui todos os conteúdos de todos os módulos do curso</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">2</div><div>TelaProgresso exibe botão "Iniciar avaliação final"</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">3</div><div>Aluno realiza a avaliação em TelaAvaliacoes — nota calculada</div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">4</div><div>Se nota ≥ 60%: <code>onAvaliacaoAprovada(cursoId, {nota, notaMaxima, porcentagem})</code> salva em <code>cdr_avaliacao_aprovada</code></div></div>
+    <div class="fluxo__seta">↓</div>
+    <div class="fluxo__passo"><div class="fluxo__num">5</div><div>TelaCertificados exibe o certificado com botão "Imprimir" → abre janela de impressão com layout do certificado</div></div>
+  </div>
+</div>
+
+<!-- ── SEÇÃO 14 ── -->
+<div class="secao" id="s14">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">14</div>
+    <div>
+      <div class="secao__titulo">Permissões por Perfil — Tabela Completa</div>
+      <div class="secao__desc">Quem vê e quem pode fazer o quê em cada seção</div>
+    </div>
+  </div>
+
+  <h3>Visibilidade de Seções na Sidebar</h3>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Seção</th><th>Aluno</th><th>Professor</th><th>Coordenador</th><th>Admin</th></tr></thead>
+      <tbody>
+        <tr><td>Dashboard</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Catálogo</td><td>✓</td><td>✓</td><td>—</td><td>✓</td></tr>
+        <tr><td>Conteúdos</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Avaliações</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+        <tr><td>Progresso</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+        <tr><td>Certificados</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Matrículas</td><td>✓</td><td>—</td><td>—</td><td>✓</td></tr>
+        <tr><td>Alunos</td><td>—</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Módulos</td><td>—</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Turmas</td><td>—</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Professores</td><td>—</td><td>—</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Cursos</td><td>—</td><td>—</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Coordenadores</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+        <tr><td>Usuários</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Permissões de Ação (Criar / Editar / Excluir)</h3>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Seção</th><th>Criar</th><th>Editar</th><th>Excluir</th></tr></thead>
+      <tbody>
+        <tr><td>Alunos</td><td>Admin, Coord</td><td>Admin, Coord</td><td>Admin</td></tr>
+        <tr><td>Professores</td><td>Admin, Coord</td><td>Admin, Coord</td><td>Admin</td></tr>
+        <tr><td>Coordenadores</td><td>Admin</td><td>Admin</td><td>Admin</td></tr>
+        <tr><td>Cursos</td><td>Admin</td><td>Admin, Coord</td><td>Admin</td></tr>
+        <tr><td>Módulos</td><td>Admin, Coord, Prof</td><td>Admin, Coord</td><td>Admin, Coord</td></tr>
+        <tr><td>Turmas</td><td>Admin, Coord</td><td>Admin, Coord</td><td>Admin</td></tr>
+        <tr><td>Matrículas</td><td>Admin</td><td>Admin</td><td>Admin</td></tr>
+        <tr><td>Avaliações</td><td>Professor</td><td>Professor</td><td>Professor</td></tr>
+        <tr><td>Conteúdos</td><td>Admin, Prof</td><td>Admin, Prof</td><td>Admin, Prof</td></tr>
+        <tr><td>Catálogo</td><td>—</td><td>Admin</td><td>Admin</td></tr>
+        <tr><td>Progresso</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── SEÇÃO 15 ── -->
+<div class="secao" id="s15">
+  <div class="secao__cabecalho">
+    <div class="secao__numero">15</div>
+    <div>
+      <div class="secao__titulo">Estrutura Completa de Arquivos</div>
+      <div class="secao__desc">Árvore de diretórios com todos os arquivos do projeto</div>
+    </div>
+  </div>
+
+  <pre><code>C:\Prototipo-frontendPIM3\
+│
+├── index.html                    ← HTML raiz (único HTML real da SPA)
+├── package.json                  ← Dependências e scripts npm
+├── vite.config.js                ← Configuração do Vite (alias, plugins, porta)
+│
+└── src\
+    ├── principal.jsx             ← Entry point: seed dados + import CSS + mountReact
+    ├── Aplicacao.jsx             ← Router SPA + autenticação + logout
+    ├── rotas.js                  ← Constantes ROTAS{} + rotaPainelSecao()
+    │
+    ├── dados\
+    │   ├── dadosMock.js          ← Todos os dados iniciais (seed)
+    │   ├── db.js                 ← localStorage wrapper (CRUD + inicializar + resetar)
+    │   ├── permissoes.js         ← RBAC: seções visíveis + ações por perfil
+    │   └── questoesQuiz.js       ← Questões CQA/UNIP com gabarito e análise
+    │
+    ├── hooks\
+    │   └── useFocusTrap.js       ← Acessibilidade WCAG: prende foco em modais
+    │
+    ├── componentes\
+    │   ├── Botao.jsx             ← Botão universal (Framer Motion)
+    │   ├── Modal.jsx             ← Dialog acessível com focus trap
+    │   ├── Toast.jsx             ← Notificações flutuantes auto-dismiss
+    │   ├── Insignia.jsx          ← Badge de status colorido
+    │   ├── CartaoEstatistica.jsx ← KPI card para dashboards
+    │   ├── BarraProgresso.jsx    ← Barra de progresso acessível
+    │   ├── SelectSimples.jsx     ← Dropdown customizado
+    │   ├── SelectUsuario.jsx     ← Dropdown especializado para usuários
+    │   ├── NavGrupo.jsx          ← Abas de subnavegação
+    │   ├── ModalEdicaoUsuario.jsx← Modal de edição de usuário
+    │   ├── BarraLateral.jsx      ← Sidebar com accordion e badges
+    │   ├── BarraTopo.jsx         ← Topbar com breadcrumb e popup de perfil
+    │   └── BarraNavMobile.jsx    ← Nav inferior para mobile
+    │
+    ├── paginas\
+    │   ├── LayoutWorkspace.jsx   ← Shell: sidebar + topbar + estado global
+    │   │
+    │   ├── autenticacao\
+    │   │   ├── TelaInicio.jsx    ← Landing page pública
+    │   │   ├── TelaLoginAluno.jsx← Login 1-clique do aluno
+    │   │   ├── TelaLoginStaff.jsx← Login da equipe (3 perfis)
+    │   │   └── TelaCadastro.jsx  ← Registro com ViaCEP + validação
+    │   │
+    │   ├── dashboard\
+    │   │   ├── TelaDashboardAluno.jsx      ← Hero inteligente + progresso real
+    │   │   ├── TelaDashboardProfessor.jsx  ← Turmas + avaliações do professor
+    │   │   ├── TelaDashboardCoordenador.jsx← Gráfico progresso por curso
+    │   │   └── TelaDashboardAdmin.jsx      ← 4 KPIs + gráfico matrículas + reset
+    │   │
+    │   ├── usuarios\
+    │   │   ├── TelaAlunos.jsx      ← CRUD alunos + ações em massa
+    │   │   ├── TelaProfessores.jsx ← CRUD professores + atribuição turmas
+    │   │   ├── TelaCoordenadores.jsx← CRUD coordenadores + atribuição cursos
+    │   │   └── TelaUsuarios.jsx    ← Visão consolidada todos os usuários
+    │   │
+    │   ├── academico\
+    │   │   ├── TelaCursos.jsx     ← Carrossel de cursos + toggle catálogo
+    │   │   ├── TelaModulos.jsx    ← Módulos por curso + modal de detalhes
+    │   │   ├── TelaTurmas.jsx     ← Turmas + lista de alunos + KPIs
+    │   │   ├── TelaMatriculas.jsx ← 3 abas + aprovação em massa
+    │   │   ├── TelaConteudos.jsx  ← Conteúdos + CheckCircular + Quiz
+    │   │   └── TelaAvaliacoes.jsx ← Criar/editar avaliações (Prof) + realizar (Aluno)
+    │   │
+    │   ├── aprendizado\
+    │   │   ├── TelaCatalogo.jsx     ← Catálogo + favoritos + solicitar matrícula
+    │   │   ├── TelaProgresso.jsx    ← Progresso por curso + desbloqueio certificado
+    │   │   ├── TelaCertificados.jsx ← Certificados + imprimir
+    │   │   └── TelaQuiz.jsx         ← Quiz 3 fases + feedback por questão
+    │   │
+    │   └── perfil\
+    │       └── TelaPerfilUsuario.jsx ← Informações + Configurações + tema
+    │
+    ├── estilos\
+    │   ├── variaveis.css    ← Tokens: cores, fontes, espaços, sombras, tema claro
+    │   ├── base.css         ← Reset, scrollbar, focus, headings, skip link
+    │   ├── componentes.css  ← Botão, Modal, Toast, Insignia, Select...
+    │   ├── layout.css       ← Sidebar, Topbar, Layout principal, popup perfil
+    │   └── paginas\
+    │       ├── publico.css      ← Landing page e header público
+    │       ├── autenticacao.css ← Login e cadastro
+    │       ├── workspace.css    ← Telas internas do painel
+    │       ├── usuarios.css     ← Tabelas de gestão
+    │       ├── avaliacoes.css   ← Quiz overlay e cards de avaliação
+    │       └── aprendizado.css  ← Catálogo, progresso, certificados
+    │
+    ├── ativos\
+    │   ├── banner-home.png         ← Hero da landing page
+    │   ├── curso-dev-web.png       ← Capa: Desenvolvimento Web
+    │   ├── curso-ciencia-dados.png ← Capa: Ciência de Dados
+    │   ├── curso-ia.png            ← Capa: Inteligência Artificial
+    │   ├── curso-cyber.png         ← Capa: Cybersegurança
+    │   ├── curso-ux-ui.png         ← Capa: UX e UI Design
+    │   ├── curso-robotica.png      ← Capa: Robótica
+    │   └── certificado-fundo.png   ← Background do certificado imprimível
+    │
+    └── impressao\
+        └── versao-impressao.html   ← HTML injetado pelo Vite; visível só no Ctrl+P</code></pre>
+
+  <div class="destaque" style="margin-top:24px">
+    <strong>Total:</strong> ~50 arquivos JSX/JS, 10 arquivos CSS, 8 imagens, 1 HTML estático.<br>
+    <strong>Linhas de código estimadas:</strong> ~8.000 linhas de JavaScript/JSX + ~3.000 linhas de CSS.
+  </div>
+</div>
+
+</div><!-- /conteudo -->
+
+<div style="text-align:center;padding:40px;background:#0d0f18;color:rgba(255,255,255,0.3);font-size:12px;margin-top:40px;">
+  CodeRyse Academy — Documentação Técnica Completa — PIM3 UNIP 2026<br>
+  Gerado automaticamente · Projeto de Análise e Desenvolvimento de Sistemas
+</div>
+
+</body>
+</html>
