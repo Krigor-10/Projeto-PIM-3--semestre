@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbDotsVertical, TbClock, TbArrowLeft, TbArrowRight, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload, TbChartBar, TbEye, TbChevronDown } from "react-icons/tb";
+import { TbDotsVertical, TbClock, TbArrowLeft, TbArrowRight, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload, TbChartBar, TbEye } from "react-icons/tb";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdSave, MdDelete } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -1028,12 +1028,6 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
             {avaliacoesDoCurso.length} avaliação{avaliacoesDoCurso.length !== 1 ? "ões" : ""} cadastrada{avaliacoesDoCurso.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <Botao variante="primario" tamanho="pequeno" onClick={onCriar} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
-            <TbPlus size={22} aria-hidden="true" />
-          </motion.span>
-          Nova Avaliação
-        </Botao>
       </header>
 
       {avaliacoesDoCurso.length === 0 ? (
@@ -1230,15 +1224,8 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   const [tentativas, setTentativas] = useState({});
 
   const [avaliacoesList, setAvaliacoesList] = useState(() => db.avaliacoes.listar());
-  const [gruposRecolhidos, setGruposRecolhidos] = useState(new Set());
-
-  function alternarGrupo(cursoId) {
-    setGruposRecolhidos((prev) => {
-      const copia = new Set(prev);
-      copia.has(cursoId) ? copia.delete(cursoId) : copia.add(cursoId);
-      return copia;
-    });
-  }
+  const [slideAluno, setSlideAluno] = useState(0);
+  const [touchInicioXAluno, setTouchInicioXAluno] = useState(null);
 
   const [modalConfirmarInicio, setModalConfirmarInicio] = useState(null);
   const [confirmandoStatusAv, setConfirmandoStatusAv] = useState(null);
@@ -1384,6 +1371,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
   });
 
   const grupos = agruparPorCurso(avaliacoesFiltradas);
+  const grupoAtual = grupos.length > 0 ? grupos[Math.min(slideAluno, grupos.length - 1)] : null;
 
   function iniciarEdicao(campo, valorAtual) {
     setCampoEditando(campo);
@@ -1465,6 +1453,14 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
             <h1 className="cabecalho-pagina__titulo">Avaliações</h1>
             <p className="cabecalho-pagina__subtitulo">Gerencie as avaliações das suas turmas</p>
           </div>
+          <Botao variante="primario" onClick={() => setModo("criar")} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            variants={{ hover: { y: -1 } }} whileHover="hover"
+          >
+            <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+              <TbPlus size={20} aria-hidden="true" />
+            </motion.span>
+            Nova Avaliação
+          </Botao>
         </header>
         <VistaProfessorAvaliacoes
           usuario={usuario}
@@ -1657,24 +1653,24 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
   return (
     <div className="tela-avaliacoes">
-      <header className="cabecalho-pagina">
-        <div>
-          <h1 className="cabecalho-pagina__titulo">Avaliações</h1>
-          <p className="cabecalho-pagina__subtitulo">
-            {avaliacoesFiltradas.length} avaliação
-            {avaliacoesFiltradas.length !== 1 ? "ões" : ""} encontrada
-            {avaliacoesFiltradas.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        {!ehAluno && (
+      {!ehAluno && (
+        <header className="cabecalho-pagina">
+          <div>
+            <h1 className="cabecalho-pagina__titulo">Avaliações</h1>
+            <p className="cabecalho-pagina__subtitulo">
+              {avaliacoesFiltradas.length} avaliação
+              {avaliacoesFiltradas.length !== 1 ? "ões" : ""} encontrada
+              {avaliacoesFiltradas.length !== 1 ? "s" : ""}
+            </p>
+          </div>
           <Botao
             variante="primario"
             onClick={() => setModo("criar")}
           >
             + Nova Avaliação
           </Botao>
-        )}
-      </header>
+        </header>
+      )}
 
       {/* Filtros visíveis apenas para não-alunos */}
       {!ehAluno && (
@@ -1712,74 +1708,107 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
         </div>
       )}
 
-      {/* Alerta de bloqueio: conteúdo do curso ainda não foi totalmente concluído */}
-      {ehAluno && avaliacoesFiltradas.some((av) => !cursoEstaLiberado(av.cursoId)) && (
-        <div className="aviso-bloqueio" role="alert">
-          <span className="aviso-bloqueio__icone" aria-hidden="true">⊘</span>
-          <div className="aviso-bloqueio__texto">
-            <strong>Avaliação bloqueada</strong>
-            <p>Conclua todos os conteúdos e quizzes do curso para liberar a avaliação final.</p>
-          </div>
-        </div>
-      )}
-
       {grupos.length === 0 && (
         <p className="texto-vazio texto-vazio--central" role="status">
           Nenhuma avaliação encontrada.
         </p>
       )}
 
-      {grupos.map((grupo) => {
-        const recolhido = gruposRecolhidos.has(grupo.cursoId);
-        return (
-        <section
-          key={grupo.cursoId}
-          className="avaliacoes-grupo"
-          aria-labelledby={`curso-${grupo.cursoId}`}
-        >
+      {/* Navegação do carrossel — apenas quando há mais de 1 curso */}
+      {grupos.length > 1 && (
+        <nav className="carrossel-cursos__nav" aria-label="Navegação entre cursos">
           <button
+            className="carrossel-cursos__seta"
+            onClick={() => setSlideAluno((i) => i - 1)}
+            disabled={slideAluno === 0}
+            aria-label="Curso anterior"
             type="button"
-            className="avaliacoes-grupo__titulo"
-            id={`curso-${grupo.cursoId}`}
-            onClick={() => alternarGrupo(grupo.cursoId)}
-            aria-expanded={!recolhido}
-            aria-controls={`grupo-lista-${grupo.cursoId}`}
           >
-            {grupo.cursoTitulo}
-            <span className="avaliacoes-grupo__contagem">
-              {grupo.itens.length}
-            </span>
-            <motion.span
-              className="avaliacoes-grupo__chevron"
-              animate={{ rotate: recolhido ? -90 : 0 }}
-              transition={{ type: "spring", stiffness: 320, damping: 24 }}
-              aria-hidden="true"
-            >
-              <TbChevronDown size={17} />
-            </motion.span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
           </button>
-
-          <AnimatePresence initial={false}>
-          {!recolhido && (
-          <motion.ul
-            key="lista"
-            id={`grupo-lista-${grupo.cursoId}`}
-            className="grade-avaliacoes"
-            role="list"
-            aria-label={`Avaliações de ${grupo.cursoTitulo}`}
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            style={{ overflow: "hidden" }}
+          <div className="carrossel-cursos__indicadores" role="tablist" aria-label="Cursos com avaliações">
+            {grupos.map((g, idx) => (
+              <button
+                key={g.cursoId}
+                className={`carrossel-cursos__bolinha ${idx === slideAluno ? "carrossel-cursos__bolinha--ativa" : ""}`}
+                onClick={() => setSlideAluno(idx)}
+                role="tab"
+                aria-selected={idx === slideAluno}
+                aria-label={`Curso ${idx + 1}: ${g.cursoTitulo}`}
+                type="button"
+              />
+            ))}
+          </div>
+          <button
+            className="carrossel-cursos__seta"
+            onClick={() => setSlideAluno((i) => i + 1)}
+            disabled={slideAluno >= grupos.length - 1}
+            aria-label="Próximo curso"
+            type="button"
           >
-            {grupo.itens.map((av) => {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </nav>
+      )}
+
+      {/* Slide do curso atual */}
+      {grupoAtual && (
+        <div
+          className="carrossel-cursos__janela"
+          onTouchStart={(e) => setTouchInicioXAluno(e.touches[0].clientX)}
+          onTouchEnd={(e) => {
+            if (touchInicioXAluno === null) return;
+            const dx = e.changedTouches[0].clientX - touchInicioXAluno;
+            if (dx > 50 && slideAluno > 0) setSlideAluno((i) => i - 1);
+            if (dx < -50 && slideAluno < grupos.length - 1) setSlideAluno((i) => i + 1);
+            setTouchInicioXAluno(null);
+          }}
+        >
+          <header className="conteudos-aluno__cabecalho">
+            <div className="conteudos-aluno__curso-info">
+              <h2 className="conteudos-aluno__curso-titulo">{grupoAtual.cursoTitulo}</h2>
+              <div className="conteudos-aluno__meta-chips">
+                <span className="conteudos-aluno__meta-chip">
+                  <TbChartBar size={12} aria-hidden="true" /> {grupoAtual.itens.length} avaliação{grupoAtual.itens.length !== 1 ? "ões" : ""}
+                </span>
+                {(() => {
+                  const realizadas = grupoAtual.itens.filter((av) => resultados[av.id]).length;
+                  return realizadas > 0 && (
+                    <span className="conteudos-aluno__meta-chip">
+                      <TbCheck size={12} aria-hidden="true" /> {realizadas} realizada{realizadas !== 1 ? "s" : ""}
+                    </span>
+                  );
+                })()}
+                {!cursoEstaLiberado(grupoAtual.cursoId) && (
+                  <span className="conteudos-aluno__meta-chip" style={{ color: "var(--cor-erro)" }}>
+                    <TbLock size={12} aria-hidden="true" /> bloqueada
+                  </span>
+                )}
+              </div>
+            </div>
+          </header>
+
+          {!cursoEstaLiberado(grupoAtual.cursoId) && (
+            <div className="aviso-bloqueio" role="alert">
+              <span className="aviso-bloqueio__icone" aria-hidden="true">⊘</span>
+              <div className="aviso-bloqueio__texto">
+                <strong>Avaliação bloqueada</strong>
+                <p>Conclua todos os conteúdos e quizzes do curso para liberar a avaliação final.</p>
+              </div>
+            </div>
+          )}
+
+          <ul className="grade-avaliacoes" role="list" aria-label={`Avaliações de ${grupoAtual.cursoTitulo}`}>
+            {grupoAtual.itens.map((av) => {
               const jaRealizada = Boolean(resultados[av.id]);
               const tentativasUsadas = tentativas[av.id] || 0;
               const limiteAtingido = tentativasUsadas >= LIMITE_TENTATIVAS;
               const resultado = resultados[av.id];
               const aprovado = resultado?.porcentagem >= 70;
-
               const liberado = cursoEstaLiberado(av.cursoId);
               const classesCartao = [
                 "cartao-avaliacao",
@@ -1789,15 +1818,9 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
               return (
                 <li key={av.id}>
-                  <article
-                    className={classesCartao}
-                    aria-labelledby={`av-titulo-${av.id}`}
-                  >
+                  <article className={classesCartao} aria-labelledby={`av-titulo-${av.id}`}>
                     <header className="cartao-avaliacao__topo">
-                      <h4
-                        className="cartao-avaliacao__titulo"
-                        id={`av-titulo-${av.id}`}
-                      >
+                      <h4 className="cartao-avaliacao__titulo" id={`av-titulo-${av.id}`}>
                         {av.titulo}
                       </h4>
                       {!ehAluno && <Insignia texto={av.status} />}
@@ -1864,12 +1887,9 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                 </li>
               );
             })}
-          </motion.ul>
-          )}
-          </AnimatePresence>
-        </section>
-        );
-      })}
+          </ul>
+        </div>
+      )}
 
       {portalQuiz}
 

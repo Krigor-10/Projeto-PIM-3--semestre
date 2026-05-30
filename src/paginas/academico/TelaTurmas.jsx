@@ -258,8 +258,36 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
   return (
     <div className="tela-turmas">
       <header className="cabecalho-pagina">
-        <div>
-          <h1 className="cabecalho-pagina__titulo">Turmas</h1>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)", flexWrap: "wrap" }}>
+            <h1 className="cabecalho-pagina__titulo">Turmas</h1>
+            {total > 0 && (
+              <>
+                <label htmlFor="filtro-turma" className="visualmente-oculto">Selecionar turma</label>
+                <select
+                  id="filtro-turma"
+                  className="campo__entrada barra-filtros__select"
+                  value={slideSeguro}
+                  onChange={(e) => irParaSlide(Number(e.target.value))}
+                  style={{ marginLeft: "auto", maxWidth: "220px" }}
+                >
+                  {turmasFiltradas.map((t, idx) => (
+                    <option key={t.id} value={idx}>{t.nomeTurma} — {t.cursoTitulo}</option>
+                  ))}
+                </select>
+              </>
+            )}
+            <label htmlFor="busca-aluno" className="visualmente-oculto">Buscar aluno</label>
+            <input
+              id="busca-aluno"
+              type="search"
+              className="campo__entrada barra-filtros__busca"
+              placeholder="Buscar aluno..."
+              value={buscaAluno}
+              onChange={(e) => setBuscaAluno(e.target.value)}
+              style={{ maxWidth: "180px" }}
+            />
+          </div>
           <p className="cabecalho-pagina__subtitulo">
             {tipo === "Professor"
               ? `${total} turma${total !== 1 ? "s" : ""} sob sua responsabilidade`
@@ -277,33 +305,6 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
           </Botao>
         )}
       </header>
-
-      {/* Filtros */}
-      <div className="barra-filtros">
-        <label htmlFor="filtro-turma" className="visualmente-oculto">Selecionar turma</label>
-        <select
-          id="filtro-turma"
-          className="campo__entrada barra-filtros__select"
-          value={slideSeguro}
-          onChange={(e) => irParaSlide(Number(e.target.value))}
-        >
-          {turmasFiltradas.map((t, idx) => (
-            <option key={t.id} value={idx}>
-              {t.nomeTurma} — {t.cursoTitulo}
-            </option>
-          ))}
-        </select>
-
-        <label htmlFor="busca-aluno" className="visualmente-oculto">Buscar aluno</label>
-        <input
-          id="busca-aluno"
-          type="search"
-          className="campo__entrada barra-filtros__busca"
-          placeholder="Buscar aluno por nome..."
-          value={buscaAluno}
-          onChange={(e) => setBuscaAluno(e.target.value)}
-        />
-      </div>
 
       {total === 0 ? (
         <p className="texto-vazio texto-vazio--central" role="status">

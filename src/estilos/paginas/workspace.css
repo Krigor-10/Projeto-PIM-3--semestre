@@ -1432,6 +1432,7 @@
   gap: var(--espaco-lg);
   background: var(--cor-cartao);
   border: 1px solid var(--cor-borda);
+  border-left: 3px solid var(--cor-marca);
   border-radius: var(--raio-md);
   padding: var(--espaco-md) var(--espaco-lg);
   transition: border-color var(--transicao-rapida);

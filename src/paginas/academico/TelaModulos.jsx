@@ -258,8 +258,27 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
   return (
     <div className="tela-modulos">
       <header className="cabecalho-pagina">
-        <div>
-          <h1 className="cabecalho-pagina__titulo">Módulos</h1>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)", flexWrap: "wrap" }}>
+            <h1 className="cabecalho-pagina__titulo">Módulos</h1>
+            {total > 0 && (
+              <>
+                <label htmlFor="filtro-modulo-curso" className="visualmente-oculto">Selecionar curso</label>
+                <select
+                  id="filtro-modulo-curso"
+                  className="campo__entrada barra-filtros__select"
+                  value={slide}
+                  onChange={(e) => irPara(Number(e.target.value))}
+                  aria-label="Navegar para curso"
+                  style={{ marginLeft: "auto", maxWidth: "220px" }}
+                >
+                  {grupos.map(({ curso }, idx) => (
+                    <option key={curso.id} value={idx}>{curso.titulo}</option>
+                  ))}
+                </select>
+              </>
+            )}
+          </div>
           <p className="cabecalho-pagina__subtitulo">
             {modulosBase.length} módulo{modulosBase.length !== 1 ? "s" : ""}{" "}
             {ehProfessor ? "nos seus cursos" : "cadastrados"}
@@ -281,21 +300,6 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
         <p className="texto-vazio texto-vazio--central" role="status">Nenhum módulo encontrado.</p>
       ) : (
         <div className="carrossel-cursos">
-          <div className="barra-filtros" style={{ marginBottom: "var(--espaco-md)" }}>
-            <label htmlFor="filtro-modulo-curso" className="visualmente-oculto">Selecionar curso</label>
-            <select
-              id="filtro-modulo-curso"
-              className="campo__entrada barra-filtros__select"
-              value={slide}
-              onChange={(e) => irPara(Number(e.target.value))}
-              aria-label="Navegar para curso"
-            >
-              {grupos.map(({ curso }, idx) => (
-                <option key={curso.id} value={idx}>{curso.titulo}</option>
-              ))}
-            </select>
-          </div>
-
           {total > 1 && (
             <nav className="carrossel-cursos__nav" aria-label="Navegação entre cursos">
               <button

@@ -447,6 +447,26 @@
   margin-left: auto;
 }
 
+.avaliacoes-grupo__chevron-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--raio-md);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo-elevado);
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.avaliacoes-grupo__chevron-btn:hover {
+  background: rgba(123, 47, 247, 0.08);
+  color: var(--cor-marca);
+}
+
 /* ------------------------------------------------------------
    TELA QUIZ
    ------------------------------------------------------------ */

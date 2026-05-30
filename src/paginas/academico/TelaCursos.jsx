@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbLogout } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbLogout, TbX } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -18,6 +18,7 @@ function VistaGerencialCoordenador({ usuario }) {
   const [menuAberto, setMenuAberto]             = useState(null);
   const [formSujo, setFormSujo]                 = useState(false);
   const [confirmarSaida, setConfirmarSaida]     = useState(false);
+  const [busca, setBusca]                       = useState("");
   const [listaCursos, setListaCursos]           = useState(() =>
     db.cursos.listar()
       .filter((c) => c.coordenadorId === usuario.id)
@@ -60,31 +61,23 @@ function VistaGerencialCoordenador({ usuario }) {
   return (
     <div className="tela-cursos">
       <header className="cabecalho-pagina">
-        <div>
-          <h1 className="cabecalho-pagina__titulo">Cursos</h1>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)", flexWrap: "wrap" }}>
+            <h1 className="cabecalho-pagina__titulo">Cursos</h1>
+            <label htmlFor="busca-cursos-coord" className="visualmente-oculto">Buscar curso</label>
+            <input
+              id="busca-cursos-coord"
+              type="search"
+              className="campo__entrada barra-filtros__busca"
+              placeholder="Buscar curso..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              style={{ marginLeft: "auto", maxWidth: "200px" }}
+            />
+          </div>
           <p className="cabecalho-pagina__subtitulo">Cursos sob sua coordenação</p>
         </div>
       </header>
-
-      {/* KPIs */}
-      <ul className="cursos-kpis" aria-label="Indicadores dos seus cursos">
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{totalAtivos}</span>
-          <span className="cursos-kpi__rotulo">Cursos ativos</span>
-        </li>
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{totalAlunos}</span>
-          <span className="cursos-kpi__rotulo">Alunos matriculados</span>
-        </li>
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{qtdTurmasAtivas}</span>
-          <span className="cursos-kpi__rotulo">Turmas em andamento</span>
-        </li>
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{listaCursos.length}</span>
-          <span className="cursos-kpi__rotulo">Sob coordenação</span>
-        </li>
-      </ul>
 
       {/* Cabeçalho da listagem */}
       <div className="desempenho-cursos-cabecalho" aria-hidden="true">
@@ -97,7 +90,7 @@ function VistaGerencialCoordenador({ usuario }) {
 
       {/* Lista de desempenho */}
       <ul className="desempenho-cursos" role="list" aria-label="Desempenho dos cursos">
-        {listaCursos.filter((c) => c.ativo).map((curso) => {
+        {listaCursos.filter((c) => c.ativo && (!busca.trim() || c.titulo.toLowerCase().includes(busca.toLowerCase()))).map((curso) => {
           const turmasCurso   = turmas.filter((t) => t.cursoId === curso.id);
           const modulosCurso  = modulos.filter((m) => m.cursoId === curso.id);
           const avsPublicadas = avaliacoes.filter((a) => a.cursoId === curso.id && a.status === "Publicada");
@@ -209,8 +202,8 @@ function VistaGerencialCoordenador({ usuario }) {
             </div>
 
             <div className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={tentarFechar} style={{ marginRight: "auto" }}>Fechar</Botao>
-              <Botao variante="primario" type="submit">Salvar alterações</Botao>
+              <Botao variante="perigo" type="button" onClick={tentarFechar} style={{ marginRight: "auto", display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
             </div>
           </form>
         </Modal>
@@ -655,9 +648,9 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             )}
 
             <div className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto" }}>Fechar</Botao>
+              <Botao variante="perigo" type="button" onClick={tentarFecharDetalhe} style={{ marginRight: "auto", display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
               {podeEditar(tipo, "cursos") && (
-                <Botao variante="primario" type="submit">Salvar alterações</Botao>
+                <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
               )}
             </div>
           </form>
@@ -672,8 +665,8 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             Há alterações não salvas nas atribuições. Se sair agora, as alterações serão perdidas.
           </p>
           <div className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmarSaida(false)}>Continuar editando</Botao>
-            <Botao variante="perigo" onClick={() => { setCursoDetalhe(null); }}>Sair sem salvar</Botao>
+            <Botao variante="perigo" onClick={() => setConfirmarSaida(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbPencil size={15} aria-hidden="true" /> Continuar editando</Botao>
+            <Botao variante="perigo" onClick={() => { setCursoDetalhe(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbLogout size={15} aria-hidden="true" /> Sair sem salvar</Botao>
           </div>
         </Modal>
       )}

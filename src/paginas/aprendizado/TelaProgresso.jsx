@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbTrophy, TbCertificate, TbDotsVertical, TbX, TbCheck, TbLayoutGrid } from "react-icons/tb";
+import { TbTrophy, TbCertificate, TbDotsVertical, TbX, TbCheck, TbLayoutGrid, TbSettings } from "react-icons/tb";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -310,6 +310,7 @@ function VistaAluno({ usuario, avaliacaoAprovada, resultadosQuizzes, onMudarSeca
 
 function VistaProfessor({ usuario }) {
   const [turmaDetalhe, setTurmaDetalhe] = useState(null);
+  const [menuAberto, setMenuAberto] = useState(null);
 
   const minhasTurmas = turmas.filter((t) => t.professorId === usuario.id);
 
@@ -376,11 +377,12 @@ function VistaProfessor({ usuario }) {
               <li key={turma.id} className="cartao-curso-progresso">
                 <div className="cartao-curso-progresso__info">
                   <div className="cartao-curso-progresso__identidade">
-                    <span className="cartao-curso-progresso__titulo">{turma.nomeTurma}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
+                      <span className="cartao-curso-progresso__titulo">{turma.nomeTurma}</span>
+                      <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
+                    </div>
                     <div className="cartao-curso-progresso__meta">
                       <span>{turma.cursoTitulo}</span>
-                      <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
-                      <span>{total} aluno{total !== 1 ? "s" : ""}</span>
                     </div>
                   </div>
                   <div className="cartao-curso-progresso__barra" aria-hidden="true">
@@ -391,14 +393,25 @@ function VistaProfessor({ usuario }) {
                   <span className="dado-rotulo" aria-hidden="true">Progresso / Nota</span>
                   <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
                   <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
-                  <button
-                    type="button"
-                    className="kebab-btn"
-                    onClick={() => setTurmaDetalhe(turmasComProgresso.find((t) => t.turma.id === turma.id))}
-                    aria-label={`Ver detalhes de ${turma.nomeTurma}`}
-                  >
-                    <TbDotsVertical size={16} aria-hidden="true" />
-                  </button>
+                  <div className="menu-contexto">
+                    <button
+                      type="button"
+                      className="menu-contexto__botao"
+                      onClick={(e) => { e.stopPropagation(); setMenuAberto((v) => v === turma.id ? null : turma.id); }}
+                      aria-label={`Opções de ${turma.nomeTurma}`}
+                    >
+                      <TbDotsVertical size={16} aria-hidden="true" />
+                    </button>
+                    {menuAberto === turma.id && (
+                      <ul className="menu-contexto__lista" role="menu">
+                        <li>
+                          <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setTurmaDetalhe(turmasComProgresso.find((t) => t.turma.id === turma.id)); }}>
+                            <TbSettings size={16} aria-hidden="true" /> Opções
+                          </button>
+                        </li>
+                      </ul>
+                    )}
+                  </div>
                 </div>
               </li>
             );
@@ -488,6 +501,7 @@ function VistaProfessor({ usuario }) {
 
 function VistaCoordenador({ usuario }) {
   const [cursoDetalhe, setCursoDetalhe] = useState(null);
+  const [menuAberto, setMenuAberto] = useState(null);
 
   const meusCursos = cursos.filter((c) => c.coordenadorId === usuario.id);
 
@@ -559,12 +573,12 @@ function VistaCoordenador({ usuario }) {
               <li key={curso.id} className="cartao-curso-progresso">
                 <div className="cartao-curso-progresso__info">
                   <div className="cartao-curso-progresso__identidade">
-                    <span className="cartao-curso-progresso__titulo">{curso.titulo}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
+                      <span className="cartao-curso-progresso__titulo">{curso.titulo}</span>
+                      <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "neutro"} />
+                    </div>
                     <div className="cartao-curso-progresso__meta">
                       <span>{curso.codigoRegistro}</span>
-                      <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "neutro"} />
-                      <span>{totalTurmas} turma{totalTurmas !== 1 ? "s" : ""}</span>
-                      <span>{total} aluno{total !== 1 ? "s" : ""}</span>
                     </div>
                   </div>
                   <div className="cartao-curso-progresso__barra" aria-hidden="true">
@@ -575,14 +589,25 @@ function VistaCoordenador({ usuario }) {
                   <span className="dado-rotulo" aria-hidden="true">Progresso / Nota</span>
                   <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
                   <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
-                  <button
-                    type="button"
-                    className="kebab-btn"
-                    onClick={() => setCursoDetalhe(cursosComProgresso.find((c) => c.curso.id === curso.id))}
-                    aria-label={`Ver detalhes de ${curso.titulo}`}
-                  >
-                    <TbDotsVertical size={16} aria-hidden="true" />
-                  </button>
+                  <div className="menu-contexto">
+                    <button
+                      type="button"
+                      className="menu-contexto__botao"
+                      onClick={(e) => { e.stopPropagation(); setMenuAberto((v) => v === curso.id ? null : curso.id); }}
+                      aria-label={`Opções de ${curso.titulo}`}
+                    >
+                      <TbDotsVertical size={16} aria-hidden="true" />
+                    </button>
+                    {menuAberto === curso.id && (
+                      <ul className="menu-contexto__lista" role="menu">
+                        <li>
+                          <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setCursoDetalhe(cursosComProgresso.find((c) => c.curso.id === curso.id)); }}>
+                            <TbSettings size={16} aria-hidden="true" /> Opções
+                          </button>
+                        </li>
+                      </ul>
+                    )}
+                  </div>
                 </div>
               </li>
             );

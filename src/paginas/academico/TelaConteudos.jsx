@@ -798,42 +798,20 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
-          <p className="conteudos-aluno__turma">{turma.nomeTurma}</p>
-          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
           <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
-          <p className="conteudos-aluno__curso-meta" style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-            {turma.totalAlunos} aluno{turma.totalAlunos !== 1 ? "s" : ""} · {conteudosDoCurso.length} conteúdo{conteudosDoCurso.length !== 1 ? "s" : ""}
-            {resumoTiposProf.length > 0 && (
-              <>
-                <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>
-                {resumoTiposProf.map((t, i) => {
-                  const { Icone, rotulo } = TIPO_CONFIG[t];
-                  const n = totalPorTipoProf[t];
-                  return (
-                    <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                      {i > 0 && <span aria-hidden="true" style={{ opacity: 0.4 }}>·</span>}
-                      <Icone size={14} aria-hidden="true" />
-                      {n} {rotulo.toLowerCase()}{n !== 1 ? "s" : ""}
-                    </span>
-                  );
-                })}
-              </>
-            )}
-          </p>
+          <div className="conteudos-aluno__meta-chips">
+            {resumoTiposProf.map((t) => {
+              const { Icone, rotulo } = TIPO_CONFIG[t];
+              const n = totalPorTipoProf[t];
+              return (
+                <span key={t} className="conteudos-aluno__meta-chip">
+                  <Icone size={12} aria-hidden="true" />
+                  {n} {rotulo.toLowerCase()}{n !== 1 ? "s" : ""}
+                </span>
+              );
+            })}
+          </div>
         </div>
-        {podeCriar(tipo, "conteudos") && (
-          <Botao
-            variante="primario"
-            tamanho="pequeno"
-            onClick={onNovoConteudo}
-            style={{ display: "flex", alignItems: "center", gap: "6px" }}
-          >
-            <motion.span whileHover={{ scale: 1.15, rotate: 90 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
-              <TbPlus size={20} aria-hidden="true" />
-            </motion.span>
-            Novo Conteúdo
-          </Botao>
-        )}
       </header>
 
       {modulosDoCurso.map((modulo) => {
@@ -1232,20 +1210,34 @@ function VistaProfessor({ usuario, onToast }) {
   return (
     <div className="carrossel-cursos">
 
-      <div className="barra-filtros" style={{ marginBottom: "var(--espaco-md)" }}>
-        <label htmlFor="filtro-prof-turma" className="visualmente-oculto">Selecionar turma</label>
-        <select
-          id="filtro-prof-turma"
-          className="campo__entrada barra-filtros__select"
-          value={slideAtual}
-          onChange={(e) => setSlideAtual(Number(e.target.value))}
-          aria-label="Navegar para turma"
+      <header className="cabecalho-pagina" style={{ marginBottom: "var(--espaco-md)" }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <h1 className="cabecalho-pagina__titulo">Conteúdos</h1>
+            <label htmlFor="filtro-prof-turma" className="visualmente-oculto">Selecionar turma</label>
+            <select
+              id="filtro-prof-turma"
+              className="campo__entrada barra-filtros__select"
+              value={slideAtual}
+              onChange={(e) => setSlideAtual(Number(e.target.value))}
+              aria-label="Navegar para turma"
+              style={{ marginLeft: "auto", maxWidth: "240px" }}
+            >
+              {minhasTurmas.map((turma, idx) => (
+                <option key={turma.id} value={idx}>{turma.cursoTitulo} — {turma.nomeTurma}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <Botao variante="primario" onClick={() => setModalAberto(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}
+          variants={{ hover: { y: -1 } }} whileHover="hover"
         >
-          {minhasTurmas.map((turma, idx) => (
-            <option key={turma.id} value={idx}>{turma.cursoTitulo} — {turma.nomeTurma}</option>
-          ))}
-        </select>
-      </div>
+          <motion.span variants={{ hover: { rotate: 90 } }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+            <TbPlus size={20} aria-hidden="true" />
+          </motion.span>
+          Novo Conteúdo
+        </Botao>
+      </header>
 
       {total > 1 && (
         <nav className="carrossel-cursos__nav" aria-label="Navegação entre turmas">
