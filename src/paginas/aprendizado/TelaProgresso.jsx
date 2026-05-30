@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbTrophy, TbCertificate, TbDotsVertical, TbX } from "react-icons/tb";
+import { TbTrophy, TbCertificate, TbDotsVertical, TbX, TbCheck, TbLayoutGrid } from "react-icons/tb";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -33,20 +33,24 @@ function SlideProgressoCurso({ matricula, avaliacaoAprovada, resultadosQuizzes =
   const totalConcluidos = conteudosDoCurso.filter((c) => concluidos.has(c.id)).length;
 
   const modulosComConteudo = modulosDoCurso.filter((m) => conteudosDoCurso.some((c) => c.moduloId === m.id));
-  const quizzesFeitos = modulosComConteudo.filter((m) => resultadosQuizzes[m.id] !== undefined).length;
-  const totalPassos   = totalConteudos + modulosComConteudo.length;
+  const quizzesFeitos = conteudosDoCurso.filter((c) => resultadosQuizzes[c.id] !== undefined).length;
+  const totalPassos   = totalConteudos * 2;
   const passosFeitos  = totalConcluidos + quizzesFeitos;
   const percentualGeral = totalPassos > 0 ? Math.round((passosFeitos / totalPassos) * 100) : 0;
 
   const modulosConcluidos = modulosDoCurso.filter((modulo) => {
     const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
-    return itens.length > 0 && itens.every((c) => concluidos.has(c.id)) && resultadosQuizzes[modulo.id] !== undefined;
+    return itens.length > 0 &&
+      itens.every((c) => concluidos.has(c.id)) &&
+      itens.every((c) => resultadosQuizzes[c.id] !== undefined);
   }).length;
 
   const todosConcluidos   = modulosConcluidos === modulosComConteudo.length && modulosComConteudo.length > 0;
   const avaliacaoLiberada = todosConcluidos;
 
-  const certAtivo = (avaliacaoAprovada?.[matricula.cursoId]) ?? (certificadosDemo[matricula.cursoId] ?? null);
+  const certAtivo = avaliacaoAprovada?.[matricula.cursoId]
+    ? (certificadosDemo[matricula.cursoId] ?? { ...avaliacaoAprovada[matricula.cursoId], dataConclusao: new Date().toLocaleDateString("pt-BR") })
+    : null;
   const certificadoDesbloqueado = Boolean(certAtivo);
 
   return (
@@ -54,14 +58,20 @@ function SlideProgressoCurso({ matricula, avaliacaoAprovada, resultadosQuizzes =
       {/* ── Hero do curso ── */}
       <header className="conteudos-aluno__cabecalho" aria-label="Visão geral do curso">
         <div className="conteudos-aluno__curso-info">
-          <p className="conteudos-aluno__turma">{matricula.turmaNome}</p>
-          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
           <h2 className="conteudos-aluno__curso-titulo">{curso?.titulo}</h2>
-          <p className="conteudos-aluno__curso-meta">
-            {passosFeitos}/{totalPassos} passos · {modulosConcluidos}/{modulosComConteudo.length} módulos
-          </p>
+          <div className="conteudos-aluno__meta-chips">
+            <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
+              <TbCheck size={12} aria-hidden="true" />
+              {passosFeitos}/{totalPassos} passos
+            </span>
+            <span className="conteudos-aluno__meta-chip">
+              <TbLayoutGrid size={12} aria-hidden="true" />
+              {modulosConcluidos}/{modulosComConteudo.length} módulos
+            </span>
+          </div>
         </div>
         <div className="conteudos-aluno__progresso-geral">
+          <p className="progresso-hero__legenda">{percentualGeral}%</p>
           <div className="anel-progresso" aria-label={`${percentualGeral} por cento concluído`}>
             <svg className="anel-progresso__svg" viewBox="0 0 120 120" aria-hidden="true">
               <defs>
@@ -90,10 +100,13 @@ function SlideProgressoCurso({ matricula, avaliacaoAprovada, resultadosQuizzes =
           {modulosDoCurso.map((modulo) => {
             const itens = conteudosDoCurso.filter((c) => c.moduloId === modulo.id);
             const concluidosModulo = itens.filter((c) => concluidos.has(c.id)).length;
-            const quizPercentual = resultadosQuizzes[modulo.id];
-            const quizFeito = quizPercentual !== undefined;
-            const totalPassosModulo = itens.length + (itens.length > 0 ? 1 : 0);
-            const passosModulo = concluidosModulo + (quizFeito ? 1 : 0);
+            const quizzesModulo = itens.filter((c) => resultadosQuizzes[c.id] !== undefined).length;
+            const quizFeito = itens.length > 0 && quizzesModulo === itens.length;
+            const quizPercentual = quizFeito
+              ? Math.round(itens.reduce((acc, c) => acc + (resultadosQuizzes[c.id] ?? 0), 0) / itens.length)
+              : undefined;
+            const totalPassosModulo = itens.length * 2;
+            const passosModulo = concluidosModulo + quizzesModulo;
             const percentualModulo = totalPassosModulo > 0 ? Math.round((passosModulo / totalPassosModulo) * 100) : 0;
             const concluido = totalPassosModulo > 0 && passosModulo === totalPassosModulo;
             const emAndamento = passosModulo > 0 && !concluido;
@@ -164,9 +177,7 @@ function SlideProgressoCurso({ matricula, avaliacaoAprovada, resultadosQuizzes =
                 <p className="passo-modulo__quiz" style={{ color: "var(--cor-texto-mudo)" }}>
                   {!todosConcluidos
                     ? `Conclua os módulos — ${modulosConcluidos}/${modulosComConteudo.length} concluídos`
-                    : !desempenhoOk
-                      ? `Desempenho insuficiente (${desempenhoNota !== null ? desempenhoNota.toFixed(1) : "—"}/10) — mínimo 7.0`
-                      : "Módulos concluídos — faça a avaliação para obter o certificado"}
+                    : "Módulos concluídos — faça a avaliação para obter o certificado"}
                 </p>
               )}
             </div>
@@ -212,6 +223,7 @@ function VistaAluno({ usuario, avaliacaoAprovada, resultadosQuizzes, onMudarSeca
     (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
   );
   const [slideAtual, setSlideAtual] = useState(0);
+  const [touchInicioX, setTouchInicioX] = useState(null);
 
   if (matriculasAprovadas.length === 0) {
     return (
@@ -270,7 +282,17 @@ function VistaAluno({ usuario, avaliacaoAprovada, resultadosQuizzes, onMudarSeca
           </nav>
         )}
 
-        <div className="carrossel-cursos__janela">
+        <div
+          className="carrossel-cursos__janela"
+          onTouchStart={(e) => setTouchInicioX(e.touches[0].clientX)}
+          onTouchEnd={(e) => {
+            if (touchInicioX === null) return;
+            const dx = e.changedTouches[0].clientX - touchInicioX;
+            if (dx > 50 && slideAtual > 0) setSlideAtual((i) => i - 1);
+            if (dx < -50 && slideAtual < matriculasAprovadas.length - 1) setSlideAtual((i) => i + 1);
+            setTouchInicioX(null);
+          }}
+        >
           <SlideProgressoCurso
             matricula={matriculasAprovadas[slideAtual]}
             avaliacaoAprovada={avaliacaoAprovada}
@@ -366,6 +388,7 @@ function VistaProfessor({ usuario }) {
                   </div>
                 </div>
                 <div className="cartao-curso-progresso__direita">
+                  <span className="dado-rotulo" aria-hidden="true">Progresso / Nota</span>
                   <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
                   <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
                   <button
@@ -549,6 +572,7 @@ function VistaCoordenador({ usuario }) {
                   </div>
                 </div>
                 <div className="cartao-curso-progresso__direita">
+                  <span className="dado-rotulo" aria-hidden="true">Progresso / Nota</span>
                   <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
                   <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
                   <button
@@ -702,6 +726,7 @@ function VistaAdmin() {
                 </div>
               </div>
               <div className="cartao-progresso-aluno__badges">
+                <span className="dado-rotulo" aria-hidden="true">Progresso</span>
                 <Insignia texto={`${percentual}%`} variante="neutro" />
                 <Insignia texto={statusTexto} variante={statusVariante} />
               </div>

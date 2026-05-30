@@ -169,6 +169,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
           <span className="switch-tema__thumb" aria-hidden="true" />
           <TbSun  size={12} className="switch-tema__sol" aria-hidden="true" />
         </button>
+        <span className="topbar__separador" aria-hidden="true" />
         {/* Wrapper relativo para posicionar o popup abaixo do perfil */}
         <div className="topbar__perfil-wrapper" ref={refWrapper}>
           <button

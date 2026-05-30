@@ -74,8 +74,7 @@
 }
 
 .cabecalho-publico__acao-admin {
-  min-width: 210px;
-  text-transform: uppercase;
+  min-width: 0;
 }
 
 .secao-hero {
@@ -406,6 +405,14 @@
 @media (max-width: 480px) {
   .cabecalho-publico__logo-marca {
     font-size: 1.15rem;
+  }
+
+  .cabecalho-publico__nav .nav-texto {
+    display: none;
+  }
+
+  .cabecalho-publico__nav .botao {
+    padding-inline: 10px;
   }
 
   .secao-hero__titulo {

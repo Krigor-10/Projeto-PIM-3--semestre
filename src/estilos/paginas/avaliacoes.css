@@ -1232,15 +1232,14 @@
 }
 
 .conteudos-aluno__cabecalho {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
   gap: var(--espaco-lg);
   background: rgba(123, 47, 247, 0.06);
   border: 1px solid var(--cor-borda-forte);
   border-radius: var(--raio-lg);
   padding: var(--espaco-lg);
-  flex-wrap: wrap;
 }
 
 .conteudos-aluno__curso-info {
@@ -1258,6 +1257,13 @@
 }
 
 /* Chip "Curso" — diferencia visualmente do nível módulo abaixo */
+.conteudos-aluno__curso-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .conteudos-aluno__curso-etiqueta {
   display: inline-block;
   font-size: 0.68rem;
@@ -1269,7 +1275,8 @@
   border: 1px solid rgba(123, 47, 247, 0.28);
   border-radius: 99px;
   padding: 0.15rem 0.6rem;
-  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .conteudos-aluno__curso-titulo {
@@ -1281,9 +1288,31 @@
   background-clip: text;
 }
 
-.conteudos-aluno__curso-meta {
-  font-size: 0.85rem;
+.conteudos-aluno__meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+
+.conteudos-aluno__meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
   color: var(--cor-texto-suave);
+  background: var(--cor-fundo-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: 99px;
+  padding: 0.18rem 0.55rem;
+  white-space: nowrap;
+}
+
+.conteudos-aluno__meta-chip--progresso {
+  color: var(--cor-marca-clara);
+  background: rgba(123, 47, 247, 0.08);
+  border-color: rgba(123, 47, 247, 0.25);
 }
 
 .conteudos-aluno__progresso-geral {
@@ -1822,11 +1851,35 @@
 
 @media (max-width: 768px) {
   .conteudos-aluno__cabecalho {
-    flex-direction: column;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: var(--espaco-sm) var(--espaco-md);
+    gap: var(--espaco-md);
+  }
+
+  .conteudos-aluno__curso-info {
+    min-width: 0;
+  }
+
+  .conteudos-aluno__curso-etiqueta,
+  .conteudos-aluno__turma,
+  .conteudos-aluno__curso-meta-tipos,
+  .progresso-hero__legenda {
+    display: none;
+  }
+
+  .conteudos-aluno__curso-titulo {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .conteudos-aluno__progresso-geral {
     flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
   }
 
   .banner-continuar {

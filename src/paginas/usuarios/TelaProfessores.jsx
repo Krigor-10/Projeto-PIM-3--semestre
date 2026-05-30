@@ -7,7 +7,7 @@ import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { db } from "@/dados/db.js";
-import { podeCriar, podeEditar } from "@/dados/permissoes.js";
+import { podeCriar, podeEditar, podeExcluir } from "@/dados/permissoes.js";
 
 const ITENS_POR_PAGINA = 8;
 
@@ -44,6 +44,8 @@ export default function TelaProfessores({ usuario, onToast }) {
 
   const [selecionados, setSelecionados]         = useState(new Set());
   const [removendoEmMassa, setRemovendoEmMassa] = useState(false);
+  const [confirmandoAtivar, setConfirmandoAtivar]       = useState(false);
+  const [confirmandoDesativar, setConfirmandoDesativar] = useState(false);
 
   const [kebabAberto,         setKebabAberto]         = useState(null);
   const [kebabPos,            setKebabPos]            = useState({ top: 0, left: 0 });
@@ -398,19 +400,21 @@ export default function TelaProfessores({ usuario, onToast }) {
             {selecionados.size} {selecionados.size === 1 ? "selecionado" : "selecionados"}
           </span>
           <div className="barra-massa__acoes">
-            <Botao variante="sucesso" tamanho="pequeno" onClick={ativarSelecionados}>
+            <Botao variante="sucesso" tamanho="pequeno" onClick={() => setConfirmandoAtivar(true)}>
               Ativar
             </Botao>
             <Botao
               tamanho="pequeno"
               style={{ background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }}
-              onClick={desativarSelecionados}
+              onClick={() => setConfirmandoDesativar(true)}
             >
               Desativar
             </Botao>
-            <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}>
-              <TbTrash size={15} aria-hidden="true" />Remover
-            </Botao>
+            {podeExcluir(usuario?.tipo, "professores") && (
+              <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}>
+                <TbTrash size={15} aria-hidden="true" />Remover
+              </Botao>
+            )}
           </div>
           <button
             className="barra-massa__limpar"
@@ -730,6 +734,36 @@ export default function TelaProfessores({ usuario, onToast }) {
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setRemovendoEmMassa(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
             <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarRemocaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {/* ── Confirmação de ativação em massa ── */}
+      {confirmandoAtivar && (
+        <Modal titulo="Ativar professores" onFechar={() => setConfirmandoAtivar(false)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Ativar <strong>{selecionados.size} {selecionados.size === 1 ? "professor" : "professores"}</strong> selecionado{selecionados.size !== 1 ? "s" : ""}?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoAtivar(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => { ativarSelecionados(); setConfirmandoAtivar(false); onToast?.(`${selecionados.size} professor${selecionados.size !== 1 ? "es" : ""} ativado${selecionados.size !== 1 ? "s" : ""}.`, "sucesso"); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" />Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {/* ── Confirmação de desativação em massa ── */}
+      {confirmandoDesativar && (
+        <Modal titulo="Desativar professores" onFechar={() => setConfirmandoDesativar(false)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Desativar <strong>{selecionados.size} {selecionados.size === 1 ? "professor" : "professores"}</strong> selecionado{selecionados.size !== 1 ? "s" : ""}?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoDesativar(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+            <Botao
+              tamanho="pequeno"
+              style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }}
+              onClick={() => { desativarSelecionados(); setConfirmandoDesativar(false); onToast?.(`${selecionados.size} professor${selecionados.size !== 1 ? "es" : ""} desativado${selecionados.size !== 1 ? "s" : ""}.`, "aviso"); }}
+            ><TbCheck size={15} aria-hidden="true" />Confirmar</Botao>
           </footer>
         </Modal>
       )}

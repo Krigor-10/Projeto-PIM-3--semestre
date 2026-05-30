@@ -248,9 +248,31 @@
   }
 }
 
+@media (max-width: 768px) {
+  .admin-kpi {
+    padding: var(--espaco-sm) var(--espaco-md);
+  }
+
+  .admin-kpi__valor {
+    font-size: 1.5rem;
+  }
+
+  .admin-kpi__detalhe {
+    display: none;
+  }
+
+  .admin-grafico-wrapper .recharts-responsive-container {
+    height: 160px !important;
+  }
+}
+
 @media (max-width: 480px) {
   .admin-kpis {
     grid-template-columns: 1fr;
+  }
+
+  .admin-kpi__valor {
+    font-size: 1.4rem;
   }
 }
 
@@ -972,6 +994,8 @@
 
   .cartao-curso-ativo {
     flex-wrap: wrap;
+    padding: var(--espaco-sm) var(--espaco-md);
+    gap: var(--espaco-md);
   }
 
   .cartao-curso-ativo__progresso {
@@ -996,31 +1020,11 @@
   }
 }
 
-@media (max-width: 600px) {
-  /* Avaliação — título pode quebrar linha no mobile */
-  .cartao-avaliacao__titulo {
-    white-space: normal;
-  }
-
-  /* Corpo do cartão empilha meta + botão em coluna */
-  .cartao-avaliacao__corpo {
-    flex-wrap: wrap;
-  }
-
-  .cartao-avaliacao__rodape {
-    width: 100%;
-    justify-content: flex-end;
-  }
-
-  /* Reduz padding do card em telas estreitas */
-  .cartao-avaliacao {
-    padding: var(--espaco-md);
-  }
-}
-
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  /* Filtros em coluna já a partir de 768px */
   .barra-filtros {
     flex-direction: column;
+    gap: var(--espaco-sm);
   }
 
   .barra-filtros__busca,
@@ -1029,8 +1033,66 @@
     width: 100%;
   }
 
+  /* Slides de turma/módulo: padding compacto */
+  .slide-turma,
+  .slide-alunos {
+    padding: var(--espaco-md);
+  }
+
+  /* Card de avaliação: linha única — título à esquerda, botão à direita */
+  .cartao-avaliacao {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--espaco-sm) var(--espaco-md);
+    gap: var(--espaco-sm);
+  }
+
+  .cartao-avaliacao__topo {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cartao-avaliacao__titulo {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Meta e badge ocultos — detalhes acessíveis pelo menu "..." */
+  .cartao-avaliacao__meta,
+  .cartao-avaliacao__badge-realizacao {
+    display: none;
+  }
+
+  /* Corpo: apenas rodapé compacto, sem espaçamento */
+  .cartao-avaliacao__corpo {
+    flex-shrink: 0;
+    gap: 0;
+    padding: 0;
+  }
+
+  .cartao-avaliacao__rodape {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
   .grade-acesso-rapido {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .botao-acesso-rapido {
     justify-content: center;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.78rem;
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grade-acesso-rapido {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1621,21 +1683,133 @@
   color: var(--cor-texto-suave);
 }
 
+/* Rótulo de coluna: oculto no desktop, visível como label no mobile */
+.dado-rotulo {
+  display: none;
+}
+
+/* Mini-grid de métricas da turma no modal de edição — só mobile */
+.modal-metricas-turma {
+  display: none;
+}
+
+/* Wrapper da coluna média no slide de alunos */
+.slide-alunos__media-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 1px;
+}
+
 /* Responsivo */
 @media (max-width: 768px) {
+  .dado-rotulo {
+    display: block;
+    font-size: 0.63rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--cor-texto-mudo);
+    margin-bottom: 2px;
+    width: 100%;
+  }
+
   .cursos-kpis {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .desempenho-curso-item {
-    flex-wrap: wrap;
-    gap: var(--espaco-sm);
+  .cursos-kpi {
+    padding: var(--espaco-sm) var(--espaco-md);
   }
 
-  .desempenho-curso-item__identidade { flex: 1 1 100%; }
-  .desempenho-curso-item__turma      { flex: 1 1 45%; }
-  .desempenho-curso-item__alunos     { flex: 1 1 45%; }
-  .desempenho-curso-item__metricas   { flex: 1 1 45%; }
+  .cursos-kpi__valor {
+    font-size: 1.4rem;
+  }
+
+  /* Esconde cabeçalho de colunas — card já dá contexto */
+  .desempenho-cursos-cabecalho {
+    display: none;
+  }
+
+  /* Card compacto: empilha colunas, menu absoluto no canto */
+  .desempenho-curso-item {
+    flex-wrap: wrap;
+    gap: var(--espaco-xs) var(--espaco-sm);
+    padding: var(--espaco-sm) var(--espaco-md);
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .desempenho-curso-item__checkbox {
+    display: none;
+  }
+
+  .desempenho-curso-item__identidade {
+    flex: 1 1 100%;
+    padding-right: 2.5rem;
+  }
+
+  .desempenho-curso-item__titulo {
+    white-space: normal;
+    font-size: 0.9rem;
+  }
+
+  .desempenho-curso-item__turma {
+    flex: 1 1 100%;
+    font-size: 0.8rem;
+  }
+
+  .desempenho-curso-item__alunos {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  .desempenho-curso-item__metricas {
+    flex: 1 1 auto;
+    flex-direction: row;
+    gap: var(--espaco-md);
+  }
+
+  .desempenho-curso-item > .menu-contexto {
+    position: absolute;
+    top: var(--espaco-sm);
+    right: var(--espaco-sm);
+  }
+
+  .modal-metricas-turma {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--espaco-xs);
+    margin-bottom: var(--espaco-md);
+    padding: var(--espaco-sm) var(--espaco-md);
+    background: rgba(123, 47, 247, 0.05);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-sm);
+  }
+
+  .modal-metricas-turma__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--espaco-xs);
+  }
+
+  .modal-metricas-turma__item dt {
+    font-size: 0.63rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--cor-texto-mudo);
+    margin-bottom: 2px;
+  }
+
+  .modal-metricas-turma__item dd {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--cor-texto-forte);
+    margin: 0;
+  }
 }
 
 @media (max-width: 480px) {

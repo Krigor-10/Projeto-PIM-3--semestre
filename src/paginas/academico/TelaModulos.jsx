@@ -156,6 +156,7 @@ function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhe
                   </div>
                 </div>
                 <div className="item-aproveitamento__badges">
+                  <span className="dado-rotulo" aria-hidden="true">Conteúdos / Desempenho</span>
                   <span style={{ fontSize: "0.82rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>
                     {mod.totalConteudos} conteúdo{mod.totalConteudos !== 1 ? "s" : ""}
                   </span>

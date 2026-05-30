@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { TbCertificate, TbLock, TbX, TbDownload, TbEye } from "react-icons/tb";
-import Insignia from "@/componentes/Insignia.jsx";
+import { motion } from "framer-motion";
+import { TbCertificate, TbX, TbDownload } from "react-icons/tb";
+import { LuEye, LuDownload } from "react-icons/lu";
 import Modal from "@/componentes/Modal.jsx";
-import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { matriculas, cursos, modulos, conteudos, certificadosDemo } from "@/dados/dadosMock.js";
 import fundoCertificado from "@/ativos/certificado-fundo.png";
@@ -23,19 +23,14 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
     (m) => m.alunoId === usuario?.id && m.status === "Aprovada"
   );
 
-  /* Retorna os dados do certificado se desbloqueado, ou null se bloqueado */
+  /* Retorna dados do certificado apenas se a avaliação foi aprovada nesta sessão */
   function obterCertificado(cursoId) {
-    /* Certificado real gerado pelo fluxo de avaliação desta sessão */
-    if (avaliacaoAprovada && cursoId === matriculasAluno[0]?.cursoId) {
-      return {
-        ...avaliacaoAprovada,
-        dataConclusao: new Date().toLocaleDateString("pt-BR"),
-      };
-    }
-    /* Certificados pré-desbloqueados para demonstração */
-    const demo = certificadosDemo[cursoId];
-    if (demo) return demo;
-    return null;
+    if (!avaliacaoAprovada?.[cursoId]) return null;
+    /* Usa dados demo se disponíveis (nota fixa para apresentação), senão usa o resultado real */
+    return certificadosDemo[cursoId] ?? {
+      ...avaliacaoAprovada[cursoId],
+      dataConclusao: new Date().toLocaleDateString("pt-BR"),
+    };
   }
 
   function imprimirCertificado() {
@@ -105,41 +100,29 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
           <div className="banner-certificados__stats" aria-label="Estatísticas de certificados">
             <div className="banner-certificados__stat">
               <span className="banner-certificados__stat-valor">{totalCertificados}</span>
-              <span className="banner-certificados__stat-rotulo">Desbloqueados</span>
+              <span className="banner-certificados__stat-rotulo">Conquistados</span>
             </div>
             <div className="banner-certificados__sep" aria-hidden="true" />
             <div className="banner-certificados__stat">
               <span className="banner-certificados__stat-valor">{matriculasAluno.length}</span>
               <span className="banner-certificados__stat-rotulo">Cursos</span>
             </div>
-            {bloqueados > 0 && (
-              <>
-                <div className="banner-certificados__sep" aria-hidden="true" />
-                <div className="banner-certificados__stat">
-                  <span className="banner-certificados__stat-valor banner-certificados__stat-valor--bloqueado">
-                    <TbLock size={18} style={{ display: "inline", verticalAlign: "middle" }} />
-                    {bloqueados}
-                  </span>
-                  <span className="banner-certificados__stat-rotulo">Bloqueados</span>
-                </div>
-              </>
-            )}
           </div>
         </div>
 
         <div className="banner-certificados__deco" aria-hidden="true" />
       </header>
 
-      {matriculasAluno.length === 0 ? (
+      {totalCertificados === 0 ? (
         <p className="texto-vazio texto-vazio--central" role="status">
-          Você não possui matrículas aprovadas. Solicite sua matrícula para começar.
+          Nenhum certificado ainda. Conclua os conteúdos e passe na avaliação para receber seu diploma.
         </p>
       ) : (
         <ul className="lista-certificados" role="list" aria-label="Lista de certificados">
-          {matriculasAluno.map((mat) => {
+          {matriculasAluno.filter((mat) => obterCertificado(mat.cursoId) !== null).map((mat) => {
             const curso = cursos.find((c) => c.id === mat.cursoId);
             const cert = obterCertificado(mat.cursoId);
-            const desbloqueado = cert !== null;
+            const desbloqueado = true;
 
             return (
               <li
@@ -152,59 +135,48 @@ export default function TelaCertificados({ usuario, avaliacaoAprovada }) {
                 {/* Informações do curso */}
                 <div className="item-certificado__curso">
                   <h3 className="item-certificado__titulo">{mat.cursoTitulo}</h3>
-                  <p className="item-certificado__meta">
-                    {curso?.nivel ?? "—"} · {mat.turmaNome}
-                  </p>
-                  <p className="item-certificado__codigo">{mat.codigoMatricula}</p>
+                  <p className="item-certificado__meta">{mat.turmaNome}</p>
                 </div>
 
-                {/* Status e progresso */}
-                <div className="item-certificado__status">
-                  {desbloqueado ? (
-                    <>
-                      <Insignia texto="Concluído" variante="sucesso" />
-                      <span className="item-certificado__nota">
-                        Nota {cert.nota} / {cert.notaMaxima ?? 10}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Insignia texto="Em andamento" variante="info" />
-                      <div className="item-certificado__progresso">
-                        <BarraProgresso percentual={0} mostrarTexto={false} />
-                      </div>
-                    </>
-                  )}
-                </div>
+                {/* Status */}
+                {desbloqueado && (
+                  <div className="item-certificado__status">
+                    <span className="item-certificado__nota">
+                      Nota {cert.nota} / {cert.notaMaxima ?? 10}
+                    </span>
+                  </div>
+                )}
 
                 {/* Ações */}
-                <div className="item-certificado__acoes">
-                  {desbloqueado ? (
-                    <>
-                      <Botao
-                        variante="fantasma"
-                        tamanho="pequeno"
-                        onClick={() => setCertificadoAberto({ mat, cert, curso })}
-                        aria-label={`Visualizar certificado de ${mat.cursoTitulo}`}
-                        style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                      >
-                        <TbEye size={14} aria-hidden="true" /> Visualizar
-                      </Botao>
-                      <Botao
-                        variante="primario"
-                        tamanho="pequeno"
-                        onClick={() => { setCertificadoAberto({ mat, cert, curso }); setTimeout(imprimirCertificado, 300); }}
-                        aria-label={`Baixar certificado de ${mat.cursoTitulo}`}
-                        style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                      >
-                        <TbDownload size={14} aria-hidden="true" /> Baixar
-                      </Botao>
-                    </>
-                  ) : (
-                    <span className="item-certificado__bloqueado" aria-label="Certificado bloqueado">
-                      ⊘ Bloqueado
-                    </span>
-                  )}
+                <div
+                  className="item-certificado__acoes"
+                  data-tooltip={!desbloqueado ? "Conclua a avaliação para desbloquear" : undefined}
+                >
+                  <motion.button
+                    type="button"
+                    onClick={() => desbloqueado && setCertificadoAberto({ mat, cert, curso })}
+                    aria-label={`Visualizar certificado de ${mat.cursoTitulo}`}
+                    className="cert-btn-visualizar"
+                    disabled={!desbloqueado}
+                    whileHover={desbloqueado ? { scale: 1.18 } : {}}
+                    whileTap={desbloqueado ? { scale: 0.9 } : {}}
+                    transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                  >
+                    <LuEye size={26} aria-hidden="true" />
+                  </motion.button>
+                  <span className="cert-separador" aria-hidden="true" />
+                  <motion.button
+                    type="button"
+                    onClick={() => { if (desbloqueado) { setCertificadoAberto({ mat, cert, curso }); setTimeout(imprimirCertificado, 300); } }}
+                    aria-label={`Baixar certificado de ${mat.cursoTitulo}`}
+                    className="cert-btn-baixar"
+                    disabled={!desbloqueado}
+                    whileHover={desbloqueado ? { scale: 1.18 } : {}}
+                    whileTap={desbloqueado ? { scale: 0.9 } : {}}
+                    transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                  >
+                    <LuDownload size={26} aria-hidden="true" />
+                  </motion.button>
                 </div>
               </li>
             );

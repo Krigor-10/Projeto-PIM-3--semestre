@@ -522,6 +522,26 @@
 
   .grade-estatisticas {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--espaco-sm);
+  }
+
+  .cartao-estatistica {
+    padding: var(--espaco-sm) var(--espaco-md);
+    gap: 4px;
+  }
+
+  .cartao-estatistica__valor {
+    font-size: 1.4rem;
+  }
+
+  .cartao-estatistica__icone {
+    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+  }
+
+  .cartao-estatistica__rotulo {
+    font-size: 0.75rem;
   }
 
   .cabecalho-pagina {
@@ -532,8 +552,24 @@
     padding: calc(var(--altura-topbar) + var(--espaco-md)) var(--espaco-md) calc(70px + var(--espaco-md));
   }
 
+  .layout-principal--com-tabs {
+    padding-top: calc(var(--altura-topbar) + 44px + var(--espaco-md));
+  }
+
   .modal-caixa {
     padding: var(--espaco-lg);
+  }
+
+  .cabecalho-pagina__subtitulo {
+    display: none;
+  }
+
+  .painel-secao__conteudo {
+    padding: var(--espaco-md);
+  }
+
+  .painel-secao__cabecalho {
+    padding: var(--espaco-sm) var(--espaco-md);
   }
 }
 

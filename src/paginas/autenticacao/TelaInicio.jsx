@@ -74,25 +74,28 @@ export default function TelaInicio() {
               tamanho="pequeno"
               className="cabecalho-publico__acao-admin"
               onClick={() => navigate(ROTAS.LOGIN_STAFF)}
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              aria-label="Acesso administrativo"
+              style={{ display: "flex", alignItems: "center" }}
             >
-              <MdAdminPanelSettings size={18} aria-hidden="true" /> Acesso administrativo
+              <MdAdminPanelSettings size={22} aria-hidden="true" />
             </Botao>
             <Botao
               variante="secundario"
               tamanho="pequeno"
               onClick={() => navigate(ROTAS.LOGIN)}
+              aria-label="Entrar"
               style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              <MdLogin size={18} aria-hidden="true" /> Entrar
+              <MdLogin size={22} aria-hidden="true" /> <span className="nav-texto">Entrar</span>
             </Botao>
             <Botao
               variante="sucesso"
               tamanho="pequeno"
               onClick={() => navigate(ROTAS.CADASTRO)}
+              aria-label="Criar conta"
               style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
-              <MdPersonAdd size={20} aria-hidden="true" /> Criar conta
+              <MdPersonAdd size={22} aria-hidden="true" /> <span className="nav-texto">Criar conta</span>
             </Botao>
           </nav>
         </div>

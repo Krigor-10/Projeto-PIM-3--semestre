@@ -1824,7 +1824,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                       </dl>
 
                       <footer className="cartao-avaliacao__rodape">
-                        {ehAluno && badgeRealizacao(av.id)}
+                        {ehAluno && <span className="cartao-avaliacao__badge-realizacao">{badgeRealizacao(av.id)}</span>}
                         {ehAluno && !liberado ? (
                           <span className="cartao-avaliacao__bloqueado-info">
                             <TbLock size={13} aria-hidden="true" />
@@ -1853,7 +1853,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                               >
                                 {jaRealizada
                                   ? <><TbRefresh size={14} aria-hidden="true" /> Refazer ({tentativasUsadas + 1}ª)</>
-                                  : <><TbPlayerPlay size={14} aria-hidden="true" /> Iniciar avaliação</>}
+                                  : <><TbPlayerPlay size={14} aria-hidden="true" /> Iniciar</>}
                               </Botao>
                             )}
                           </>
@@ -1914,7 +1914,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setModalConfirmarInicio(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
-            <Botao variante="primario" onClick={confirmarInicioAvaliacao} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbPlayerPlay size={16} aria-hidden="true" />Iniciar avaliação</Botao>
+            <Botao variante="primario" onClick={confirmarInicioAvaliacao} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbPlayerPlay size={16} aria-hidden="true" />Iniciar</Botao>
           </footer>
         </Modal>
       )}
@@ -1986,7 +1986,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
               >
                 {resultados[avaliacaoAtiva.id]
                   ? <><TbRefresh size={15} aria-hidden="true" /> Refazer</>
-                  : <><TbPlayerPlay size={15} aria-hidden="true" /> Iniciar avaliação</>}
+                  : <><TbPlayerPlay size={15} aria-hidden="true" /> Iniciar</>}
               </Botao>
             )}
             {!ehAluno && (

@@ -74,17 +74,17 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
           </div>
 
           <div className="slide-turma__kpis">
-            <div className="slide-turma__kpi">
+            <div className="slide-turma__kpi slide-turma__kpi--alunos">
               <span className="slide-turma__kpi-valor">{alunos.length}</span>
               <span className="slide-turma__kpi-rotulo">alunos</span>
             </div>
-            <div className="slide-turma__kpi">
+            <div className="slide-turma__kpi slide-turma__kpi--media">
               <span className="slide-turma__kpi-valor" style={{ color: corNota }}>
                 {mediaNota !== null ? mediaNota.toFixed(1) : "—"}
               </span>
               <span className="slide-turma__kpi-rotulo">média</span>
             </div>
-            <div className="slide-turma__kpi">
+            <div className="slide-turma__kpi slide-turma__kpi--aprovados">
               <span className="slide-turma__kpi-valor">{aprovados}</span>
               <span className="slide-turma__kpi-rotulo">aprovados</span>
             </div>
@@ -124,13 +124,16 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
                 <strong className="slide-alunos__linha-nome">{aluno.nome}</strong>
                 <span className="slide-alunos__linha-email">{aluno.email}</span>
               </div>
-              <span
-                className="slide-alunos__media"
-                style={{ color: corMedia(aluno.media) }}
-                title={`Média: ${aluno.media.toFixed(1)}`}
-              >
-                {aluno.media.toFixed(1)}
-              </span>
+              <div className="slide-alunos__media-col">
+                <span className="dado-rotulo" aria-hidden="true">Média</span>
+                <span
+                  className="slide-alunos__media"
+                  style={{ color: corMedia(aluno.media) }}
+                  title={`Média: ${aluno.media.toFixed(1)}`}
+                >
+                  {aluno.media.toFixed(1)}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
@@ -179,6 +182,17 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
   useEffect(() => { setStatusEditando(turmaEditando?.status ?? null); }, [turmaEditando]);
 
   const tipo = usuario?.tipo;
+
+  const alunosTurmaEditando = turmaEditando ? montarAlunosTurma(turmaEditando.id) : [];
+  const progressoMedioEditando = alunosTurmaEditando.length > 0
+    ? Math.round(alunosTurmaEditando.reduce((acc, a) => acc + (PROGRESSO_MOCK[a.matriculaId] ?? 50), 0) / alunosTurmaEditando.length)
+    : 0;
+  const aprovadosEditando = alunosTurmaEditando.filter((a) => a.statusMatricula === "Aprovada").length;
+  const mediaNotaEditando = turmaEditando ? (NOTAS_MOCK[turmaEditando.id] ?? null) : null;
+  const corNotaEditando = mediaNotaEditando === null ? "var(--cor-texto-mudo)"
+    : mediaNotaEditando >= 7 ? "var(--cor-sucesso)"
+    : mediaNotaEditando >= 5 ? "var(--cor-aviso)"
+    : "var(--cor-erro)";
 
   const turmasFiltradas = listaTurmas.filter((t) => {
     if (tipo === "Professor" && t.professorId !== usuario?.id) return false;
@@ -395,6 +409,26 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
           >
             {turmaEditando.nomeTurma.split("-").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
           </div>
+
+          <dl className="modal-metricas-turma" aria-label="Métricas da turma">
+            <div className="modal-metricas-turma__item">
+              <dt>Alunos</dt>
+              <dd>{alunosTurmaEditando.length}</dd>
+            </div>
+            <div className="modal-metricas-turma__item">
+              <dt>Progresso</dt>
+              <dd>{progressoMedioEditando}%</dd>
+            </div>
+            <div className="modal-metricas-turma__item">
+              <dt>Aprovados</dt>
+              <dd>{aprovadosEditando}</dd>
+            </div>
+            <div className="modal-metricas-turma__item">
+              <dt>Média</dt>
+              <dd style={{ color: corNotaEditando }}>{mediaNotaEditando !== null ? mediaNotaEditando.toFixed(1) : "—"}</dd>
+            </div>
+          </dl>
+
           <form className="formulario-modal" onSubmit={salvarEdicao}>
             <div className="campo">
               <label className="campo__rotulo" htmlFor="edit-nome-turma">Nome da Turma *</label>

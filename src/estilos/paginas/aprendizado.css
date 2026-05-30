@@ -182,10 +182,10 @@
 
 .cartao-conteudo__badge-check {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 28px;
-  height: 28px;
+  top: -7px;
+  right: -7px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #16a34a;
   color: #fff;
@@ -352,6 +352,15 @@
   transform: none !important;
   box-shadow: none !important;
   filter: none !important;
+}
+
+.cartao-conteudo__quiz-btn--pendente {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%) !important;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35) !important;
+}
+
+.cartao-conteudo__quiz-btn--pendente:hover {
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.5) !important;
 }
 
 .cartao-conteudo__quiz-btn--feito {
@@ -797,7 +806,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 0.72rem;
   font-weight: 900;
   background: linear-gradient(135deg, var(--cor-marca-clara), var(--cor-marca));
   -webkit-background-clip: text;
@@ -1419,6 +1428,38 @@
 }
 .cert-btn-baixar:hover { color: var(--cor-marca-hover, var(--cor-marca)); }
 
+.cert-btn-visualizar:disabled,
+.cert-btn-baixar:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.item-certificado__acoes {
+  position: relative;
+}
+
+.item-certificado__acoes[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: var(--cor-fundo-elevado);
+  color: var(--cor-texto-forte);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+
+.item-certificado__acoes[data-tooltip]:hover::after {
+  opacity: 1;
+}
+
 .item-certificado__check {
   position: absolute;
   top: -11px;
@@ -1627,19 +1668,43 @@
 
   .item-aproveitamento {
     flex-wrap: wrap;
+    padding: var(--espaco-sm) var(--espaco-md);
+    gap: var(--espaco-xs);
+  }
+
+  .item-aproveitamento__titulo {
+    white-space: normal;
+  }
+
+  .item-aproveitamento__info {
+    flex: 1 1 100%;
   }
 
   .item-aproveitamento__badges {
-    width: 100%;
+    flex: 1 1 auto;
     justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: var(--espaco-sm);
   }
 
   .item-aproveitamento__barra {
     max-width: 100%;
   }
 
+  /* Menu kebab dos módulos: move para a direita da linha de badges */
+  .item-aproveitamento > .menu-contexto {
+    flex-shrink: 0;
+  }
+
   .cartao-avaliacao-resultado {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Trilha de módulos: oculta duração/tipo para ganhar espaço */
+  .passo-modulo__item-meta {
+    display: none;
   }
 }
 
@@ -1649,11 +1714,6 @@
   }
 
   .item-check-conteudo__meta {
-    display: none;
-  }
-
-  /* Trilha de módulos: oculta duração/meta para ganhar espaço */
-  .passo-modulo__item-meta {
     display: none;
   }
 
@@ -2128,6 +2188,23 @@
   height: 16px;
 }
 
+@media (max-width: 600px) {
+  .cartao-certificado-link {
+    flex-wrap: wrap;
+    padding: var(--espaco-md);
+    gap: var(--espaco-sm);
+  }
+
+  .cartao-certificado-link__info {
+    min-width: 0;
+  }
+
+  .cartao-certificado-link .botao {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* ============================================================
    TELA DE CERTIFICADOS
    ============================================================ */
@@ -2266,6 +2343,120 @@
   background: rgba(255, 255, 255, 0.22);
 }
 
+@media (max-width: 768px) {
+  .tela-certificados {
+    gap: var(--espaco-lg);
+  }
+
+  /* Banner: grid 2 colunas — ícone | título na linha 1, stats span na linha 2 */
+  .banner-certificados {
+    padding: var(--espaco-md) var(--espaco-lg);
+    border-radius: var(--raio-lg);
+  }
+
+  .banner-certificados__conteudo {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--espaco-md);
+    row-gap: var(--espaco-md);
+    align-items: center;
+  }
+
+  .banner-certificados__icone-area {
+    grid-column: 1;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+  }
+
+  .banner-certificados__texto {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .banner-certificados__subtitulo {
+    display: none;
+  }
+
+  .banner-certificados__titulo {
+    font-size: 1.1rem;
+  }
+
+  .banner-certificados__stats {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: auto;
+    justify-content: space-around;
+    padding: var(--espaco-sm) var(--espaco-md);
+    gap: var(--espaco-sm);
+  }
+
+  .banner-certificados__stat-valor {
+    font-size: 1.1rem;
+  }
+
+  .banner-certificados__stat-rotulo {
+    font-size: 0.65rem;
+  }
+
+  /* Conquistas compactadas */
+  .cartao-conquista {
+    padding: var(--espaco-sm) var(--espaco-md);
+    gap: var(--espaco-xs);
+  }
+
+  .cartao-conquista__icone {
+    font-size: 1.4rem;
+  }
+
+  .cartao-conquista__titulo {
+    font-size: 0.78rem;
+  }
+
+  .cartao-conquista__descricao {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tela-certificados {
+    gap: var(--espaco-md);
+  }
+
+  .banner-certificados__conteudo {
+    grid-template-columns: 1fr;
+  }
+
+  .banner-certificados__icone-area {
+    display: none;
+  }
+
+  .banner-certificados__texto {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .banner-certificados__stats {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .banner-certificados__titulo {
+    font-size: 1rem;
+  }
+
+  .item-certificado__titulo {
+    font-size: 0.9rem;
+  }
+
+  .item-certificado__meta,
+  .item-certificado__codigo {
+    font-size: 0.72rem;
+  }
+}
+
 /* ── Lista de certificados ─────────────────────────────────── */
 .lista-certificados {
   display: flex;
@@ -2354,9 +2545,6 @@
   font-weight: 600;
 }
 
-.item-certificado__progresso {
-  width: 120px;
-}
 
 .item-certificado__acoes {
   display: flex;
@@ -2364,12 +2552,66 @@
   flex-shrink: 0;
 }
 
+
 .item-certificado__bloqueado {
   font-size: 0.82rem;
   color: var(--cor-texto-mudo);
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+@media (max-width: 600px) {
+  /* Grid: [info (2 linhas) | status / botões] */
+  .item-certificado {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    padding: var(--espaco-sm) var(--espaco-md);
+    column-gap: var(--espaco-md);
+    row-gap: 6px;
+  }
+
+  .item-certificado__faixa { display: none; }
+
+  /* Coluna esquerda — spans as 2 linhas */
+  .item-certificado__curso {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    min-width: 0;
+    align-self: center;
+    gap: 3px;
+  }
+
+  .item-certificado__titulo {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Coluna direita linha 1 — nota ou anel de progresso */
+  .item-certificado__status {
+    grid-column: 2;
+    grid-row: 1;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+
+  .item-certificado__nota {
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  /* Coluna direita linha 2 — botões */
+  .item-certificado__acoes {
+    grid-column: 2;
+    grid-row: 2;
+    justify-content: flex-end;
+    gap: var(--espaco-xs);
+  }
 }
 
 /* ── Certificado modal ─────────────────────────────────────── */
@@ -2463,6 +2705,9 @@
   align-items: center;
   justify-content: center;
   gap: var(--espaco-lg);
+  position: sticky;
+  top: calc(var(--altura-topbar) + var(--espaco-sm));
+  z-index: 10;
 }
 
 .carrossel-cursos__seta {
@@ -2533,6 +2778,12 @@
 }
 
 /* Responsividade */
+@media (max-width: 768px) {
+  .carrossel-cursos__nav {
+    top: calc(var(--altura-topbar) + 44px + var(--espaco-sm));
+  }
+}
+
 @media (max-width: 600px) {
   .carrossel-cursos__seta {
     width: 30px;
@@ -2804,9 +3055,14 @@
 @media (max-width: 768px) {
   .gerencial-stats-barra {
     flex-wrap: wrap;
+    gap: var(--espaco-sm);
   }
   .gerencial-stats-barra > div {
-    flex: 1 1 calc(50% - var(--espaco-md));
+    flex: 1 1 calc(50% - var(--espaco-sm));
+    padding: var(--espaco-sm) var(--espaco-md);
+  }
+  .gerencial-stats-barra dd {
+    font-size: 1.3rem;
   }
 }
 
@@ -2926,6 +3182,12 @@
 .menu-contexto__lista button:hover {
   background: rgba(123, 47, 247, 0.08);
   color: var(--cor-texto-forte);
+}
+
+/* Itens de métrica no menu: ocultos no desktop, aparecem só no mobile via media query */
+.menu-contexto__info-mobile,
+.menu-contexto__divisor-mobile {
+  display: none;
 }
 
 /* Últimos itens abrem o dropdown para cima para não sair da área visível */
@@ -3931,8 +4193,21 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .kpi-coord {
+    padding: var(--espaco-sm) var(--espaco-md);
+  }
+
+  .kpi-coord__valor {
+    font-size: 1.25rem;
+  }
+
   .cartao-curso-progresso {
     flex-wrap: wrap;
+    padding: var(--espaco-sm) var(--espaco-md);
+  }
+
+  .cartao-curso-progresso__titulo {
+    white-space: normal;
   }
 
   .cartao-curso-progresso__direita {
@@ -3942,5 +4217,73 @@
 
   .grade-kpi-modal-curso {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Slide de turma mobile: simplifica o cabeçalho */
+
+  /* Oculta o badge de status (ex: ATIVA) */
+  .slide-turma__nome-linha .insignia {
+    display: none;
+  }
+
+  /* Oculta o anel de progresso */
+  .anel-turma {
+    display: none;
+  }
+
+  /* Oculta alunos e aprovados — ficam no menu "..." */
+  .slide-turma__kpi--alunos,
+  .slide-turma__kpi--aprovados {
+    display: none;
+  }
+
+  /* Itens de métrica dentro do menu: visíveis só no mobile */
+  .menu-contexto__info-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-md);
+    padding: 0.35rem var(--espaco-md);
+    font-size: 0.82rem;
+    color: var(--cor-texto-suave);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .menu-contexto__info-mobile strong {
+    color: var(--cor-texto-forte);
+    font-weight: 700;
+  }
+
+  /* Divisor entre métricas e ações no menu */
+  .menu-contexto__divisor-mobile {
+    height: 1px;
+    background: var(--cor-borda);
+    margin: var(--espaco-xs) 0;
+  }
+
+  /* Lista de alunos: oculta email em telas pequenas */
+  .slide-alunos__linha-email {
+    display: none;
+  }
+
+  .anel-progresso {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grade-kpi-coord {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-coord__valor {
+    font-size: 1.1rem;
+  }
+
+  .anel-progresso {
+    width: 52px;
+    height: 52px;
   }
 }

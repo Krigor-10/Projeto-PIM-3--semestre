@@ -181,8 +181,8 @@ export const modulos = [
   { id: 11, cursoId: 4, codigoRegistro: "MOD-011", titulo: "Pentest e OWASP",                ordem: 2, totalConteudos: 10 },
 
   /* UX e UI Design (cursoId: 5) */
-  { id: 12, cursoId: 5, codigoRegistro: "MOD-012", titulo: "Design Thinking e Pesquisa",     ordem: 1, totalConteudos: 7  },
-  { id: 13, cursoId: 5, codigoRegistro: "MOD-013", titulo: "Prototipação com Figma",         ordem: 2, totalConteudos: 9  },
+  { id: 12, cursoId: 5, codigoRegistro: "MOD-012", titulo: "Design Thinking e Pesquisa",         ordem: 1, totalConteudos: 1 },
+  { id: 16, cursoId: 5, codigoRegistro: "MOD-016", titulo: "Sistemas de Design e Acessibilidade", ordem: 2, totalConteudos: 1 },
 
   /* Robótica (cursoId: 6) */
   { id: 14, cursoId: 6, codigoRegistro: "MOD-014", titulo: "Eletrônica para Robótica",       ordem: 1, totalConteudos: 8  },
@@ -218,20 +218,22 @@ export const avaliacoes = [
   { id: 4, titulo: "Avaliação — Python e Pandas",       cursoId: 2, cursoTitulo: "Ciência de Dados",       moduloId: 6,  tentativasPermitidas: 3, tempoLimiteMinutos: 45,  notaMaxima: 10, totalQuestoes: 8,  status: "Publicada" },
   { id: 5, titulo: "Quiz — Fundamentos de IA",          cursoId: 3, cursoTitulo: "Inteligência Artificial", moduloId: 8,  tentativasPermitidas: 2, tempoLimiteMinutos: 30,  notaMaxima: 10, totalQuestoes: 5,  status: "Publicada" },
   { id: 6, titulo: "Prova — OWASP e Pentest",           cursoId: 4, cursoTitulo: "Cybersegurança",          moduloId: 11, tentativasPermitidas: 1, tempoLimiteMinutos: 60,  notaMaxima: 10, totalQuestoes: 12, status: "Publicada" },
-  { id: 7, titulo: "Avaliação — Prototipação Figma",    cursoId: 5, cursoTitulo: "UX e UI Design",          moduloId: 13, tentativasPermitidas: 2, tempoLimiteMinutos: 40,  notaMaxima: 10, totalQuestoes: 8,  status: "Publicada" },
+  { id: 7, titulo: "Avaliação Final — UX e UI Design",  cursoId: 5, cursoTitulo: "UX e UI Design",          moduloId: 16, tentativasPermitidas: 2, tempoLimiteMinutos: 40,  notaMaxima: 10, totalQuestoes: 10, status: "Publicada" },
   { id: 8, titulo: "Prova — Arduino e Sensores",        cursoId: 6, cursoTitulo: "Robótica",                moduloId: 15, tentativasPermitidas: 2, tempoLimiteMinutos: 50,  notaMaxima: 10, totalQuestoes: 10, status: "Rascunho"  },
 ];
 
 /* ── Conteúdos (ligados aos módulos do Desenvolvimento Web) ──── */
 export const conteudos = [
   { id: 1, moduloId: 1, titulo: "Introdução ao HTML5",             tipo: "Video",     duracao: "18min", concluido: false },
-  { id: 2, moduloId: 1, titulo: "Estrutura semântica",             tipo: "Video",     duracao: "22min", concluido: false },
   { id: 3, moduloId: 1, titulo: "Formulários e inputs",            tipo: "Texto",     duracao: "15min", concluido: false },
-  { id: 4, moduloId: 2, titulo: "Flexbox na prática",              tipo: "Video",     duracao: "30min", concluido: false },
-  { id: 5, moduloId: 2, titulo: "CSS Grid",                        tipo: "Video",     duracao: "28min", concluido: false },
-  { id: 6, moduloId: 2, titulo: "Media Queries e responsividade",  tipo: "Documento", duracao: "20min", concluido: false },
+  { id: 4, moduloId: 2, titulo: "Flexbox na prática", tipo: "Video", duracao: "30min", concluido: false },
+  { id: 5, moduloId: 2, titulo: "CSS Grid",           tipo: "Video", duracao: "28min", concluido: false },
   { id: 7, moduloId: 3, titulo: "Arrow functions e destructuring", tipo: "Video",     duracao: "25min", concluido: false },
   { id: 8, moduloId: 3, titulo: "Promises e Async/Await",          tipo: "Video",     duracao: "35min", concluido: false, novo: true },
+  /* UX e UI Design — Módulo 1 */
+  { id: 10, moduloId: 12, titulo: "Introdução ao Design Thinking",    tipo: "Video", duracao: "22min", concluido: false },
+  /* UX e UI Design — Módulo 2 */
+  { id: 9,  moduloId: 16, titulo: "Tipografia e hierarquia visual",   tipo: "Video", duracao: "20min", concluido: false },
 ];
 
 /* ── Progresso da aluna demo (Maria Isabela) ────────────────── */
@@ -297,9 +299,10 @@ export const estatisticasCoordenador = {
 };
 
 /* ── Certificados desbloqueados (demo) ───────────────────────── */
-/* Chave = cursoId; representa cursos já concluídos com avaliação aprovada */
+/* Dados prontos para apresentação — só exibidos após a avaliação ser aprovada */
 export const certificadosDemo = {
-  5: { nota: 9.2, porcentagem: 92, notaMaxima: 10, dataConclusao: "10/06/2024" },
+  1: { nota: 9.0, notaMaxima: 10, dataConclusao: "10/06/2026" },
+  5: { nota: 8.5, notaMaxima: 10, dataConclusao: "10/06/2026" },
 };
 
 /* ── Progresso por matrícula (chave = matricula.id) ──────────── */
@@ -374,6 +377,22 @@ export const questoesProfessor = [
     gabarito: "C",
   },
 
+  {
+    id: 9010,
+    moduloId: 1,
+    tema: "Formulários e inputs",
+    titulo: "Tipos de input HTML5",
+    enunciado: "Qual atributo do elemento <input> define o tipo de dado esperado (ex: e-mail, número, senha)?",
+    alternativas: [
+      { letra: "A", texto: "name" },
+      { letra: "B", texto: "value" },
+      { letra: "C", texto: "type" },
+      { letra: "D", texto: "pattern" },
+      { letra: "E", texto: "required" },
+    ],
+    gabarito: "C",
+  },
+
   /* ── Quiz 2 — Módulo: CSS3 e Responsividade (moduloId: 2) ───── */
 
   {
@@ -420,6 +439,54 @@ export const questoesProfessor = [
       { letra: "E", texto: "display: table" },
     ],
     gabarito: "D",
+  },
+
+  /* ── Quiz 3 — Módulo: Sistemas de Design e Acessibilidade (moduloId: 16) ── */
+
+  {
+    id: 9011,
+    moduloId: 16,
+    tema: "Tipografia",
+    titulo: "Famílias tipográficas",
+    enunciado: "Qual família tipográfica é mais indicada para textos longos em telas, por oferecer melhor legibilidade?",
+    alternativas: [
+      { letra: "A", texto: "Decorativa" },
+      { letra: "B", texto: "Cursiva" },
+      { letra: "C", texto: "Sans-serif" },
+      { letra: "D", texto: "Monoespaçada" },
+      { letra: "E", texto: "Display" },
+    ],
+    gabarito: "C",
+  },
+  {
+    id: 9012,
+    moduloId: 16,
+    tema: "Hierarquia Visual",
+    titulo: "Hierarquia tipográfica",
+    enunciado: "O que define a hierarquia visual em um layout com textos?",
+    alternativas: [
+      { letra: "A", texto: "Usar sempre a mesma fonte em todo o layout" },
+      { letra: "B", texto: "Variar tamanho, peso e cor para indicar importância" },
+      { letra: "C", texto: "Alinhar todos os textos ao centro" },
+      { letra: "D", texto: "Usar apenas letras maiúsculas nos títulos" },
+      { letra: "E", texto: "Escolher fontes diferentes para cada parágrafo" },
+    ],
+    gabarito: "B",
+  },
+  {
+    id: 9013,
+    moduloId: 16,
+    tema: "Tipografia",
+    titulo: "Espaçamento entre linhas",
+    enunciado: "Como se chama o espaçamento vertical entre linhas de texto em tipografia?",
+    alternativas: [
+      { letra: "A", texto: "Kerning" },
+      { letra: "B", texto: "Tracking" },
+      { letra: "C", texto: "Leading" },
+      { letra: "D", texto: "Baseline" },
+      { letra: "E", texto: "X-height" },
+    ],
+    gabarito: "C",
   },
 
 ];

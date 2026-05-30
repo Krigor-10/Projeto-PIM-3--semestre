@@ -81,10 +81,11 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
   useEffect(() => { db.cursos.salvar(listaCursos); }, [listaCursos]);
   /* Estado global de progresso — compartilhado entre TelaConteudos, TelaAvaliacoes e TelaProgresso */
   const [quizzesAprovados, setQuizzesAprovados] = useState(() => db.progresso.listarQuizzes());
-  /* Percentual de acerto por módulo: { [moduloId]: número } */
-  const [resultadosQuizzes, setResultadosQuizzes] = useState({});
-  /* null enquanto não aprovada; objeto { porcentagem, nota, notaMaxima } após aprovação */
-  const [avaliacaoAprovada, setAvaliacaoAprovada] = useState(null);
+  /* Percentual de acerto por módulo: { [moduloId]: número } — persistido */
+  const [resultadosQuizzes, setResultadosQuizzes] = useState(() => db.progresso.listarResultados());
+  /* null enquanto não aprovada; objeto { porcentagem, nota, notaMaxima } após aprovação — persistido */
+  /* { [cursoId]: { porcentagem, nota, notaMaxima } } — um resultado por curso */
+  const [avaliacaoAprovada, setAvaliacaoAprovada] = useState(() => db.progresso.listarAvaliacaoAprovada());
   const [conteudoConcluido, setConteudoConcluido] = useState(false);
   /* Set de IDs de conteúdos concluídos — compartilhado entre TelaConteudos e TelaProgresso */
   const [conteudosConcluidos, setConteudosConcluidos] = useState(
@@ -113,6 +114,8 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
 
   useEffect(() => { db.progresso.salvarConcluidos(conteudosConcluidos); }, [conteudosConcluidos]);
   useEffect(() => { db.progresso.salvarQuizzes(quizzesAprovados); }, [quizzesAprovados]);
+  useEffect(() => { db.progresso.salvarResultados(resultadosQuizzes); }, [resultadosQuizzes]);
+  useEffect(() => { db.progresso.salvarAvaliacaoAprovada(avaliacaoAprovada); }, [avaliacaoAprovada]);
 
   function alternarFavorito(cursoId) {
     setCursosFavoritos((prev) => {
@@ -179,7 +182,7 @@ export default function LayoutWorkspace({ usuario, onLogout }) {
                 onQuizAprovado={registrarQuizAprovado}
                 resultadosQuizzes={resultadosQuizzes}
                 avaliacaoAprovada={avaliacaoAprovada}
-                onAvaliacaoAprovada={(resultado) => setAvaliacaoAprovada(resultado)}
+                onAvaliacaoAprovada={(cursoId, resultado) => setAvaliacaoAprovada((prev) => ({ ...prev, [cursoId]: resultado }))}
                 conteudoConcluido={conteudoConcluido}
                 onConteudoConcluido={setConteudoConcluido}
                 conteudosConcluidos={conteudosConcluidos}

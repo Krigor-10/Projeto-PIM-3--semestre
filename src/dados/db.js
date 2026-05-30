@@ -25,6 +25,8 @@ const CHAVES = {
   seed:              "cdr_seed_v2",
   conteudosConcluidos: "cdr_concluidos",
   quizzesAprovados:    "cdr_quizzes",
+  resultadosQuizzes:   "cdr_resultados_quizzes",
+  avaliacaoAprovada:   "cdr_avaliacao_aprovada",
 };
 
 function ler(chave) {
@@ -60,6 +62,8 @@ export function inicializar() {
     escrever(CHAVES.questoes,            questoesProfessorIniciais);
     escrever(CHAVES.conteudosConcluidos, []);
     escrever(CHAVES.quizzesAprovados,    []);
+    escrever(CHAVES.resultadosQuizzes,   {});
+    escrever(CHAVES.avaliacaoAprovada,   {});
     escrever(CHAVES.seed, "1");
   } else {
     if (!ler(CHAVES.avaliacoes)) escrever(CHAVES.avaliacoes, avaliacoesIniciais);
@@ -108,9 +112,13 @@ export const db = {
     salvar: (lista) => escrever(CHAVES.avaliacoes, lista),
   },
   progresso: {
-    listarConcluidos: () => new Set(ler(CHAVES.conteudosConcluidos) ?? []),
-    salvarConcluidos: (set) => escrever(CHAVES.conteudosConcluidos, [...set]),
-    listarQuizzes:    () => new Set(ler(CHAVES.quizzesAprovados) ?? []),
-    salvarQuizzes:    (set) => escrever(CHAVES.quizzesAprovados, [...set]),
+    listarConcluidos:   () => new Set(ler(CHAVES.conteudosConcluidos) ?? []),
+    salvarConcluidos:   (set) => escrever(CHAVES.conteudosConcluidos, [...set]),
+    listarQuizzes:      () => new Set(ler(CHAVES.quizzesAprovados) ?? []),
+    salvarQuizzes:      (set) => escrever(CHAVES.quizzesAprovados, [...set]),
+    listarResultados:      () => ler(CHAVES.resultadosQuizzes) ?? {},
+    salvarResultados:      (obj) => escrever(CHAVES.resultadosQuizzes, obj),
+    listarAvaliacaoAprovada: () => ler(CHAVES.avaliacaoAprovada) ?? {},
+    salvarAvaliacaoAprovada: (obj) => escrever(CHAVES.avaliacaoAprovada, obj),
   },
 };

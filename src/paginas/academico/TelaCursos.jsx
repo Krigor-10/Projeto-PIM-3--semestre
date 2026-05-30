@@ -117,6 +117,7 @@ function VistaGerencialCoordenador({ usuario }) {
               </div>
 
               <div className="desempenho-curso-item__turma">
+                <span className="dado-rotulo" aria-hidden="true">Turma / Professor</span>
                 {turmaAtiva ? (
                   <>
                     <span className="desempenho-curso-item__turma-nome">{turmaAtiva.nomeTurma}</span>
@@ -135,10 +136,12 @@ function VistaGerencialCoordenador({ usuario }) {
               </div>
 
               <div className="desempenho-curso-item__alunos">
+                <span className="dado-rotulo" aria-hidden="true">Alunos</span>
                 <span className="desempenho-curso-item__alunos-num">{totalAlunos}</span>
               </div>
 
               <div className="desempenho-curso-item__metricas">
+                <span className="dado-rotulo" aria-hidden="true">Módulos / Aval.</span>
                 <span className="desempenho-metrica">
                   <strong>{modulosCurso.length}</strong> módulos
                 </span>
@@ -490,6 +493,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
 
               {/* Turma e professor */}
               <div className="desempenho-curso-item__turma">
+                <span className="dado-rotulo" aria-hidden="true">Turma / Professor</span>
                 {turmaAtiva ? (
                   <>
                     <span className="desempenho-curso-item__turma-nome">{turmaAtiva.nomeTurma}</span>
@@ -509,11 +513,13 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
 
               {/* Alunos */}
               <div className="desempenho-curso-item__alunos">
+                <span className="dado-rotulo" aria-hidden="true">Alunos</span>
                 <span className="desempenho-curso-item__alunos-num">{totalAlunos}</span>
               </div>
 
               {/* Módulos e avaliações */}
               <div className="desempenho-curso-item__metricas">
+                <span className="dado-rotulo" aria-hidden="true">Módulos / Aval.</span>
                 <span className="desempenho-metrica">
                   <strong>{modulosCurso.length}</strong> módulos
                 </span>
