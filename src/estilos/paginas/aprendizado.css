@@ -2215,7 +2215,7 @@
 .banner-certificados {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--cor-marca-profunda) 0%, var(--cor-marca) 55%, var(--cor-acento) 100%);
+  background: linear-gradient(135deg, rgba(55, 10, 130, 0.88) 0%, rgba(123, 47, 247, 0.70) 55%, rgba(168, 85, 247, 0.52) 100%);
   border-radius: var(--raio-xl);
   padding: var(--espaco-xl) var(--espaco-2xl);
   box-shadow: var(--sombra-acento);

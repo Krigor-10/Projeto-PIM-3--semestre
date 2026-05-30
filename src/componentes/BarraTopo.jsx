@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROTAS, rotaPainelSecao } from "@/rotas.js";
 import {
-  TbTrophy, TbSun, TbMoon, TbChevronDown, TbMenu2,
+  TbTrophy, TbChevronDown, TbMenu2,
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
