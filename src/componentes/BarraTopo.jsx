@@ -145,6 +145,16 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
               <span className="topbar__atalho-certificados-label">Certificados</span>
             </button>
             <span className="topbar__separador" aria-hidden="true" />
+            <button
+              className={`topbar__atalho-certificados${secaoAtual === "catalogo" ? " topbar__atalho-certificados--ativo" : ""}`}
+              onClick={() => navigate(rotaPainelSecao("catalogo"))}
+              aria-label="Ir para o Catálogo"
+              type="button"
+            >
+              <TbWorld size={18} aria-hidden="true" />
+              <span className="topbar__atalho-certificados-label">Catálogo</span>
+            </button>
+            <span className="topbar__separador" aria-hidden="true" />
             {!confirmandoReset ? (
               <button
                 type="button"
@@ -162,6 +172,20 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
                 <button type="button" className="topbar__btn-reset topbar__btn-reset--nao" onClick={() => setConfirmandoReset(false)} style={{ display: "flex", alignItems: "center", gap: "3px" }}><TbX size={13} aria-hidden="true" />Não</button>
               </div>
             )}
+            <span className="topbar__separador" aria-hidden="true" />
+          </>
+        )}
+        {(usuario.tipo === "Admin" || usuario.tipo === "Professor") && (
+          <>
+            <button
+              className={`topbar__atalho-certificados${secaoAtual === "catalogo" ? " topbar__atalho-certificados--ativo" : ""}`}
+              onClick={() => navigate(rotaPainelSecao("catalogo"))}
+              aria-label="Ir para o Catálogo"
+              type="button"
+            >
+              <TbWorld size={18} aria-hidden="true" />
+              <span className="topbar__atalho-certificados-label">Catálogo</span>
+            </button>
             <span className="topbar__separador" aria-hidden="true" />
           </>
         )}

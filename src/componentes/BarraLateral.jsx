@@ -80,7 +80,9 @@ export const FILHO_PARA_GRUPO = {
 };
 
 const SECOES_OCULTAS_SIDEBAR = {
-  Aluno: new Set(["matriculas"]),
+  Aluno:     new Set(["matriculas", "catalogo"]),
+  Admin:     new Set(["catalogo"]),
+  Professor: new Set(["catalogo"]),
 };
 
 export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, onLogout }) {
