@@ -304,8 +304,8 @@
    ACESSO RÁPIDO (ADMIN)
    ------------------------------------------------------------ */
 .grade-acesso-rapido {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--espaco-sm);
   list-style: none;
 }

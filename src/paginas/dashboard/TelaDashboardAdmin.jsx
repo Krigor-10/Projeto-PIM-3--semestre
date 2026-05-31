@@ -48,13 +48,12 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
   const maxTotal = Math.max(...dadosGrafico.map((d) => d.total), 1);
 
   const acessoRapido = [
-    { secao: "usuarios",   icone: <MdPeople size={20} />,            rotulo: "Usuários"   },
     { secao: "cursos",     icone: <MdMenuBook size={20} />,          rotulo: "Cursos"     },
     { secao: "modulos",    icone: <MdLayers size={20} />,            rotulo: "Módulos"    },
     { secao: "turmas",     icone: <MdGroups size={20} />,            rotulo: "Turmas"     },
     { secao: "matriculas", icone: <MdAssignment size={20} />,        rotulo: "Matrículas" },
     { secao: "avaliacoes", icone: <MdAssignmentTurnedIn size={20} />,rotulo: "Avaliações" },
-    { secao: "conteudos",  icone: <MdDescription size={20} />,       rotulo: "Conteúdos" },
+    { secao: "conteudos",  icone: <MdDescription size={20} />,       rotulo: "Conteúdos"  },
   ];
 
   return (
