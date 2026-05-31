@@ -6,7 +6,7 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle, TbX, TbRefresh,
+  TbUserCircle, TbX, TbRefresh, TbCheck,
 } from "react-icons/tb";
 import { resetar } from "@/dados/db.js";
 import { MdLogout, MdSettings } from "react-icons/md";
@@ -158,8 +158,8 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             ) : (
               <div className="topbar__reset-confirm">
                 <span>Resetar?</span>
-                <button type="button" className="topbar__btn-reset topbar__btn-reset--sim" onClick={() => { resetar(); window.location.reload(); }}>Sim</button>
-                <button type="button" className="topbar__btn-reset topbar__btn-reset--nao" onClick={() => setConfirmandoReset(false)}>Não</button>
+                <button type="button" className="topbar__btn-reset topbar__btn-reset--sim" onClick={() => { resetar(); window.location.reload(); }} style={{ display: "flex", alignItems: "center", gap: "3px" }}><TbCheck size={13} aria-hidden="true" />Sim</button>
+                <button type="button" className="topbar__btn-reset topbar__btn-reset--nao" onClick={() => setConfirmandoReset(false)} style={{ display: "flex", alignItems: "center", gap: "3px" }}><TbX size={13} aria-hidden="true" />Não</button>
               </div>
             )}
             <span className="topbar__separador" aria-hidden="true" />

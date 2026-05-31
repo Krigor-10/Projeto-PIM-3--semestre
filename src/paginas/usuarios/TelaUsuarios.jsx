@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TbCirclePlus, TbSearch } from "react-icons/tb";
+import { TbCirclePlus, TbSearch, TbX } from "react-icons/tb";
 import { MdSave } from "react-icons/md";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -220,7 +220,7 @@ export default function TelaUsuarios({ usuario }) {
               <input id="telefone-usr" className="campo__entrada" type="tel" placeholder="(11) 99999-9999" />
             </div>
             <div className="modal-rodape">
-              <Botao variante="perigo" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" onClick={() => setModalAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </div>
           </form>

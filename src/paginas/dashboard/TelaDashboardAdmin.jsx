@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { MdPeople, MdSchool, MdAssignment, MdBarChart, MdMenuBook, MdLayers, MdGroups, MdAssignmentTurnedIn, MdDescription } from "react-icons/md";
+import { TbRefresh, TbX, TbCheck } from "react-icons/tb";
+import { MdPeople, MdSchool, MdAssignment, MdBarChart, MdMenuBook, MdLayers, MdGroups, MdAssignmentTurnedIn, MdDescription, MdChevronRight } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
@@ -92,8 +93,8 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
                 </span>
               )}
             </h2>
-            <Botao variante="fantasma" tamanho="pequeno" onClick={() => onMudarSecao("matriculas")}>
-              Ver todas
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => onMudarSecao("matriculas")} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              Ver todas <MdChevronRight size={14} aria-hidden="true" />
             </Botao>
           </header>
           <div className="painel-secao__conteudo">
@@ -207,8 +208,8 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
               <p className="reset-demo__descricao">
                 Restaura todos os dados ao estado inicial. Use antes de uma apresentação para garantir dados limpos.
               </p>
-              <Botao variante="perigo" tamanho="pequeno" onClick={() => setConfirmandoReset(true)}>
-                Resetar dados
+              <Botao variante="perigo" tamanho="pequeno" onClick={() => setConfirmandoReset(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbRefresh size={15} aria-hidden="true" /> Resetar dados
               </Botao>
             </div>
           ) : (
@@ -217,11 +218,11 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
                 Todos os dados criados ou editados serão perdidos. Esta ação não pode ser desfeita.
               </p>
               <div className="reset-demo__acoes">
-                <Botao variante="perigo" tamanho="pequeno" onClick={() => setConfirmandoReset(false)}>
-                  Cancelar
+                <Botao variante="perigo" tamanho="pequeno" onClick={() => setConfirmandoReset(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <TbX size={15} aria-hidden="true" /> Cancelar
                 </Botao>
-                <Botao variante="perigo" tamanho="pequeno" onClick={executarReset}>
-                  Confirmar reset
+                <Botao variante="perigo" tamanho="pequeno" onClick={executarReset} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <TbRefresh size={15} aria-hidden="true" /> Confirmar reset
                 </Botao>
               </div>
             </div>

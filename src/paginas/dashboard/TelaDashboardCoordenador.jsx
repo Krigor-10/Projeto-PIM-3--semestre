@@ -7,7 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
-import { MdMenuBook, MdGroups, MdSchool } from "react-icons/md";
+import { MdMenuBook, MdGroups, MdSchool, MdChevronRight } from "react-icons/md";
 import { turmas, cursos, modulos, matriculas, PROGRESSO_MOCK, estatisticasCoordenador } from "@/dados/dadosMock.js";
 
 export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
@@ -106,8 +106,8 @@ export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
       <section className="painel-secao" style={{ marginTop: "var(--espaco-xl)" }} aria-labelledby="titulo-turmas-coord">
         <header className="painel-secao__cabecalho">
           <h2 className="painel-secao__titulo" id="titulo-turmas-coord">Turmas Ativas</h2>
-          <Botao variante="fantasma" tamanho="pequeno" onClick={() => onMudarSecao("turmas")}>
-            Ver todas
+          <Botao variante="fantasma" tamanho="pequeno" onClick={() => onMudarSecao("turmas")} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            Ver todas <MdChevronRight size={14} aria-hidden="true" />
           </Botao>
         </header>
         <div className="painel-secao__conteudo">

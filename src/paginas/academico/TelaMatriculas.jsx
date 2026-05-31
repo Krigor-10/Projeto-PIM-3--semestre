@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { TbSearch, TbCheck, TbX, TbClock, TbDotsVertical, TbChartBar, TbTrophy, TbStar, TbInfoCircle, TbDownload, TbRosetteDiscountCheck } from "react-icons/tb";
+import { TbSearch, TbCheck, TbX, TbClock, TbDotsVertical, TbChartBar, TbTrophy, TbStar, TbInfoCircle, TbDownload, TbRosetteDiscountCheck, TbRefresh, TbArrowLeft } from "react-icons/tb";
 import imgDevWeb   from "@/ativos/curso-dev-web.png";
 import imgCiencia  from "@/ativos/curso-ciencia-dados.png";
 import imgIA       from "@/ativos/curso-ia.png";
@@ -285,7 +285,7 @@ export default function TelaMatriculas({ usuario }) {
               Tem certeza que deseja cancelar a solicitação para <strong>{matParaCancelar.cursoTitulo}</strong>? Esta ação não pode ser desfeita.
             </p>
             <footer className="modal-rodape">
-              <Botao variante="fantasma" onClick={() => setMatParaCancelar(null)}>Voltar</Botao>
+              <Botao variante="fantasma" onClick={() => setMatParaCancelar(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbArrowLeft size={15} aria-hidden="true" /> Voltar</Botao>
               <Botao variante="perigo" onClick={() => cancelarMatricula(matParaCancelar.id)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <TbX size={15} aria-hidden="true" /> Confirmar cancelamento
               </Botao>
@@ -579,8 +579,8 @@ export default function TelaMatriculas({ usuario }) {
                   <td>{new Date(mat.dataSolicitacao).toLocaleDateString("pt-BR")}</td>
                   {podeAgir && (
                     <td>
-                      <Botao variante="secundario" tamanho="pequeno" onClick={() => reativar(mat.id)} aria-label={`Reativar matrícula de ${mat.alunoNome}`}>
-                        Reativar
+                      <Botao variante="secundario" tamanho="pequeno" onClick={() => reativar(mat.id)} aria-label={`Reativar matrícula de ${mat.alunoNome}`} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <TbRefresh size={13} aria-hidden="true" /> Reativar
                       </Botao>
                     </td>
                   )}

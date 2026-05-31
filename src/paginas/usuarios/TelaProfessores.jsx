@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbSettings, TbPencil, TbSearch } from "react-icons/tb";
+import { TbChevronUp, TbChevronDown, TbSelector, TbDotsVertical, TbPlus, TbX, TbCheck, TbTrash, TbSettings, TbPencil, TbSearch, TbChevronLeft, TbChevronRight } from "react-icons/tb";
 import { MdSave, MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -390,11 +390,11 @@ export default function TelaProfessores({ usuario, onToast }) {
             {inicio + 1}–{Math.min(inicio + ITENS_POR_PAGINA, listaProcessada.length)} de {listaProcessada.length}
           </span>
           <div className="paginacao__controles">
-            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1}>‹ Anterior</Botao>
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={paginaSegura === 1} style={{ display: "flex", alignItems: "center", gap: "4px" }}><TbChevronLeft size={14} aria-hidden="true" /> Anterior</Botao>
             {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
               <button key={n} className={`paginacao__pagina${paginaSegura === n ? " paginacao__pagina--ativa" : ""}`} onClick={() => setPagina(n)} type="button" aria-current={paginaSegura === n ? "page" : undefined}>{n}</button>
             ))}
-            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas}>Próxima ›</Botao>
+            <Botao variante="fantasma" tamanho="pequeno" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={paginaSegura === totalPaginas} style={{ display: "flex", alignItems: "center", gap: "4px" }}>Próxima <TbChevronRight size={14} aria-hidden="true" /></Botao>
           </div>
         </nav>
       )}

@@ -380,8 +380,8 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             {selecionados.size} {selecionados.size === 1 ? "selecionado" : "selecionados"}
           </span>
           <div className="barra-massa__acoes">
-            <Botao variante="sucesso" tamanho="pequeno" onClick={ativarSelecionados}>Ativar</Botao>
-            <Botao tamanho="pequeno" style={{ background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }} onClick={desativarSelecionados}>Desativar</Botao>
+            <Botao variante="sucesso" tamanho="pequeno" onClick={ativarSelecionados} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={14} aria-hidden="true" />Ativar</Botao>
+            <Botao tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }} onClick={desativarSelecionados}><TbX size={14} aria-hidden="true" />Desativar</Botao>
             {podeExcluir_ && (
               <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}><TbTrash size={15} aria-hidden="true" />Remover</Botao>
             )}

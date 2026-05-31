@@ -743,8 +743,8 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
               />
             </div>
             <div className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
-              <Botao variante="primario" type="submit">Salvar alterações</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
             </div>
           </form>
         </Modal>
@@ -788,7 +788,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
               </button>
             </div>
             <div className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)}>Cancelar</Botao>
+              <Botao variante="perigo" type="button" onClick={() => setModalAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
               <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
             </div>
           </form>
@@ -861,7 +861,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             Tem certeza que deseja excluir <strong>{selecionados.size} {selecionados.size === 1 ? "curso" : "cursos"}</strong>? Esta ação não pode ser desfeita.
           </p>
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setExcluindoEmMassa(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setExcluindoEmMassa(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
             <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={confirmarExclusaoEmMassa}><TbTrash size={16} aria-hidden="true" />Confirmar exclusão</Botao>
           </footer>
         </Modal>
@@ -879,7 +879,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             </span>
           </p>
           <div className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setPopupExclusao(false)}>Cancelar</Botao>
+            <Botao variante="perigo" onClick={() => setPopupExclusao(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
             <Botao variante="perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={excluirCurso}><TbTrash size={16} aria-hidden="true" />Excluir permanentemente</Botao>
           </div>
         </Modal>
