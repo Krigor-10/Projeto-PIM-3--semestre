@@ -96,7 +96,7 @@ function VitrineCatalogo({ listaCursos, usuario, cursosFavoritos = new Set(), on
         <div>
           <h1 className="cabecalho-pagina__titulo">Catálogo de Cursos</h1>
           <p className="cabecalho-pagina__subtitulo">
-            {visiveis.length} curso{visiveis.length !== 1 ? "s" : ""} disponível{visiveis.length !== 1 ? "eis" : ""}
+            {visiveis.length} curso{visiveis.length !== 1 ? "s" : ""} disponíve{visiveis.length !== 1 ? "is" : "l"}
             {destaques.length > 0 && ` · ${destaques.length} em destaque`}
           </p>
         </div>
