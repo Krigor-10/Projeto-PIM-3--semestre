@@ -122,7 +122,7 @@ export default function TelaDashboardAdmin({ usuario, onMudarSecao, onToast }) {
           </div>
         </section>
 
-        <section className="painel-secao" aria-labelledby="titulo-acesso-rapido">
+        <section className="painel-secao" aria-labelledby="titulo-acesso-rapido" style={{ alignSelf: "start" }}>
           <header className="painel-secao__cabecalho">
             <h2 className="painel-secao__titulo" id="titulo-acesso-rapido">Acesso Rápido</h2>
           </header>
