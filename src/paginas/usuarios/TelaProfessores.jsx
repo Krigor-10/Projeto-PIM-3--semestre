@@ -106,6 +106,7 @@ export default function TelaProfessores({ usuario, onToast }) {
   }
 
   function salvarAtribuicao() {
+    if (!atribuindoTurmas) return;
     setTurmasLista((prev) =>
       prev.map((t) => {
         const eraDoProf  = t.professorId === atribuindoTurmas.id;
@@ -216,6 +217,9 @@ export default function TelaProfessores({ usuario, onToast }) {
 
   const totalAtivos   = lista.filter((u) =>  u.ativo).length;
   const totalInativos = lista.filter((u) => !u.ativo).length;
+
+  const todosAtivos   = selecionados.size > 0 && [...selecionados].every((id) => lista.find((u) => u.id === id)?.ativo ?? false);
+  const todosInativos = selecionados.size > 0 && [...selecionados].every((id) => !(lista.find((u) => u.id === id)?.ativo ?? true));
 
   const idsVisiveis        = itensPagina.map((p) => p.id);
   const todosSelecionados  = idsVisiveis.length > 0 && idsVisiveis.every((id) => selecionados.has(id));
@@ -406,19 +410,18 @@ export default function TelaProfessores({ usuario, onToast }) {
             {selecionados.size} {selecionados.size === 1 ? "selecionado" : "selecionados"}
           </span>
           <div className="barra-massa__acoes">
-            <Botao variante="sucesso" tamanho="pequeno" onClick={() => setConfirmandoAtivar(true)}>
-              Ativar
-            </Botao>
-            <Botao
-              tamanho="pequeno"
-              style={{ background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }}
-              onClick={() => setConfirmandoDesativar(true)}
-            >
-              Desativar
-            </Botao>
-            {podeExcluir(usuario?.tipo, "professores") && (
-              <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}>
-                <TbTrash size={15} aria-hidden="true" />Remover
+            {!todosAtivos && (
+              <Botao variante="sucesso" tamanho="pequeno" onClick={() => setConfirmandoAtivar(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <TbCheck size={14} aria-hidden="true" />Ativar
+              </Botao>
+            )}
+            {!todosInativos && (
+              <Botao
+                tamanho="pequeno"
+                style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }}
+                onClick={() => setConfirmandoDesativar(true)}
+              >
+                <TbX size={14} aria-hidden="true" />Desativar
               </Botao>
             )}
           </div>
@@ -764,9 +767,7 @@ export default function TelaProfessores({ usuario, onToast }) {
           </p>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setConfirmandoDesativar(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
-            <Botao
-              tamanho="pequeno"
-              style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }}
+            <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }}
               onClick={() => { desativarSelecionados(); setConfirmandoDesativar(false); onToast?.(`${selecionados.size} professor${selecionados.size !== 1 ? "es" : ""} desativado${selecionados.size !== 1 ? "s" : ""}.`, "aviso"); }}
             ><TbCheck size={15} aria-hidden="true" />Confirmar</Botao>
           </footer>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { siglasCurso } from "@/utils/siglas.js";
 import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbArrowRight, TbPencil, TbX, TbCheck, TbBrain, TbPaperclip, TbLink, TbUpload, TbRefresh, TbChartBar, TbSearch, TbUsers } from "react-icons/tb";
-import { MdSave, MdAdd, MdDelete } from "react-icons/md";
+import { MdSave, MdAdd, MdDelete, MdDescription } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
@@ -187,9 +188,6 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
           </ul>
 
           <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={onFechar}>
-              <TbX size={16} aria-hidden="true" /> Fechar
-            </Botao>
             {!aprovado && (
               <Botao variante="primario" onClick={reiniciar}>
                 <TbRefresh size={16} aria-hidden="true" /> Refazer Quiz
@@ -205,6 +203,9 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
                 Ir para Avaliação Final <TbArrowRight size={16} aria-hidden="true" />
               </Botao>
             )}
+            <Botao variante="primario" onClick={onFechar} style={{ marginLeft: "auto" }}>
+              Avançar <TbArrowRight size={16} aria-hidden="true" />
+            </Botao>
           </footer>
         </div>
       </Modal>
@@ -314,7 +315,10 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
   const [quizModulo, setQuizModulo] = useState(null);
   const [previewConteudo, setPreviewConteudo] = useState(null);
   const [quizzesIniciados, setQuizzesIniciados] = useState(() => new Set());
+  const [contDesbloqueado, setContDesbloqueado] = useState(null);
   const refsModulos = useRef({});
+  const refsConteudos = useRef({});
+  const refPendingUnlock = useRef(null);
 
   const totalConteudos  = conteudosDoCurso.length;
   const totalConcluidos = conteudosDoCurso.filter((c) => concluidos.has(c.id)).length;
@@ -407,7 +411,12 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
-          <h2 className="conteudos-aluno__curso-titulo">{curso?.titulo}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+              <MdDescription size={20} aria-hidden="true" />
+            </div>
+            <h2 className="conteudos-aluno__curso-titulo">{curso?.titulo}</h2>
+          </div>
           <div className="conteudos-aluno__meta-chips">
             <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
               <TbCheck size={12} aria-hidden="true" />
@@ -542,7 +551,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.28, ease: "easeInOut" }}
-                style={{ overflow: "hidden" }}
+                style={{ overflow: "visible" }}
               >
               <ul className="lista-conteudos-completa conteudos-modulo__lista" role="list">
                 {itens.map((cont, i) => {
@@ -551,7 +560,11 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                   const itemBloqueado = i > 0 && !concluidos.has(itens[i - 1].id);
                   const isAtual       = !estaConcluido && !itemBloqueado && cont.id === proximoConteudo?.id;
                   return (
-                    <li key={cont.id} className={`cartao-conteudo${estaConcluido ? " cartao-conteudo--concluido" : ""}${itemBloqueado ? " cartao-conteudo--bloqueado" : ""}${isAtual ? " cartao-conteudo--atual" : ""}`}>
+                    <li
+                      key={cont.id}
+                      ref={(el) => { refsConteudos.current[cont.id] = el; }}
+                      className={`cartao-conteudo${estaConcluido ? " cartao-conteudo--concluido" : ""}${itemBloqueado ? " cartao-conteudo--bloqueado" : ""}${isAtual ? " cartao-conteudo--atual" : ""}${contDesbloqueado?.has(cont.id) ? " cartao-conteudo--desbloqueado" : ""}`}
+                    >
                       {estaConcluido && !itemBloqueado && (
                         <motion.span
                           className="cartao-conteudo__badge-check"
@@ -610,13 +623,6 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                           </button>
                         );
                       })()}
-                      {cont.tipo !== "Video" && !itemBloqueado && !estaConcluido && (
-                        <CheckCircular
-                          concluido={false}
-                          onClick={() => alternarConclusao(cont.id)}
-                          label={`Marcar "${cont.titulo}" como concluído`}
-                        />
-                      )}
                     </li>
                   );
                 })}
@@ -651,10 +657,46 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
         <QuizRapidoModal
           modulo={quizModulo.modulo}
           questoes={quizModulo.questoes}
-          onFechar={() => setQuizModulo(null)}
+          onFechar={() => {
+            setQuizModulo(null);
+            if (refPendingUnlock.current) {
+              const { moduloId, ids, novoModulo } = refPendingUnlock.current;
+              refPendingUnlock.current = null;
+              if (novoModulo) {
+                setModulosAbertos((prev) => new Set(prev).add(moduloId));
+              }
+              setTimeout(() => {
+                if (novoModulo) {
+                  refsModulos.current[moduloId]?.scrollIntoView({ behavior: "smooth", block: "start" });
+                } else {
+                  refsConteudos.current[ids[0]]?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+                setContDesbloqueado(new Set(ids));
+                setTimeout(() => setContDesbloqueado(null), 2200);
+              }, 320);
+            }
+          }}
           onAprovado={(percentual) => {
             setQuizzesIniciados((prev) => { const c = new Set(prev); c.delete(quizModulo.contId); return c; });
             onQuizAprovado?.(quizModulo.contId, percentual);
+            const idxMod    = modulosDoCurso.findIndex((m) => m.id === quizModulo.modulo.id);
+            const itensMod  = conteudosDoCurso.filter((c) => c.moduloId === quizModulo.modulo.id);
+            const idxCont   = itensMod.findIndex((c) => c.id === quizModulo.contId);
+            const proxNaMod = itensMod[idxCont + 1];
+            if (proxNaMod) {
+              // Próximo conteúdo no mesmo módulo
+              refPendingUnlock.current = { moduloId: quizModulo.modulo.id, ids: [proxNaMod.id], novoModulo: false };
+            } else {
+              // Último conteúdo do módulo — verifica se módulo está completo para liberar o próximo
+              const novosAprovados = new Set([...quizzesAprovados, quizModulo.contId]);
+              const moduloCompleto = itensMod.every((c) => concluidos.has(c.id)) &&
+                itensMod.every((c) => novosAprovados.has(c.id));
+              if (moduloCompleto && idxMod >= 0 && idxMod < modulosDoCurso.length - 1) {
+                const proxMod      = modulosDoCurso[idxMod + 1];
+                const itensProxMod = conteudosDoCurso.filter((c) => c.moduloId === proxMod.id);
+                refPendingUnlock.current = { moduloId: proxMod.id, ids: itensProxMod.map((c) => c.id), novoModulo: true };
+              }
+            }
           }}
         />,
         document.body
@@ -799,7 +841,12 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
-          <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+              <MdDescription size={20} aria-hidden="true" />
+            </div>
+            <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
+          </div>
           <div className="conteudos-aluno__meta-chips">
             {resumoTiposProf.map((t) => {
               const { Icone, rotulo } = TIPO_CONFIG[t];
@@ -811,6 +858,13 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                 </span>
               );
             })}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", background: "rgba(123,47,247,0.10)", border: "1px solid rgba(123,47,247,0.22)", borderRadius: "var(--raio-md)", padding: "var(--espaco-sm) var(--espaco-md)", alignSelf: "center" }}>
+          <MdDescription size={20} style={{ color: "#fff", flexShrink: 0 }} aria-hidden="true" />
+          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.2 }}>
+            <span style={{ fontSize: "1.4rem", fontWeight: 700, color: "#fff" }}>{conteudosDoCurso.length}</span>
+            <span style={{ fontSize: "0.72rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>{conteudosDoCurso.length !== 1 ? "conteúdos" : "conteúdo"}</span>
           </div>
         </div>
       </header>
@@ -1115,7 +1169,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                     <p className="opcoes-cont__quiz-contagem">
                       {nQuestoes === 0
                         ? "Nenhuma questão cadastrada"
-                        : `${nQuestoes} questão${nQuestoes !== 1 ? "ões" : ""} cadastrada${nQuestoes !== 1 ? "s" : ""}`}
+                        : `${nQuestoes} ${nQuestoes !== 1 ? "questões" : "questão"} cadastrada${nQuestoes !== 1 ? "s" : ""}`}
                     </p>
                     {confirmarExcluirQuiz ? (
                       <div className="opcoes-cont__confirmar">
@@ -1923,7 +1977,12 @@ function SlideCursoGestao({ curso, tipo, busca = "" }) {
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
-          <h2 className="conteudos-aluno__curso-titulo">{curso.titulo}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+              <MdDescription size={20} aria-hidden="true" />
+            </div>
+            <h2 className="conteudos-aluno__curso-titulo">{curso.titulo}</h2>
+          </div>
           <div className="conteudos-aluno__meta-chips">
             <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
               <TbUsers size={12} aria-hidden="true" />
@@ -2101,7 +2160,7 @@ function SlideCursoGestao({ curso, tipo, busca = "" }) {
                     <p className="opcoes-cont__quiz-contagem">
                       {nQuestoes === 0
                         ? "Nenhuma questão cadastrada"
-                        : `${nQuestoes} questão${nQuestoes !== 1 ? "ões" : ""} cadastrada${nQuestoes !== 1 ? "s" : ""}`}
+                        : `${nQuestoes} ${nQuestoes !== 1 ? "questões" : "questão"} cadastrada${nQuestoes !== 1 ? "s" : ""}`}
                     </p>
                   </div>
                 </div>

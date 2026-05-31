@@ -6,9 +6,10 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle, TbX, TbRefresh, TbCheck,
+  TbUserCircle, TbX, TbRefresh, TbCheck, TbSearch,
 } from "react-icons/tb";
-import { resetar } from "@/dados/db.js";
+import { resetar, db } from "@/dados/db.js";
+import { obterSecoesPermitidas } from "@/dados/permissoes.js";
 import { MdLogout, MdSettings } from "react-icons/md";
 import Insignia from "./Insignia.jsx";
 import Modal from "./Modal.jsx";
@@ -70,6 +71,10 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
     () => localStorage.getItem("coderyse-tema") === "claro"
   );
   const refWrapper = useRef(null);
+  const [termoBusca, setTermoBusca] = useState("");
+  const [buscaFocada, setBuscaFocada] = useState(false);
+  const [indiceBusca, setIndiceBusca] = useState(-1);
+  const refInputBusca = useRef(null);
 
   useEffect(() => {
     document.documentElement.dataset.tema = temaClaro ? "claro" : "escuro";
@@ -92,6 +97,86 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
 
   function gerarIniciais(nome) {
     return nome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+  }
+
+  function calcularGruposBusca(termo) {
+    if (!termo.trim()) return [];
+    const t = termo.toLowerCase();
+    const grupos = [];
+
+    const secoesPermitidas = obterSecoesPermitidas(usuario.tipo);
+    const secoesFiltradas = secoesPermitidas
+      .filter(s => metadadosPorSecao[s.chave] && (
+        metadadosPorSecao[s.chave].titulo.toLowerCase().includes(t) ||
+        s.chave.toLowerCase().includes(t)
+      ))
+      .slice(0, 3)
+      .map(s => ({
+        id: `sec-${s.chave}`,
+        titulo: metadadosPorSecao[s.chave].titulo,
+        descricao: metadadosPorSecao[s.chave].descricao,
+        Icone: iconesPorSecao[s.chave] || TbLayoutDashboard,
+        navegar: () => navigate(rotaPainelSecao(s.chave)),
+      }));
+    if (secoesFiltradas.length) grupos.push({ categoria: "Seções", itens: secoesFiltradas });
+
+    const todosCursos = db.cursos.listar();
+    const cursosFiltrados = todosCursos
+      .filter(c => c.titulo.toLowerCase().includes(t) || c.descricao?.toLowerCase().includes(t))
+      .slice(0, 3)
+      .map(c => ({
+        id: `crs-${c.id}`,
+        titulo: c.titulo,
+        descricao: c.nivel || "",
+        Icone: TbBooks,
+        navegar: () => navigate(rotaPainelSecao(["Admin", "Coordenador"].includes(usuario.tipo) ? "cursos" : "catalogo")),
+      }));
+    if (cursosFiltrados.length) grupos.push({ categoria: "Cursos", itens: cursosFiltrados });
+
+    if (["Admin", "Coordenador", "Professor"].includes(usuario.tipo)) {
+      const todosModulos = db.modulos.listar();
+      const modulosFiltrados = todosModulos
+        .filter(m => m.titulo.toLowerCase().includes(t))
+        .slice(0, 3)
+        .map(m => ({
+          id: `mod-${m.id}`,
+          titulo: m.titulo,
+          descricao: `Módulo ${m.ordem}`,
+          Icone: TbStack,
+          navegar: () => navigate(rotaPainelSecao("modulos")),
+        }));
+      if (modulosFiltrados.length) grupos.push({ categoria: "Módulos", itens: modulosFiltrados });
+    }
+
+    return grupos;
+  }
+
+  const gruposBusca = calcularGruposBusca(termoBusca);
+  const itensBusca = gruposBusca.flatMap(g => g.itens);
+
+  function handleKeyDownBusca(e) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setIndiceBusca(i => Math.min(i + 1, itensBusca.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setIndiceBusca(i => Math.max(i - 1, 0));
+    } else if (e.key === "Enter" && indiceBusca >= 0 && itensBusca[indiceBusca]) {
+      e.preventDefault();
+      selecionarResultado(itensBusca[indiceBusca]);
+    } else if (e.key === "Escape") {
+      setTermoBusca("");
+      setBuscaFocada(false);
+      setIndiceBusca(-1);
+      refInputBusca.current?.blur();
+    }
+  }
+
+  function selecionarResultado(item) {
+    item.navegar();
+    setTermoBusca("");
+    setBuscaFocada(false);
+    setIndiceBusca(-1);
   }
 
   const comTabs = temNavGrupo(usuario, secaoAtual);
@@ -120,6 +205,65 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             </span>
           </nav>
         </div>
+      </div>
+
+      <div className="topbar__busca">
+        <div className="topbar__busca-campo">
+          <TbSearch size={15} className="topbar__busca-icone" aria-hidden="true" />
+          <input
+            ref={refInputBusca}
+            type="search"
+            className="topbar__busca-input"
+            placeholder="Buscar seções, cursos..."
+            value={termoBusca}
+            onChange={e => { setTermoBusca(e.target.value); setIndiceBusca(-1); }}
+            onKeyDown={handleKeyDownBusca}
+            onFocus={() => setBuscaFocada(true)}
+            onBlur={() => setTimeout(() => setBuscaFocada(false), 150)}
+            aria-label="Busca global"
+            aria-autocomplete="list"
+          />
+          {termoBusca && (
+            <button
+              className="topbar__busca-limpar"
+              type="button"
+              aria-label="Limpar busca"
+              onMouseDown={e => { e.preventDefault(); setTermoBusca(""); setIndiceBusca(-1); refInputBusca.current?.focus(); }}
+            >
+              <TbX size={13} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+        {buscaFocada && termoBusca && (
+          <div className="busca-dropdown" role="listbox" aria-label="Resultados da busca">
+            {gruposBusca.length > 0 ? gruposBusca.map(grupo => (
+              <div key={grupo.categoria} className="busca-dropdown__grupo">
+                <div className="busca-dropdown__categoria">{grupo.categoria}</div>
+                {grupo.itens.map(item => {
+                  const flatIdx = itensBusca.indexOf(item);
+                  return (
+                    <button
+                      key={item.id}
+                      className={`busca-dropdown__item${flatIdx === indiceBusca ? " busca-dropdown__item--ativo" : ""}`}
+                      type="button"
+                      role="option"
+                      aria-selected={flatIdx === indiceBusca}
+                      onMouseDown={() => selecionarResultado(item)}
+                    >
+                      <item.Icone size={16} className="busca-dropdown__item-icone" aria-hidden="true" />
+                      <div className="busca-dropdown__item-texto">
+                        <span className="busca-dropdown__item-titulo">{item.titulo}</span>
+                        <span className="busca-dropdown__item-descricao">{item.descricao}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )) : (
+              <div className="busca-dropdown__vazio">Nenhum resultado para "{termoBusca}"</div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="topbar__acoes">

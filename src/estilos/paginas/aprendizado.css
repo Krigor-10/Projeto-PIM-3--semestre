@@ -100,6 +100,17 @@
 }
 
 /* Conteúdo bloqueado — aguarda o anterior ser concluído */
+@keyframes desbloquear-glow {
+  0%   { box-shadow: 0 0 0 0 rgba(123, 47, 247, 0);    border-color: var(--cor-borda); }
+  15%  { box-shadow: 0 0 0 6px rgba(123, 47, 247, 0.4); border-color: var(--cor-marca); }
+  60%  { box-shadow: 0 0 0 4px rgba(123, 47, 247, 0.2); border-color: var(--cor-marca); }
+  100% { box-shadow: 0 0 0 0 rgba(123, 47, 247, 0);    border-color: var(--cor-borda); }
+}
+
+.cartao-conteudo--desbloqueado {
+  animation: desbloquear-glow 2.2s ease forwards;
+}
+
 .cartao-conteudo--bloqueado {
   opacity: 0.45;
   pointer-events: none;
@@ -149,28 +160,6 @@
   box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
 }
 
-.cartao-conteudo__icone-btn::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 7px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--cor-fundo-elevado);
-  color: var(--cor-texto-forte);
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-sm);
-  padding: 4px 10px;
-  font-size: 0.72rem;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 20;
-}
-
-.cartao-conteudo__icone-btn:hover::after {
-  opacity: 1;
-}
 
 /* Modal preview de conteúdo */
 .preview-conteudo {
@@ -379,28 +368,6 @@
   margin-right: 2.5rem;
 }
 
-.cartao-conteudo__quiz-btn::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--cor-fundo-elevado);
-  color: var(--cor-texto-forte);
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-sm);
-  padding: 4px 10px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 20;
-}
-
-.cartao-conteudo__quiz-btn:hover::after {
-  opacity: 1;
-}
 
 /* ------------------------------------------------------------
    MODAL NOVO CONTEÚDO — preview + seletor de tipo
@@ -1911,26 +1878,25 @@
    ------------------------------------------------------------ */
 .aviso-bloqueio {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--espaco-md);
   padding: var(--espaco-md) var(--espaco-lg);
   background: rgba(239, 68, 68, 0.06);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(248, 113, 113, 0.25);
   border-radius: var(--raio-lg);
   margin-bottom: var(--espaco-lg);
 }
 
 .aviso-bloqueio__icone {
-  font-size: 1.4rem;
-  color: #ef4444;
+  display: flex;
+  color: #f87171;
   flex-shrink: 0;
-  line-height: 1.2;
 }
 
 .aviso-bloqueio__texto strong {
   display: block;
   font-size: 0.9rem;
-  color: #ef4444;
+  color: #f87171;
   margin-bottom: 0.2rem;
 }
 
@@ -4288,5 +4254,57 @@
   .anel-progresso {
     width: 52px;
     height: 52px;
+  }
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVIDADE — barra em massa, hero, tipografia mobile
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  /* Hero do professor: empilha em coluna em tablets */
+  .conteudos-aluno__hero {
+    flex-direction: column;
+    gap: var(--espaco-md);
+  }
+
+  /* KPIs do progresso do coordenador: 3 colunas */
+  .grade-kpi-modal-curso {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Barra em massa sobe acima da nav-mobile (~70px) */
+  .barra-massa {
+    bottom: calc(70px + var(--espaco-md));
+    padding: 0.4rem 0.6rem;
+    gap: var(--espaco-xs);
+  }
+
+  .barra-massa__contador {
+    font-size: 0.8rem;
+    padding-right: var(--espaco-xs);
+  }
+
+  /* Hero do professor em celular: compacto */
+  .conteudos-aluno__cabecalho {
+    padding: var(--espaco-xs) var(--espaco-md);
+  }
+
+  /* Slide de turma: título menor */
+  .slide-turma__nome {
+    font-size: 0.9rem;
+  }
+
+  /* Card de conteúdo do módulo: empilha */
+  .item-conteudo-modulo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espaco-xs);
+  }
+
+  /* KPIs no modal em 1 coluna em celular pequeno */
+  .grade-kpi-modal-curso {
+    grid-template-columns: 1fr 1fr;
   }
 }

@@ -37,8 +37,10 @@ export default function TelaCoordenadores({ usuario, onToast }) {
   const [ordenacao, setOrdenacao]       = useState({ campo: "nome", direcao: "asc" });
   const [pagina, setPagina]             = useState(1);
 
-  const [selecionados, setSelecionados]         = useState(new Set());
-  const [removendoEmMassa, setRemovendoEmMassa] = useState(false);
+  const [selecionados, setSelecionados]               = useState(new Set());
+  const [removendoEmMassa, setRemovendoEmMassa]       = useState(false);
+  const [confirmandoAtivar,    setConfirmandoAtivar]   = useState(false);
+  const [confirmandoDesativar, setConfirmandoDesativar] = useState(false);
 
   const [kebabAberto,      setKebabAberto]      = useState(null);
   const [kebabPos,         setKebabPos]         = useState({ top: 0, left: 0 });
@@ -71,6 +73,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
 
   function alternarAtivo(id) {
     const alvo = lista.find((u) => u.id === id);
+    if (!alvo) return;
     const novoEstado = !alvo.ativo;
     setLista((prev) => prev.map((u) => u.id === id ? { ...u, ativo: novoEstado } : u));
     if (coordDetalhe?.id === id) setCoordDetalhe((prev) => ({ ...prev, ativo: novoEstado }));
@@ -87,6 +90,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
   }
 
   function salvarAtribuicaoCursos() {
+    if (!atribuindoCursos) return;
     setCursosLista((prev) =>
       prev.map((c) => {
         const eraDesteCoord = c.coordenadorId === atribuindoCursos.id;
@@ -196,6 +200,9 @@ export default function TelaCoordenadores({ usuario, onToast }) {
   const itensPagina   = listaProcessada.slice(inicio, inicio + ITENS_POR_PAGINA);
   const totalAtivos   = lista.filter((u) =>  u.ativo).length;
   const totalInativos = lista.filter((u) => !u.ativo).length;
+
+  const todosAtivos   = selecionados.size > 0 && [...selecionados].every((id) => lista.find((u) => u.id === id)?.ativo ?? false);
+  const todosInativos = selecionados.size > 0 && [...selecionados].every((id) => !(lista.find((u) => u.id === id)?.ativo ?? true));
 
   const idsVisiveis        = itensPagina.map((c) => c.id);
   const todosSelecionados  = idsVisiveis.length > 0 && idsVisiveis.every((id) => selecionados.has(id));
@@ -380,11 +387,8 @@ export default function TelaCoordenadores({ usuario, onToast }) {
             {selecionados.size} {selecionados.size === 1 ? "selecionado" : "selecionados"}
           </span>
           <div className="barra-massa__acoes">
-            <Botao variante="sucesso" tamanho="pequeno" onClick={ativarSelecionados} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={14} aria-hidden="true" />Ativar</Botao>
-            <Botao tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }} onClick={desativarSelecionados}><TbX size={14} aria-hidden="true" />Desativar</Botao>
-            {podeExcluir_ && (
-              <Botao variante="perigo" tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => setRemovendoEmMassa(true)}><TbTrash size={15} aria-hidden="true" />Remover</Botao>
-            )}
+            {!todosAtivos && <Botao variante="sucesso" tamanho="pequeno" onClick={() => setConfirmandoAtivar(true)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={14} aria-hidden="true" />Ativar</Botao>}
+            {!todosInativos && <Botao tamanho="pequeno" style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cor-aviso-fundo)", color: "var(--cor-aviso)", border: "1px solid var(--cor-aviso)" }} onClick={() => setConfirmandoDesativar(true)}><TbX size={14} aria-hidden="true" />Desativar</Botao>}
           </div>
           <button className="barra-massa__limpar" onClick={() => setSelecionados(new Set())} aria-label="Limpar seleção" type="button">✕</button>
         </div>,
@@ -656,6 +660,32 @@ export default function TelaCoordenadores({ usuario, onToast }) {
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setConfirmandoStatus(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
             <Botao variante="sucesso" onClick={() => { alternarAtivo(confirmandoStatus.id); setConfirmandoStatus(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" /> Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {/* Confirmação ativar em massa */}
+      {confirmandoAtivar && (
+        <Modal titulo="Ativar coordenadores" onFechar={() => setConfirmandoAtivar(false)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Ativar <strong>{selecionados.size} {selecionados.size === 1 ? "coordenador" : "coordenadores"}</strong> selecionado{selecionados.size !== 1 ? "s" : ""}?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoAtivar(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+            <Botao variante="sucesso" onClick={() => { const n = selecionados.size; ativarSelecionados(); setConfirmandoAtivar(false); onToast?.(`${n} coordenador${n !== 1 ? "es" : ""} ativado${n !== 1 ? "s" : ""}.`, "sucesso"); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbCheck size={15} aria-hidden="true" /> Confirmar</Botao>
+          </footer>
+        </Modal>
+      )}
+
+      {/* Confirmação desativar em massa */}
+      {confirmandoDesativar && (
+        <Modal titulo="Desativar coordenadores" onFechar={() => setConfirmandoDesativar(false)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            Desativar <strong>{selecionados.size} {selecionados.size === 1 ? "coordenador" : "coordenadores"}</strong> selecionado{selecionados.size !== 1 ? "s" : ""}?
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmandoDesativar(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+            <Botao variante="sucesso" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { const n = selecionados.size; desativarSelecionados(); setConfirmandoDesativar(false); onToast?.(`${n} coordenador${n !== 1 ? "es" : ""} desativado${n !== 1 ? "s" : ""}.`, "aviso"); }}><TbCheck size={15} aria-hidden="true" /> Confirmar</Botao>
           </footer>
         </Modal>
       )}
