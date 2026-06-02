@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
+import { siglasCurso } from "@/utils/siglas.js";
 import { TbDotsVertical, TbPlus, TbPencil, TbTrash, TbSettings, TbLogout, TbX, TbSearch } from "react-icons/tb";
 import { motion } from "framer-motion";
-import { MdSave } from "react-icons/md";
+import { MdSave, MdMenuBook, MdGroups, MdSchool, MdLayers } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -78,16 +79,25 @@ function VistaGerencialCoordenador({ usuario }) {
               />
             </div>
           </div>
-          <p className="cabecalho-pagina__subtitulo">Cursos sob sua coordenação</p>
+          <p className="cabecalho-pagina__subtitulo">{totalAtivos} {totalAtivos === 1 ? "curso ativo" : "cursos ativos"}</p>
         </div>
       </header>
 
       {/* Cabeçalho da listagem */}
       <div className="desempenho-cursos-cabecalho" aria-hidden="true">
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--identidade">Curso</span>
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--turma">Turma / Professor</span>
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--alunos">Alunos</span>
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--metricas">Módulos / Aval.</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--avatar" />
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--identidade">
+          <MdMenuBook size={13} aria-hidden="true" /> Curso
+        </span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--turma">
+          <MdGroups size={13} aria-hidden="true" /> Turma / Professor
+        </span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--alunos">
+          <MdSchool size={13} aria-hidden="true" /> Alunos
+        </span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--metricas">
+          <MdLayers size={13} aria-hidden="true" /> Módulos / Aval.
+        </span>
         <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--acoes" />
       </div>
 
@@ -101,6 +111,9 @@ function VistaGerencialCoordenador({ usuario }) {
           const turmaAtiva    = turmasCurso.find((t) => t.status === "Ativa");
           return (
             <li key={curso.id} className="desempenho-curso-item">
+              <div className="cartao-progresso-aluno__avatar" aria-hidden="true">
+                {siglasCurso(curso.titulo)}
+              </div>
               <div className="desempenho-curso-item__identidade">
                 <div className="desempenho-curso-item__cabecalho">
                   <h3 className="desempenho-curso-item__titulo">{curso.titulo}</h3>
@@ -393,6 +406,7 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
       <header className="cabecalho-pagina" style={{ alignItems: "center" }}>
         <div>
           <h1 className="cabecalho-pagina__titulo">Cursos</h1>
+          <p className="cabecalho-pagina__subtitulo">{totalAtivos} {totalAtivos === 1 ? "curso ativo" : "cursos ativos"}</p>
         </div>
         <label htmlFor="busca-cursos" className="visualmente-oculto">Buscar curso</label>
         <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
@@ -419,26 +433,6 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
           </Botao>
         )}
       </header>
-
-      {/* KPIs */}
-      <ul className="cursos-kpis" aria-label="Indicadores gerais">
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{totalAtivos}</span>
-          <span className="cursos-kpi__rotulo">Cursos ativos</span>
-        </li>
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{totalAlunosSoma}</span>
-          <span className="cursos-kpi__rotulo">Alunos matriculados</span>
-        </li>
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{qtdTurmasAtivas}</span>
-          <span className="cursos-kpi__rotulo">Turmas em andamento</span>
-        </li>
-        <li className="cursos-kpi">
-          <span className="cursos-kpi__valor">{qtdAvalPublicadas}</span>
-          <span className="cursos-kpi__rotulo">Avaliações publicadas</span>
-        </li>
-      </ul>
 
       {/* Ações em massa */}
       <div className="barra-filtros">
@@ -495,10 +489,19 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
             />
           </span>
         )}
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--identidade">Curso</span>
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--turma">Turma / Professor</span>
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--alunos">Alunos</span>
-        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--metricas">Módulos / Aval.</span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--avatar" />
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--identidade">
+          <MdMenuBook size={13} aria-hidden="true" /> Curso
+        </span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--turma">
+          <MdGroups size={13} aria-hidden="true" /> Turma / Professor
+        </span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--alunos">
+          <MdSchool size={13} aria-hidden="true" /> Alunos
+        </span>
+        <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--metricas">
+          <MdLayers size={13} aria-hidden="true" /> Módulos / Aval.
+        </span>
         <span className="desempenho-cursos-cabecalho__col desempenho-cursos-cabecalho__col--acoes" aria-hidden="true" />
       </div>
 
@@ -525,6 +528,9 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                 </div>
               )}
               {/* Nome + código + nível */}
+              <div className="cartao-progresso-aluno__avatar" aria-hidden="true">
+                {siglasCurso(curso.titulo)}
+              </div>
               <div className="desempenho-curso-item__identidade">
                 <div className="desempenho-curso-item__cabecalho">
                   <h3 className="desempenho-curso-item__titulo">{curso.titulo}</h3>
@@ -669,7 +675,6 @@ export default function TelaCursos({ usuario, listaCursos, onListaCursosChange, 
                 )}
               </div>
 
-              <div className="lista-detalhes__item"><dt>Catálogo</dt><dd>{cursoDetalhe.visivelCatalogo ? "Visível" : "Oculto"}</dd></div>
             </dl>
 
             {podeEditar(tipo, "cursos") && (

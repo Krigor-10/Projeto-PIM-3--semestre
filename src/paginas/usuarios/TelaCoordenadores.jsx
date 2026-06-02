@@ -11,6 +11,8 @@ import { podeCriar, podeEditar, podeExcluir } from "@/dados/permissoes.js";
 
 const ITENS_POR_PAGINA = 8;
 
+const DADOS_VAZIO_COORD = { nome: "", sobrenome: "", email: "", cpf: "", telefone: "", logradouro: "", numero: "", complemento: "", bairro: "", cidade: "", estado: "", cep: "", registroMec: "" };
+
 function gerarIniciais(nome) {
   return (nome ?? "").split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
 }
@@ -49,6 +51,9 @@ export default function TelaCoordenadores({ usuario, onToast }) {
   const [coordRemovendo,     setCoordRemovendo]     = useState(null);
   const [confirmandoStatus,  setConfirmandoStatus]  = useState(null);
   const [modalNovoAberto,    setModalNovoAberto]    = useState(false);
+  const [abaNovo,            setAbaNovo]            = useState(0);
+  const [maxAbaNovo,         setMaxAbaNovo]         = useState(0);
+  const [dadosNovo,          setDadosNovo]          = useState(DADOS_VAZIO_COORD);
   const [atribuindoCursos,        setAtribuindoCursos]        = useState(null);
   const [cursosSelecionados,      setCursosSelecionados]      = useState(new Set());
   const [confirmandoRemocaoCurso, setConfirmandoRemocaoCurso] = useState(null);
@@ -613,36 +618,122 @@ export default function TelaCoordenadores({ usuario, onToast }) {
 
       {/* Novo coordenador */}
       {modalNovoAberto && (
-        <Modal titulo="Novo Coordenador" onFechar={() => setModalNovoAberto(false)}>
-          <div className="modal-edicao__avatar" aria-hidden="true">+</div>
-          <form className="formulario-modal" onSubmit={(e) => {
-            e.preventDefault();
-            const f = e.target;
-            setLista((prev) => [...prev, {
-              id: Date.now(),
-              nome: f["nome-coord"].value,
-              email: f["email-coord"].value,
-              tipo: "Coordenador",
-              ativo: true,
-              dataCadastro: new Date().toISOString().slice(0, 10),
-            }]);
-            setModalNovoAberto(false);
-          }}>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="nome-coord">Nome completo *</label>
-              <input id="nome-coord" className="campo__entrada" type="text" required />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="email-coord">E-mail *</label>
-              <input id="email-coord" className="campo__entrada" type="email" required />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="cpf-coord">CPF *</label>
-              <input id="cpf-coord" className="campo__entrada" type="text" placeholder="000.000.000-00" required />
-            </div>
-            <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setModalNovoAberto(false)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
-              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar</Botao>
+        <Modal titulo="Novo Coordenador" onFechar={() => { setModalNovoAberto(false); setAbaNovo(0); setMaxAbaNovo(0); setDadosNovo(DADOS_VAZIO_COORD); }} className="modal-caixa--largo">
+          <nav className="abas-matriculas" style={{ width: "100%", justifyContent: "center" }}>
+              {["Dados Pessoais", "Endereço", "Registro Profissional"].map((label, i) => {
+                const bloqueada = i > maxAbaNovo;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`abas-matriculas__aba${abaNovo === i ? " abas-matriculas__aba--ativa" : ""}`}
+                    style={bloqueada ? { opacity: 0.4, cursor: "not-allowed" } : undefined}
+                    onClick={() => { if (!bloqueada) setAbaNovo(i); }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </nav>
+          <form className="formulario-modal" onSubmit={(e) => e.preventDefault()}>
+            {abaNovo === 0 && (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--espaco-md)" }}>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="coord-nome">Nome *</label>
+                    <input id="coord-nome" className="campo__entrada" type="text" value={dadosNovo.nome} onChange={(e) => setDadosNovo((v) => ({ ...v, nome: e.target.value }))} />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="coord-sobrenome">Sobrenome *</label>
+                    <input id="coord-sobrenome" className="campo__entrada" type="text" value={dadosNovo.sobrenome} onChange={(e) => setDadosNovo((v) => ({ ...v, sobrenome: e.target.value }))} />
+                  </div>
+                </div>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="coord-email">E-mail *</label>
+                  <input id="coord-email" className="campo__entrada" type="email" value={dadosNovo.email} onChange={(e) => setDadosNovo((v) => ({ ...v, email: e.target.value }))} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--espaco-md)" }}>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="coord-cpf">CPF *</label>
+                    <input id="coord-cpf" className="campo__entrada" type="text" placeholder="000.000.000-00" value={dadosNovo.cpf} onChange={(e) => setDadosNovo((v) => ({ ...v, cpf: e.target.value }))} />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="coord-telefone">Telefone *</label>
+                    <input id="coord-telefone" className="campo__entrada" type="text" placeholder="(00) 00000-0000" value={dadosNovo.telefone} onChange={(e) => setDadosNovo((v) => ({ ...v, telefone: e.target.value }))} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {abaNovo === 1 && (
+              <>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="coord-cep">CEP *</label>
+                  <input id="coord-cep" className="campo__entrada" type="text" placeholder="00000-000" value={dadosNovo.cep} onChange={(e) => setDadosNovo((v) => ({ ...v, cep: e.target.value }))} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--espaco-md)" }}>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="coord-logradouro">Logradouro *</label>
+                    <input id="coord-logradouro" className="campo__entrada" type="text" placeholder="Rua, Av., Travessa..." value={dadosNovo.logradouro} onChange={(e) => setDadosNovo((v) => ({ ...v, logradouro: e.target.value }))} />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="coord-numero">Número *</label>
+                    <input id="coord-numero" className="campo__entrada" type="text" value={dadosNovo.numero} onChange={(e) => setDadosNovo((v) => ({ ...v, numero: e.target.value }))} />
+                  </div>
+                </div>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="coord-complemento">Complemento <span style={{ fontWeight: 400, color: "var(--cor-texto-mudo)" }}>(opcional)</span></label>
+                  <input id="coord-complemento" className="campo__entrada" type="text" placeholder="Apto, Bloco, Sala..." value={dadosNovo.complemento} onChange={(e) => setDadosNovo((v) => ({ ...v, complemento: e.target.value }))} />
+                </div>
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="coord-bairro">Bairro *</label>
+                  <input id="coord-bairro" className="campo__entrada" type="text" value={dadosNovo.bairro} onChange={(e) => setDadosNovo((v) => ({ ...v, bairro: e.target.value }))} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--espaco-md)" }}>
+                  <div className="campo" style={{ gridColumn: "1 / 3" }}>
+                    <label className="campo__rotulo" htmlFor="coord-cidade">Cidade *</label>
+                    <input id="coord-cidade" className="campo__entrada" type="text" value={dadosNovo.cidade} onChange={(e) => setDadosNovo((v) => ({ ...v, cidade: e.target.value }))} />
+                  </div>
+                  <div className="campo">
+                    <label className="campo__rotulo" htmlFor="coord-estado">UF *</label>
+                    <input id="coord-estado" className="campo__entrada" type="text" placeholder="SP" maxLength={2} value={dadosNovo.estado} onChange={(e) => setDadosNovo((v) => ({ ...v, estado: e.target.value.toUpperCase() }))} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {abaNovo === 2 && (
+              <div className="campo">
+                <label className="campo__rotulo" htmlFor="coord-registro-mec">Registro MEC</label>
+                <input id="coord-registro-mec" className="campo__entrada" type="text" placeholder="Número do registro" value={dadosNovo.registroMec} onChange={(e) => setDadosNovo((v) => ({ ...v, registroMec: e.target.value }))} />
+              </div>
+            )}
+
+            <footer className="modal-rodape" style={{ marginTop: "var(--espaco-lg)" }}>
+              <Botao variante="perigo" type="button" onClick={() => { setModalNovoAberto(false); setAbaNovo(0); setMaxAbaNovo(0); setDadosNovo(DADOS_VAZIO_COORD); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" />Cancelar</Botao>
+              <div style={{ display: "flex", gap: "var(--espaco-sm)" }}>
+                {abaNovo > 0 && (
+                  <Botao variante="secundario" type="button" onClick={() => setAbaNovo((v) => v - 1)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbChevronLeft size={15} aria-hidden="true" />Anterior</Botao>
+                )}
+                {abaNovo < 2 ? (
+                  <Botao variante="primario" type="button" onClick={() => {
+                    if (abaNovo === 0) {
+                      if (!dadosNovo.nome || !dadosNovo.sobrenome || !dadosNovo.email || !dadosNovo.cpf || !dadosNovo.telefone) { onToast?.("Preencha todos os campos obrigatórios.", "erro"); return; }
+                    }
+                    if (abaNovo === 1) {
+                      if (!dadosNovo.logradouro || !dadosNovo.numero || !dadosNovo.bairro || !dadosNovo.cidade || !dadosNovo.estado || !dadosNovo.cep) { onToast?.("Preencha todos os campos obrigatórios do endereço.", "erro"); return; }
+                    }
+                    setMaxAbaNovo((v) => Math.max(v, abaNovo + 1));
+                    setAbaNovo((v) => v + 1);
+                  }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>Próximo<TbChevronRight size={15} aria-hidden="true" /></Botao>
+                ) : (
+                  <Botao variante="primario" type="button" onClick={() => {
+                    if (!dadosNovo.nome || !dadosNovo.sobrenome || !dadosNovo.email || !dadosNovo.cpf || !dadosNovo.telefone) { onToast?.("Preencha todos os campos obrigatórios na aba Dados Pessoais.", "erro"); setAbaNovo(0); return; }
+                    setLista((prev) => [...prev, { id: Date.now(), nome: `${dadosNovo.nome} ${dadosNovo.sobrenome}`.trim(), email: dadosNovo.email, cpf: dadosNovo.cpf, telefone: dadosNovo.telefone, logradouro: dadosNovo.logradouro, numero: dadosNovo.numero, complemento: dadosNovo.complemento, bairro: dadosNovo.bairro, cidade: dadosNovo.cidade, estado: dadosNovo.estado, cep: dadosNovo.cep, registroMec: dadosNovo.registroMec, tipo: "Coordenador", ativo: true, dataCadastro: new Date().toISOString().slice(0, 10) }]);
+                    setModalNovoAberto(false); setAbaNovo(0); setMaxAbaNovo(0); setDadosNovo(DADOS_VAZIO_COORD);
+                  }} style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={19} aria-hidden="true" />Salvar Cadastro</Botao>
+                )}
+              </div>
             </footer>
           </form>
         </Modal>

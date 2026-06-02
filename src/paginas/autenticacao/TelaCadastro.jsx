@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { TbArrowLeft, TbLogin, TbX } from "react-icons/tb";
+import { TbArrowLeft, TbLogin, TbX, TbChevronLeft, TbChevronRight } from "react-icons/tb";
 import { MdSend } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
@@ -44,7 +44,7 @@ const estadosBR = [
 function campoVazio() {
   return {
     nome: "", sobrenome: "", email: "", cpf: "", telefone: "",
-    cep: "", rua: "", numero: "", bairro: "", cidade: "", estado: "",
+    cep: "", rua: "", numero: "", complemento: "", bairro: "", cidade: "", estado: "",
     senha: "", confirmarSenha: "", cursoId: "",
   };
 }
@@ -56,6 +56,8 @@ export default function TelaCadastro() {
     ...campoVazio(),
     cursoId: searchParams.get("curso") || "",
   }));
+  const [aba, setAba] = useState(0);
+  const [maxAba, setMaxAba] = useState(0);
   const [erros, setErros] = useState({});
   const [enviado, setEnviado] = useState(false);
   const [buscandoCep, setBuscandoCep] = useState(false);
@@ -90,6 +92,20 @@ export default function TelaCadastro() {
     }
   }
 
+  /* Validação dos campos da aba 0 (Dados Pessoais e Senha) */
+  function validarAba0() {
+    const e = {};
+    if (!form.nome.trim())          e.nome = "Informe o nome.";
+    if (!form.sobrenome.trim())     e.sobrenome = "Informe o sobrenome.";
+    if (!form.email.includes("@")) e.email = "E-mail inválido.";
+    if (form.cpf.replace(/\D/g,"").length !== 11) e.cpf = "CPF incompleto.";
+    if (form.telefone.replace(/\D/g,"").length < 10) e.telefone = "Telefone inválido.";
+    if (form.senha.length < 8)      e.senha = "Mínimo de 8 caracteres.";
+    if (form.senha !== form.confirmarSenha) e.confirmarSenha = "As senhas não coincidem.";
+    if (!form.cursoId)              e.cursoId = "Selecione um curso.";
+    return e;
+  }
+
   /* Validação básica dos campos obrigatórios */
   function validar() {
     const e = {};
@@ -115,12 +131,10 @@ export default function TelaCadastro() {
     const errosEncontrados = validar();
     if (Object.keys(errosEncontrados).length > 0) {
       setErros(errosEncontrados);
-      /* Rola até o primeiro erro */
-      const primeiroErro = document.querySelector(".campo--erro .campo__entrada");
-      primeiroErro?.focus();
+      const camposAba0 = ["nome", "sobrenome", "email", "cpf", "telefone", "senha", "confirmarSenha", "cursoId"];
+      if (camposAba0.some((c) => errosEncontrados[c])) setAba(0);
       return;
     }
-    /* Protótipo: simula cadastro com sucesso */
     setEnviado(true);
   }
 
@@ -202,270 +216,187 @@ export default function TelaCadastro() {
 
           <form
             className="formulario-cadastro"
-            onSubmit={enviarFormulario}
+            onSubmit={(e) => e.preventDefault()}
             noValidate
             aria-label="Formulário de cadastro"
           >
+            <nav className="abas-matriculas" style={{ width: "100%", justifyContent: "center", marginBottom: "var(--espaco-xl)" }}>
+              {["Dados Pessoais e Senha", "Endereço"].map((label, i) => {
+                const bloqueada = i > maxAba;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`abas-matriculas__aba${aba === i ? " abas-matriculas__aba--ativa" : ""}`}
+                    style={bloqueada ? { opacity: 0.4, cursor: "not-allowed" } : undefined}
+                    onClick={() => { if (!bloqueada) setAba(i); }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </nav>
 
-            {/* Dados pessoais */}
-            <fieldset className="formulario-cadastro__grupo">
-              <legend className="formulario-cadastro__legenda">Dados pessoais</legend>
+            {aba === 0 && (
+              <>
+                {/* Dados pessoais */}
+                <fieldset className="formulario-cadastro__grupo">
+                  <legend className="formulario-cadastro__legenda">Dados pessoais</legend>
 
-              <div className="grade-2">
-                <div className={`campo ${erros.nome ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-nome">Nome *</label>
-                  <input
-                    id="cad-nome"
-                    className="campo__entrada"
-                    type="text"
-                    autoComplete="given-name"
-                    value={form.nome}
-                    onChange={(e) => set("nome", e.target.value)}
-                    aria-describedby={erros.nome ? "erro-nome" : undefined}
-                    aria-invalid={!!erros.nome}
-                  />
-                  {erros.nome && <span id="erro-nome" className="campo__erro" role="alert">{erros.nome}</span>}
+                  <div className="grade-2">
+                    <div className={`campo ${erros.nome ? "campo--erro" : ""}`}>
+                      <label className="campo__rotulo" htmlFor="cad-nome">Nome *</label>
+                      <input id="cad-nome" className="campo__entrada" type="text" autoComplete="given-name" value={form.nome} onChange={(e) => set("nome", e.target.value)} aria-describedby={erros.nome ? "erro-nome" : undefined} aria-invalid={!!erros.nome} />
+                      {erros.nome && <span id="erro-nome" className="campo__erro" role="alert">{erros.nome}</span>}
+                    </div>
+                    <div className={`campo ${erros.sobrenome ? "campo--erro" : ""}`}>
+                      <label className="campo__rotulo" htmlFor="cad-sobrenome">Sobrenome *</label>
+                      <input id="cad-sobrenome" className="campo__entrada" type="text" autoComplete="family-name" value={form.sobrenome} onChange={(e) => set("sobrenome", e.target.value)} aria-describedby={erros.sobrenome ? "erro-sobrenome" : undefined} aria-invalid={!!erros.sobrenome} />
+                      {erros.sobrenome && <span id="erro-sobrenome" className="campo__erro" role="alert">{erros.sobrenome}</span>}
+                    </div>
+                  </div>
+
+                  <div className={`campo ${erros.email ? "campo--erro" : ""}`}>
+                    <label className="campo__rotulo" htmlFor="cad-email">E-mail *</label>
+                    <input id="cad-email" className="campo__entrada" type="email" autoComplete="email" value={form.email} onChange={(e) => set("email", e.target.value)} aria-describedby={erros.email ? "erro-email" : undefined} aria-invalid={!!erros.email} />
+                    {erros.email && <span id="erro-email" className="campo__erro" role="alert">{erros.email}</span>}
+                  </div>
+
+                  <div className="grade-2">
+                    <div className={`campo ${erros.cpf ? "campo--erro" : ""}`}>
+                      <label className="campo__rotulo" htmlFor="cad-cpf">CPF *</label>
+                      <input id="cad-cpf" className="campo__entrada" type="text" inputMode="numeric" placeholder="000.000.000-00" autoComplete="off" value={form.cpf} onChange={(e) => set("cpf", mascararCpf(e.target.value))} aria-describedby={erros.cpf ? "erro-cpf" : undefined} aria-invalid={!!erros.cpf} />
+                      {erros.cpf && <span id="erro-cpf" className="campo__erro" role="alert">{erros.cpf}</span>}
+                    </div>
+                    <div className={`campo ${erros.telefone ? "campo--erro" : ""}`}>
+                      <label className="campo__rotulo" htmlFor="cad-telefone">Telefone *</label>
+                      <input id="cad-telefone" className="campo__entrada" type="tel" inputMode="numeric" placeholder="(00) 00000-0000" autoComplete="tel" value={form.telefone} onChange={(e) => set("telefone", mascararTelefone(e.target.value))} aria-describedby={erros.telefone ? "erro-telefone" : undefined} aria-invalid={!!erros.telefone} />
+                      {erros.telefone && <span id="erro-telefone" className="campo__erro" role="alert">{erros.telefone}</span>}
+                    </div>
+                  </div>
+                </fieldset>
+
+                {/* Curso */}
+                <fieldset className="formulario-cadastro__grupo">
+                  <legend className="formulario-cadastro__legenda">Curso de interesse</legend>
+                  <div className={`campo ${erros.cursoId ? "campo--erro" : ""}`}>
+                    <label className="campo__rotulo" htmlFor="cad-curso">Curso *</label>
+                    <SelectSimples id="cad-curso" value={form.cursoId} opcoes={cursosAtivos.map((c) => ({ valor: c.id, rotulo: `${c.titulo} — ${c.nivel}` }))} onChange={(val) => set("cursoId", val)} placeholder="Selecione um curso" />
+                    {erros.cursoId && <span id="erro-curso" className="campo__erro" role="alert">{erros.cursoId}</span>}
+                  </div>
+                </fieldset>
+
+                {/* Senha */}
+                <fieldset className="formulario-cadastro__grupo">
+                  <legend className="formulario-cadastro__legenda">Senha de acesso</legend>
+                  <div className="grade-2">
+                    <div className={`campo ${erros.senha ? "campo--erro" : ""}`}>
+                      <label className="campo__rotulo" htmlFor="cad-senha">Senha *</label>
+                      <input id="cad-senha" className="campo__entrada" type="password" autoComplete="new-password" placeholder="Mínimo 8 caracteres" value={form.senha} onChange={(e) => set("senha", e.target.value)} aria-describedby={erros.senha ? "erro-senha" : undefined} aria-invalid={!!erros.senha} />
+                      {erros.senha && <span id="erro-senha" className="campo__erro" role="alert">{erros.senha}</span>}
+                    </div>
+                    <div className={`campo ${erros.confirmarSenha ? "campo--erro" : ""}`}>
+                      <label className="campo__rotulo" htmlFor="cad-confirmar">Confirmar senha *</label>
+                      <input id="cad-confirmar" className="campo__entrada" type="password" autoComplete="new-password" value={form.confirmarSenha} onChange={(e) => set("confirmarSenha", e.target.value)} aria-describedby={erros.confirmarSenha ? "erro-confirmar" : undefined} aria-invalid={!!erros.confirmarSenha} />
+                      {erros.confirmarSenha && <span id="erro-confirmar" className="campo__erro" role="alert">{erros.confirmarSenha}</span>}
+                    </div>
+                  </div>
+                </fieldset>
+              </>
+            )}
+
+            {aba === 1 && (
+              <fieldset className="formulario-cadastro__grupo">
+                <legend className="formulario-cadastro__legenda">Endereço</legend>
+
+                <div className={`campo ${erros.cep ? "campo--erro" : ""}`}>
+                  <label className="campo__rotulo" htmlFor="cad-cep">CEP *</label>
+                  <div className="campo__linha">
+                    <input
+                      id="cad-cep"
+                      className="campo__entrada"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="00000-000"
+                      value={form.cep}
+                      onChange={(e) => {
+                        const mascarado = mascararCep(e.target.value);
+                        set("cep", mascarado);
+                        if (mascarado.replace(/\D/g,"").length === 8) buscarCep(mascarado);
+                      }}
+                      aria-describedby={erros.cep ? "erro-cep" : "cep-dica"}
+                      aria-invalid={!!erros.cep}
+                    />
+                    {buscandoCep && <span className="campo__indicador" aria-live="polite">Buscando...</span>}
+                  </div>
+                  <span id="cep-dica" className="campo__dica">Preenchimento automático do endereço.</span>
+                  {erros.cep && <span id="erro-cep" className="campo__erro" role="alert">{erros.cep}</span>}
                 </div>
 
-                <div className={`campo ${erros.sobrenome ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-sobrenome">Sobrenome *</label>
-                  <input
-                    id="cad-sobrenome"
-                    className="campo__entrada"
-                    type="text"
-                    autoComplete="family-name"
-                    value={form.sobrenome}
-                    onChange={(e) => set("sobrenome", e.target.value)}
-                    aria-describedby={erros.sobrenome ? "erro-sobrenome" : undefined}
-                    aria-invalid={!!erros.sobrenome}
-                  />
-                  {erros.sobrenome && <span id="erro-sobrenome" className="campo__erro" role="alert">{erros.sobrenome}</span>}
+                <div className="grade-endereco">
+                  <div className={`campo ${erros.rua ? "campo--erro" : ""}`}>
+                    <label className="campo__rotulo" htmlFor="cad-rua">Rua *</label>
+                    <input id="cad-rua" className="campo__entrada" type="text" autoComplete="street-address" value={form.rua} onChange={(e) => set("rua", e.target.value)} aria-invalid={!!erros.rua} />
+                    {erros.rua && <span className="campo__erro" role="alert">{erros.rua}</span>}
+                  </div>
+                  <div className={`campo campo--numero ${erros.numero ? "campo--erro" : ""}`}>
+                    <label className="campo__rotulo" htmlFor="cad-numero">Número *</label>
+                    <input id="cad-numero" className="campo__entrada" type="text" inputMode="numeric" value={form.numero} onChange={(e) => set("numero", e.target.value)} aria-invalid={!!erros.numero} />
+                    {erros.numero && <span className="campo__erro" role="alert">{erros.numero}</span>}
+                  </div>
                 </div>
-              </div>
-
-              <div className={`campo ${erros.email ? "campo--erro" : ""}`}>
-                <label className="campo__rotulo" htmlFor="cad-email">E-mail *</label>
-                <input
-                  id="cad-email"
-                  className="campo__entrada"
-                  type="email"
-                  autoComplete="email"
-                  value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
-                  aria-describedby={erros.email ? "erro-email" : undefined}
-                  aria-invalid={!!erros.email}
-                />
-                {erros.email && <span id="erro-email" className="campo__erro" role="alert">{erros.email}</span>}
-              </div>
-
-              <div className="grade-2">
-                <div className={`campo ${erros.cpf ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-cpf">CPF *</label>
-                  <input
-                    id="cad-cpf"
-                    className="campo__entrada"
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="000.000.000-00"
-                    autoComplete="off"
-                    value={form.cpf}
-                    onChange={(e) => set("cpf", mascararCpf(e.target.value))}
-                    aria-describedby={erros.cpf ? "erro-cpf" : undefined}
-                    aria-invalid={!!erros.cpf}
-                  />
-                  {erros.cpf && <span id="erro-cpf" className="campo__erro" role="alert">{erros.cpf}</span>}
+                <div className="campo">
+                  <label className="campo__rotulo" htmlFor="cad-complemento">Complemento <span style={{ fontWeight: 400, color: "var(--cor-texto-mudo)" }}>(opcional)</span></label>
+                  <input id="cad-complemento" className="campo__entrada" type="text" placeholder="Apto, Bloco, Sala..." autoComplete="address-line2" value={form.complemento} onChange={(e) => set("complemento", e.target.value)} />
                 </div>
 
-                <div className={`campo ${erros.telefone ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-telefone">Telefone *</label>
-                  <input
-                    id="cad-telefone"
-                    className="campo__entrada"
-                    type="tel"
-                    inputMode="numeric"
-                    placeholder="(00) 00000-0000"
-                    autoComplete="tel"
-                    value={form.telefone}
-                    onChange={(e) => set("telefone", mascararTelefone(e.target.value))}
-                    aria-describedby={erros.telefone ? "erro-telefone" : undefined}
-                    aria-invalid={!!erros.telefone}
-                  />
-                  {erros.telefone && <span id="erro-telefone" className="campo__erro" role="alert">{erros.telefone}</span>}
+                <div className="grade-3">
+                  <div className={`campo ${erros.bairro ? "campo--erro" : ""}`}>
+                    <label className="campo__rotulo" htmlFor="cad-bairro">Bairro *</label>
+                    <input id="cad-bairro" className="campo__entrada" type="text" value={form.bairro} onChange={(e) => set("bairro", e.target.value)} aria-invalid={!!erros.bairro} />
+                    {erros.bairro && <span className="campo__erro" role="alert">{erros.bairro}</span>}
+                  </div>
+                  <div className={`campo ${erros.cidade ? "campo--erro" : ""}`}>
+                    <label className="campo__rotulo" htmlFor="cad-cidade">Cidade *</label>
+                    <input id="cad-cidade" className="campo__entrada" type="text" autoComplete="address-level2" value={form.cidade} onChange={(e) => set("cidade", e.target.value)} aria-invalid={!!erros.cidade} />
+                    {erros.cidade && <span className="campo__erro" role="alert">{erros.cidade}</span>}
+                  </div>
+                  <div className={`campo ${erros.estado ? "campo--erro" : ""}`}>
+                    <label className="campo__rotulo" htmlFor="cad-estado">Estado *</label>
+                    <SelectSimples id="cad-estado" value={form.estado} opcoes={estadosBR} onChange={(val) => set("estado", val)} placeholder="UF" />
+                    {erros.estado && <span className="campo__erro" role="alert">{erros.estado}</span>}
+                  </div>
                 </div>
-              </div>
-            </fieldset>
-
-            {/* Endereço */}
-            <fieldset className="formulario-cadastro__grupo">
-              <legend className="formulario-cadastro__legenda">Endereço</legend>
-
-              <div className={`campo ${erros.cep ? "campo--erro" : ""}`}>
-                <label className="campo__rotulo" htmlFor="cad-cep">CEP *</label>
-                <div className="campo__linha">
-                  <input
-                    id="cad-cep"
-                    className="campo__entrada"
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="00000-000"
-                    value={form.cep}
-                    onChange={(e) => {
-                      const mascarado = mascararCep(e.target.value);
-                      set("cep", mascarado);
-                      if (mascarado.replace(/\D/g,"").length === 8) buscarCep(mascarado);
-                    }}
-                    aria-describedby={erros.cep ? "erro-cep" : "cep-dica"}
-                    aria-invalid={!!erros.cep}
-                  />
-                  {buscandoCep && (
-                    <span className="campo__indicador" aria-live="polite">Buscando...</span>
-                  )}
-                </div>
-                <span id="cep-dica" className="campo__dica">Preenchimento automático do endereço.</span>
-                {erros.cep && <span id="erro-cep" className="campo__erro" role="alert">{erros.cep}</span>}
-              </div>
-
-              <div className="grade-endereco">
-                <div className={`campo ${erros.rua ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-rua">Rua *</label>
-                  <input
-                    id="cad-rua"
-                    className="campo__entrada"
-                    type="text"
-                    autoComplete="street-address"
-                    value={form.rua}
-                    onChange={(e) => set("rua", e.target.value)}
-                    aria-invalid={!!erros.rua}
-                  />
-                  {erros.rua && <span className="campo__erro" role="alert">{erros.rua}</span>}
-                </div>
-
-                <div className={`campo campo--numero ${erros.numero ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-numero">Número *</label>
-                  <input
-                    id="cad-numero"
-                    className="campo__entrada"
-                    type="text"
-                    inputMode="numeric"
-                    value={form.numero}
-                    onChange={(e) => set("numero", e.target.value)}
-                    aria-invalid={!!erros.numero}
-                  />
-                  {erros.numero && <span className="campo__erro" role="alert">{erros.numero}</span>}
-                </div>
-              </div>
-
-              <div className="grade-3">
-                <div className={`campo ${erros.bairro ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-bairro">Bairro *</label>
-                  <input
-                    id="cad-bairro"
-                    className="campo__entrada"
-                    type="text"
-                    value={form.bairro}
-                    onChange={(e) => set("bairro", e.target.value)}
-                    aria-invalid={!!erros.bairro}
-                  />
-                  {erros.bairro && <span className="campo__erro" role="alert">{erros.bairro}</span>}
-                </div>
-
-                <div className={`campo ${erros.cidade ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-cidade">Cidade *</label>
-                  <input
-                    id="cad-cidade"
-                    className="campo__entrada"
-                    type="text"
-                    autoComplete="address-level2"
-                    value={form.cidade}
-                    onChange={(e) => set("cidade", e.target.value)}
-                    aria-invalid={!!erros.cidade}
-                  />
-                  {erros.cidade && <span className="campo__erro" role="alert">{erros.cidade}</span>}
-                </div>
-
-                <div className={`campo ${erros.estado ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-estado">Estado *</label>
-                  <SelectSimples
-                    id="cad-estado"
-                    value={form.estado}
-                    opcoes={estadosBR}
-                    onChange={(val) => set("estado", val)}
-                    placeholder="UF"
-                  />
-                  {erros.estado && <span className="campo__erro" role="alert">{erros.estado}</span>}
-                </div>
-              </div>
-            </fieldset>
-
-            {/* Curso */}
-            <fieldset className="formulario-cadastro__grupo">
-              <legend className="formulario-cadastro__legenda">Curso de interesse</legend>
-
-              <div className={`campo ${erros.cursoId ? "campo--erro" : ""}`}>
-                <label className="campo__rotulo" htmlFor="cad-curso">Curso *</label>
-                <SelectSimples
-                  id="cad-curso"
-                  value={form.cursoId}
-                  opcoes={cursosAtivos.map((c) => ({ valor: c.id, rotulo: `${c.titulo} — ${c.nivel}` }))}
-                  onChange={(val) => set("cursoId", val)}
-                  placeholder="Selecione um curso"
-                  required
-                />
-                {erros.cursoId && <span id="erro-curso" className="campo__erro" role="alert">{erros.cursoId}</span>}
-              </div>
-            </fieldset>
-
-            {/* Senha */}
-            <fieldset className="formulario-cadastro__grupo">
-              <legend className="formulario-cadastro__legenda">Senha de acesso</legend>
-
-              <div className="grade-2">
-                <div className={`campo ${erros.senha ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-senha">Senha *</label>
-                  <input
-                    id="cad-senha"
-                    className="campo__entrada"
-                    type="password"
-                    autoComplete="new-password"
-                    placeholder="Mínimo 8 caracteres"
-                    value={form.senha}
-                    onChange={(e) => set("senha", e.target.value)}
-                    aria-describedby={erros.senha ? "erro-senha" : undefined}
-                    aria-invalid={!!erros.senha}
-                  />
-                  {erros.senha && <span id="erro-senha" className="campo__erro" role="alert">{erros.senha}</span>}
-                </div>
-
-                <div className={`campo ${erros.confirmarSenha ? "campo--erro" : ""}`}>
-                  <label className="campo__rotulo" htmlFor="cad-confirmar">Confirmar senha *</label>
-                  <input
-                    id="cad-confirmar"
-                    className="campo__entrada"
-                    type="password"
-                    autoComplete="new-password"
-                    value={form.confirmarSenha}
-                    onChange={(e) => set("confirmarSenha", e.target.value)}
-                    aria-describedby={erros.confirmarSenha ? "erro-confirmar" : undefined}
-                    aria-invalid={!!erros.confirmarSenha}
-                  />
-                  {erros.confirmarSenha && <span id="erro-confirmar" className="campo__erro" role="alert">{erros.confirmarSenha}</span>}
-                </div>
-              </div>
-            </fieldset>
+              </fieldset>
+            )}
 
             {/* Rodapé do formulário */}
             <div className="formulario-cadastro__rodape">
-              <Botao
-                variante="perigo"
-                tamanho="grande"
-                onClick={() => navigate(ROTAS.INICIO)}
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
+              <Botao variante="perigo" tamanho="grande" onClick={() => navigate(ROTAS.INICIO)} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <TbX size={18} aria-hidden="true" /> Cancelar
               </Botao>
-              <Botao variante="primario" tamanho="grande" type="submit" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <MdSend size={20} aria-hidden="true" /> Salvar dados
-              </Botao>
+              <div style={{ display: "flex", gap: "var(--espaco-sm)" }}>
+                {aba > 0 && (
+                  <Botao variante="secundario" tamanho="grande" type="button" onClick={() => setAba((v) => v - 1)} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <TbChevronLeft size={18} aria-hidden="true" /> Anterior
+                  </Botao>
+                )}
+                {aba < 1 ? (
+                  <Botao variante="primario" tamanho="grande" type="button" onClick={() => {
+                    const e = validarAba0();
+                    if (Object.keys(e).length > 0) { setErros(e); return; }
+                    setErros({});
+                    setMaxAba((v) => Math.max(v, 1));
+                    setAba(1);
+                  }} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    Próximo <TbChevronRight size={18} aria-hidden="true" />
+                  </Botao>
+                ) : (
+                  <Botao variante="primario" tamanho="grande" type="button" onClick={enviarFormulario} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <MdSend size={20} aria-hidden="true" /> Salvar dados
+                  </Botao>
+                )}
+              </div>
             </div>
           </form>
         </div>

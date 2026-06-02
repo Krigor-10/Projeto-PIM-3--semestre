@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { TbDotsVertical, TbSend, TbChevronDown, TbX } from "react-icons/tb";
-import { MdPersonAdd, MdAdminPanelSettings, MdLogin } from "react-icons/md";
+import { MdPersonAdd, MdAdminPanelSettings, MdLogin, MdMenuBook } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import Modal from "@/componentes/Modal.jsx";
+import ModalCadastro from "@/componentes/ModalCadastro.jsx";
 import { cursos } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
 import bannerHome from "@/ativos/banner-home.png";
@@ -26,16 +28,16 @@ const IMAGEM_CURSO = {
 
 const pilares = [
   {
-    titulo: "Cursos orientados a projeto",
-    descricao: "Trilhas práticas com materiais e progresso por turma.",
+    titulo: "Preparado para o mercado",
+    descricao: "Foco em carreira e mercado!",
   },
   {
-    titulo: "Matrícula acompanhada",
-    descricao: "Solicitação online com status visível no painel.",
+    titulo: "Metodologia inovadora",
+    descricao: "Inovação e metodologia!",
   },
   {
-    titulo: "Sala digital por perfil",
-    descricao: "Aluno, professor e coordenação com acessos próprios.",
+    titulo: "Tecnologias do futuro",
+    descricao: "Domine as ferramentas que moldam o futuro!",
   },
 ];
 
@@ -46,7 +48,9 @@ const cursosVisiveis = cursos
 
 export default function TelaInicio() {
   const navigate = useNavigate();
-  const [cursoModal, setCursoModal] = useState(null);
+  const [cursoModal, setCursoModal]               = useState(null);
+  const [cadastroAberto, setCadastroAberto]       = useState(false);
+  const [cursoIdCadastro, setCursoIdCadastro]     = useState("");
 
   return (
     <>
@@ -66,35 +70,49 @@ export default function TelaInicio() {
           </a>
 
           <nav className="cabecalho-publico__nav" aria-label="Navegação principal">
-            <a href="#cursos" className="botao botao--secundario botao--pequeno cabecalho-publico__link">
-              Cursos
-            </a>
-            <Botao
-              variante="secundario"
-              tamanho="pequeno"
-              className="cabecalho-publico__acao-admin"
-              onClick={() => navigate(ROTAS.LOGIN_STAFF)}
-              aria-label="Acesso administrativo"
-              data-tooltip="Acesso administrativo"
-              style={{ display: "flex", alignItems: "center" }}
+            <motion.a
+              href="#cursos"
+              className="cabecalho-publico__link"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
-              <MdAdminPanelSettings size={22} aria-hidden="true" />
-            </Botao>
-            <Botao
-              variante="secundario"
-              tamanho="pequeno"
+              <MdMenuBook size={18} aria-hidden="true" /> Cursos
+            </motion.a>
+            <span className="topbar__separador" aria-hidden="true" />
+            <motion.button
+              type="button"
+              className="cabecalho-publico__link cabecalho-publico__acao-admin"
+              onClick={() => navigate(ROTAS.LOGIN_STAFF)}
+              aria-label="Área restrita"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
+            >
+              <MdAdminPanelSettings size={20} aria-hidden="true" /> <span className="nav-texto">Área restrita</span>
+            </motion.button>
+            <span className="topbar__separador" aria-hidden="true" />
+            <motion.button
+              type="button"
+              className="cabecalho-publico__link"
               onClick={() => navigate(ROTAS.LOGIN)}
               aria-label="Entrar"
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
-              <MdLogin size={22} aria-hidden="true" /> <span className="nav-texto">Entrar</span>
-            </Botao>
+              <MdLogin size={20} aria-hidden="true" /> <span className="nav-texto">Entrar</span>
+            </motion.button>
+            <span className="topbar__separador" aria-hidden="true" />
             <Botao
               variante="sucesso"
               tamanho="pequeno"
-              onClick={() => navigate(ROTAS.CADASTRO)}
+              onClick={() => { setCursoIdCadastro(""); setCadastroAberto(true); }}
               aria-label="Criar conta"
               style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
               <MdPersonAdd size={22} aria-hidden="true" /> <span className="nav-texto">Criar conta</span>
             </Botao>
@@ -122,7 +140,7 @@ export default function TelaInicio() {
               <Botao
                 variante="sucesso"
                 tamanho="grande"
-                onClick={() => navigate(ROTAS.CADASTRO)}
+                onClick={() => { setCursoIdCadastro(""); setCadastroAberto(true); }}
                 style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
                 <TbSend size={18} aria-hidden="true" /> Solicitar matrícula
@@ -203,7 +221,7 @@ export default function TelaInicio() {
                         <Botao
                           variante="primario"
                           tamanho="pequeno"
-                          onClick={() => navigate(`${ROTAS.CADASTRO}?curso=${curso.id}`)}
+                          onClick={() => { setCursoIdCadastro(String(curso.id)); setCadastroAberto(true); }}
                           aria-label={`Cadastrar-se em ${curso.titulo}`}
                           style={{ display: "flex", alignItems: "center", gap: "6px" }}
                         >
@@ -235,19 +253,13 @@ export default function TelaInicio() {
               <dd>{cursoModal.totalAlunos}</dd>
             </div>
             <div className="lista-detalhes__item">
-              <dt>Preço</dt>
-              <dd>
-                {cursoModal.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-              </dd>
-            </div>
-            <div className="lista-detalhes__item">
               <dt>Descrição</dt>
               <dd>{cursoModal.descricao}</dd>
             </div>
           </dl>
           <footer className="modal-rodape">
             <Botao variante="perigo" onClick={() => setCursoModal(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
-            <Botao variante="primario" onClick={() => { setCursoModal(null); navigate(`${ROTAS.CADASTRO}?curso=${cursoModal.id}`); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <Botao variante="primario" onClick={() => { const id = String(cursoModal.id); setCursoModal(null); setCursoIdCadastro(id); setCadastroAberto(true); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <MdPersonAdd size={20} aria-hidden="true" /> Cadastrar-se
             </Botao>
           </footer>
@@ -276,7 +288,7 @@ export default function TelaInicio() {
                 </button>
               </li>
               <li>
-                <button className="rodape-publico__nav-link" onClick={() => navigate(ROTAS.CADASTRO)}>
+                <button className="rodape-publico__nav-link" onClick={() => { setCursoIdCadastro(""); setCadastroAberto(true); }}>
                   Criar conta
                 </button>
               </li>
@@ -295,6 +307,12 @@ export default function TelaInicio() {
           </p>
         </div>
       </footer>
+
+      <ModalCadastro
+        aberto={cadastroAberto}
+        onFechar={() => setCadastroAberto(false)}
+        cursoIdInicial={cursoIdCadastro}
+      />
     </>
   );
 }
