@@ -275,6 +275,21 @@
   border-radius: var(--raio-md);
 }
 
+.cartao-curso--clicavel {
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.cartao-curso--clicavel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(123, 47, 247, 0.22);
+}
+
+.cartao-curso--clicavel:focus-visible {
+  outline: 2px solid var(--cor-marca-clara);
+  outline-offset: 3px;
+}
+
 .cartao-curso__codigo {
   color: var(--cor-marca-clara);
   font-weight: 800;
@@ -367,23 +382,32 @@
 
   .cabecalho-publico__nav {
     flex-wrap: nowrap;
-    gap: 6px;
+    flex-shrink: 0;
+    margin-left: auto;
+    gap: 10px;
   }
 
-  .cabecalho-publico__acao-admin {
+  /* separdores e textos somem — ficam só ícones */
+  .cabecalho-publico__nav .topbar__separador,
+  .cabecalho-publico__nav .nav-texto {
     display: none;
+  }
+
+  /* todos os itens da nav viram botões de ícone compactos */
+  .cabecalho-publico__link,
+  .cabecalho-publico__acao-admin {
+    display: flex;
+    padding: 0 8px;
+    height: 38px;
+    min-width: 38px;
+    justify-content: center;
   }
 
   .cabecalho-publico__nav .botao {
-    min-width: 0;
+    min-width: 38px;
     min-height: 38px;
-    padding-inline: 14px;
+    padding-inline: 8px;
     font-size: 0.84rem;
-  }
-
-  /* Oculta só âncoras de scroll (Cursos); botões de ação (Entrar) ficam visíveis */
-  a.cabecalho-publico__link {
-    display: none;
   }
 
   .secao-hero {
@@ -420,12 +444,8 @@
     font-size: 1.15rem;
   }
 
-  .cabecalho-publico__nav .nav-texto {
-    display: none;
-  }
-
   .cabecalho-publico__nav .botao {
-    padding-inline: 10px;
+    padding-inline: 8px;
   }
 
   .secao-hero__titulo {

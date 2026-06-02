@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { siglasCurso } from "@/utils/siglas.js";
 import { TbDotsVertical, TbPlayerPlay, TbAlignLeft, TbFileDescription, TbFile, TbPlus, TbLock, TbSettings, TbTrash, TbArrowLeft, TbArrowRight, TbPencil, TbX, TbCheck, TbBrain, TbPaperclip, TbLink, TbUpload, TbRefresh, TbChartBar, TbSearch, TbUsers } from "react-icons/tb";
 import { MdSave, MdAdd, MdDelete, MdDescription } from "react-icons/md";
@@ -311,15 +312,25 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
   }
   const resumoTiposAluno = ["Video", "Texto", "Documento"].filter((t) => totalPorTipoAluno[t]);
 
+  const location = useLocation();
   const concluidos = conteudosConcluidos ?? new Set(conteudosDoCurso.filter((c) => c.concluido).map((c) => c.id));
   const [modulosAbertos, setModulosAbertos] = useState(() => new Set());
   const [quizModulo, setQuizModulo] = useState(null);
   const [previewConteudo, setPreviewConteudo] = useState(null);
   const [quizzesIniciados, setQuizzesIniciados] = useState(() => new Set());
   const [contDesbloqueado, setContDesbloqueado] = useState(null);
+  const [vistos, setVistos] = useState(() => new Set());
   const refsModulos = useRef({});
   const refsConteudos = useRef({});
   const refPendingUnlock = useRef(null);
+
+  /* Abre o primeiro módulo automaticamente ao chegar via "Iniciar jornada" */
+  useEffect(() => {
+    if (!ativo || !location.state?.abrirPrimeiro || modulosDoCurso.length === 0) return;
+    const primeiro = modulosDoCurso[0];
+    setModulosAbertos(new Set([primeiro.id]));
+    setTimeout(() => refsModulos.current[primeiro.id]?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+  }, [ativo]);
 
   const totalConteudos  = conteudosDoCurso.length;
   const totalConcluidos = conteudosDoCurso.filter((c) => concluidos.has(c.id)).length;
@@ -598,10 +609,10 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                       ) : (
                         <button
                           type="button"
-                          className="cartao-conteudo__icone-btn"
+                          className={`cartao-conteudo__icone-btn${!vistos.has(cont.id) && !estaConcluido ? " cartao-conteudo__icone-btn--pulsando" : ""}`}
                           aria-label={`Visualizar ${config.rotulo}: ${cont.titulo}`}
                           data-tooltip={`Ver ${config.rotulo}`}
-                          onClick={() => setPreviewConteudo({ cont, config })}
+                          onClick={() => { setVistos((p) => new Set(p).add(cont.id)); setPreviewConteudo({ cont, config }); }}
                         >
                           {(() => { const Ic = config.Icone ?? IconePadrao; return <Ic size={18} aria-hidden="true" />; })()}
                         </button>
@@ -763,14 +774,19 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                       </button>
                     </motion.div>
                   ) : (
-                    <div className="preview-conteudo__thumb">
+                    <button
+                      type="button"
+                      className="preview-conteudo__thumb"
+                      onClick={() => alternarConclusao(cont.id)}
+                      aria-label={`Marcar "${cont.titulo}" como concluído`}
+                    >
                       <img src={imgPreview} alt={cont.titulo} className="preview-conteudo__thumb-img" />
                       <div className="preview-conteudo__thumb-overlay">
                         {cont.tipo === "Video" && <TbPlayerPlay size={48} aria-hidden="true" />}
                         {cont.tipo === "Texto" && <TbAlignLeft size={36} aria-hidden="true" />}
                         {cont.tipo === "Documento" && <TbFileDescription size={36} aria-hidden="true" />}
                       </div>
-                    </div>
+                    </button>
                   )}
 
                   {/* Rodapé — visível apenas antes de concluir */}

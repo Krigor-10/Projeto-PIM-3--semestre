@@ -73,11 +73,12 @@ export default function TelaInicio() {
             <motion.a
               href="#cursos"
               className="cabecalho-publico__link"
+              data-tooltip="Cursos"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
-              <MdMenuBook size={18} aria-hidden="true" /> Cursos
+              <MdMenuBook size={18} aria-hidden="true" /> <span className="nav-texto">Cursos</span>
             </motion.a>
             <span className="topbar__separador" aria-hidden="true" />
             <motion.button
@@ -85,6 +86,7 @@ export default function TelaInicio() {
               className="cabecalho-publico__link cabecalho-publico__acao-admin"
               onClick={() => navigate(ROTAS.LOGIN_STAFF)}
               aria-label="Área restrita"
+              data-tooltip="Área restrita"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: "spring", stiffness: 400, damping: 18 }}
@@ -97,6 +99,7 @@ export default function TelaInicio() {
               className="cabecalho-publico__link"
               onClick={() => navigate(ROTAS.LOGIN)}
               aria-label="Entrar"
+              data-tooltip="Entrar"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: "spring", stiffness: 400, damping: 18 }}
@@ -109,6 +112,7 @@ export default function TelaInicio() {
               tamanho="pequeno"
               onClick={() => { setCursoIdCadastro(""); setCadastroAberto(true); }}
               aria-label="Criar conta"
+              data-tooltip="Criar conta"
               style={{ display: "flex", alignItems: "center", gap: "6px" }}
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.96 }}
@@ -187,7 +191,14 @@ export default function TelaInicio() {
                 const imagem = IMAGEM_CURSO[curso.titulo];
                 return (
                   <li key={curso.id}>
-                    <article className="cartao-curso" aria-labelledby={`curso-titulo-${curso.id}`}>
+                    <article
+                      className="cartao-curso cartao-curso--clicavel"
+                      aria-labelledby={`curso-titulo-${curso.id}`}
+                      onClick={() => setCursoModal(curso)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === "Enter" && setCursoModal(curso)}
+                    >
                       <div className="cartao-curso__topo" aria-hidden="true">
                         <img
                           src={imagem}
@@ -203,14 +214,6 @@ export default function TelaInicio() {
                       <div className="cartao-curso__corpo">
                         <div className="cartao-curso__cabecalho-linha">
                           <span className="cartao-curso__nivel">{curso.nivel}</span>
-                          <button
-                            type="button"
-                            className="cartao-curso__mais"
-                            onClick={() => setCursoModal(curso)}
-                            aria-label={`Ver detalhes de ${curso.titulo}`}
-                          >
-                            <TbDotsVertical size={18} aria-hidden="true" />
-                          </button>
                         </div>
                         <h3 className="cartao-curso__titulo" id={`curso-titulo-${curso.id}`}>
                           {curso.titulo}
@@ -221,7 +224,7 @@ export default function TelaInicio() {
                         <Botao
                           variante="primario"
                           tamanho="pequeno"
-                          onClick={() => { setCursoIdCadastro(String(curso.id)); setCadastroAberto(true); }}
+                          onClick={(e) => { e.stopPropagation(); setCursoIdCadastro(String(curso.id)); setCadastroAberto(true); }}
                           aria-label={`Cadastrar-se em ${curso.titulo}`}
                           style={{ display: "flex", alignItems: "center", gap: "6px" }}
                         >

@@ -7,12 +7,15 @@ import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { MdFavorite } from "react-icons/md";
 import { TbPlayerPlay, TbBooks, TbCheck, TbStack, TbChartBar, TbRocket } from "react-icons/tb";
 import { conteudos, modulos, PROGRESSO_MOCK } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
+import { rotaPainelSecao } from "@/rotas.js";
 
 export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos = [], cursosFavoritos = new Set(), onAlternarFavorito }) {
+  const navigate = useNavigate();
   /* Progresso real do db */
   const concluidos = db.progresso.listarConcluidos();
   const resultados  = db.progresso.listarResultados();
@@ -112,7 +115,7 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos 
               whileTap={{ scale: 0.95 }}
               style={{ display: "inline-block", borderRadius: "var(--raio-md)" }}
             >
-              <Botao variante="primario" onClick={() => onMudarSecao("conteudos")} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Botao variante="primario" onClick={() => navigate(rotaPainelSecao("conteudos"), { state: { abrirPrimeiro: true } })} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <TbRocket size={16} aria-hidden="true" /> Iniciar jornada
               </Botao>
             </motion.div>

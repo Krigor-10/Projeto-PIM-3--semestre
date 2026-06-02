@@ -1872,6 +1872,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                               <Botao
                                 variante={jaRealizada ? "secundario" : "primario"}
                                 tamanho="pequeno"
+                                className={!jaRealizada ? "botao--pulsando" : ""}
                                 onClick={() => iniciarAvaliacao(av)}
                                 aria-label={`${jaRealizada ? "Refazer" : "Iniciar"} ${av.titulo}`}
                                 style={{ display: "flex", alignItems: "center", gap: "5px" }}
