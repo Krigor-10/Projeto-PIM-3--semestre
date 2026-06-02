@@ -201,14 +201,28 @@ export const turmas = [
 
 /* ── Matrículas ──────────────────────────────────────────────── */
 export const matriculas = [
-  { id: 1,  alunoId: 1,  alunoNome: "Maria Isabela Branco", cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-001", status: "Aprovada",  dataSolicitacao: "2024-02-10" },
-  { id: 20, alunoId: 1,  alunoNome: "Maria Isabela Branco", cursoId: 5, cursoTitulo: "UX e UI Design",       turmaId: 5, turmaNome: "UX-2024-A",    codigoMatricula: "MAT-2023-020", status: "Aprovada",  dataSolicitacao: "2023-09-05" },
-  { id: 2, alunoId: 8,  alunoNome: "João Pedro Alves",     cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-002", status: "Aprovada",  dataSolicitacao: "2024-02-11" },
-  { id: 3, alunoId: 9,  alunoNome: "Lucas Ferreira",       cursoId: 2, cursoTitulo: "Ciência de Dados",    turmaId: 3, turmaNome: "DATA-2024-A",  codigoMatricula: "MAT-2024-003", status: "Pendente",  dataSolicitacao: "2024-03-15" },
-  { id: 4, alunoId: 10, alunoNome: "Camila Rodrigues",     cursoId: 4, cursoTitulo: "Cybersegurança",      turmaId: 4, turmaNome: "CYBER-2024-A", codigoMatricula: "MAT-2024-004", status: "Pendente",  dataSolicitacao: "2024-03-18" },
-  { id: 5, alunoId: 11, alunoNome: "Rafael Souza",         cursoId: 5, cursoTitulo: "UX e UI Design",      turmaId: 5, turmaNome: "UX-2024-A",    codigoMatricula: "MAT-2024-005", status: "Rejeitada", dataSolicitacao: "2024-01-20" },
-  { id: 6, alunoId: 12, alunoNome: "Juliana Castro",       cursoId: 6, cursoTitulo: "Robótica",            turmaId: 6, turmaNome: "ROB-2024-A",   codigoMatricula: "MAT-2024-006", status: "Aprovada",  dataSolicitacao: "2024-03-01" },
-  { id: 7, alunoId: 13, alunoNome: "Felipe Oliveira",      cursoId: 1, cursoTitulo: "Desenvolvimento Web", turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-007", status: "Pendente",  dataSolicitacao: "2024-03-20" },
+  /* WEB-2024-A */
+  { id: 1,  alunoId: 1,  alunoNome: "Maria Isabela Branco", cursoId: 1, cursoTitulo: "Desenvolvimento Web",    turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-001", status: "Aprovada", dataSolicitacao: "2024-02-10" },
+  { id: 2,  alunoId: 8,  alunoNome: "João Pedro Alves",     cursoId: 1, cursoTitulo: "Desenvolvimento Web",    turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-002", status: "Aprovada", dataSolicitacao: "2024-02-11" },
+  { id: 7,  alunoId: 13, alunoNome: "Felipe Oliveira",      cursoId: 1, cursoTitulo: "Desenvolvimento Web",    turmaId: 1, turmaNome: "WEB-2024-A",   codigoMatricula: "MAT-2024-007", status: "Aprovada", dataSolicitacao: "2024-03-20" },
+  /* DATA-2024-A */
+  { id: 3,  alunoId: 9,  alunoNome: "Lucas Ferreira",       cursoId: 2, cursoTitulo: "Ciência de Dados",       turmaId: 3, turmaNome: "DATA-2024-A",  codigoMatricula: "MAT-2024-003", status: "Aprovada", dataSolicitacao: "2024-03-15" },
+  { id: 11, alunoId: 17, alunoNome: "Gabriel Santos",       cursoId: 2, cursoTitulo: "Ciência de Dados",       turmaId: 3, turmaNome: "DATA-2024-A",  codigoMatricula: "MAT-2024-011", status: "Aprovada", dataSolicitacao: "2024-04-06" },
+  { id: 15, alunoId: 21, alunoNome: "Vitor Hugo Lima",      cursoId: 2, cursoTitulo: "Ciência de Dados",       turmaId: 3, turmaNome: "DATA-2024-A",  codigoMatricula: "MAT-2024-015", status: "Aprovada", dataSolicitacao: "2024-03-06" },
+  /* IA-2024-A */
+  { id: 8,  alunoId: 14, alunoNome: "Beatriz Mendonça",     cursoId: 3, cursoTitulo: "Inteligência Artificial", turmaId: 7, turmaNome: "IA-2024-A",    codigoMatricula: "MAT-2024-008", status: "Aprovada", dataSolicitacao: "2024-03-23" },
+  { id: 14, alunoId: 20, alunoNome: "Isabela Teixeira",     cursoId: 3, cursoTitulo: "Inteligência Artificial", turmaId: 7, turmaNome: "IA-2024-A",    codigoMatricula: "MAT-2024-014", status: "Aprovada", dataSolicitacao: "2024-04-13" },
+  /* CYBER-2024-A */
+  { id: 4,  alunoId: 10, alunoNome: "Camila Rodrigues",     cursoId: 4, cursoTitulo: "Cybersegurança",          turmaId: 4, turmaNome: "CYBER-2024-A", codigoMatricula: "MAT-2024-004", status: "Aprovada", dataSolicitacao: "2024-03-18" },
+  { id: 10, alunoId: 16, alunoNome: "Larissa Monteiro",     cursoId: 4, cursoTitulo: "Cybersegurança",          turmaId: 4, turmaNome: "CYBER-2024-A", codigoMatricula: "MAT-2024-010", status: "Aprovada", dataSolicitacao: "2024-04-03" },
+  /* UX-2024-A */
+  { id: 20, alunoId: 1,  alunoNome: "Maria Isabela Branco", cursoId: 5, cursoTitulo: "UX e UI Design",          turmaId: 5, turmaNome: "UX-2024-A",    codigoMatricula: "MAT-2023-020", status: "Aprovada", dataSolicitacao: "2023-09-05" },
+  { id: 5,  alunoId: 11, alunoNome: "Rafael Souza",         cursoId: 5, cursoTitulo: "UX e UI Design",          turmaId: 5, turmaNome: "UX-2024-A",    codigoMatricula: "MAT-2024-005", status: "Rejeitada", dataSolicitacao: "2024-01-20" },
+  { id: 9,  alunoId: 15, alunoNome: "Thiago Carvalho",      cursoId: 5, cursoTitulo: "UX e UI Design",          turmaId: 5, turmaNome: "UX-2024-A",    codigoMatricula: "MAT-2024-009", status: "Aprovada", dataSolicitacao: "2024-01-31" },
+  /* ROB-2024-A */
+  { id: 6,  alunoId: 12, alunoNome: "Juliana Castro",       cursoId: 6, cursoTitulo: "Robótica",                turmaId: 6, turmaNome: "ROB-2024-A",   codigoMatricula: "MAT-2024-006", status: "Aprovada", dataSolicitacao: "2024-03-01" },
+  { id: 13, alunoId: 19, alunoNome: "Diego Nascimento",     cursoId: 6, cursoTitulo: "Robótica",                turmaId: 6, turmaNome: "ROB-2024-A",   codigoMatricula: "MAT-2024-013", status: "Aprovada", dataSolicitacao: "2024-04-11" },
+  { id: 12, alunoId: 18, alunoNome: "Natália Freitas",      cursoId: 6, cursoTitulo: "Robótica",                turmaId: 6, turmaNome: "ROB-2024-A",   codigoMatricula: "MAT-2024-012", status: "Aprovada", dataSolicitacao: "2024-02-15" },
 ];
 
 /* ── Avaliações ──────────────────────────────────────────────── */
@@ -254,8 +268,6 @@ export const usuarios = [
   { id: 3,  nome: "Nicolas Pimentel",       email: "nicolas.pimentel@coderyse.com", tipo: "Coordenador", codigo: "CRD-2023-001", ativo: true,  dataCadastro: "2023-07-20" },
   { id: 4,  nome: "Krigor de Sousa",        email: "krigor@coderyse.com",            tipo: "Admin",       codigo: "ADM-2023-001", ativo: true,  dataCadastro: "2023-01-01" },
   { id: 5,  nome: "Ana Carvalho",           email: "ana.carvalho@coderyse.com",      tipo: "Professor",   codigo: "PRF-2023-002", ativo: true,  dataCadastro: "2023-09-10" },
-  { id: 6,  nome: "Carlos Mendes",          email: "carlos.mendes@coderyse.com",     tipo: "Professor",   codigo: "PRF-2023-003", ativo: true,  dataCadastro: "2023-10-05" },
-  { id: 7,  nome: "Fernanda Lima",          email: "fernanda.lima@coderyse.com",     tipo: "Professor",   codigo: "PRF-2023-004", ativo: false, dataCadastro: "2023-06-15" },
   { id: 8,  nome: "João Pedro Alves",       email: "joao.alves@coderyse.com",        tipo: "Aluno",       codigo: "ALU-2024-002", ativo: true,  dataCadastro: "2024-02-01" },
   { id: 9,  nome: "Lucas Ferreira",         email: "lucas.ferreira@coderyse.com",    tipo: "Aluno",       codigo: "ALU-2024-003", ativo: true,  dataCadastro: "2024-03-10" },
   { id: 10, nome: "Camila Rodrigues",       email: "camila.rodrigues@coderyse.com",  tipo: "Aluno",       codigo: "ALU-2024-004", ativo: true,  dataCadastro: "2024-03-12" },
