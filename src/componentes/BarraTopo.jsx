@@ -95,10 +95,6 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
     return () => document.removeEventListener("mousedown", fecharAoClicarFora);
   }, [popupAberto]);
 
-  function gerarIniciais(nome) {
-    return nome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
-  }
-
   function calcularGruposBusca(termo) {
     if (!termo.trim()) return [];
     const t = termo.toLowerCase();
@@ -341,7 +337,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
               <TbUserFilled size={18} style={{ color: "#fff" }} />
             </div>
             <div className="topbar__info">
-              <span className="topbar__nome">{usuario.nome.split(" ")[0]}</span>
+              <span className="topbar__nome">{(usuario.nome ?? "").split(" ")[0]}</span>
               <span className="topbar__cargo">{usuario.tipo}</span>
             </div>
             <TbChevronDown

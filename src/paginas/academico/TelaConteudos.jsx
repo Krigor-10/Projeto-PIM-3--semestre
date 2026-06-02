@@ -118,7 +118,7 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
   const ehUltima = indice === totalQuestoes - 1;
 
   function selecionar(letra) {
-    setRespostas((prev) => ({ ...prev, [questao.id]: letra }));
+    if (questao) setRespostas((prev) => ({ ...prev, [questao.id]: letra }));
   }
 
   function avancar() {

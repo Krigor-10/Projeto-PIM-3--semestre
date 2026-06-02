@@ -84,7 +84,7 @@ export default function TelaDashboardAluno({ usuario, onMudarSecao, listaCursos 
     <main className="dashboard-aluno">
       <header className="cabecalho-pagina">
         <div>
-          <h1 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h1>
+          <h1 className="cabecalho-pagina__titulo">Olá, {(usuario.nome ?? "").split(" ")[0]}</h1>
           <p className="cabecalho-pagina__subtitulo">
             Continue de onde parou e acompanhe sua trilha acadêmica.
           </p>

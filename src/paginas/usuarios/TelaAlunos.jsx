@@ -47,7 +47,24 @@ export default function TelaAlunos({ usuario, onToast }) {
   useEffect(() => { db.usuarios.salvarPorTipo("Aluno", lista); }, [lista]);
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [filtroTurma, setFiltroTurma]   = useState("");
   const [ordenacao, setOrdenacao]       = useState({ campo: "nome", direcao: "asc" });
+
+  const turmasDoProfessor = useMemo(() => {
+    if (tipo !== "Professor") return [];
+    return db.turmas.listar().filter((t) => t.professorId === usuario.id);
+  }, [tipo, usuario?.id]);
+
+  const alunosDaTurma = useMemo(() => {
+    if (tipo !== "Professor" || !filtroTurma) return null;
+    const todasMatriculas = db.matriculas.listar();
+    const ids = new Set(
+      todasMatriculas
+        .filter((m) => m.turmaId === Number(filtroTurma) && m.status === "Aprovada")
+        .map((m) => m.alunoId)
+    );
+    return ids;
+  }, [tipo, filtroTurma]);
   const [pagina, setPagina]             = useState(1);
 
   const [selecionados, setSelecionados]         = useState(new Set());
@@ -147,7 +164,8 @@ export default function TelaAlunos({ usuario, onToast }) {
   }
 
   const listaProcessada = useMemo(() => {
-    let r = lista;
+    let r = tipo === "Professor" ? lista.filter((u) => u.ativo) : lista;
+    if (alunosDaTurma) r = r.filter((u) => alunosDaTurma.has(u.id));
     if (busca.trim()) {
       const t = busca.toLowerCase();
       r = r.filter((u) => u.nome.toLowerCase().includes(t) || u.email.toLowerCase().includes(t));
@@ -161,7 +179,7 @@ export default function TelaAlunos({ usuario, onToast }) {
       if (typeof vb === "string") vb = vb.toLowerCase();
       return (va < vb ? -1 : va > vb ? 1 : 0) * (ordenacao.direcao === "asc" ? 1 : -1);
     });
-  }, [lista, busca, filtroStatus, ordenacao]);
+  }, [lista, busca, filtroStatus, ordenacao, alunosDaTurma]);
 
   const totalPaginas   = Math.max(1, Math.ceil(listaProcessada.length / ITENS_POR_PAGINA));
   const paginaSegura   = Math.min(pagina, totalPaginas);
@@ -198,7 +216,9 @@ export default function TelaAlunos({ usuario, onToast }) {
         <div>
           <h1 className="cabecalho-pagina__titulo">Alunos</h1>
           <p className="cabecalho-pagina__subtitulo">
-            {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
+            {tipo === "Professor"
+              ? `${totalAtivos} alunos ativos`
+              : `${lista.length} cadastrados · ${totalAtivos} ativos · ${totalInativos} inativos`}
           </p>
         </div>
         <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
@@ -218,7 +238,7 @@ export default function TelaAlunos({ usuario, onToast }) {
 
       {/* Filtros */}
       <div className="barra-filtros">
-        <div className="segmented-control" role="group" aria-label="Filtrar por status">
+        {tipo !== "Professor" && <div className="segmented-control" role="group" aria-label="Filtrar por status">
           {[
             { valor: "todos",    rotulo: "Todos"    },
             { valor: "ativos",   rotulo: "Ativos"   },
@@ -233,7 +253,22 @@ export default function TelaAlunos({ usuario, onToast }) {
               {rotulo}
             </button>
           ))}
-        </div>
+        </div>}
+
+        {tipo === "Professor" && turmasDoProfessor.length > 0 && (
+          <select
+            className="campo__entrada"
+            value={filtroTurma}
+            onChange={(e) => { setFiltroTurma(e.target.value); setPagina(1); }}
+            aria-label="Filtrar por turma"
+            style={{ minWidth: "200px" }}
+          >
+            <option value="">Todas as turmas</option>
+            {turmasDoProfessor.map((t) => (
+              <option key={t.id} value={t.id}>{t.nomeTurma} — {t.cursoTitulo}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Tabela */}

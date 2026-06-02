@@ -36,7 +36,7 @@ export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
     <main className="dashboard-coordenador">
       <header className="cabecalho-pagina">
         <div>
-          <h1 className="cabecalho-pagina__titulo">Olá, {usuario.nome.split(" ")[0]}</h1>
+          <h1 className="cabecalho-pagina__titulo">Olá, {(usuario.nome ?? "").split(" ")[0]}</h1>
           <p className="cabecalho-pagina__subtitulo">
             Acompanhe turmas, cursos e indicadores acadêmicos.
           </p>

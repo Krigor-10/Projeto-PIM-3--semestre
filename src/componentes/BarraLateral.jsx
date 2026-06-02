@@ -208,10 +208,6 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, on
     return lista;
   })();
 
-  function gerarIniciais(nome) {
-    return nome.split(" ").slice(0, 2).map((parte) => parte[0]).join("").toUpperCase();
-  }
-
   function renderBadge(chave) {
     if (chave === "matriculas" && pendentes > 0)
       return <span className="sidebar__badge" aria-label={`${pendentes} matrículas pendentes`}>{pendentes}</span>;

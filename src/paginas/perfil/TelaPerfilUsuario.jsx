@@ -21,10 +21,6 @@ const variantePorTipo = {
   Admin:       "erro",
 };
 
-function gerarIniciais(nome) {
-  return nome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
-}
-
 export default function TelaPerfilUsuario({ usuario, onToast }) {
   const navigate = useNavigate();
   const { state: navState } = useLocation();

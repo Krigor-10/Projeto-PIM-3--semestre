@@ -35,7 +35,7 @@ export default function ModalEdicaoUsuario({ usuario, onSalvar, onFechar }) {
 
         {/* Avatar textual com iniciais — decorativo, oculto para leitores de tela */}
         <div className="modal-edicao__avatar" aria-hidden="true">
-          {usuario.nome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
+          {(usuario.nome ?? "").split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
         </div>
 
         <fieldset className="formulario-modal__grupo">

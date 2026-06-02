@@ -20,7 +20,7 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
     <main className="dashboard-professor">
       <header className="cabecalho-pagina">
         <div>
-          <h1 className="cabecalho-pagina__titulo">Olá, Prof. {usuario.nome.split(" ")[0]}</h1>
+          <h1 className="cabecalho-pagina__titulo">Olá, Prof. {(usuario.nome ?? "").split(" ")[0]}</h1>
           <p className="cabecalho-pagina__subtitulo">
             Gerencie suas turmas, avaliações e conteúdos didáticos.
           </p>
