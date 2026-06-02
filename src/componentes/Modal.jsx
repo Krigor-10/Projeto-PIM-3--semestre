@@ -1,3 +1,8 @@
+/* ============================================================
+   MODAL — Diálogo acessível reutilizável
+   Fecha com Escape, prende foco internamente (focus trap) e
+   bloqueia interação com o fundo via aria-modal="true".
+   ============================================================ */
 import { useEffect } from "react";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 

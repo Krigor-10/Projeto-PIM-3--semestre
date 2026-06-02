@@ -12,7 +12,7 @@ import { turmas, avaliacoes, estatisticasProfessor } from "@/dados/dadosMock.js"
 
 export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
   /* Filtra por professorId para exibir apenas as turmas deste professor */
-  const minhasTurmas = turmas.filter((t) => t.professorId === usuario.id).slice(0, 3);
+  const minhasTurmas = turmas.filter((t) => t.professorId === usuario?.id).slice(0, 3);
   /* Avaliações recentes — lista as 4 mais recentes do mock geral */
   const minhasAvaliacoes = avaliacoes.slice(0, 4);
 

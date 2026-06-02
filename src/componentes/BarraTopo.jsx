@@ -1,3 +1,8 @@
+/* ============================================================
+   BARRA TOPO — Cabeçalho global do workspace
+   Exibe título da seção ativa, busca global, menu de perfil
+   e hamburger mobile. Visível em todas as telas autenticadas.
+   ============================================================ */
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";

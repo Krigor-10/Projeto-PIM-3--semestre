@@ -1,3 +1,8 @@
+/* ============================================================
+   BARRA LATERAL — Navegação principal por seção
+   Exibe grupos de seções filtrados pelo perfil do usuário,
+   destaca a seção ativa e oferece atalho para perfil e logout.
+   ============================================================ */
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";

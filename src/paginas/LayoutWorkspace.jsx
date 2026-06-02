@@ -1,3 +1,8 @@
+/* ============================================================
+   LAYOUT WORKSPACE — Shell autenticado da CodeRyse Academy
+   Controla navegação interna por seção, renderização condicional
+   de telas por perfil de acesso e exibição do sistema de toast.
+   ============================================================ */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { rotaPainelSecao } from "@/rotas.js";

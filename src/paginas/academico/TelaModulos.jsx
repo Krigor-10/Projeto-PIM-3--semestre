@@ -30,7 +30,8 @@ const DESEMPENHO_MODULO = {
 };
 
 /* ── Modal de detalhes do módulo: KPIs + avaliações + conteúdos ── */
-function ModalDetalhesModulo({ modulo, curso, visivel, onSolicitarVisibilidade, onFechar, onSalvar, onToast }) {
+function ModalDetalhesModulo({ modulo, curso, tipo, visivel, onSolicitarVisibilidade, onFechar, onSalvar, onToast }) {
+  const podeAlterarVisibilidade = tipo === "Admin" || tipo === "Coordenador";
   const conteudosMod  = conteudos.filter((c) => c.moduloId === modulo.id);
   const avaliacoesMod = avaliacoes.filter((a) => a.moduloId === modulo.id);
   /* Soma alunos de todas as turmas do curso para exibir o total */
@@ -102,27 +103,29 @@ function ModalDetalhesModulo({ modulo, curso, visivel, onSolicitarVisibilidade, 
           )}
         </section>
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--espaco-md) 0", borderTop: "1px solid var(--cor-borda)" }}>
-          <span style={{ fontSize: "0.875rem", color: "var(--cor-texto-forte)", fontWeight: 600 }}>Visível para alunos</span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={visivel}
-            onClick={() => onSolicitarVisibilidade(!visivel)}
-            style={{
-              width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
-              background: visivel ? "var(--cor-sucesso)" : "var(--cor-borda)",
-              position: "relative", transition: "background 0.2s", flexShrink: 0,
-            }}
-            aria-label="Alternar visibilidade do módulo"
-          >
-            <span style={{
-              position: "absolute", top: 3, left: visivel ? 23 : 3,
-              width: 18, height: 18, borderRadius: "50%", background: "#fff",
-              transition: "left 0.2s", display: "block",
-            }} />
-          </button>
-        </div>
+        {podeAlterarVisibilidade && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--espaco-md) 0", borderTop: "1px solid var(--cor-borda)" }}>
+            <span style={{ fontSize: "0.875rem", color: "var(--cor-texto-forte)", fontWeight: 600 }}>Visível para alunos</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={visivel}
+              onClick={() => onSolicitarVisibilidade(!visivel)}
+              style={{
+                width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
+                background: visivel ? "var(--cor-sucesso)" : "var(--cor-borda)",
+                position: "relative", transition: "background 0.2s", flexShrink: 0,
+              }}
+              aria-label="Alternar visibilidade do módulo"
+            >
+              <span style={{
+                position: "absolute", top: 3, left: visivel ? 23 : 3,
+                width: 18, height: 18, borderRadius: "50%", background: "#fff",
+                transition: "left 0.2s", display: "block",
+              }} />
+            </button>
+          </div>
+        )}
 
         <footer className="modal-rodape">
           <Botao variante="perigo" onClick={onFechar} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
@@ -464,6 +467,7 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
         <ModalDetalhesModulo
           modulo={moduloDetalhe}
           curso={cursosDisponiveis.find((c) => c.id === moduloDetalhe.cursoId)}
+          tipo={tipo}
           visivel={visivelAtual}
           onSolicitarVisibilidade={(novoValor) => setConfirmacaoVisib({ novoValor })}
           onFechar={() => { setModuloDetalhe(null); setConfirmacaoVisib(null); }}
