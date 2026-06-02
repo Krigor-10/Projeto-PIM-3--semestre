@@ -282,7 +282,7 @@ export default function TelaProfessores({ usuario, onToast }) {
             className="campo__entrada barra-filtros__busca"
             placeholder="Buscar por nome ou e-mail…"
             value={busca}
-            onChange={(e) => { setBusca(e.target.value); setPagina(1); }}
+            onChange={(e) => { setBusca(e.target.value); setFiltroTurma(""); setPagina(1); }}
             style={{ width: "100%", paddingLeft: "32px" }}
           />
         </div>
@@ -328,7 +328,7 @@ export default function TelaProfessores({ usuario, onToast }) {
           <select
             className="campo__entrada"
             value={filtroTurma}
-            onChange={(e) => { setFiltroTurma(e.target.value); setPagina(1); }}
+            onChange={(e) => { setFiltroTurma(e.target.value); setBusca(""); setPagina(1); }}
             aria-label="Filtrar por turma"
             style={{ minWidth: "200px" }}
           >
