@@ -298,8 +298,8 @@ function QuizRapidoModal({ modulo, questoes, onFechar, onAprovado, onProximoModu
 function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMudarSecao, onConteudoConcluido, onAlternarConclusao, conteudosConcluidos, ativo }) {
   const curso = cursos.find((c) => c.id === matricula.cursoId);
 
-  const modulosDoCurso = modulos
-    .filter((m) => m.cursoId === matricula.cursoId)
+  const modulosDoCurso = db.modulos.listar()
+    .filter((m) => m.cursoId === matricula.cursoId && m.visivel !== false)
     .sort((a, b) => a.ordem - b.ordem);
 
   const conteudosDoCurso = conteudos.filter((c) =>
@@ -818,12 +818,13 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
 
 /* ── Slide de uma turma (visão do professor) ─────────────────── */
 
-function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExcluirQuiz, onExcluirConteudo, conteudosExtras = [], conteudosExcluidos = new Set() }) {
+function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExcluirQuiz, conteudosExtras = [], conteudosExcluidos = new Set(), conteudosOcultos = new Set(), onAlterarVisibilidadeCont }) {
   const [modulosAbertos, setModulosAbertos]         = useState(() => new Set());
   const [menuConteudoAberto, setMenuConteudoAberto] = useState(null);
   const [modalOpcoesCont, setModalOpcoesCont]       = useState(null);
   const [confirmarExcluirQuiz, setConfirmarExcluirQuiz]     = useState(false);
-  const [confirmarExcluirCont, setConfirmarExcluirCont]     = useState(null);
+  const [visivelCont, setVisivelCont]               = useState(true);
+  const [confirmacaoVisibCont, setConfirmacaoVisibCont]     = useState(null);
   const [conteudoEditando, setConteudoEditando]             = useState(null);
 
   useEffect(() => {
@@ -969,7 +970,12 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                         {(() => { const Ic = config.Icone ?? IconePadrao; return <Ic size={18} aria-hidden="true" />; })()}
                       </button>
                       <div className="cartao-conteudo__info">
-                        <h4 className="cartao-conteudo__titulo">{cont.titulo}</h4>
+                        <h4 className="cartao-conteudo__titulo" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          {cont.titulo}
+                          {conteudosOcultos.has(cont.id) && (
+                            <span style={{ fontSize: "0.68rem", fontWeight: 600, color: "var(--cor-texto-mudo)", background: "var(--cor-borda)", borderRadius: "4px", padding: "1px 6px", letterSpacing: "0.04em" }}>oculto</span>
+                          )}
+                        </h4>
                         <p className="cartao-conteudo__modulo">{config.rotulo} · {cont.duracao}</p>
                       </div>
 
@@ -1003,8 +1009,7 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                           ><TbDotsVertical size={18} aria-hidden="true" /></button>
                           {menuConteudoAberto === cont.id && (
                             <ul className="menu-contexto__lista" role="menu">
-                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setModalOpcoesCont({ cont, modulo }); setMenuConteudoAberto(null); }}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
-                              <li><button type="button" className="menu-item--perigo" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={(e) => { e.stopPropagation(); setConfirmarExcluirCont(cont); setMenuConteudoAberto(null); }}><TbTrash size={20} aria-hidden="true" />Excluir</button></li>
+                              <li><button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setVisivelCont(!conteudosOcultos.has(cont.id)); setModalOpcoesCont({ cont, modulo }); setMenuConteudoAberto(null); }}><TbSettings size={20} aria-hidden="true" />Opções</button></li>
                             </ul>
                           )}
                         </div>
@@ -1107,22 +1112,6 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
         document.body
       )}
 
-      {confirmarExcluirCont && (
-        <Modal titulo="Excluir conteúdo" onFechar={() => setConfirmarExcluirCont(null)}>
-          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
-            Deseja excluir <strong>{confirmarExcluirCont.titulo}</strong>? Esta ação não pode ser desfeita.
-          </p>
-          <footer className="modal-rodape">
-            <Botao variante="perigo" onClick={() => setConfirmarExcluirCont(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
-              <TbX size={15} aria-hidden="true" /> Cancelar
-            </Botao>
-            <Botao variante="sucesso" onClick={() => { onExcluirConteudo(confirmarExcluirCont); setConfirmarExcluirCont(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }} variants={{ hover: { y: -1 } }} whileHover="hover">
-              <TbTrash size={15} aria-hidden="true" /> Confirmar
-            </Botao>
-          </footer>
-        </Modal>
-      )}
-
       {modalOpcoesCont && createPortal(
         <Modal
           titulo={modalOpcoesCont.cont.titulo}
@@ -1158,20 +1147,6 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                         style={{ display: "flex" }}
                       >
                         <TbPencil size={19} aria-hidden="true" />
-                      </motion.span>
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Excluir conteúdo ${cont.titulo}`}
-                      style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", padding: "2px" }}
-                      onClick={() => { onExcluirConteudo(cont); setModalOpcoesCont(null); }}
-                    >
-                      <motion.span
-                        whileHover={{ scale: 1.3, rotate: -15 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 10 }}
-                        style={{ display: "flex" }}
-                      >
-                        <MdDelete size={21} aria-hidden="true" />
                       </motion.span>
                     </button>
                   </div>
@@ -1239,13 +1214,52 @@ function SlideCursoProfessor({ turma, tipo, onNovoConteudo, onAbrirQuiz, onExclu
                   <Botao variante="perigo" tamanho="pequeno" onClick={() => setModalOpcoesCont(null)} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}>
                     <TbX size={15} aria-hidden="true" /> Cancelar
                   </Botao>
-                  <Botao variante="primario" tamanho="pequeno" onClick={() => setModalOpcoesCont(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--cor-texto-suave)" }}>
+                      {visivelCont ? "Visível" : "Oculto"}
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={visivelCont}
+                      onClick={() => setConfirmacaoVisibCont({ novoValor: !visivelCont })}
+                      style={{
+                        width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
+                        background: visivelCont ? "var(--cor-sucesso)" : "var(--cor-borda)",
+                        position: "relative", transition: "background 0.2s", flexShrink: 0,
+                      }}
+                      aria-label="Alternar visibilidade do conteúdo"
+                    >
+                      <span style={{
+                        position: "absolute", top: 3, left: visivelCont ? 23 : 3,
+                        width: 18, height: 18, borderRadius: "50%", background: "#fff",
+                        transition: "left 0.2s", display: "block",
+                      }} />
+                    </button>
+                  </div>
+                  <Botao variante="primario" tamanho="pequeno" onClick={() => { onAlterarVisibilidadeCont?.(cont.id, visivelCont); setModalOpcoesCont(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <MdSave size={15} aria-hidden="true" /> Salvar
                   </Botao>
                 </footer>
               </>
             );
           })()}
+        </Modal>,
+        document.body
+      )}
+      {confirmacaoVisibCont && createPortal(
+        <Modal titulo="Confirmar alteração" onFechar={() => setConfirmacaoVisibCont(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            {confirmacaoVisibCont.novoValor ? "Tornar este conteúdo visível para os alunos?" : "Ocultar este conteúdo dos alunos?"}
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmacaoVisibCont(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao variante="primario" onClick={() => { setVisivelCont(confirmacaoVisibCont.novoValor); setConfirmacaoVisibCont(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbCheck size={15} aria-hidden="true" /> Confirmar
+            </Botao>
+          </footer>
         </Modal>,
         document.body
       )}
@@ -1268,6 +1282,7 @@ function VistaProfessor({ usuario, onToast }) {
   const [anexoContProf, setAnexoContProf]   = useState("");
   const [conteudosLocais, setConteudosLocais]       = useState([]);
   const [conteudosExcluidos, setConteudosExcluidos] = useState(() => new Set());
+  const [conteudosOcultos, setConteudosOcultos]     = useState(() => new Set());
   const [modalQuizModulo, setModalQuizModulo] = useState(null);
   const [questoesDb, setQuestoesDb]         = useState(() => db.questoes.listar());
   const [formQuestao, setFormQuestao]       = useState(null);
@@ -1314,6 +1329,15 @@ function VistaProfessor({ usuario, onToast }) {
     setConteudosExcluidos((prev) => new Set([...prev, cont.id]));
     setConteudosLocais((prev) => prev.filter((c) => c.id !== cont.id));
     onToast?.(`"${cont.titulo}" excluído.`, "aviso");
+  }
+
+  function alterarVisibilidadeCont(id, visivel) {
+    setConteudosOcultos((prev) => {
+      const copia = new Set(prev);
+      visivel ? copia.delete(id) : copia.add(id);
+      return copia;
+    });
+    onToast?.(visivel ? "Conteúdo visível para os alunos." : "Conteúdo ocultado dos alunos.", "sucesso");
   }
 
   function excluirTodoQuiz(modulo) {
@@ -1481,9 +1505,10 @@ function VistaProfessor({ usuario, onToast }) {
           onNovoConteudo={(modulo = null) => { setModuloModal(modulo); setModalAberto(true); }}
           onAbrirQuiz={abrirModalQuiz}
           onExcluirQuiz={excluirTodoQuiz}
-          onExcluirConteudo={excluirConteudo}
           conteudosExtras={conteudosLocais}
           conteudosExcluidos={conteudosExcluidos}
+          conteudosOcultos={conteudosOcultos}
+          onAlterarVisibilidadeCont={alterarVisibilidadeCont}
         />
       </div>
 

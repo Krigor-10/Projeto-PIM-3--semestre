@@ -7,7 +7,7 @@
    ============================================================ */
 import { useState, useEffect } from "react";
 import { siglasCurso } from "@/utils/siglas.js";
-import { TbDotsVertical, TbPlus, TbSettings, TbX, TbStack, TbFileText, TbTrash } from "react-icons/tb";
+import { TbDotsVertical, TbPlus, TbSettings, TbX, TbStack, TbFileText, TbTrash, TbCheck } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { MdSave, MdLayers } from "react-icons/md";
 import Modal from "@/componentes/Modal.jsx";
@@ -17,7 +17,7 @@ import Botao from "@/componentes/Botao.jsx";
 import SelectSimples from "@/componentes/SelectSimples.jsx";
 import { turmas, avaliacoes, conteudos } from "@/dados/dadosMock.js";
 import { db } from "@/dados/db.js";
-import { podeCriar } from "@/dados/permissoes.js";
+import { podeCriar, podeExcluir } from "@/dados/permissoes.js";
 
 /* Dados de desempenho médio por módulo (mock estático, chaveado por moduloId) */
 const DESEMPENHO_MODULO = {
@@ -30,7 +30,7 @@ const DESEMPENHO_MODULO = {
 };
 
 /* ── Modal de detalhes do módulo: KPIs + avaliações + conteúdos ── */
-function ModalDetalhesModulo({ modulo, curso, onFechar }) {
+function ModalDetalhesModulo({ modulo, curso, visivel, onSolicitarVisibilidade, onFechar, onSalvar, onToast }) {
   const conteudosMod  = conteudos.filter((c) => c.moduloId === modulo.id);
   const avaliacoesMod = avaliacoes.filter((a) => a.moduloId === modulo.id);
   /* Soma alunos de todas as turmas do curso para exibir o total */
@@ -102,8 +102,37 @@ function ModalDetalhesModulo({ modulo, curso, onFechar }) {
           )}
         </section>
 
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--espaco-md) 0", borderTop: "1px solid var(--cor-borda)" }}>
+          <span style={{ fontSize: "0.875rem", color: "var(--cor-texto-forte)", fontWeight: 600 }}>Visível para alunos</span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={visivel}
+            onClick={() => onSolicitarVisibilidade(!visivel)}
+            style={{
+              width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
+              background: visivel ? "var(--cor-sucesso)" : "var(--cor-borda)",
+              position: "relative", transition: "background 0.2s", flexShrink: 0,
+            }}
+            aria-label="Alternar visibilidade do módulo"
+          >
+            <span style={{
+              position: "absolute", top: 3, left: visivel ? 23 : 3,
+              width: 18, height: 18, borderRadius: "50%", background: "#fff",
+              transition: "left 0.2s", display: "block",
+            }} />
+          </button>
+        </div>
+
         <footer className="modal-rodape">
           <Botao variante="perigo" onClick={onFechar} style={{ display: "flex", alignItems: "center", gap: "6px", marginRight: "auto" }}><TbX size={15} aria-hidden="true" /> Fechar</Botao>
+          <Botao variante="primario" onClick={() => {
+            onSalvar?.({ ...modulo, visivel });
+            onToast?.(visivel ? "Módulo visível para os alunos." : "Módulo ocultado dos alunos.", "sucesso");
+            onFechar();
+          }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <MdSave size={16} aria-hidden="true" /> Salvar
+          </Botao>
         </footer>
       </div>
     </Modal>
@@ -218,17 +247,19 @@ function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhe
                           <TbSettings size={20} aria-hidden="true" />Opções
                         </button>
                       </li>
-                      <li>
-                        <button
-                          type="button"
-                          role="menuitem"
-                          className="menu-item--perigo"
-                          style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                          onClick={() => { onExcluir(mod); onToggleMenu(null); }}
-                        >
-                          <TbTrash size={20} aria-hidden="true" />Excluir
-                        </button>
-                      </li>
+                      {onExcluir && (
+                        <li>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            className="menu-item--perigo"
+                            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                            onClick={() => { onExcluir(mod); onToggleMenu(null); }}
+                          >
+                            <TbTrash size={20} aria-hidden="true" />Excluir
+                          </button>
+                        </li>
+                      )}
                     </ul>
                   )}
                 </div>
@@ -250,6 +281,8 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
   const [listaModulos, setListaModulos]     = useState(() => db.modulos.listar());
   const [menuModuloAberto, setMenuModuloAberto] = useState(null);
   const [moduloDetalhe, setModuloDetalhe]   = useState(null);
+  const [visivelAtual, setVisivelAtual]     = useState(false);
+  const [confirmacaoVisib, setConfirmacaoVisib] = useState(null); // null | { novoValor: bool }
   const [moduloParaExcluir, setModuloParaExcluir] = useState(null);
 
   /* Persiste alterações de módulos no localStorage a cada mudança */
@@ -263,9 +296,10 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
     return () => document.removeEventListener("click", fechar);
   }, [menuModuloAberto]);
 
-  const tipo          = usuario?.tipo;
-  const ehProfessor   = tipo === "Professor";
-  const ehCoordenador = tipo === "Coordenador";
+  const tipo            = usuario?.tipo;
+  const ehProfessor     = tipo === "Professor";
+  const ehCoordenador   = tipo === "Coordenador";
+  const podeExcluir_    = podeExcluir(tipo, "modulos");
 
   /* Sets de IDs para filtrar cursos e módulos por perfil em O(1) */
   const cursosIdsProfessor = ehProfessor
@@ -403,8 +437,8 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
               itens={grupos[slide].itens}
               menuModuloAberto={menuModuloAberto}
               onToggleMenu={(id) => setMenuModuloAberto((prev) => (prev === id ? null : id))}
-              onVerDetalhes={(mod) => setModuloDetalhe(mod)}
-              onExcluir={(mod) => setModuloParaExcluir(mod)}
+              onVerDetalhes={(mod) => { setModuloDetalhe(mod); setVisivelAtual(mod.visivel !== false); }}
+              onExcluir={podeExcluir_ ? (mod) => setModuloParaExcluir(mod) : null}
             />
           </div>
         </div>
@@ -430,8 +464,27 @@ export default function TelaModulos({ usuario, listaCursos, onToast }) {
         <ModalDetalhesModulo
           modulo={moduloDetalhe}
           curso={cursosDisponiveis.find((c) => c.id === moduloDetalhe.cursoId)}
-          onFechar={() => setModuloDetalhe(null)}
+          visivel={visivelAtual}
+          onSolicitarVisibilidade={(novoValor) => setConfirmacaoVisib({ novoValor })}
+          onFechar={() => { setModuloDetalhe(null); setConfirmacaoVisib(null); }}
+          onSalvar={(atualizado) => setListaModulos((prev) => prev.map((m) => m.id === atualizado.id ? atualizado : m))}
+          onToast={onToast}
         />
+      )}
+      {confirmacaoVisib && (
+        <Modal titulo="Confirmar alteração" onFechar={() => setConfirmacaoVisib(null)}>
+          <p style={{ color: "var(--cor-texto-suave)", marginBottom: "var(--espaco-xl)" }}>
+            {confirmacaoVisib.novoValor ? "Tornar este módulo visível para os alunos?" : "Ocultar este módulo dos alunos?"}
+          </p>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" onClick={() => setConfirmacaoVisib(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbX size={15} aria-hidden="true" /> Cancelar
+            </Botao>
+            <Botao variante="primario" onClick={() => { setVisivelAtual(confirmacaoVisib.novoValor); setConfirmacaoVisib(null); }} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <TbCheck size={15} aria-hidden="true" /> Confirmar
+            </Botao>
+          </footer>
+        </Modal>
       )}
 
       {/* ── Modal: criar novo módulo ── */}

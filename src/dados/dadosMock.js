@@ -165,28 +165,28 @@ export const cursos = [
 /* ── Módulos por curso ───────────────────────────────────────── */
 export const modulos = [
   /* Desenvolvimento Web (cursoId: 1) */
-  { id: 1, cursoId: 1, codigoRegistro: "MOD-001", titulo: "Fundamentos de HTML5", ordem: 1, totalConteudos: 3 },
-  { id: 2, cursoId: 1, codigoRegistro: "MOD-002", titulo: "CSS3 e Responsividade", ordem: 2, totalConteudos: 3 },
+  { id: 1, cursoId: 1, codigoRegistro: "MOD-001", titulo: "Fundamentos de HTML5",              ordem: 1, totalConteudos: 3,  visivel: true },
+  { id: 2, cursoId: 1, codigoRegistro: "MOD-002", titulo: "CSS3 e Responsividade",             ordem: 2, totalConteudos: 3,  visivel: true },
 
   /* Ciência de Dados (cursoId: 2) */
-  { id: 6,  cursoId: 2, codigoRegistro: "MOD-006", titulo: "Python para Análise de Dados",  ordem: 1, totalConteudos: 10 },
-  { id: 7,  cursoId: 2, codigoRegistro: "MOD-007", titulo: "Pandas e Visualização",          ordem: 2, totalConteudos: 8  },
+  { id: 6,  cursoId: 2, codigoRegistro: "MOD-006", titulo: "Python para Análise de Dados",    ordem: 1, totalConteudos: 10, visivel: true },
+  { id: 7,  cursoId: 2, codigoRegistro: "MOD-007", titulo: "Pandas e Visualização",            ordem: 2, totalConteudos: 8,  visivel: true },
 
   /* Inteligência Artificial (cursoId: 3) */
-  { id: 8,  cursoId: 3, codigoRegistro: "MOD-008", titulo: "Fundamentos de IA",              ordem: 1, totalConteudos: 9  },
-  { id: 9,  cursoId: 3, codigoRegistro: "MOD-009", titulo: "Redes Neurais com Python",       ordem: 2, totalConteudos: 11 },
+  { id: 8,  cursoId: 3, codigoRegistro: "MOD-008", titulo: "Fundamentos de IA",               ordem: 1, totalConteudos: 9,  visivel: true },
+  { id: 9,  cursoId: 3, codigoRegistro: "MOD-009", titulo: "Redes Neurais com Python",        ordem: 2, totalConteudos: 11, visivel: true },
 
   /* Cybersegurança (cursoId: 4) */
-  { id: 10, cursoId: 4, codigoRegistro: "MOD-010", titulo: "Fundamentos de Cybersegurança",  ordem: 1, totalConteudos: 8  },
-  { id: 11, cursoId: 4, codigoRegistro: "MOD-011", titulo: "Pentest e OWASP",                ordem: 2, totalConteudos: 10 },
+  { id: 10, cursoId: 4, codigoRegistro: "MOD-010", titulo: "Fundamentos de Cybersegurança",   ordem: 1, totalConteudos: 8,  visivel: true },
+  { id: 11, cursoId: 4, codigoRegistro: "MOD-011", titulo: "Pentest e OWASP",                 ordem: 2, totalConteudos: 10, visivel: true },
 
   /* UX e UI Design (cursoId: 5) */
-  { id: 12, cursoId: 5, codigoRegistro: "MOD-012", titulo: "Design Thinking e Pesquisa",         ordem: 1, totalConteudos: 1 },
-  { id: 16, cursoId: 5, codigoRegistro: "MOD-016", titulo: "Sistemas de Design e Acessibilidade", ordem: 2, totalConteudos: 1 },
+  { id: 12, cursoId: 5, codigoRegistro: "MOD-012", titulo: "Design Thinking e Pesquisa",          ordem: 1, totalConteudos: 1, visivel: true },
+  { id: 16, cursoId: 5, codigoRegistro: "MOD-016", titulo: "Sistemas de Design e Acessibilidade", ordem: 2, totalConteudos: 1, visivel: true },
 
   /* Robótica (cursoId: 6) */
-  { id: 14, cursoId: 6, codigoRegistro: "MOD-014", titulo: "Eletrônica para Robótica",       ordem: 1, totalConteudos: 8  },
-  { id: 15, cursoId: 6, codigoRegistro: "MOD-015", titulo: "Arduino e Sensores",             ordem: 2, totalConteudos: 10 },
+  { id: 14, cursoId: 6, codigoRegistro: "MOD-014", titulo: "Eletrônica para Robótica",        ordem: 1, totalConteudos: 8,  visivel: true },
+  { id: 15, cursoId: 6, codigoRegistro: "MOD-015", titulo: "Arduino e Sensores",              ordem: 2, totalConteudos: 10, visivel: true },
 ];
 
 /* ── Turmas ──────────────────────────────────────────────────── */
