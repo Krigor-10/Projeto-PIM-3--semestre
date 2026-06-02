@@ -12,6 +12,7 @@ import { conteudos, cursos, modulos, matriculas, turmas } from "@/dados/dadosMoc
 import { db } from "@/dados/db.js";
 import { questoesQuiz } from "@/dados/questoesQuiz.js";
 import { podeCriar, podeEditar, podeExcluir } from "@/dados/permissoes.js";
+import imgPreview from "@/ativos/curso-dev-web.png";
 
 /* Ícones e rótulos semânticos por tipo de conteúdo */
 const TIPO_CONFIG = {
@@ -761,23 +762,14 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                         <TbBrain size={18} aria-hidden="true" /> Iniciar Quiz
                       </button>
                     </motion.div>
-                  ) : cont.tipo === "Video" ? (
-                    <div className="preview-conteudo__video-placeholder">
-                      <TbPlayerPlay size={64} aria-hidden="true" />
-                      <p>Pré-visualização de vídeo</p>
-                      <span>{cont.titulo}</span>
-                    </div>
-                  ) : cont.tipo === "Texto" ? (
-                    <div className="preview-conteudo__texto-placeholder">
-                      <TbAlignLeft size={36} aria-hidden="true" />
-                      <p>Conteúdo em texto</p>
-                      <span>{cont.titulo}</span>
-                    </div>
                   ) : (
-                    <div className="preview-conteudo__doc-placeholder">
-                      <TbFileDescription size={36} aria-hidden="true" />
-                      <p>Documento disponível</p>
-                      <span>{cont.titulo}</span>
+                    <div className="preview-conteudo__thumb">
+                      <img src={imgPreview} alt={cont.titulo} className="preview-conteudo__thumb-img" />
+                      <div className="preview-conteudo__thumb-overlay">
+                        {cont.tipo === "Video" && <TbPlayerPlay size={48} aria-hidden="true" />}
+                        {cont.tipo === "Texto" && <TbAlignLeft size={36} aria-hidden="true" />}
+                        {cont.tipo === "Documento" && <TbFileDescription size={36} aria-hidden="true" />}
+                      </div>
                     </div>
                   )}
 

@@ -7,9 +7,9 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle, TbX, TbRefresh, TbCheck, TbSearch, TbUserFilled,
+  TbUserCircle, TbX, TbSearch, TbUserFilled,
 } from "react-icons/tb";
-import { resetar, db } from "@/dados/db.js";
+import { db } from "@/dados/db.js";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
 import { MdLogout, MdSettings } from "react-icons/md";
 import Insignia from "./Insignia.jsx";
@@ -67,7 +67,6 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
   const navigate = useNavigate();
   const [popupAberto, setPopupAberto] = useState(false);
   const [confirmarSaida, setConfirmarSaida] = useState(false);
-  const [confirmandoReset, setConfirmandoReset] = useState(false);
   const [temaClaro, setTemaClaro] = useState(
     () => localStorage.getItem("coderyse-tema") === "claro"
   );
@@ -307,24 +306,6 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
               <TbWorld size={18} aria-hidden="true" />
               <span className="topbar__atalho-certificados-label">Catálogo</span>
             </motion.button>
-            <span className="topbar__separador" aria-hidden="true" />
-            {!confirmandoReset ? (
-              <button
-                type="button"
-                className="topbar__btn-reset"
-                onClick={() => setConfirmandoReset(true)}
-                aria-label="Resetar dados de teste"
-              >
-                <TbRefresh size={15} aria-hidden="true" />
-                <span>Reset</span>
-              </button>
-            ) : (
-              <div className="topbar__reset-confirm">
-                <span>Resetar?</span>
-                <button type="button" className="topbar__btn-reset topbar__btn-reset--sim" onClick={() => { resetar(); window.location.reload(); }} style={{ display: "flex", alignItems: "center", gap: "3px" }}><TbCheck size={13} aria-hidden="true" />Sim</button>
-                <button type="button" className="topbar__btn-reset topbar__btn-reset--nao" onClick={() => setConfirmandoReset(false)} style={{ display: "flex", alignItems: "center", gap: "3px" }}><TbX size={13} aria-hidden="true" />Não</button>
-              </div>
-            )}
             <span className="topbar__separador" aria-hidden="true" />
           </>
         )}

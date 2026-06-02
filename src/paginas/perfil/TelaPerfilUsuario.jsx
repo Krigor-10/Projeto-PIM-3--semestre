@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { TbMail, TbPhone, TbMapPin, TbUser, TbEdit, TbLock, TbX, TbUserCircle, TbSettings, TbSun, TbMoon, TbArrowLeft, TbUserFilled } from "react-icons/tb";
+import { TbMail, TbPhone, TbMapPin, TbUser, TbEdit, TbLock, TbX, TbCheck, TbRefresh, TbUserCircle, TbSettings, TbSun, TbMoon, TbArrowLeft, TbUserFilled } from "react-icons/tb";
 import { MdSave } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
+import { resetar } from "@/dados/db.js";
 import Insignia from "@/componentes/Insignia.jsx";
 
 const corPorTipo = {
@@ -37,6 +38,7 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
     document.documentElement.dataset.tema = temaClaro ? "claro" : "escuro";
     localStorage.setItem("coderyse-tema", temaClaro ? "claro" : "escuro");
   }, [temaClaro]);
+  const [confirmandoReset, setConfirmandoReset] = useState(false);
   const [form, setForm] = useState({
     nome:     usuario.nome     ?? "",
     email:    usuario.email    ?? "",
@@ -321,6 +323,31 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
                   >
                     <TbEdit size={18} aria-hidden="true" />
                   </motion.button>
+                </div>
+
+                <div className="perfil-seguranca-item">
+                  <div className="perfil-seguranca-item__info">
+                    <TbRefresh size={24} aria-hidden="true" />
+                    <div>
+                      <strong>Resetar dados</strong>
+                      <p>Restaura todos os dados de teste ao estado inicial</p>
+                    </div>
+                  </div>
+                  {!confirmandoReset ? (
+                    <Botao variante="perigo" tamanho="pequeno" onClick={() => setConfirmandoReset(true)}>
+                      <TbRefresh size={14} aria-hidden="true" /> Reset
+                    </Botao>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <span style={{ fontSize: "0.8rem", color: "var(--cor-texto-suave)" }}>Confirmar?</span>
+                      <Botao variante="perigo" tamanho="pequeno" onClick={() => { resetar(); window.location.reload(); }}>
+                        <TbCheck size={14} aria-hidden="true" /> Sim
+                      </Botao>
+                      <Botao variante="secundario" tamanho="pequeno" onClick={() => setConfirmandoReset(false)}>
+                        <TbX size={14} aria-hidden="true" /> Não
+                      </Botao>
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
