@@ -41,7 +41,16 @@ export default function TelaProfessores({ usuario, onToast }) {
   useEffect(() => { db.turmas.salvar(turmasLista); }, [turmasLista]);
   const [busca, setBusca]               = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [filtroTurma, setFiltroTurma]   = useState("");
   const [ordenacao, setOrdenacao]       = useState({ campo: "nome", direcao: "asc" });
+
+  const turmasDoCoord = useMemo(() => {
+    if (usuario?.tipo !== "Coordenador") return [];
+    const cursosIds = new Set(
+      db.cursos.listar().filter((c) => c.coordenadorId === usuario.id).map((c) => c.id)
+    );
+    return db.turmas.listar().filter((t) => cursosIds.has(t.cursoId));
+  }, [usuario?.tipo, usuario?.id]);
   const [pagina, setPagina]             = useState(1);
 
   const [selecionados, setSelecionados]         = useState(new Set());
@@ -199,7 +208,11 @@ export default function TelaProfessores({ usuario, onToast }) {
   }
 
   const listaProcessada = useMemo(() => {
-    let r = lista;
+    let r = usuario?.tipo === "Coordenador" ? lista.filter((u) => u.ativo) : lista;
+    if (filtroTurma) {
+      const profId = turmasDoCoord.find((t) => t.id === Number(filtroTurma))?.professorId;
+      r = profId ? r.filter((u) => u.id === profId) : [];
+    }
     if (busca.trim()) {
       const t = busca.toLowerCase();
       r = r.filter((u) => u.nome.toLowerCase().includes(t) || u.email.toLowerCase().includes(t));
@@ -213,7 +226,7 @@ export default function TelaProfessores({ usuario, onToast }) {
       if (typeof vb === "string") vb = vb.toLowerCase();
       return (va < vb ? -1 : va > vb ? 1 : 0) * (ordenacao.direcao === "asc" ? 1 : -1);
     });
-  }, [lista, busca, filtroStatus, ordenacao]);
+  }, [lista, busca, filtroStatus, ordenacao, filtroTurma, turmasDoCoord]);
 
   const totalPaginas  = Math.max(1, Math.ceil(listaProcessada.length / ITENS_POR_PAGINA));
   const paginaSegura  = Math.min(pagina, totalPaginas);
@@ -255,7 +268,9 @@ export default function TelaProfessores({ usuario, onToast }) {
         <div>
           <h1 className="cabecalho-pagina__titulo">Professores</h1>
           <p className="cabecalho-pagina__subtitulo">
-            {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
+            {usuario?.tipo === "Coordenador"
+              ? `${totalAtivos} professores ativos`
+              : `${lista.length} cadastrados · ${totalAtivos} ativos · ${totalInativos} inativos`}
           </p>
         </div>
         <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
@@ -290,22 +305,39 @@ export default function TelaProfessores({ usuario, onToast }) {
 
       {/* ── Filtros ── */}
       <div className="barra-filtros">
-        <div className="segmented-control" role="group" aria-label="Filtrar por status">
-          {[
-            { valor: "todos",    rotulo: "Todos"    },
-            { valor: "ativos",   rotulo: "Ativos"   },
-            { valor: "inativos", rotulo: "Inativos" },
-          ].map(({ valor, rotulo }) => (
-            <button
-              key={valor}
-              className={`segmented-control__opcao${filtroStatus === valor ? " segmented-control__opcao--ativa" : ""}`}
-              onClick={() => { setFiltroStatus(valor); setPagina(1); }}
-              type="button"
-            >
-              {rotulo}
-            </button>
-          ))}
-        </div>
+        {usuario?.tipo !== "Coordenador" && (
+          <div className="segmented-control" role="group" aria-label="Filtrar por status">
+            {[
+              { valor: "todos",    rotulo: "Todos"    },
+              { valor: "ativos",   rotulo: "Ativos"   },
+              { valor: "inativos", rotulo: "Inativos" },
+            ].map(({ valor, rotulo }) => (
+              <button
+                key={valor}
+                className={`segmented-control__opcao${filtroStatus === valor ? " segmented-control__opcao--ativa" : ""}`}
+                onClick={() => { setFiltroStatus(valor); setPagina(1); }}
+                type="button"
+              >
+                {rotulo}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {usuario?.tipo === "Coordenador" && turmasDoCoord.length > 0 && (
+          <select
+            className="campo__entrada"
+            value={filtroTurma}
+            onChange={(e) => { setFiltroTurma(e.target.value); setPagina(1); }}
+            aria-label="Filtrar por turma"
+            style={{ minWidth: "200px" }}
+          >
+            <option value="">Todas as turmas</option>
+            {turmasDoCoord.map((t) => (
+              <option key={t.id} value={t.id}>{t.nomeTurma} — {t.cursoTitulo}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* ── Tabela ── */}
