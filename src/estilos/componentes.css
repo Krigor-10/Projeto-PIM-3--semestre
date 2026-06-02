@@ -469,54 +469,54 @@ select.campo__entrada option {
   background: var(--cor-marca-fundo);
 }
 
-.modal-cabecalho__btn-icone::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  right: 0;
+/* ------------------------------------------------------------
+   TABELA DE DADOS — mobile
+   ------------------------------------------------------------ */
+@media (max-width: 600px) {
+  .tabela-dados {
+    font-size: 0.82rem;
+  }
+
+  .tabela-dados th {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.65rem;
+  }
+
+  .tabela-dados td {
+    padding: 0.55rem 0.55rem;
+  }
+
+  .tabela-dados--sem-dados td {
+    padding: 1.5rem 0.6rem;
+  }
+}
+
+/* ------------------------------------------------------------
+   MODAL — mobile
+   ------------------------------------------------------------ */
+@media (max-width: 480px) {
+  .modal-cabecalho {
+    margin-bottom: var(--espaco-md);
+  }
+
+  .modal-titulo {
+    font-size: 1rem;
+  }
+}
+
+/* ── Tooltip global (portal) ─────────────────────────────────── */
+.tooltip-portal {
   background: var(--cor-fundo-elevado);
-  color: var(--cor-texto-forte);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-sm);
-  padding: 4px 10px;
+  color: var(--cor-texto-forte);
   font-size: 0.75rem;
-  white-space: nowrap;
+  padding: 4px 10px;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 10;
-}
-
-.modal-cabecalho__btn-icone:hover::after {
-  opacity: 1;
-}
-
-/* ── Tooltip global ──────────────────────────────────────────── */
-[data-tooltip] {
-  position: relative;
-}
-
-[data-tooltip]::after {
-  content: attr(data-tooltip);
   position: absolute;
-  top: calc(100% + 6px);
-  left: 50%;
   transform: translateX(-50%);
-  background: var(--cor-fundo-elevado);
-  color: var(--cor-texto-forte);
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-sm);
-  padding: 4px 10px;
-  font-size: 0.75rem;
   white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
   z-index: 9999;
-}
-
-[data-tooltip]:hover::after {
-  opacity: 1;
 }
 
 .modal-fechar {

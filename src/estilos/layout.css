@@ -236,6 +236,64 @@
   color: var(--cor-erro) !important;
 }
 
+/* ── Mini card do usuário no rodapé da sidebar ───────────────── */
+.sidebar__mini-usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: 8px 10px;
+  border-radius: var(--raio-md);
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+  margin-bottom: 2px;
+}
+
+.sidebar__mini-usuario:hover {
+  background: rgba(123, 47, 247, 0.07);
+}
+
+.sidebar__mini-usuario__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--cor-perfil, var(--cor-marca)),
+    color-mix(in srgb, var(--cor-perfil, var(--cor-marca)) 55%, #000)
+  );
+}
+
+.sidebar__mini-usuario__info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidebar__mini-usuario__nome {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--cor-texto-forte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar__mini-usuario__tipo {
+  font-size: 0.7rem;
+  color: var(--cor-texto-mudo);
+}
+
 /* ------------------------------------------------------------
    CARTÃO DE ESTATÍSTICA
    ------------------------------------------------------------ */
@@ -916,6 +974,15 @@
   padding: 0.62rem;
 }
 
+.sidebar--recolhida .sidebar__mini-usuario {
+  justify-content: center;
+  padding: 8px;
+}
+
+.sidebar--recolhida .sidebar__mini-usuario__info {
+  display: none;
+}
+
 /* ── Peek: sidebar expande por cima ao hover (sem mover layout) */
 .sidebar--peek {
   width: 272px;
@@ -1222,48 +1289,11 @@
   margin: 0 var(--espaco-lg);
 }
 
-.topbar__busca-campo {
-  display: flex;
-  align-items: center;
-  gap: var(--espaco-xs);
-  background: var(--cor-fundo-alt);
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-md);
-  padding: 0 var(--espaco-sm);
-  transition: border-color var(--transicao-rapida), box-shadow var(--transicao-rapida);
-}
-
-.topbar__busca-campo:focus-within {
-  border-color: var(--cor-marca);
-  box-shadow: 0 0 0 3px rgba(123, 47, 247, 0.15);
-}
-
-.topbar__busca-icone {
-  color: var(--cor-texto-suave);
-  flex-shrink: 0;
-}
-
-.topbar__busca-input {
-  flex: 1;
-  background: none;
-  border: none;
-  color: var(--cor-texto-forte);
-  font: inherit;
-  font-size: 0.85rem;
-  padding: 0.45rem 0;
-  outline: none;
-  min-width: 0;
-}
-
-.topbar__busca-input::placeholder {
-  color: var(--cor-texto-mudo);
-}
-
-.topbar__busca-input::-webkit-search-cancel-button {
-  display: none;
-}
-
 .topbar__busca-limpar {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
@@ -1271,7 +1301,6 @@
   display: flex;
   align-items: center;
   padding: 0;
-  flex-shrink: 0;
   transition: color var(--transicao-rapida);
 }
 
@@ -1501,6 +1530,15 @@
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+}
+
+.popup-perfil__email {
+  font-size: 0.75rem;
+  color: var(--cor-texto-mudo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 }
 
 .popup-perfil__nome {
@@ -1740,6 +1778,54 @@
     bottom: var(--espaco-lg);
     left: var(--espaco-md);
     max-width: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVIDADE — cabeçalho de página e tipografia
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  .cabecalho-pagina__titulo {
+    font-size: 1.4rem;
+  }
+
+  /* Botão "Novo" empilhado sob o título ocupa a largura toda */
+  .cabecalho-pagina > .botao {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Rodapé da sidebar: mini card mais compacto */
+  .sidebar__mini-usuario {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cabecalho-pagina__titulo {
+    font-size: 1.2rem;
+  }
+
+  /* Popup de perfil: ocupa largura disponível em telas pequenas */
+  .popup-perfil {
+    width: min(280px, 90vw);
+    right: 0;
+  }
+
+  /* Ações do modal em coluna para não transbordar */
+  .modal-rodape {
+    flex-direction: column-reverse;
+  }
+
+  .modal-rodape > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .texto-confirmacao-exclusao {
+    margin-right: 0;
+    width: 100%;
+    text-align: center;
   }
 }
 

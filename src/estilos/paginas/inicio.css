@@ -2,8 +2,13 @@
    HOME PUBLICA - APROXIMACAO COM O PROJETO PRINCIPAL
    ------------------------------------------------------------ */
 .cabecalho-publico {
-  background: linear-gradient(180deg, rgba(25, 27, 33, 0.96), rgba(25, 27, 33, 0.78));
+  background: rgba(25, 27, 33, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 2px solid rgba(123, 47, 247, 0.55);
   min-height: 96px;
+  position: sticky;
+  top: 0;
+  z-index: 150;
 }
 
 .cabecalho-publico__inner {
@@ -55,26 +60,38 @@
 }
 
 .cabecalho-publico__nav {
-  gap: 10px;
+  align-items: center;
+  gap: 16px;
 }
 
-.cabecalho-publico__nav .botao {
-  border-radius: var(--raio-circular);
-  min-height: 44px;
-  min-width: 128px;
-  padding-inline: 18px;
+.cabecalho-publico__link {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: rgba(243, 245, 255, 0.72);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 500;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  text-decoration: none;
+  transition: color var(--transicao-rapida), border-color var(--transicao-rapida);
+  white-space: nowrap;
 }
 
-.cabecalho-publico__nav .botao--secundario {
-  color: rgba(243, 245, 255, 0.92);
-}
-
-.cabecalho-publico__nav .botao--secundario:hover:not(:disabled) {
+.cabecalho-publico__link:hover {
+  border-bottom-color: rgba(123, 47, 247, 0.65);
   color: #fff;
 }
 
-.cabecalho-publico__acao-admin {
-  min-width: 0;
+.cabecalho-publico__nav .botao--sucesso {
+  border-radius: var(--raio-circular);
+  min-height: 38px;
+  padding-inline: 18px;
 }
 
 .secao-hero {
@@ -202,7 +219,7 @@
 }
 
 .cartao-pilar::before {
-  background: linear-gradient(90deg, #14b8a6, #f59e0b, var(--cor-marca-clara));
+  background: var(--cor-marca);
   content: "";
   height: 4px;
   inset: 0 0 auto;
@@ -283,10 +300,6 @@
 }
 
 @media (max-width: 1100px) {
-  .cabecalho-publico {
-    position: sticky;
-  }
-
   .cabecalho-publico__inner {
     align-items: stretch;
     flex-direction: column;
@@ -352,7 +365,6 @@
     display: none;
   }
 
-  /* Nav: botões compactos — cancela min-width: 128px e min-height: 44px */
   .cabecalho-publico__nav {
     flex-wrap: nowrap;
     gap: 6px;
@@ -369,7 +381,8 @@
     font-size: 0.84rem;
   }
 
-  .cabecalho-publico__nav .cabecalho-publico__link {
+  /* Oculta só âncoras de scroll (Cursos); botões de ação (Entrar) ficam visíveis */
+  a.cabecalho-publico__link {
     display: none;
   }
 

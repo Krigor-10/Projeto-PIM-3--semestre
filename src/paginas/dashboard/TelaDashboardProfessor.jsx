@@ -25,7 +25,6 @@ export default function TelaDashboardProfessor({ usuario, onMudarSecao }) {
             Gerencie suas turmas, avaliações e conteúdos didáticos.
           </p>
         </div>
-        <Insignia texto="Professor" variante="info" />
       </header>
 
       <section aria-labelledby="titulo-stats-prof">

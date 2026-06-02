@@ -8,6 +8,12 @@ import imgCyber    from "@/ativos/curso-cyber.png";
 import imgUxUi     from "@/ativos/curso-ux-ui.png";
 import imgRobotica from "@/ativos/curso-robotica.png";
 import Insignia from "@/componentes/Insignia.jsx";
+import Botao from "@/componentes/Botao.jsx";
+import Modal from "@/componentes/Modal.jsx";
+import { db } from "@/dados/db.js";
+import { podeEditar } from "@/dados/permissoes.js";
+import { certificadosDemo, PROGRESSO_MOCK, NOTAS_MOCK, avaliacoes as avaliacoesMock, cursos, modulos, conteudos as conteudosMock } from "@/dados/dadosMock.js";
+import fundoCertificado from "@/ativos/certificado-fundo.png";
 
 const IMAGEM_CURSO = {
   "Desenvolvimento Web":     imgDevWeb,
@@ -17,12 +23,6 @@ const IMAGEM_CURSO = {
   "UX e UI Design":          imgUxUi,
   "Robótica":                imgRobotica,
 };
-import Botao from "@/componentes/Botao.jsx";
-import Modal from "@/componentes/Modal.jsx";
-import { db } from "@/dados/db.js";
-import { podeEditar } from "@/dados/permissoes.js";
-import { certificadosDemo, PROGRESSO_MOCK, NOTAS_MOCK, avaliacoes as avaliacoesMock, cursos, modulos, conteudos as conteudosMock } from "@/dados/dadosMock.js";
-import fundoCertificado from "@/ativos/certificado-fundo.png";
 
 export default function TelaMatriculas({ usuario }) {
   const tipo = usuario?.tipo;

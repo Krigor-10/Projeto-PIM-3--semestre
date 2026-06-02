@@ -72,7 +72,7 @@ export const SECOES = [
     chave: "progresso",
     rotulo: "Progresso",
     icone: "PG",
-    perfis: ["Coordenador", "Professor", "Aluno"],
+    perfis: ["Admin", "Coordenador", "Professor", "Aluno"],
   },
   {
     chave: "matriculas",
@@ -90,7 +90,7 @@ export const SECOES = [
     chave: "catalogo",
     rotulo: "Catálogo",
     icone: "CL",
-    perfis: ["Admin", "Aluno", "Professor"],
+    perfis: ["Admin", "Aluno", "Professor", "Coordenador"],
   },
 ];
 

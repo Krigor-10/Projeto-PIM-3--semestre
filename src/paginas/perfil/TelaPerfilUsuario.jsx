@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { TbMail, TbPhone, TbMapPin, TbUser, TbEdit, TbLock, TbX, TbUserCircle, TbSettings, TbSun, TbMoon } from "react-icons/tb";
+import { TbMail, TbPhone, TbMapPin, TbUser, TbEdit, TbLock, TbX, TbUserCircle, TbSettings, TbSun, TbMoon, TbArrowLeft, TbUserFilled } from "react-icons/tb";
 import { MdSave } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -25,6 +25,7 @@ function gerarIniciais(nome) {
 }
 
 export default function TelaPerfilUsuario({ usuario, onToast }) {
+  const navigate = useNavigate();
   const { state: navState } = useLocation();
   const [aba, setAba] = useState(navState?.aba ?? "informacoes");
   const [editando, setEditando] = useState(false);
@@ -69,6 +70,15 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
   return (
     <div className="tela-perfil">
       <header className="cabecalho-pagina">
+        <button
+          type="button"
+          className="cadastro-voltar"
+          onClick={() => navigate(-1)}
+          aria-label="Voltar"
+        >
+          <TbArrowLeft size={18} aria-hidden="true" />
+          Voltar
+        </button>
         <div>
           <h1 className="cabecalho-pagina__titulo">Meu Perfil</h1>
           <p className="cabecalho-pagina__subtitulo">
@@ -85,10 +95,10 @@ export default function TelaPerfilUsuario({ usuario, onToast }) {
             style={{ "--cor-perfil": corPorTipo[usuario.tipo] ?? "#7b2ff7" }}
             aria-hidden="true"
           >
-            {gerarIniciais(form.nome)}
+            <TbUserFilled size={48} style={{ color: "#fff" }} />
           </div>
           <h3 className="perfil-cartao-identidade__nome">{form.nome}</h3>
-          <Insignia texto={usuario.tipo} variante={variantePorTipo[usuario.tipo] ?? "neutro"} />
+          <Insignia texto={usuario.tipo} variante={variantePorTipo[usuario.tipo] ?? "neutro"} style={usuario.tipo === "Admin" ? { color: "#fff" } : undefined} />
 
           <dl className="perfil-cartao-identidade__dados">
             {form.email && (

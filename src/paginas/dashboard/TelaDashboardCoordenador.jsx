@@ -41,7 +41,6 @@ export default function TelaDashboardCoordenador({ usuario, onMudarSecao }) {
             Acompanhe turmas, cursos e indicadores acadêmicos.
           </p>
         </div>
-        <Insignia texto="Coordenador" variante="aviso" />
       </header>
 
       <section aria-labelledby="titulo-stats-coord">

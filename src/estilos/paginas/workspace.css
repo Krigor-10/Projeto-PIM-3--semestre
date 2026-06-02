@@ -1752,19 +1752,24 @@
   display: flex;
   align-items: center;
   gap: var(--espaco-lg);
-  padding: 0 var(--espaco-lg);
+  padding: var(--espaco-xs) var(--espaco-lg) var(--espaco-sm);
   margin-bottom: var(--espaco-xs);
+  border-bottom: 1px solid var(--cor-borda);
 }
 
 .desempenho-cursos-cabecalho__col {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--cor-texto-suave);
+  color: var(--cor-texto-forte);
 }
 
-.desempenho-cursos-cabecalho__col--checkbox   { width: 40px; flex-shrink: 0; display: flex; align-items: center; }
+.desempenho-cursos-cabecalho__col--checkbox   { width: 40px; flex-shrink: 0; }
+.desempenho-cursos-cabecalho__col--avatar     { width: 40px; flex-shrink: 0; }
 .desempenho-cursos-cabecalho__col--identidade { flex: 2; min-width: 0; }
 .desempenho-cursos-cabecalho__col--turma      { flex: 1.5; min-width: 0; }
 .desempenho-cursos-cabecalho__col--alunos     { flex: 1.2; min-width: 100px; }
@@ -1778,7 +1783,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--espaco-sm);
+  gap: var(--espaco-md);
 }
 
 .desempenho-curso-item {
@@ -2494,6 +2499,59 @@
 
   .formulario-perfil__campo--largo {
     grid-column: 1;
+  }
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVIDADE — páginas admin/coordenador/professor
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  /* Catálogo interno: grid de 1 coluna desde tablet */
+  .catalogo-grade {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Card do catálogo: padding compacto */
+  .catalogo-card {
+    padding: var(--espaco-md);
+    gap: var(--espaco-sm);
+  }
+
+  /* Turmas: grade 1 coluna */
+  .painel-turmas {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tela de perfil: lado a lado em tablet já vai para 1 col (já existe) */
+}
+
+@media (max-width: 480px) {
+  /* Catálogo: 1 coluna em celular */
+  .catalogo-grade {
+    grid-template-columns: 1fr;
+  }
+
+  /* Card de curso ativo no dashboard: título menor */
+  .cartao-curso-ativo__nome {
+    font-size: 0.88rem;
+  }
+
+  /* Perfil: avatar menor */
+  .perfil-avatar-grande {
+    width: 64px;
+    height: 64px;
+  }
+
+  /* Abas de perfil: fonte menor */
+  .abas-matriculas__aba {
+    font-size: 0.82rem;
+    padding: 0.4rem 0.7rem;
+    gap: 4px;
+  }
+
+  /* Mini card do usuário na sidebar: menos padding */
+  .sidebar__mini-usuario {
+    padding: 6px;
   }
 }
 

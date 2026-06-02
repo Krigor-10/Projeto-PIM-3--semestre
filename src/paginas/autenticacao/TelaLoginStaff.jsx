@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TbArrowLeft } from "react-icons/tb";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard, MdCastForEducation, MdManageAccounts, MdAdminPanelSettings, MdSchool } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import { perfisDemo } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
+
+const ICONE_PERFIL = {
+  aluno:       <MdSchool size={28} />,
+  professor:   <MdCastForEducation size={28} />,
+  coordenador: <MdManageAccounts size={28} />,
+  admin:       <MdAdminPanelSettings size={28} />,
+};
 
 /* Apenas perfis de equipe (sem o aluno) */
 const perfisStaff = perfisDemo.filter((p) => p.chave !== "aluno");
@@ -68,11 +75,14 @@ export default function TelaLoginStaff({ onLogin }) {
                 aria-pressed={selecionado === perfil.chave}
                 type="button"
               >
-                <span className="cartao-perfil__icone" aria-hidden="true">{perfil.icone}</span>
+                <span className="cartao-perfil__icone" aria-hidden="true">{ICONE_PERFIL[perfil.chave]}</span>
                 <div className="cartao-perfil__info">
                   <strong className="cartao-perfil__rotulo">{perfil.rotulo}</strong>
                   <span className="cartao-perfil__descricao">{perfil.descricao}</span>
                 </div>
+                {selecionado === perfil.chave && (
+                  <span className="cartao-perfil__check" aria-hidden="true">✓</span>
+                )}
               </button>
             ))}
           </fieldset>

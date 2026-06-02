@@ -356,6 +356,16 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
     if (ativo) onConteudoConcluido?.(tudoConcluido);
   }, [tudoConcluido, ativo]);
 
+  /* Anima o ícone do primeiro conteúdo quando a aba abre sem nenhum progresso */
+  useEffect(() => {
+    if (!ativo || totalConcluidos > 0) return;
+    const primeiroCont = conteudosDoCurso[0];
+    if (!primeiroCont) return;
+    setContDesbloqueado(new Set([primeiroCont.id]));
+    const t = setTimeout(() => setContDesbloqueado(null), 2200);
+    return () => clearTimeout(t);
+  }, [ativo]);
+
   /* Fecha módulos que ficaram bloqueados ao desmarcar conteúdo */
   useEffect(() => {
     setModulosAbertos((prev) => {
@@ -694,7 +704,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
               if (moduloCompleto && idxMod >= 0 && idxMod < modulosDoCurso.length - 1) {
                 const proxMod      = modulosDoCurso[idxMod + 1];
                 const itensProxMod = conteudosDoCurso.filter((c) => c.moduloId === proxMod.id);
-                refPendingUnlock.current = { moduloId: proxMod.id, ids: itensProxMod.map((c) => c.id), novoModulo: true };
+                refPendingUnlock.current = { moduloId: proxMod.id, ids: itensProxMod.slice(0, 1).map((c) => c.id), novoModulo: true };
               }
             }
           }}
@@ -744,7 +754,7 @@ function SlideConteudoCurso({ matricula, quizzesAprovados, onQuizAprovado, onMud
                       </span>
                       <button
                         type="button"
-                        className="cartao-conteudo__quiz-btn"
+                        className="cartao-conteudo__quiz-btn cartao-conteudo__quiz-btn--preview"
                         onClick={() => { setPreviewConteudo(null); abrirQuizConteudo(cont); }}
                         style={{ marginTop: "0.5rem" }}
                       >

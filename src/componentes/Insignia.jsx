@@ -15,12 +15,12 @@ const variantePorValor = {
   Concluída: "neutro",
 };
 
-export default function Insignia({ texto, variante }) {
+export default function Insignia({ texto, variante, style }) {
   /* Usa variante explícita se fornecida; senão infere pelo texto; fallback para neutro */
   const varianteResolvida = variante || variantePorValor[texto] || "neutro";
 
   return (
-    <span className={`insignia insignia--${varianteResolvida}`} role="status">
+    <span className={`insignia insignia--${varianteResolvida}`} role="status" style={style}>
       {texto}
     </span>
   );

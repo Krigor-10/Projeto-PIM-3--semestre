@@ -6,9 +6,10 @@
    (vê cursos sob sua responsabilidade) e Admin (vê todos).
    ============================================================ */
 import { useState, useEffect } from "react";
+import { siglasCurso } from "@/utils/siglas.js";
 import { TbDotsVertical, TbPlus, TbSettings, TbX, TbStack, TbFileText, TbTrash } from "react-icons/tb";
 import { motion } from "framer-motion";
-import { MdSave } from "react-icons/md";
+import { MdSave, MdLayers } from "react-icons/md";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
@@ -120,7 +121,12 @@ function SlideCurso({ curso, itens, menuModuloAberto, onToggleMenu, onVerDetalhe
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
-          <h2 className="conteudos-aluno__curso-titulo">{curso.titulo}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+              <MdLayers size={20} aria-hidden="true" />
+            </div>
+            <h2 className="conteudos-aluno__curso-titulo">{curso.titulo}</h2>
+          </div>
           <div className="conteudos-aluno__meta-chips">
             <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
               <TbStack size={12} aria-hidden="true" />

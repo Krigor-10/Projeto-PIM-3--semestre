@@ -51,28 +51,6 @@
   border-color: var(--cor-marca);
 }
 
-.switch-ativo::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--cor-fundo-elevado);
-  color: var(--cor-texto-forte);
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-sm);
-  padding: 4px 10px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 10;
-}
-
-.switch-ativo:hover::after {
-  opacity: 1;
-}
 
 .switch-ativo__thumb {
   position: absolute;
@@ -341,6 +319,75 @@
   display: flex;
   gap: var(--espaco-sm);
   align-items: center;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVIDADE MOBILE
+   ------------------------------------------------------------ */
+@media (max-width: 600px) {
+  /* Card de usuário empilha badges abaixo das ações */
+  .cartao-usuario {
+    flex-wrap: wrap;
+    gap: var(--espaco-sm);
+    padding: var(--espaco-sm) var(--espaco-md);
+  }
+
+  .cartao-usuario__badges {
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .cartao-usuario__acoes {
+    flex-wrap: wrap;
+    gap: var(--espaco-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Card de usuário: avatar menor, nome truncado */
+  .cartao-usuario__avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.78rem;
+  }
+
+  .cartao-usuario__nome {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cartao-usuario__email {
+    font-size: 0.75rem;
+  }
+
+  /* Lista de detalhes: texto menor */
+  .lista-detalhes__item dt {
+    font-size: 0.68rem;
+  }
+
+  .lista-detalhes__item dd {
+    font-size: 0.85rem;
+  }
+
+  /* Status card: empilha em coluna */
+  .detalhe-status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espaco-sm);
+  }
+
+  /* Acesso rápido admin: 2 colunas em celular */
+  .grade-acesso-rapido {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .botao-acesso-rapido {
+    font-size: 0.78rem;
+    padding: 0.5rem 0.6rem;
+    justify-content: center;
+  }
 }
 
 /* ------------------------------------------------------------

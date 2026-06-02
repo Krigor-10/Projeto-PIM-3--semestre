@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ROTAS, rotaPainelSecao } from "@/rotas.js";
 import {
@@ -6,7 +7,7 @@ import {
   TbLayoutDashboard, TbUsers, TbChalkboard, TbUserShield,
   TbBooks, TbStack, TbSchool, TbClipboardList,
   TbFileCheck, TbFileText, TbChartBar, TbUsersGroup, TbWorld,
-  TbUserCircle, TbX, TbRefresh, TbCheck, TbSearch,
+  TbUserCircle, TbX, TbRefresh, TbCheck, TbSearch, TbUserFilled,
 } from "react-icons/tb";
 import { resetar, db } from "@/dados/db.js";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
@@ -208,32 +209,31 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
       </div>
 
       <div className="topbar__busca">
-        <div className="topbar__busca-campo">
-          <TbSearch size={15} className="topbar__busca-icone" aria-hidden="true" />
-          <input
-            ref={refInputBusca}
-            type="search"
-            className="topbar__busca-input"
-            placeholder="Buscar seções, cursos..."
-            value={termoBusca}
-            onChange={e => { setTermoBusca(e.target.value); setIndiceBusca(-1); }}
-            onKeyDown={handleKeyDownBusca}
-            onFocus={() => setBuscaFocada(true)}
-            onBlur={() => setTimeout(() => setBuscaFocada(false), 150)}
-            aria-label="Busca global"
-            aria-autocomplete="list"
-          />
-          {termoBusca && (
-            <button
-              className="topbar__busca-limpar"
-              type="button"
-              aria-label="Limpar busca"
-              onMouseDown={e => { e.preventDefault(); setTermoBusca(""); setIndiceBusca(-1); refInputBusca.current?.focus(); }}
-            >
-              <TbX size={13} aria-hidden="true" />
-            </button>
-          )}
-        </div>
+        <TbSearch size={15} aria-hidden="true" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--cor-texto-mudo)", pointerEvents: "none", zIndex: 1 }} />
+        <input
+          ref={refInputBusca}
+          type="search"
+          className="campo__entrada"
+          placeholder="Buscar seções, cursos..."
+          value={termoBusca}
+          onChange={e => { setTermoBusca(e.target.value); setIndiceBusca(-1); }}
+          onKeyDown={handleKeyDownBusca}
+          onFocus={() => setBuscaFocada(true)}
+          onBlur={() => setTimeout(() => setBuscaFocada(false), 150)}
+          aria-label="Busca global"
+          aria-autocomplete="list"
+          style={{ width: "100%", paddingLeft: "32px", paddingRight: termoBusca ? "32px" : undefined, fontSize: "0.85rem", padding: "0.45rem 1rem 0.45rem 32px" }}
+        />
+        {termoBusca && (
+          <button
+            className="topbar__busca-limpar"
+            type="button"
+            aria-label="Limpar busca"
+            onMouseDown={e => { e.preventDefault(); setTermoBusca(""); setIndiceBusca(-1); refInputBusca.current?.focus(); }}
+          >
+            <TbX size={13} aria-hidden="true" />
+          </button>
+        )}
         {buscaFocada && termoBusca && (
           <div className="busca-dropdown" role="listbox" aria-label="Resultados da busca">
             {gruposBusca.length > 0 ? gruposBusca.map(grupo => (
@@ -269,35 +269,44 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
       <div className="topbar__acoes">
         {usuario.tipo === "Aluno" && (
           <>
-            <button
+            <motion.button
               className={`topbar__atalho-certificados${secaoAtual === "matriculas" ? " topbar__atalho-certificados--ativo" : ""}`}
               onClick={() => navigate(rotaPainelSecao("matriculas"))}
               aria-label="Ir para Meus Cursos"
               type="button"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
               <TbBooks size={18} aria-hidden="true" />
               <span className="topbar__atalho-certificados-label">Meus Cursos</span>
-            </button>
+            </motion.button>
             <span className="topbar__separador" aria-hidden="true" />
-            <button
+            <motion.button
               className={`topbar__atalho-certificados${secaoAtual === "certificados" ? " topbar__atalho-certificados--ativo" : ""}`}
               onClick={() => navigate(ROTAS.PAINEL_CERTIFICADOS)}
               aria-label="Ir para Meus Certificados"
               type="button"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
               <TbTrophy size={18} aria-hidden="true" />
               <span className="topbar__atalho-certificados-label">Certificados</span>
-            </button>
+            </motion.button>
             <span className="topbar__separador" aria-hidden="true" />
-            <button
+            <motion.button
               className={`topbar__atalho-certificados${secaoAtual === "catalogo" ? " topbar__atalho-certificados--ativo" : ""}`}
               onClick={() => navigate(rotaPainelSecao("catalogo"))}
               aria-label="Ir para o Catálogo"
               type="button"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
               <TbWorld size={18} aria-hidden="true" />
               <span className="topbar__atalho-certificados-label">Catálogo</span>
-            </button>
+            </motion.button>
             <span className="topbar__separador" aria-hidden="true" />
             {!confirmandoReset ? (
               <button
@@ -319,17 +328,20 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             <span className="topbar__separador" aria-hidden="true" />
           </>
         )}
-        {(usuario.tipo === "Admin" || usuario.tipo === "Professor") && (
+        {(usuario.tipo === "Admin" || usuario.tipo === "Professor" || usuario.tipo === "Coordenador") && (
           <>
-            <button
+            <motion.button
               className={`topbar__atalho-certificados${secaoAtual === "catalogo" ? " topbar__atalho-certificados--ativo" : ""}`}
               onClick={() => navigate(rotaPainelSecao("catalogo"))}
               aria-label="Ir para o Catálogo"
               type="button"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
             >
               <TbWorld size={18} aria-hidden="true" />
               <span className="topbar__atalho-certificados-label">Catálogo</span>
-            </button>
+            </motion.button>
             <span className="topbar__separador" aria-hidden="true" />
           </>
         )}
@@ -345,7 +357,7 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             style={{ "--cor-perfil": corPorTipo[usuario.tipo] ?? "#7b2ff7" }}
           >
             <div className="topbar__avatar" aria-hidden="true">
-              {gerarIniciais(usuario.nome)}
+              <TbUserFilled size={18} style={{ color: "#fff" }} />
             </div>
             <div className="topbar__info">
               <span className="topbar__nome">{usuario.nome.split(" ")[0]}</span>
@@ -358,55 +370,62 @@ export default function BarraTopo({ usuario, secaoAtual, onLogout, onAbrirSideba
             />
           </button>
 
-          {popupAberto && (
-            <div
-              className="popup-perfil"
-              role="dialog"
-              aria-label="Dados do perfil"
-              aria-modal="false"
-            >
-              <div className="popup-perfil__cabecalho">
-                <div className="popup-perfil__avatar" aria-hidden="true">
-                  {gerarIniciais(usuario.nome)}
+          <AnimatePresence>
+            {popupAberto && (
+              <motion.div
+                className="popup-perfil"
+                role="dialog"
+                aria-label="Dados do perfil"
+                aria-modal="false"
+                initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
+              >
+                <div className="popup-perfil__cabecalho">
+                  <div className="popup-perfil__avatar" aria-hidden="true">
+                    <TbUserFilled size={28} style={{ color: "#fff" }} />
+                  </div>
+                  <div className="popup-perfil__identidade">
+                    <h2 className="popup-perfil__nome">{usuario.nome}</h2>
+                    <span className="popup-perfil__email">{usuario.email}</span>
+                    <div><Insignia texto={usuario.tipo} variante={variantePorTipo[usuario.tipo] ?? "neutro"} style={usuario.tipo === "Admin" ? { color: "#fff" } : undefined} /></div>
+                  </div>
                 </div>
-                <div className="popup-perfil__identidade">
-                  <h2 className="popup-perfil__nome">{usuario.nome}</h2>
-                  <div><Insignia texto={usuario.tipo} variante={variantePorTipo[usuario.tipo] ?? "neutro"} /></div>
+
+                <div className="popup-perfil__rodape">
+                  <Botao
+                    variante="fantasma"
+                    className="popup-perfil__editar"
+                    onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil"), { state: { aba: "informacoes" } }); }}
+                    style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <TbUserCircle size={15} aria-hidden="true" />
+                    Meu Perfil
+                  </Botao>
+                  <Botao
+                    variante="fantasma"
+                    className="popup-perfil__editar"
+                    onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil"), { state: { aba: "seguranca" } }); }}
+                    style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <MdSettings size={15} aria-hidden="true" />
+                    Configurações
+                  </Botao>
+                  <hr style={{ border: "none", borderTop: "1px solid var(--cor-borda)", margin: "4px 0" }} />
+                  <Botao
+                    variante="perigo"
+                    className="popup-perfil__sair"
+                    onClick={() => { setConfirmarSaida(true); setPopupAberto(false); }}
+                    style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <MdLogout size={15} aria-hidden="true" />
+                    Sair
+                  </Botao>
                 </div>
-              </div>
-
-
-              <div className="popup-perfil__rodape">
-                <Botao
-                  variante="fantasma"
-                  className="popup-perfil__editar"
-                  onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil"), { state: { aba: "informacoes" } }); }}
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <TbUserCircle size={15} aria-hidden="true" />
-                  Meu Perfil
-                </Botao>
-                <Botao
-                  variante="fantasma"
-                  className="popup-perfil__editar"
-                  onClick={() => { setPopupAberto(false); navigate(rotaPainelSecao("perfil"), { state: { aba: "seguranca" } }); }}
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <MdSettings size={15} aria-hidden="true" />
-                  Configurações
-                </Botao>
-                <Botao
-                  variante="perigo"
-                  className="popup-perfil__sair"
-                  onClick={() => { setConfirmarSaida(true); setPopupAberto(false); }}
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <MdLogout size={15} aria-hidden="true" />
-                  Sair
-                </Botao>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
       </div>

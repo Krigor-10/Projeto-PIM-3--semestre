@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { siglasCurso } from "@/utils/siglas.js";
 import { createPortal } from "react-dom";
 import { TbDotsVertical, TbClock, TbArrowLeft, TbArrowRight, TbLock, TbPlus, TbX, TbCheck, TbPencil, TbSettings, TbPlayerPlay, TbRefresh, TbCertificate, TbDownload, TbChartBar, TbEye } from "react-icons/tb";
 import { motion, AnimatePresence } from "framer-motion";
-import { MdSave, MdDelete } from "react-icons/md";
+import { MdSave, MdDelete, MdAssignmentTurnedIn, MdFormatListNumbered } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -1022,11 +1023,19 @@ function SlideAvaliacoesProfessor({ turma, onCriar, onVerDetalhes, avaliacoesLis
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
           <p className="conteudos-aluno__turma">{turma.nomeTurma}</p>
-          <span className="conteudos-aluno__curso-etiqueta" aria-hidden="true">Curso</span>
-          <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
-          <p className="conteudos-aluno__curso-meta">
-            {avaliacoesDoCurso.length} avaliação{avaliacoesDoCurso.length !== 1 ? "ões" : ""} cadastrada{avaliacoesDoCurso.length !== 1 ? "s" : ""}
-          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+              <MdAssignmentTurnedIn size={20} aria-hidden="true" />
+            </div>
+            <h2 className="conteudos-aluno__curso-titulo">{turma.cursoTitulo}</h2>
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", background: "rgba(123,47,247,0.10)", border: "1px solid rgba(123,47,247,0.22)", borderRadius: "var(--raio-md)", padding: "var(--espaco-sm) var(--espaco-md)", alignSelf: "center" }}>
+          <MdAssignmentTurnedIn size={20} style={{ color: "#fff", flexShrink: 0 }} aria-hidden="true" />
+          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.2 }}>
+            <span style={{ fontSize: "1.4rem", fontWeight: 700, color: "#fff" }}>{avaliacoesDoCurso.length}</span>
+            <span style={{ fontSize: "0.72rem", color: "var(--cor-texto-suave)", whiteSpace: "nowrap" }}>{avaliacoesDoCurso.length !== 1 ? "avaliações" : "avaliação"}</span>
+          </div>
         </div>
       </header>
 
@@ -1658,9 +1667,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
           <div>
             <h1 className="cabecalho-pagina__titulo">Avaliações</h1>
             <p className="cabecalho-pagina__subtitulo">
-              {avaliacoesFiltradas.length} avaliação
-              {avaliacoesFiltradas.length !== 1 ? "ões" : ""} encontrada
-              {avaliacoesFiltradas.length !== 1 ? "s" : ""}
+              {avaliacoesFiltradas.length} {avaliacoesFiltradas.length !== 1 ? "avaliações" : "avaliação"} encontrada{avaliacoesFiltradas.length !== 1 ? "s" : ""}
             </p>
           </div>
           <Botao
@@ -1770,10 +1777,15 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
         >
           <header className="conteudos-aluno__cabecalho">
             <div className="conteudos-aluno__curso-info">
-              <h2 className="conteudos-aluno__curso-titulo">{grupoAtual.cursoTitulo}</h2>
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+                <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+                  <MdAssignmentTurnedIn size={20} aria-hidden="true" />
+                </div>
+                <h2 className="conteudos-aluno__curso-titulo">{grupoAtual.cursoTitulo}</h2>
+              </div>
               <div className="conteudos-aluno__meta-chips">
                 <span className="conteudos-aluno__meta-chip">
-                  <TbChartBar size={12} aria-hidden="true" /> {grupoAtual.itens.length} avaliação{grupoAtual.itens.length !== 1 ? "ões" : ""}
+                  <TbChartBar size={12} aria-hidden="true" /> {grupoAtual.itens.length} {grupoAtual.itens.length !== 1 ? "avaliações" : "avaliação"}
                 </span>
                 {(() => {
                   const realizadas = grupoAtual.itens.filter((av) => resultados[av.id]).length;
@@ -1784,23 +1796,13 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
                   );
                 })()}
                 {!cursoEstaLiberado(grupoAtual.cursoId) && (
-                  <span className="conteudos-aluno__meta-chip" style={{ color: "var(--cor-erro)" }}>
+                  <span className="conteudos-aluno__meta-chip" style={{ color: "#f87171" }}>
                     <TbLock size={12} aria-hidden="true" /> bloqueada
                   </span>
                 )}
               </div>
             </div>
           </header>
-
-          {!cursoEstaLiberado(grupoAtual.cursoId) && (
-            <div className="aviso-bloqueio" role="alert">
-              <span className="aviso-bloqueio__icone" aria-hidden="true">⊘</span>
-              <div className="aviso-bloqueio__texto">
-                <strong>Avaliação bloqueada</strong>
-                <p>Conclua todos os conteúdos e quizzes do curso para liberar a avaliação final.</p>
-              </div>
-            </div>
-          )}
 
           <ul className="grade-avaliacoes" role="list" aria-label={`Avaliações de ${grupoAtual.cursoTitulo}`}>
             {grupoAtual.itens.map((av) => {
@@ -1818,7 +1820,7 @@ export default function TelaAvaliacoes({ usuario, onMudarSecao, quizzesAprovados
 
               return (
                 <li key={av.id}>
-                  <article className={classesCartao} aria-labelledby={`av-titulo-${av.id}`}>
+                  <article className={classesCartao} aria-labelledby={`av-titulo-${av.id}`} {...(ehAluno && !liberado ? { "data-tooltip": "🔒 Conclua todos os conteúdos e quizzes do curso para liberar" } : {})}>
                     <header className="cartao-avaliacao__topo">
                       <h4 className="cartao-avaliacao__titulo" id={`av-titulo-${av.id}`}>
                         {av.titulo}

@@ -7,6 +7,7 @@ import TelaLoginAluno from "@/paginas/autenticacao/TelaLoginAluno.jsx";
 import TelaLoginStaff from "@/paginas/autenticacao/TelaLoginStaff.jsx";
 import TelaCadastro from "@/paginas/autenticacao/TelaCadastro.jsx";
 import LayoutWorkspace from "@/paginas/LayoutWorkspace.jsx";
+import TooltipGlobal from "@/componentes/TooltipGlobal.jsx";
 
 function RotaProtegida({ usuario, children }) {
   if (!usuario) return <Navigate to={ROTAS.INICIO} replace />;
@@ -33,6 +34,8 @@ export default function Aplicacao() {
   }
 
   return (
+    <>
+    <TooltipGlobal />
     <Routes>
       <Route path={ROTAS.INICIO}      element={<TelaInicio />} />
       <Route path={ROTAS.LOGIN}       element={<TelaLoginAluno onLogin={fazerLogin} />} />
@@ -48,5 +51,6 @@ export default function Aplicacao() {
       />
       <Route path="*" element={<Navigate to={ROTAS.INICIO} replace />} />
     </Routes>
+    </>
   );
 }

@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { TbTrophy, TbCertificate, TbDotsVertical, TbX, TbCheck, TbLayoutGrid, TbSettings } from "react-icons/tb";
+import { siglasCurso } from "@/utils/siglas.js";
+import { TbTrophy, TbCertificate, TbDotsVertical, TbX, TbCheck, TbLayoutGrid, TbSettings, TbStar } from "react-icons/tb";
+import { MdSchool, MdMenuBook, MdBarChart, MdGroups, MdDescription } from "react-icons/md";
 import Modal from "@/componentes/Modal.jsx";
 import BarraProgresso from "@/componentes/BarraProgresso.jsx";
 import Insignia from "@/componentes/Insignia.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { conteudos, cursos, modulos, matriculas, turmas, certificadosDemo, PROGRESSO_MOCK, NOTAS_MOCK } from "@/dados/dadosMock.js";
+import CartaoEstatistica from "@/componentes/CartaoEstatistica.jsx";
 
 /* Retorna status e variante de badge a partir do progresso do módulo */
 function resolverStatusModulo(concluidosModulo, totalItens) {
@@ -58,7 +61,12 @@ function SlideProgressoCurso({ matricula, avaliacaoAprovada, resultadosQuizzes =
       {/* ── Hero do curso ── */}
       <header className="conteudos-aluno__cabecalho" aria-label="Visão geral do curso">
         <div className="conteudos-aluno__curso-info">
-          <h2 className="conteudos-aluno__curso-titulo">{curso?.titulo}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+              <MdBarChart size={20} aria-hidden="true" />
+            </div>
+            <h2 className="conteudos-aluno__curso-titulo">{curso?.titulo}</h2>
+          </div>
           <div className="conteudos-aluno__meta-chips">
             <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
               <TbCheck size={12} aria-hidden="true" />
@@ -329,10 +337,15 @@ function VistaProfessor({ usuario }) {
 
   const totalAlunos  = turmasComProgresso.reduce((acc, t) => acc + t.totalAlunos, 0);
   const turmasAtivas = minhasTurmas.filter((t) => t.status === "Ativa").length;
+  const cursoIdsDoProfessor = [...new Set(minhasTurmas.map((t) => t.cursoId))];
+  const modulosDoProfessor  = modulos.filter((m) => cursoIdsDoProfessor.includes(m.cursoId));
+  const totalConteudos      = conteudos.filter((c) => modulosDoProfessor.some((m) => m.id === c.moduloId)).length;
   const mediaGeral   = totalAlunos > 0
     ? Math.round(turmasComProgresso.reduce((acc, t) => acc + t.media * t.totalAlunos, 0) / totalAlunos)
     : 0;
-  const corMediaGeral = mediaGeral >= 70 ? "var(--cor-sucesso)" : mediaGeral >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
+  const mediaNotas = turmasComProgresso.length > 0
+    ? (turmasComProgresso.reduce((acc, t) => acc + t.mediaNota, 0) / turmasComProgresso.length).toFixed(1)
+    : "—";
 
   return (
     <div className="tela-progresso">
@@ -346,72 +359,57 @@ function VistaProfessor({ usuario }) {
       </header>
 
       {/* KPIs */}
-      <div className="grade-kpi-coord">
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor">{minhasTurmas.length}</span>
-          <span className="kpi-coord__rotulo">Turmas</span>
-        </div>
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor">{turmasAtivas}</span>
-          <span className="kpi-coord__rotulo">Ativas</span>
-        </div>
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor">{totalAlunos}</span>
-          <span className="kpi-coord__rotulo">Alunos</span>
-        </div>
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor" style={{ color: corMediaGeral }}>{mediaGeral}%</span>
-          <span className="kpi-coord__rotulo">Média geral</span>
-        </div>
+      <div className="grade-estatisticas" style={{ marginBottom: "var(--espaco-xl)" }}>
+        <CartaoEstatistica icone={<MdDescription size={22} />} valor={totalConteudos}      rotulo="Conteúdos publicados" />
+        <CartaoEstatistica icone={<MdGroups size={22} />}    valor={turmasAtivas}        rotulo="Turmas ativas"        corBorda="var(--cor-sucesso)" />
+        <CartaoEstatistica icone={<MdSchool size={22} />}   valor={totalAlunos}         rotulo="Total de alunos" corBorda="var(--cor-info)" />
+        <CartaoEstatistica icone={<TbStar size={22} />}     valor={mediaNotas}          rotulo="Média de notas"  corBorda="var(--cor-aviso)" />
       </div>
 
       {/* Lista de turmas */}
       {minhasTurmas.length === 0 ? (
         <p className="texto-vazio" role="status">Você não possui turmas atribuídas.</p>
       ) : (
-        <ul className="lista-cursos-progresso" role="list" aria-label="Progresso por turma">
-          {turmasComProgresso.map(({ turma, totalAlunos: total, media, mediaNota }) => {
-            const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
-            const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+        <ul className="lista-progresso-alunos" role="list" aria-label="Progresso por turma">
+          {turmasComProgresso.map(({ turma, totalAlunos: total, media, mediaNota, concluidos }) => {
+            const { texto: statusTexto, variante: statusVariante } = resolverStatusModulo(media, 100);
             return (
-              <li key={turma.id} className="cartao-curso-progresso">
-                <div className="cartao-curso-progresso__info">
-                  <div className="cartao-curso-progresso__identidade">
-                    <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
-                      <span className="cartao-curso-progresso__titulo">{turma.nomeTurma}</span>
-                      <Insignia texto={turma.status} variante={turma.status === "Ativa" ? "sucesso" : "neutro"} />
-                    </div>
-                    <div className="cartao-curso-progresso__meta">
-                      <span>{turma.cursoTitulo}</span>
-                    </div>
-                  </div>
-                  <div className="cartao-curso-progresso__barra" aria-hidden="true">
+              <li key={turma.id} className="cartao-progresso-aluno">
+                <div className="cartao-progresso-aluno__avatar" aria-hidden="true">
+                  {siglasCurso(turma.cursoTitulo)}
+                </div>
+                <div className="cartao-progresso-aluno__info">
+                  <strong className="cartao-progresso-aluno__nome">{turma.nomeTurma}</strong>
+                  <p className="cartao-progresso-aluno__meta">
+                    {turma.cursoTitulo} · {total} aluno{total !== 1 ? "s" : ""} · {concluidos} concluído{concluidos !== 1 ? "s" : ""} · ★ {mediaNota.toFixed(1)}
+                  </p>
+                  <div className="cartao-progresso-aluno__barra">
                     <BarraProgresso percentual={media} mostrarTexto={false} />
                   </div>
                 </div>
-                <div className="cartao-curso-progresso__direita">
-                  <span className="dado-rotulo" aria-hidden="true">Progresso / Nota</span>
-                  <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
-                  <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
-                  <div className="menu-contexto">
-                    <button
-                      type="button"
-                      className="menu-contexto__botao"
-                      onClick={(e) => { e.stopPropagation(); setMenuAberto((v) => v === turma.id ? null : turma.id); }}
-                      aria-label={`Opções de ${turma.nomeTurma}`}
-                    >
-                      <TbDotsVertical size={16} aria-hidden="true" />
-                    </button>
-                    {menuAberto === turma.id && (
-                      <ul className="menu-contexto__lista" role="menu">
-                        <li>
-                          <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setTurmaDetalhe(turmasComProgresso.find((t) => t.turma.id === turma.id)); }}>
-                            <TbSettings size={16} aria-hidden="true" /> Opções
-                          </button>
-                        </li>
-                      </ul>
-                    )}
-                  </div>
+                <div className="cartao-progresso-aluno__badges">
+                  <span className="dado-rotulo" aria-hidden="true">Média</span>
+                  <Insignia texto={`${media}%`} variante="neutro" />
+                  <Insignia texto={statusTexto} variante={statusVariante} />
+                </div>
+                <div className="menu-contexto">
+                  <button
+                    type="button"
+                    className="menu-contexto__botao"
+                    onClick={(e) => { e.stopPropagation(); setMenuAberto((v) => v === turma.id ? null : turma.id); }}
+                    aria-label={`Opções de ${turma.nomeTurma}`}
+                  >
+                    <TbDotsVertical size={16} aria-hidden="true" />
+                  </button>
+                  {menuAberto === turma.id && (
+                    <ul className="menu-contexto__lista" role="menu">
+                      <li>
+                        <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setTurmaDetalhe(turmasComProgresso.find((t) => t.turma.id === turma.id)); }}>
+                          <TbSettings size={16} aria-hidden="true" /> Opções
+                        </button>
+                      </li>
+                    </ul>
+                  )}
                 </div>
               </li>
             );
@@ -528,7 +526,6 @@ function VistaCoordenador({ usuario }) {
   const mediaGeral   = totalAlunos > 0
     ? Math.round(cursosComProgresso.reduce((acc, c) => acc + c.media * c.totalAlunos, 0) / totalAlunos)
     : 0;
-  const corMediaGeral = mediaGeral >= 70 ? "var(--cor-sucesso)" : mediaGeral >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
 
   return (
     <div className="tela-progresso">
@@ -542,72 +539,57 @@ function VistaCoordenador({ usuario }) {
       </header>
 
       {/* KPIs */}
-      <div className="grade-kpi-coord">
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor">{meusCursos.length}</span>
-          <span className="kpi-coord__rotulo">Cursos</span>
-        </div>
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor">{cursosAtivos}</span>
-          <span className="kpi-coord__rotulo">Ativos</span>
-        </div>
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor">{totalAlunos}</span>
-          <span className="kpi-coord__rotulo">Alunos</span>
-        </div>
-        <div className="kpi-coord">
-          <span className="kpi-coord__valor" style={{ color: corMediaGeral }}>{mediaGeral}%</span>
-          <span className="kpi-coord__rotulo">Média geral</span>
-        </div>
+      <div className="grade-estatisticas" style={{ marginBottom: "var(--espaco-xl)" }}>
+        <CartaoEstatistica icone={<MdMenuBook size={22} />} valor={meusCursos.length} rotulo="Cursos" />
+        <CartaoEstatistica icone={<MdMenuBook size={22} />} valor={cursosAtivos}      rotulo="Cursos ativos"   corBorda="var(--cor-sucesso)" />
+        <CartaoEstatistica icone={<MdSchool size={22} />}   valor={totalAlunos}       rotulo="Total de alunos" corBorda="var(--cor-info)" />
+        <CartaoEstatistica icone={<MdBarChart size={22} />} valor={`${mediaGeral}%`}  rotulo="Média geral"     corBorda="var(--cor-aviso)" />
       </div>
 
       {/* Lista de cursos */}
       {meusCursos.length === 0 ? (
         <p className="texto-vazio" role="status">Nenhum curso sob sua coordenação.</p>
       ) : (
-        <ul className="lista-cursos-progresso" role="list" aria-label="Progresso por curso">
+        <ul className="lista-progresso-alunos" role="list" aria-label="Progresso por curso">
           {cursosComProgresso.map(({ curso, totalTurmas, totalAlunos: total, media, mediaNota }) => {
-            const corPct  = media     >= 70 ? "var(--cor-sucesso)" : media     >= 40 ? "var(--cor-aviso)" : "var(--cor-erro)";
-            const corNota = mediaNota >= 7  ? "var(--cor-sucesso)" : mediaNota >= 5  ? "var(--cor-aviso)" : "var(--cor-erro)";
+            const { texto: statusTexto, variante: statusVariante } = resolverStatusModulo(media, 100);
             return (
-              <li key={curso.id} className="cartao-curso-progresso">
-                <div className="cartao-curso-progresso__info">
-                  <div className="cartao-curso-progresso__identidade">
-                    <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
-                      <span className="cartao-curso-progresso__titulo">{curso.titulo}</span>
-                      <Insignia texto={curso.ativo ? "Ativo" : "Inativo"} variante={curso.ativo ? "sucesso" : "neutro"} />
-                    </div>
-                    <div className="cartao-curso-progresso__meta">
-                      <span>{curso.codigoRegistro}</span>
-                    </div>
-                  </div>
-                  <div className="cartao-curso-progresso__barra" aria-hidden="true">
+              <li key={curso.id} className="cartao-progresso-aluno">
+                <div className="cartao-progresso-aluno__avatar" aria-hidden="true">
+                  {siglasCurso(curso.titulo)}
+                </div>
+                <div className="cartao-progresso-aluno__info">
+                  <strong className="cartao-progresso-aluno__nome">{curso.titulo}</strong>
+                  <p className="cartao-progresso-aluno__meta">
+                    {total} aluno{total !== 1 ? "s" : ""} · {totalTurmas} turma{totalTurmas !== 1 ? "s" : ""} · ★ {mediaNota.toFixed(1)}
+                  </p>
+                  <div className="cartao-progresso-aluno__barra">
                     <BarraProgresso percentual={media} mostrarTexto={false} />
                   </div>
                 </div>
-                <div className="cartao-curso-progresso__direita">
-                  <span className="dado-rotulo" aria-hidden="true">Progresso / Nota</span>
-                  <span style={{ color: corPct, fontWeight: 700, fontSize: "1.05rem", whiteSpace: "nowrap" }}>{media}%</span>
-                  <span style={{ color: corNota, fontSize: "0.82rem", fontWeight: 600, whiteSpace: "nowrap" }}>★ {mediaNota.toFixed(1)}</span>
-                  <div className="menu-contexto">
-                    <button
-                      type="button"
-                      className="menu-contexto__botao"
-                      onClick={(e) => { e.stopPropagation(); setMenuAberto((v) => v === curso.id ? null : curso.id); }}
-                      aria-label={`Opções de ${curso.titulo}`}
-                    >
-                      <TbDotsVertical size={16} aria-hidden="true" />
-                    </button>
-                    {menuAberto === curso.id && (
-                      <ul className="menu-contexto__lista" role="menu">
-                        <li>
-                          <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setCursoDetalhe(cursosComProgresso.find((c) => c.curso.id === curso.id)); }}>
-                            <TbSettings size={16} aria-hidden="true" /> Opções
-                          </button>
-                        </li>
-                      </ul>
-                    )}
-                  </div>
+                <div className="cartao-progresso-aluno__badges">
+                  <span className="dado-rotulo" aria-hidden="true">Média</span>
+                  <Insignia texto={`${media}%`} variante="neutro" />
+                  <Insignia texto={statusTexto} variante={statusVariante} />
+                </div>
+                <div className="menu-contexto">
+                  <button
+                    type="button"
+                    className="menu-contexto__botao"
+                    onClick={(e) => { e.stopPropagation(); setMenuAberto((v) => v === curso.id ? null : curso.id); }}
+                    aria-label={`Opções de ${curso.titulo}`}
+                  >
+                    <TbDotsVertical size={16} aria-hidden="true" />
+                  </button>
+                  {menuAberto === curso.id && (
+                    <ul className="menu-contexto__lista" role="menu">
+                      <li>
+                        <button type="button" style={{ display: "flex", alignItems: "center", gap: "6px" }} onClick={() => { setMenuAberto(null); setCursoDetalhe(cursosComProgresso.find((c) => c.curso.id === curso.id)); }}>
+                          <TbSettings size={16} aria-hidden="true" /> Opções
+                        </button>
+                      </li>
+                    </ul>
+                  )}
                 </div>
               </li>
             );
@@ -712,47 +694,62 @@ function VistaCoordenador({ usuario }) {
 
 function VistaAdmin() {
   const matriculasAprovadas = matriculas.filter((m) => m.status === "Aprovada");
-  const mediaGeral = matriculasAprovadas.length > 0
-    ? Math.round(
-        matriculasAprovadas.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) /
-        matriculasAprovadas.length
-      )
+
+  const progressoPorCurso = cursos.map((curso) => {
+    const mats = matriculasAprovadas.filter((m) => m.cursoId === curso.id);
+    const media = mats.length > 0
+      ? Math.round(mats.reduce((acc, m) => acc + (PROGRESSO_MOCK[m.id] ?? 0), 0) / mats.length)
+      : 0;
+    const concluidos = mats.filter((m) => (PROGRESSO_MOCK[m.id] ?? 0) === 100).length;
+    return { curso, totalAlunos: mats.length, media, concluidos };
+  });
+
+  const cursosComAlunos = progressoPorCurso.filter((c) => c.totalAlunos > 0).length;
+  const mediaGeral = cursosComAlunos > 0
+    ? Math.round(progressoPorCurso.filter((c) => c.totalAlunos > 0).reduce((acc, c) => acc + c.media, 0) / cursosComAlunos)
     : 0;
+
+  const totalCertificados = matriculasAprovadas.filter((m) => (PROGRESSO_MOCK[m.id] ?? 0) === 100).length;
+  const totalAlunos = matriculasAprovadas.length;
 
   return (
     <div className="tela-progresso">
       <header className="cabecalho-pagina">
         <div>
-          <h1 className="cabecalho-pagina__titulo">Progresso dos Alunos</h1>
+          <h1 className="cabecalho-pagina__titulo">Progresso por Curso</h1>
           <p className="cabecalho-pagina__subtitulo">
-            {matriculasAprovadas.length} aluno(s) com matrícula ativa — média geral: {mediaGeral}%
+            {progressoPorCurso.length} {progressoPorCurso.length === 1 ? "curso cadastrado" : "cursos cadastrados"} · média geral: {mediaGeral}%
           </p>
         </div>
       </header>
 
-      <ul className="lista-progresso-alunos" role="list" aria-label="Progresso por aluno">
-        {matriculasAprovadas.map((mat) => {
-          const percentual = PROGRESSO_MOCK[mat.id] ?? 0;
-          const { texto: statusTexto, variante: statusVariante } =
-            resolverStatusModulo(percentual, 100);
+      <div className="grade-estatisticas" style={{ marginBottom: "var(--espaco-xl)" }}>
+        <CartaoEstatistica icone={<MdSchool size={22} />}   valor={totalAlunos}             rotulo="Alunos matriculados" />
+        <CartaoEstatistica icone={<MdMenuBook size={22} />} valor={progressoPorCurso.length} rotulo="Cursos cadastrados"   corBorda="var(--cor-info)" />
+        <CartaoEstatistica icone={<MdBarChart size={22} />} valor={`${mediaGeral}%`}         rotulo="Média geral"          corBorda="var(--cor-aviso)" />
+        <CartaoEstatistica icone={<TbTrophy size={22} />}   valor={totalCertificados}        rotulo="Certificados liberados" corBorda="var(--cor-sucesso)" />
+      </div>
 
+      <ul className="lista-progresso-alunos" role="list" aria-label="Progresso por curso">
+        {progressoPorCurso.map(({ curso, totalAlunos, media, concluidos }) => {
+          const { texto: statusTexto, variante: statusVariante } = resolverStatusModulo(media, 100);
           return (
-            <li key={mat.id} className="cartao-progresso-aluno">
+            <li key={curso.id} className="cartao-progresso-aluno">
               <div className="cartao-progresso-aluno__avatar" aria-hidden="true">
-                {mat.alunoNome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
+                {siglasCurso(curso.titulo)}
               </div>
               <div className="cartao-progresso-aluno__info">
-                <strong className="cartao-progresso-aluno__nome">{mat.alunoNome}</strong>
+                <strong className="cartao-progresso-aluno__nome">{curso.titulo}</strong>
                 <p className="cartao-progresso-aluno__meta">
-                  {mat.turmaNome} · {mat.cursoTitulo}
+                  {totalAlunos} aluno{totalAlunos !== 1 ? "s" : ""} matriculado{totalAlunos !== 1 ? "s" : ""} · {concluidos} concluído{concluidos !== 1 ? "s" : ""}
                 </p>
                 <div className="cartao-progresso-aluno__barra">
-                  <BarraProgresso percentual={percentual} mostrarTexto={false} />
+                  <BarraProgresso percentual={media} mostrarTexto={false} />
                 </div>
               </div>
               <div className="cartao-progresso-aluno__badges">
-                <span className="dado-rotulo" aria-hidden="true">Progresso</span>
-                <Insignia texto={`${percentual}%`} variante="neutro" />
+                <span className="dado-rotulo" aria-hidden="true">Média</span>
+                <Insignia texto={`${media}%`} variante="neutro" />
                 <Insignia texto={statusTexto} variante={statusVariante} />
               </div>
             </li>

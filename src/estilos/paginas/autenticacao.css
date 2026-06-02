@@ -196,7 +196,8 @@
 }
 
 .cartao-perfil__icone {
-  font-size: 1.5rem;
+  color: var(--cor-marca-clara);
+  display: inline-flex;
   flex-shrink: 0;
 }
 
@@ -219,9 +220,17 @@
 }
 
 .cartao-perfil__check {
-  color: var(--cor-marca-clara);
-  font-weight: 700;
-  font-size: 1.1rem;
+  align-items: center;
+  background: #22c55e;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 900;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
 }
 
 /* ------------------------------------------------------------

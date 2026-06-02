@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { TbArrowLeft } from "react-icons/tb";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard, MdSchool } from "react-icons/md";
 import Botao from "@/componentes/Botao.jsx";
 import { perfisDemo } from "@/dados/dadosMock.js";
 import { ROTAS } from "@/rotas.js";
@@ -61,7 +61,7 @@ export default function TelaLoginAluno({ onLogin }) {
           {/* Card do perfil aluno */}
           <div className="login-aluno__perfil-demo" aria-label="Perfil de demonstração selecionado">
             <div className="login-aluno__avatar" aria-hidden="true">
-              {perfilAluno.icone}
+              <MdSchool size={28} />
             </div>
             <div className="login-aluno__info">
               <strong>{perfilAluno.rotulo}</strong>

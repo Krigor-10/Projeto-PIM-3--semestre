@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { TbX, TbTrophy } from "react-icons/tb";
+import { TbX, TbTrophy, TbUserFilled } from "react-icons/tb";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
 import { rotaPainelSecao } from "@/rotas.js";
@@ -27,6 +27,13 @@ import {
 } from "react-icons/md";
 import { obterSecoesPermitidas } from "@/dados/permissoes.js";
 import { matriculas, conteudos, avaliacoes } from "@/dados/dadosMock.js";
+
+const corPorTipo = {
+  Aluno:       "#7b2ff7",
+  Professor:   "#3b82f6",
+  Coordenador: "#f59e0b",
+  Admin:       "#ef4444",
+};
 
 const ICONES_SECAO = {
   dashboard:     <MdDashboard size={18} />,
@@ -55,7 +62,7 @@ export const GRUPOS_DEF = {
   academico: {
     rotulo: "Acadêmico",
     Icone:  MdMenuBook,
-    filhos: ["cursos", "modulos", "turmas", "conteudos", "avaliacoes"],
+    filhos: ["cursos", "modulos", "conteudos", "avaliacoes", "turmas"],
   },
   aprendizado: {
     rotulo: "Aprendizado",
@@ -80,9 +87,10 @@ export const FILHO_PARA_GRUPO = {
 };
 
 const SECOES_OCULTAS_SIDEBAR = {
-  Aluno:     new Set(["matriculas", "catalogo"]),
-  Admin:     new Set(["catalogo"]),
-  Professor: new Set(["catalogo"]),
+  Aluno:       new Set(["matriculas", "catalogo"]),
+  Admin:       new Set(["catalogo"]),
+  Professor:   new Set(["catalogo"]),
+  Coordenador: new Set(["catalogo"]),
 };
 
 export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, onLogout }) {
@@ -174,7 +182,7 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, on
       const filhosVisiveis = def.filhos
         .map((f) => itensMenu.find((i) => i.chave === f))
         .filter(Boolean);
-      if (filhosVisiveis.length >= 2) {
+      if (filhosVisiveis.length >= 1) {
         gruposVisiveis[chave] = { ...def, filhosVisiveis };
       }
     }
@@ -318,6 +326,26 @@ export default function BarraLateral({ usuario, secaoAtual, aberta, onFechar, on
         </nav>
 
         <footer className="sidebar__rodape">
+          <button
+            type="button"
+            className="sidebar__mini-usuario"
+            onClick={() => navigate(rotaPainelSecao("perfil"))}
+            title={usuario.nome}
+            aria-label={`Meu perfil — ${usuario.nome}`}
+          >
+            <span
+              className="sidebar__mini-usuario__avatar"
+              style={{ "--cor-perfil": corPorTipo[usuario.tipo] ?? "#7b2ff7" }}
+              aria-hidden="true"
+            >
+              <TbUserFilled size={15} style={{ color: "#fff" }} />
+            </span>
+            <span className="sidebar__mini-usuario__info">
+              <span className="sidebar__mini-usuario__nome">{usuario.nome}</span>
+              <span className="sidebar__mini-usuario__tipo">{usuario.tipo}</span>
+            </span>
+          </button>
+
           <button
             className="sidebar__item sidebar__item--sair"
             onClick={() => setConfirmarSaida(true)}

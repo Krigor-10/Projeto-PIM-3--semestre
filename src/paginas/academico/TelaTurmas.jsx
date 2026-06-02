@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { TbDotsVertical, TbPlus, TbSettings, TbX, TbSearch, TbUsers, TbChalkboard, TbCheck } from "react-icons/tb";
+import { siglasCurso } from "@/utils/siglas.js";
+import { TbDotsVertical, TbPlus, TbSettings, TbX, TbSearch, TbUsers, TbChalkboard, TbCheck, TbPencil } from "react-icons/tb";
 import { motion } from "framer-motion";
-import { MdSave } from "react-icons/md";
+import { MdSave, MdGroups } from "react-icons/md";
 import Insignia from "@/componentes/Insignia.jsx";
 import Modal from "@/componentes/Modal.jsx";
 import Botao from "@/componentes/Botao.jsx";
@@ -39,7 +40,17 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
     <div className="conteudos-aluno">
       <header className="conteudos-aluno__cabecalho">
         <div className="conteudos-aluno__curso-info">
-          <h2 className="conteudos-aluno__curso-titulo">{turma.nomeTurma}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-md)" }}>
+            <div className="cartao-progresso-aluno__avatar conteudos-aluno__avatar-desktop" aria-hidden="true">
+              <MdGroups size={20} aria-hidden="true" />
+            </div>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)", flexWrap: "wrap" }}>
+                <h2 className="conteudos-aluno__curso-titulo">{turma.nomeTurma}</h2>
+                <span className="conteudos-aluno__curso-etiqueta">{turma.cursoTitulo}</span>
+              </div>
+            </div>
+          </div>
           <div className="conteudos-aluno__meta-chips">
             <span className="conteudos-aluno__meta-chip conteudos-aluno__meta-chip--progresso">
               <TbCheck size={12} aria-hidden="true" />
@@ -59,9 +70,6 @@ function SlideTurma({ turma, alunos, busca, tipo, onEditar }) {
               {turma.professorNome}
             </span>
           </div>
-          <p style={{ fontSize: "0.8rem", color: "var(--cor-texto-mudo)", marginTop: "4px" }}>
-            {turma.cursoTitulo}
-          </p>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "var(--espaco-sm)" }}>
@@ -175,8 +183,10 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
   const [erroNovaTurma, setErroNovaTurma]     = useState("");
   const [cursoIdNovaTurma, setCursoIdNovaTurma] = useState(null);
   const [statusEditando, setStatusEditando]   = useState(null);
+  const [campoEditando, setCampoEditando]     = useState(null);
+  const [valoresEdit, setValoresEdit]         = useState({});
 
-  useEffect(() => { setStatusEditando(turmaEditando?.status ?? null); }, [turmaEditando]);
+  useEffect(() => { setStatusEditando(turmaEditando?.status ?? null); setValoresEdit({}); setCampoEditando(null); }, [turmaEditando]);
 
   const tipo = usuario?.tipo;
 
@@ -240,12 +250,10 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
     setModalNova(false);
   }
 
-  function salvarEdicao(e) {
-    e.preventDefault();
-    const f = e.target;
+  function salvarEdicao() {
     setListaTurmas((prev) => prev.map((t) =>
       t.id === turmaEditando.id
-        ? { ...t, nomeTurma: f["edit-nome-turma"].value, status: statusEditando ?? turmaEditando.status }
+        ? { ...t, nomeTurma: valoresEdit.nomeTurma ?? turmaEditando.nomeTurma, status: statusEditando ?? turmaEditando.status }
         : t
     ));
     onToast?.("Turma atualizada.", "sucesso");
@@ -408,12 +416,41 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
       {/* Modal edição */}
       {turmaEditando && (
         <Modal titulo="Editar Turma" onFechar={() => setTurmaEditando(null)}>
-          <div
-            className="modal-edicao__avatar"
-            aria-hidden="true"
-          >
-            {turmaEditando.nomeTurma.split("-").slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
-          </div>
+          <dl className="lista-detalhes">
+            <div className="lista-detalhes__item">
+              <dt>Nome da Turma</dt>
+              {campoEditando === "nomeTurma" ? (
+                <input
+                  className="campo__entrada campo__entrada--inline"
+                  defaultValue={valoresEdit.nomeTurma ?? turmaEditando.nomeTurma}
+                  autoFocus
+                  onBlur={(e) => { setValoresEdit((v) => ({ ...v, nomeTurma: e.target.value })); setCampoEditando(null); }}
+                  onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
+                />
+              ) : (
+                <dd>{valoresEdit.nomeTurma ?? turmaEditando.nomeTurma}</dd>
+              )}
+              <button className="btn-editar-linha" type="button" title="Editar nome" onClick={() => setCampoEditando("nomeTurma")}>
+                <motion.span whileHover={{ scale: 1.25, rotate: -12 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} style={{ display: "flex" }}>
+                  <TbPencil size={17} />
+                </motion.span>
+              </button>
+            </div>
+
+            <div className="lista-detalhes__item">
+              <dt>Curso</dt>
+              <dd>{turmaEditando.cursoTitulo}</dd>
+            </div>
+
+            <div className="lista-detalhes__item">
+              <dt>Status</dt>
+              <SelectSimples
+                value={statusEditando ?? turmaEditando.status}
+                opcoes={["Ativa", "Concluída", "Inativa"]}
+                onChange={setStatusEditando}
+              />
+            </div>
+          </dl>
 
           <dl className="modal-metricas-turma" aria-label="Métricas da turma">
             <div className="modal-metricas-turma__item">
@@ -434,42 +471,10 @@ export default function TelaTurmas({ usuario, listaCursos, onToast }) {
             </div>
           </dl>
 
-          <form className="formulario-modal" onSubmit={salvarEdicao}>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-nome-turma">Nome da Turma *</label>
-              <input
-                id="edit-nome-turma"
-                className="campo__entrada"
-                type="text"
-                defaultValue={turmaEditando.nomeTurma}
-                required
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-curso-turma">Curso</label>
-              <input
-                id="edit-curso-turma"
-                className="campo__entrada"
-                type="text"
-                value={turmaEditando.cursoTitulo}
-                disabled
-                style={{ opacity: 0.6, cursor: "not-allowed" }}
-              />
-            </div>
-            <div className="campo">
-              <label className="campo__rotulo" htmlFor="edit-status-turma">Status</label>
-              <SelectSimples
-                id="edit-status-turma"
-                value={statusEditando ?? turmaEditando.status}
-                opcoes={["Ativa", "Concluída", "Inativa"]}
-                onChange={setStatusEditando}
-              />
-            </div>
-            <footer className="modal-rodape">
-              <Botao variante="perigo" type="button" onClick={() => setTurmaEditando(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
-              <Botao variante="primario" type="submit" style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
-            </footer>
-          </form>
+          <footer className="modal-rodape">
+            <Botao variante="perigo" type="button" onClick={() => setTurmaEditando(null)} style={{ display: "flex", alignItems: "center", gap: "6px" }}><TbX size={15} aria-hidden="true" /> Cancelar</Botao>
+            <Botao variante="primario" type="button" onClick={salvarEdicao} style={{ display: "flex", alignItems: "center", gap: "6px" }}><MdSave size={17} aria-hidden="true" /> Salvar alterações</Botao>
+          </footer>
         </Modal>
       )}
     </div>
