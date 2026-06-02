@@ -144,7 +144,7 @@ export const cursos = [
     ativo: true,
     visivelCatalogo: true,
     destaque: false,
-    coordenadorId: null,
+    coordenadorId: 3,
   },
   {
     id: 6,
@@ -158,7 +158,7 @@ export const cursos = [
     ativo: true,
     visivelCatalogo: true,
     destaque: false,
-    coordenadorId: null,
+    coordenadorId: 3,
   },
 ];
 
@@ -195,8 +195,8 @@ export const turmas = [
   { id: 3, nomeTurma: "DATA-2024-A",  cursoId: 2, cursoTitulo: "Ciência de Dados",       professorId: 5, professorNome: "Ana Carvalho",   totalAlunos: 25, status: "Ativa"     },
   { id: 7, nomeTurma: "IA-2024-A",    cursoId: 3, cursoTitulo: "Inteligência Artificial", professorId: 5, professorNome: "Ana Carvalho",  totalAlunos: 20, status: "Ativa"     },
   { id: 4, nomeTurma: "CYBER-2024-A", cursoId: 4, cursoTitulo: "Cybersegurança",         professorId: 2, professorNome: "Heitor Nadir",   totalAlunos: 22, status: "Ativa"     },
-  { id: 5, nomeTurma: "UX-2024-A",    cursoId: 5, cursoTitulo: "UX e UI Design",         professorId: 7, professorNome: "Fernanda Lima",  totalAlunos: 30, status: "Concluída" },
-  { id: 6, nomeTurma: "ROB-2024-A",   cursoId: 6, cursoTitulo: "Robótica",               professorId: 6, professorNome: "Carlos Mendes",  totalAlunos: 18, status: "Ativa"     },
+  { id: 5, nomeTurma: "UX-2024-A",    cursoId: 5, cursoTitulo: "UX e UI Design",         professorId: 5, professorNome: "Ana Carvalho",   totalAlunos: 30, status: "Concluída" },
+  { id: 6, nomeTurma: "ROB-2024-A",   cursoId: 6, cursoTitulo: "Robótica",               professorId: 2, professorNome: "Heitor Nadir",   totalAlunos: 18, status: "Ativa"     },
 ];
 
 /* ── Matrículas ──────────────────────────────────────────────── */

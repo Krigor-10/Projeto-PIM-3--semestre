@@ -183,7 +183,7 @@ export default function TelaCoordenadores({ usuario, onToast }) {
   }
 
   const listaProcessada = useMemo(() => {
-    let r = lista;
+    let r = tipo === "Coordenador" ? lista.filter((u) => u.ativo) : lista;
     if (busca.trim()) {
       const t = busca.toLowerCase();
       r = r.filter((u) => u.nome.toLowerCase().includes(t) || u.email.toLowerCase().includes(t));
@@ -233,7 +233,9 @@ export default function TelaCoordenadores({ usuario, onToast }) {
         <div>
           <h1 className="cabecalho-pagina__titulo">Coordenadores</h1>
           <p className="cabecalho-pagina__subtitulo">
-            {lista.length} cadastrados · {totalAtivos} ativos · {totalInativos} inativos
+            {tipo === "Coordenador"
+              ? `${totalAtivos} coordenadores ativos`
+              : `${lista.length} cadastrados · ${totalAtivos} ativos · ${totalInativos} inativos`}
           </p>
         </div>
         <div style={{ position: "relative", width: "260px", flexShrink: 0, marginLeft: "auto" }}>
@@ -268,22 +270,24 @@ export default function TelaCoordenadores({ usuario, onToast }) {
 
       {/* Filtros */}
       <div className="barra-filtros">
-        <div className="segmented-control" role="group" aria-label="Filtrar por status">
-          {[
-            { valor: "todos",    rotulo: "Todos"    },
-            { valor: "ativos",   rotulo: "Ativos"   },
-            { valor: "inativos", rotulo: "Inativos" },
-          ].map(({ valor, rotulo }) => (
-            <button
-              key={valor}
-              className={`segmented-control__opcao${filtroStatus === valor ? " segmented-control__opcao--ativa" : ""}`}
-              onClick={() => { setFiltroStatus(valor); setPagina(1); }}
-              type="button"
-            >
-              {rotulo}
-            </button>
-          ))}
-        </div>
+        {tipo !== "Coordenador" && (
+          <div className="segmented-control" role="group" aria-label="Filtrar por status">
+            {[
+              { valor: "todos",    rotulo: "Todos"    },
+              { valor: "ativos",   rotulo: "Ativos"   },
+              { valor: "inativos", rotulo: "Inativos" },
+            ].map(({ valor, rotulo }) => (
+              <button
+                key={valor}
+                className={`segmented-control__opcao${filtroStatus === valor ? " segmented-control__opcao--ativa" : ""}`}
+                onClick={() => { setFiltroStatus(valor); setPagina(1); }}
+                type="button"
+              >
+                {rotulo}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Tabela */}

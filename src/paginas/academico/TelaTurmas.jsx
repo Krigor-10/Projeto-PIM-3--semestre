@@ -169,8 +169,10 @@ function montarAlunosTurma(turmaId) {
         email: u?.email ?? "—",
         statusMatricula: m.status,
         media: mediaMock(m.alunoId),
+        ativo: u?.ativo ?? true,
       };
-    });
+    })
+    .filter((a) => a.ativo);
 }
 
 export default function TelaTurmas({ usuario, listaCursos, onToast }) {
