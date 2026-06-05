@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manual do Usuário — CodeRyse Academy</title>
+<style>
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --roxo:        #7c3aed;
+    --roxo-claro:  #a78bfa;
+    --roxo-escuro: #4c1d95;
+    --verde:       #10b981;
+    --azul:        #3b82f6;
+    --laranja:     #f59e0b;
+    --vermelho:    #ef4444;
+    --bg-dark:     #0f0f1a;
+    --bg-card:     #1a1a2e;
+    --bg-card2:    #16213e;
+    --texto:       #e2e8f0;
+    --texto-muted: #94a3b8;
+    --borda:       #2d2d4e;
+    --cream:       #faf7f2;
+    --cinza:       #f1f5f9;
+  }
+
+  body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: #f0f0f0;
+    color: #1e293b;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ── Página (A4) ── */
+  .pagina {
+    width: 210mm;
+    margin: 0 auto 24px;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(0,0,0,.18);
+    padding: 0;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── CAPA ── */
+  .capa {
+    background: linear-gradient(155deg, #0f0f1a 0%, #1a1a2e 40%, #16213e 70%, #0d0d1a 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 48px 40px 40px;
+    min-height: 297mm;
+    position: relative;
+  }
+
+  .capa::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,58,237,.35) 0%, transparent 70%);
+  }
+
+  .capa::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16,185,129,.2) 0%, transparent 70%);
+  }
+
+  .capa__univ {
+    text-align: center;
+    z-index: 1;
+  }
+
+  .capa__univ-nome {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 4px;
+  }
+
+  .capa__univ-curso {
+    font-size: 13px;
+    color: rgba(255,255,255,.7);
+    font-weight: 500;
+  }
+
+  .capa__univ-campus {
+    font-size: 11px;
+    color: rgba(255,255,255,.45);
+    margin-top: 4px;
+  }
+
+  .capa__centro {
+    text-align: center;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .capa__badge {
+    display: inline-block;
+    background: rgba(124,58,237,.3);
+    border: 1px solid rgba(124,58,237,.6);
+    color: #a78bfa;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 100px;
+  }
+
+  .capa__logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .capa__logo-marca {
+    font-size: 58px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  .capa__logo-marca span:first-child { color: #fff; }
+  .capa__logo-marca span:last-child  { color: #7c3aed; }
+
+  .capa__logo-sub {
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+  }
+
+  .capa__divisor {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #7c3aed, #10b981);
+    border-radius: 2px;
+    margin: 4px 0;
+  }
+
+  .capa__titulo-doc {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .capa__subtitulo-doc {
+    font-size: 12px;
+    color: rgba(255,255,255,.5);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .capa__pilares {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    z-index: 1;
+  }
+
+  .capa__pilar {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    padding: 12px 18px;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .capa__pilar-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: #7c3aed;
+    display: block;
+  }
+
+  .capa__pilar-label {
+    font-size: 10px;
+    color: rgba(255,255,255,.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .capa__rodape {
+    text-align: center;
+    z-index: 1;
+    color: rgba(255,255,255,.35);
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* ── Conteúdo interno ── */
+  .inner {
+    padding: 36px 44px;
+  }
+
+  /* ── Cabeçalho de seção interno ── */
+  .secao-header {
+    border-bottom: 2px solid #7c3aed;
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .secao-header__num {
+    background: #7c3aed;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .secao-header__titulo {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: 0.2px;
+  }
+
+  .secao-header--perfil {
+    border-bottom-color: var(--cor-perfil, #7c3aed);
+  }
+
+  .secao-header--perfil .secao-header__num {
+    background: var(--cor-perfil, #7c3aed);
+  }
+
+  /* ── Sumário ── */
+  .sumario-titulo {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 6px;
+  }
+
+  .sumario-sub {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 14px;
+  }
+
+  .sumario-grupo {
+    margin-bottom: 20px;
+  }
+
+  .sumario-grupo__titulo {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #7c3aed;
+    margin-bottom: 8px;
+  }
+
+  .sumario-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px dotted #e2e8f0;
+    gap: 8px;
+  }
+
+  .sumario-item__texto {
+    font-size: 13px;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sumario-item__num {
+    font-size: 11px;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .sumario-item__pagina {
+    color: #94a3b8;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .sumario-item--perfil .sumario-item__texto { font-weight: 600; }
+  .sumario-item--perfil .sumario-item__num   { background: #ede9fe; color: #7c3aed; }
+
+  /* ── Tabelas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  th {
+    background: #1e293b;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  /* ── Cards de dados ── */
+  .dados-grade {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .dado-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .dado-item--full { grid-column: 1 / -1; }
+
+  .dado-item__rotulo {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #7c3aed;
+    margin-bottom: 4px;
+  }
+
+  .dado-item__valor {
+    font-size: 13px;
+    color: #1e293b;
+    font-weight: 500;
+  }
+
+  /* ── Cabeçalho de páginas internas ── */
+  .pagina-header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: #fff;
+    padding: 22px 44px 20px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pagina-header__marca {
+    font-size: 13px;
+    font-weight: 700;
+    color: #7c3aed;
+    letter-spacing: 1px;
+  }
+
+  .pagina-header__secao {
+    font-size: 11px;
+    color: rgba(255,255,255,.45);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── Perfil banner ── */
+  .perfil-banner {
+    padding: 28px 44px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 0;
+  }
+
+  .perfil-banner__icone {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    font-weight: 800;
+  }
+
+  .perfil-banner__nome {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.2;
+  }
+
+  .perfil-banner__desc {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  .perfil-banner__badge {
+    margin-left: auto;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── Funcionalidade card ── */
+  .func-lista {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .func-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    page-break-inside: avoid;
+  }
+
+  .func-card__icone {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .func-card__corpo {}
+
+  .func-card__titulo {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+  }
+
+  .func-card__desc {
+    font-size: 12.5px;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .func-card__lista {
+    margin-top: 8px;
+    padding-left: 16px;
+    list-style: disc;
+    color: #475569;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  /* ── Steps (passo a passo) ── */
+  .steps {
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 10px;
+    counter-increment: step;
+    page-break-inside: avoid;
+  }
+
+  .step::before {
+    content: counter(step);
+    background: #7c3aed;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step__texto {
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.5;
+  }
+
+  .step__texto strong { color: #1e293b; }
+
+  /* ── Alerta / dica ── */
+  .dica {
+    background: #f0fdf4;
+    border-left: 4px solid #10b981;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 12.5px;
+    color: #065f46;
+  }
+
+  .aviso {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 12.5px;
+    color: #78350f;
+  }
+
+  .info {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 12.5px;
+    color: #1e3a5f;
+  }
+
+  /* ── Placeholder de screenshot ── */
+  .screenshot {
+    width: 100%;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-radius: 12px;
+    border: 2px dashed #334155;
+    padding: 40px 20px;
+    text-align: center;
+    margin: 16px 0;
+    color: #64748b;
+    font-size: 12px;
+    page-break-inside: avoid;
+  }
+
+  .screenshot__titulo {
+    font-size: 14px;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 6px;
+  }
+
+  .screenshot__legenda {
+    font-size: 11px;
+    color: #475569;
+    font-style: italic;
+  }
+
+  /* ── Subtítulos ── */
+  h3.sub {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 18px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3.sub::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    background: #7c3aed;
+    border-radius: 2px;
+  }
+
+  p.texto {
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  /* ── Chips ── */
+  .chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 10.5px;
+    font-weight: 600;
+    margin: 2px;
+  }
+
+  .chip--roxo   { background: #ede9fe; color: #5b21b6; }
+  .chip--verde  { background: #d1fae5; color: #065f46; }
+  .chip--azul   { background: #dbeafe; color: #1e40af; }
+  .chip--laranja{ background: #fef3c7; color: #92400e; }
+  .chip--cinza  { background: #f1f5f9; color: #475569; }
+
+  /* ── Divisor ── */
+  hr.divisor {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 20px 0;
+  }
+
+  /* ── Conclusão e comprovação ── */
+  .comprovacao-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+
+  .comprovacao-box__num {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #7c3aed;
+    margin-bottom: 8px;
+  }
+
+  .comprovacao-box__titulo {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+  }
+
+  .foto-placeholder {
+    background: #e2e8f0;
+    border-radius: 8px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 12px;
+    text-align: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .foto-placeholder__icone { font-size: 32px; }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; }
+    .pagina { box-shadow: none; margin: 0; }
+  }
+
+  /* ── Aluno ── */  .aluno   { --cor-perfil: #7c3aed; }
+  /* ── Professor ── */ .professor { --cor-perfil: #3b82f6; }
+  /* ── Coordenador ── */ .coordenador { --cor-perfil: #10b981; }
+  /* ── Admin ── */ .admin { --cor-perfil: #f59e0b; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  CAPA                                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="capa">
+    <div class="capa__univ">
+      <p class="capa__univ-nome">Universidade Paulista — UNIP</p>
+      <p class="capa__univ-curso">CST em Análise e Desenvolvimento de Sistemas</p>
+      <p class="capa__univ-campus">Campus Dutra · São José dos Campos (SP)</p>
+    </div>
+
+    <div class="capa__centro">
+      <span class="capa__badge">Atividade de Extensão Universitária · PIM III</span>
+      <div class="capa__logo">
+        <div class="capa__logo-marca"><span>Code</span><span>Ryse</span></div>
+        <div class="capa__logo-sub">Academy</div>
+      </div>
+      <div class="capa__divisor"></div>
+      <div class="capa__titulo-doc">Manual do Usuário</div>
+      <div class="capa__subtitulo-doc">Plataforma de Ensino à Distância — Guia Completo de Utilização</div>
+
+      <div class="capa__pilares" style="margin-top:20px;">
+        <div class="capa__pilar">
+          <span class="capa__pilar-num">4</span>
+          <span class="capa__pilar-label">Perfis</span>
+        </div>
+        <div class="capa__pilar">
+          <span class="capa__pilar-num">6</span>
+          <span class="capa__pilar-label">Cursos</span>
+        </div>
+        <div class="capa__pilar">
+          <span class="capa__pilar-num">30+</span>
+          <span class="capa__pilar-label">Telas</span>
+        </div>
+        <div class="capa__pilar">
+          <span class="capa__pilar-num">100%</span>
+          <span class="capa__pilar-label">Responsivo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="capa__rodape">
+      <p>2026 · São José dos Campos · Brasil</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  SUMÁRIO                                                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Sumário</span>
+  </div>
+  <div class="inner">
+    <p class="sumario-titulo">Sumário</p>
+    <p class="sumario-sub">Manual do Usuário · Plataforma CodeRyse Academy</p>
+
+    <div class="sumario-grupo">
+      <p class="sumario-grupo__titulo">Dados de Cadastro</p>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">1</span> Campus</span><span class="sumario-item__pagina">3</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">2</span> Alunos Participantes</span><span class="sumario-item__pagina">3</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">3</span> Período</span><span class="sumario-item__pagina">3</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">4</span> Área Temática e Projetos</span><span class="sumario-item__pagina">3</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">5</span> Ação</span><span class="sumario-item__pagina">3</span></div>
+    </div>
+
+    <div class="sumario-grupo">
+      <p class="sumario-grupo__titulo">Descrição da Atividade</p>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">6</span> Descrição Geral — Visão da Plataforma</span><span class="sumario-item__pagina">4</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">6.1</span> Páginas Públicas (Acesso sem login)</span><span class="sumario-item__pagina">4</span></div>
+    </div>
+
+    <div class="sumario-grupo">
+      <p class="sumario-grupo__titulo">Manual por Perfil de Usuário</p>
+      <div class="sumario-item sumario-item--perfil"><span class="sumario-item__texto"><span class="sumario-item__num">7</span> Perfil — Aluno</span><span class="sumario-item__pagina">5</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Dashboard do Aluno</span><span class="sumario-item__pagina">5</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Catálogo de Cursos</span><span class="sumario-item__pagina">5</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Módulos e Conteúdos</span><span class="sumario-item__pagina">6</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Avaliações e Quizzes</span><span class="sumario-item__pagina">6</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Progresso Acadêmico</span><span class="sumario-item__pagina">7</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Certificados</span><span class="sumario-item__pagina">7</span></div>
+
+      <div class="sumario-item sumario-item--perfil"><span class="sumario-item__texto"><span class="sumario-item__num">8</span> Perfil — Professor</span><span class="sumario-item__pagina">8</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Dashboard do Professor</span><span class="sumario-item__pagina">8</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Gerenciar Turmas</span><span class="sumario-item__pagina">8</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Módulos e Conteúdos Didáticos</span><span class="sumario-item__pagina">9</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Criar e Gerenciar Avaliações</span><span class="sumario-item__pagina">9</span></div>
+
+      <div class="sumario-item sumario-item--perfil"><span class="sumario-item__texto"><span class="sumario-item__num">9</span> Perfil — Coordenador</span><span class="sumario-item__pagina">10</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Dashboard do Coordenador</span><span class="sumario-item__pagina">10</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Gerenciar Cursos e Turmas</span><span class="sumario-item__pagina">10</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Matrículas</span><span class="sumario-item__pagina">11</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Gerenciar Alunos e Professores</span><span class="sumario-item__pagina">11</span></div>
+
+      <div class="sumario-item sumario-item--perfil"><span class="sumario-item__texto"><span class="sumario-item__num">10</span> Perfil — Administrador</span><span class="sumario-item__pagina">12</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Dashboard Administrativo</span><span class="sumario-item__pagina">12</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto">&nbsp;&nbsp;&nbsp;Gestão de Usuários</span><span class="sumario-item__pagina">12</span></div>
+    </div>
+
+    <div class="sumario-grupo">
+      <p class="sumario-grupo__titulo">Encerramento</p>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">11</span> Participação do Aluno</span><span class="sumario-item__pagina">13</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">12</span> Conclusão</span><span class="sumario-item__pagina">13</span></div>
+      <div class="sumario-item"><span class="sumario-item__texto"><span class="sumario-item__num">13</span> Local onde o Projeto foi Desenvolvido</span><span class="sumario-item__pagina">14</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  DADOS DE CADASTRO                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Dados de Cadastro</span>
+  </div>
+  <div class="inner">
+
+    <div class="secao-header">
+      <span class="secao-header__num">✦</span>
+      <span class="secao-header__titulo">Dados de Cadastro</span>
+    </div>
+
+    <!-- 1. Campus -->
+    <h3 class="sub">1. Campus</h3>
+    <div class="dado-item" style="margin-bottom:16px;">
+      <p class="dado-item__rotulo">Campus</p>
+      <p class="dado-item__valor">Campus Dutra — São José dos Campos (SP)</p>
+    </div>
+
+    <!-- 2. Alunos Participantes -->
+    <h3 class="sub">2. Alunos Participantes</h3>
+    <table style="margin-bottom:16px;">
+      <thead>
+        <tr>
+          <th style="width:48px;">Nº</th>
+          <th style="width:120px;">RA</th>
+          <th>Nome Completo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>[RA DO ALUNO]</strong></td>
+          <td>Krigor Nasare</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="aviso">OBS: Preencher o RA antes da entrega. Todos os alunos devem ser do mesmo Campus.</p>
+
+    <!-- 3. Período -->
+    <h3 class="sub">3. Período</h3>
+    <div class="dados-grade">
+      <div class="dado-item">
+        <p class="dado-item__rotulo">Ano</p>
+        <p class="dado-item__valor">2026</p>
+      </div>
+      <div class="dado-item">
+        <p class="dado-item__rotulo">Semestre</p>
+        <p class="dado-item__valor">1º Semestre</p>
+      </div>
+    </div>
+
+    <!-- 4. Área Temática -->
+    <h3 class="sub">4. Área Temática e Projetos</h3>
+    <div class="dado-item dado-item--full" style="margin-bottom:16px;">
+      <p class="dado-item__rotulo">Área</p>
+      <p class="dado-item__valor">Tecnologia e Produção — Desenvolvimento de Aplicativos / Software / Web Site para a comunidade.</p>
+    </div>
+
+    <!-- 5. Ação -->
+    <h3 class="sub">5. Ação</h3>
+    <div class="dado-item" style="margin-bottom:0;">
+      <p class="dado-item__rotulo">Tipo de Ação</p>
+      <p class="dado-item__valor">Prestação de Serviços.</p>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  DESCRIÇÃO GERAL                                               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Descrição Geral</span>
+  </div>
+  <div class="inner">
+
+    <div class="secao-header">
+      <span class="secao-header__num">6</span>
+      <span class="secao-header__titulo">Descrição Geral da Atividade</span>
+    </div>
+
+    <p class="texto">
+      A <strong>CodeRyse Academy</strong> é uma plataforma de ensino à distância (EAD) desenvolvida como projeto integrador multidisciplinar (PIM III) do curso de <em>Análise e Desenvolvimento de Sistemas</em> da UNIP. A aplicação foi construída inteiramente em <strong>React + Vite</strong>, sem dependência de backend, utilizando dados mockados para simular um ambiente acadêmico completo e funcional.
+    </p>
+
+    <p class="texto">
+      O sistema atende quatro perfis distintos de usuários — <strong>Aluno, Professor, Coordenador</strong> e <strong>Administrador</strong> — cada um com dashboard exclusivo, permissões específicas e fluxos de trabalho independentes. O design segue um sistema visual próprio (dark theme) com componentes reutilizáveis, animações via Framer Motion, acessibilidade WCAG 2.1 AA e responsividade completa para dispositivos móveis.
+    </p>
+
+    <p class="texto">
+      A plataforma oferece desde o cadastro de novos alunos e solicitação de matrícula, passando pela gestão pedagógica de módulos, conteúdos e avaliações com quizzes interativos, até a emissão de certificados digitais ao concluir um curso. Todo o fluxo foi projetado para demonstrar, em ambiente de protótipo, as funcionalidades essenciais de um sistema EAD real.
+    </p>
+
+    <div class="info">
+      <strong>Tecnologias utilizadas:</strong> React 18 · Vite · React Router DOM · Framer Motion · Recharts · React Icons · CSS puro com variáveis customizadas · localStorage como banco de dados de sessão.
+    </div>
+
+    <hr class="divisor" />
+
+    <div class="secao-header">
+      <span class="secao-header__num">6.1</span>
+      <span class="secao-header__titulo">Páginas Públicas — Acesso sem Login</span>
+    </div>
+
+    <p class="texto">Qualquer visitante pode acessar a página inicial da plataforma sem precisar criar uma conta.</p>
+
+    <div class="func-lista">
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">🏠</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Página Inicial (Home)</p>
+          <p class="func-card__desc">Apresenta a identidade visual da plataforma, os três pilares diferenciais e o catálogo completo de cursos disponíveis com imagem, nível e botão de cadastro direto. O visitante pode navegar pelos cursos e ver detalhes sem fazer login.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#dbeafe;">🔐</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Login do Aluno</p>
+          <p class="func-card__desc">Acesso com e-mail e senha. Redireciona automaticamente para o painel do aluno após autenticação. Link para criar conta disponível na tela.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#fef3c7;">🛡️</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Área Restrita — Login Staff</p>
+          <p class="func-card__desc">Acesso exclusivo para Professor, Coordenador e Administrador. O sistema identifica o perfil automaticamente e direciona para o dashboard correspondente.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#d1fae5;">✍️</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Wizard de Cadastro</p>
+          <p class="func-card__desc">Formulário multi-etapas (4 abas para alunos, 3 abas para staff): dados pessoais → informações acadêmicas → curso desejado → confirmação. Pode ser iniciado diretamente pelo card de um curso, pré-selecionando-o.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">Como acessar a plataforma</h3>
+    <div class="steps">
+      <div class="step"><span class="step__texto">Abra o navegador e acesse a URL da plataforma CodeRyse Academy.</span></div>
+      <div class="step"><span class="step__texto">Na página inicial, clique em <strong>"Entrar"</strong> (alunos) ou <strong>"Área restrita"</strong> (staff).</span></div>
+      <div class="step"><span class="step__texto">Informe seu e-mail e senha cadastrados e clique em <strong>"Entrar"</strong>.</span></div>
+      <div class="step"><span class="step__texto">O sistema identificará seu perfil e redirecionará para o painel correspondente.</span></div>
+      <div class="step"><span class="step__texto">Para sair, clique no seu nome no canto superior direito e selecione <strong>"Sair"</strong>.</span></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  PERFIL: ALUNO                                                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina aluno">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Perfil — Aluno</span>
+  </div>
+
+  <div class="perfil-banner" style="background: linear-gradient(135deg,#ede9fe,#f5f3ff);">
+    <div class="func-card__icone" style="background:#7c3aed;width:56px;height:56px;font-size:26px;border-radius:16px;display:flex;align-items:center;justify-content:center;">🎓</div>
+    <div>
+      <p class="perfil-banner__nome" style="color:#4c1d95;">Perfil: Aluno</p>
+      <p class="perfil-banner__desc">Aprendizado, progresso e certificação</p>
+    </div>
+    <span class="perfil-banner__badge chip chip--roxo" style="font-size:11px;padding:6px 16px;">Seção 7</span>
+  </div>
+
+  <div class="inner" style="padding-top:16px;">
+
+    <div class="secao-header secao-header--perfil">
+      <span class="secao-header__num">7</span>
+      <span class="secao-header__titulo">Manual do Aluno</span>
+    </div>
+
+    <p class="texto">O aluno é o principal usuário da plataforma. Após ter sua matrícula aprovada, ele tem acesso ao painel completo de aprendizado com módulos, conteúdos, quizzes e acompanhamento de progresso em tempo real.</p>
+
+    <h3 class="sub">7.1 Dashboard do Aluno</h3>
+
+    <div class="func-lista">
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">📊</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">KPIs de Desempenho</p>
+          <p class="func-card__desc">Quatro cards no topo exibem em tempo real: cursos matriculados, conteúdos concluídos, módulos finalizados e média geral de notas.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">▶️</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Card "Continue de onde parou"</p>
+          <p class="func-card__desc">Exibe automaticamente o módulo em andamento com barra de progresso, nome do próximo conteúdo e botão de acesso rápido para continuar sem precisar navegar manualmente.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">⚡</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Ações Rápidas</p>
+          <p class="func-card__desc">Atalhos diretos para as seções mais usadas: Catálogo, Avaliações, Progresso e Meu Perfil — acessíveis com um clique a partir do dashboard.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">❤️</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Cursos Favoritos</p>
+          <p class="func-card__desc">Lista de cursos marcados como favoritos pelo aluno, com acesso rápido ao catálogo e possibilidade de desfavoritar diretamente pelo ícone de coração.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">7.2 Catálogo de Cursos</h3>
+    <p class="texto">O catálogo exibe todos os cursos ativos e visíveis da plataforma. O aluno pode:</p>
+    <ul class="func-card__lista" style="margin-bottom:14px;">
+      <li>Filtrar cursos por nível (Iniciante, Intermediário, Avançado)</li>
+      <li>Buscar por nome do curso na barra de pesquisa</li>
+      <li>Marcar/desmarcar cursos como favoritos (ícone ❤️)</li>
+      <li>Visualizar status: <span class="chip chip--verde">Matriculado</span> <span class="chip chip--laranja">Pendente</span> ou botão de solicitar matrícula</li>
+      <li>Solicitar nova matrícula diretamente pelo card do curso</li>
+    </ul>
+
+    <div class="dica">
+      <strong>Dica:</strong> Ao clicar em "Solicitar matrícula", um modal confirma a turma disponível. A solicitação ficará com status <strong>Pendente</strong> até o Coordenador aprovar.
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  ALUNO cont. — Módulos, Quiz, Progresso, Certificados         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina aluno">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Perfil — Aluno (cont.)</span>
+  </div>
+  <div class="inner">
+
+    <h3 class="sub">7.3 Módulos e Conteúdos</h3>
+    <p class="texto">A seção de módulos organiza o conteúdo do curso em uma estrutura sequencial desbloqueável:</p>
+
+    <div class="func-lista">
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">📚</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Desbloqueio Sequencial</p>
+          <p class="func-card__desc">O próximo módulo só é liberado após concluir todos os conteúdos e quizzes do módulo atual. Módulos bloqueados aparecem com cadeado e mensagem explicativa.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">🎬</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Tipos de Conteúdo</p>
+          <p class="func-card__desc">Cada módulo pode conter vídeos, leituras (textos) e arquivos para download. O aluno marca cada item como concluído ao terminar, atualizando a barra de progresso do módulo em tempo real.</p>
+        </div>
+      </div>
+
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#ede9fe;">🧩</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Preview de Conteúdo</p>
+          <p class="func-card__desc">Clicando no item, o aluno visualiza um preview com detalhes do conteúdo — tipo, duração estimada e descrição — antes de acessar.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">7.4 Avaliações e Quizzes</h3>
+    <p class="texto">Ao finalizar todos os módulos do curso, o aluno desbloqueia a Avaliação Final. Os quizzes são aplicados ao final de cada módulo.</p>
+
+    <div class="steps">
+      <div class="step"><span class="step__texto">Acesse a seção <strong>Avaliações</strong> na barra lateral.</span></div>
+      <div class="step"><span class="step__texto">Selecione a avaliação disponível para o seu curso.</span></div>
+      <div class="step"><span class="step__texto">Responda as questões de múltipla escolha. Um indicador mostra a questão atual e o total.</span></div>
+      <div class="step"><span class="step__texto">Use os botões <strong>Anterior</strong> / <strong>Próxima</strong> para navegar entre questões.</span></div>
+      <div class="step"><span class="step__texto">Ao concluir, veja seu resultado imediatamente com feedback visual (acertos/erros e nota final).</span></div>
+    </div>
+
+    <div class="aviso">
+      <strong>Atenção:</strong> Ao tentar sair de uma avaliação em andamento, um modal de confirmação será exibido. Se sair, a nota registrada será proporcional às questões já respondidas.
+    </div>
+
+    <h3 class="sub">7.5 Progresso Acadêmico</h3>
+    <p class="texto">A tela de Progresso apresenta um slider (carrossel) com um card por curso matriculado, exibindo:</p>
+    <ul class="func-card__lista" style="margin-bottom:14px;">
+      <li>Percentual geral de conclusão do curso (conteúdos + quizzes)</li>
+      <li>Lista de módulos com status: <span class="chip chip--cinza">Não iniciado</span> <span class="chip chip--azul">Em andamento</span> <span class="chip chip--verde">Concluído</span></li>
+      <li>Indicador se a avaliação final está liberada ou bloqueada</li>
+      <li>Badge de certificado desbloqueado ao concluir tudo</li>
+    </ul>
+
+    <h3 class="sub">7.6 Certificados</h3>
+
+    <div class="func-card">
+      <div class="func-card__icone" style="background:#fef3c7;">🏆</div>
+      <div class="func-card__corpo">
+        <p class="func-card__titulo">Emissão de Certificado Digital</p>
+        <p class="func-card__desc">Após concluir todos os módulos e ser aprovado na avaliação final, o certificado é desbloqueado automaticamente. O aluno pode visualizá-lo e imprimi-lo (Ctrl+P) com layout profissional contendo nome, curso, carga horária e data de conclusão.</p>
+      </div>
+    </div>
+
+    <div class="dica">
+      <strong>Dica:</strong> Acesse a seção <strong>Certificados</strong> na barra lateral para ver todos os certificados obtidos. Clique em "Imprimir" para salvar como PDF.
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  PERFIL: PROFESSOR                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina professor">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Perfil — Professor</span>
+  </div>
+
+  <div class="perfil-banner" style="background: linear-gradient(135deg,#dbeafe,#eff6ff);">
+    <div style="width:56px;height:56px;border-radius:16px;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👨‍🏫</div>
+    <div>
+      <p class="perfil-banner__nome" style="color:#1e3a5f;">Perfil: Professor</p>
+      <p class="perfil-banner__desc">Gestão pedagógica de turmas, módulos e avaliações</p>
+    </div>
+    <span class="chip chip--azul" style="font-size:11px;padding:6px 16px;margin-left:auto;">Seção 8</span>
+  </div>
+
+  <div class="inner" style="padding-top:16px;">
+
+    <div class="secao-header" style="border-bottom-color:#3b82f6;">
+      <span class="secao-header__num" style="background:#3b82f6;">8</span>
+      <span class="secao-header__titulo">Manual do Professor</span>
+    </div>
+
+    <p class="texto">O professor gerencia os conteúdos didáticos de suas turmas, cria avaliações e acompanha o desempenho dos alunos. O acesso se dá pela <strong>Área Restrita</strong> no login.</p>
+
+    <h3 class="sub">8.1 Dashboard do Professor</h3>
+    <div class="func-lista">
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#dbeafe;">📈</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Resumo Geral</p>
+          <p class="func-card__desc">Quatro KPIs no topo: turmas ativas, total de alunos, avaliações publicadas e média de notas da turma. Atualização automática.</p>
+        </div>
+      </div>
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#dbeafe;">🗂️</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Minhas Turmas</p>
+          <p class="func-card__desc">Lista as 3 turmas mais recentes com nome, curso e total de alunos. Botão "Ver todas" para acesso à tela completa de turmas.</p>
+        </div>
+      </div>
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#dbeafe;">📝</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Avaliações Recentes</p>
+          <p class="func-card__desc">Exibe as últimas avaliações criadas com status (publicada/rascunho), prazo e ação rápida de edição.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">8.2 Gerenciar Turmas</h3>
+    <p class="texto">Na seção <strong>Turmas</strong>, o professor visualiza todas as suas turmas com lista de alunos e status de progresso individual.</p>
+    <ul class="func-card__lista" style="margin-bottom:14px;">
+      <li>Filtrar turmas por status (Ativa / Encerrada)</li>
+      <li>Ver quantidade de alunos por turma</li>
+      <li>Acompanhar desempenho geral da turma</li>
+    </ul>
+
+    <h3 class="sub">8.3 Módulos e Conteúdos Didáticos</h3>
+    <p class="texto">O professor organiza o material pedagógico em módulos, e cada módulo contém conteúdos de diferentes tipos:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo de Conteúdo</th>
+          <th>Ícone</th>
+          <th>Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Vídeo</strong></td>
+          <td>🎬</td>
+          <td>Aula gravada com URL do player de vídeo</td>
+        </tr>
+        <tr>
+          <td><strong>Leitura</strong></td>
+          <td>📄</td>
+          <td>Texto ou artigo em formato de leitura</td>
+        </tr>
+        <tr>
+          <td><strong>Arquivo</strong></td>
+          <td>📎</td>
+          <td>Material para download (PDF, slides, etc.)</td>
+        </tr>
+        <tr>
+          <td><strong>Quiz</strong></td>
+          <td>🧠</td>
+          <td>Questionário interativo com questões de múltipla escolha</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="texto">Para criar um novo conteúdo, o professor acessa o módulo desejado e clica em <strong>"+ Novo Conteúdo"</strong>. Um seletor visual de tipo é exibido antes do formulário de criação.</p>
+
+    <h3 class="sub">8.4 Criar e Gerenciar Avaliações</h3>
+    <div class="steps">
+      <div class="step"><span class="step__texto">Acesse <strong>Avaliações</strong> na barra lateral.</span></div>
+      <div class="step"><span class="step__texto">Clique em <strong>"+ Nova Avaliação"</strong>.</span></div>
+      <div class="step"><span class="step__texto">Preencha título, prazo e adicione questões de múltipla escolha com a resposta correta marcada.</span></div>
+      <div class="step"><span class="step__texto">Salve como <strong>rascunho</strong> para revisão posterior ou publique imediatamente.</span></div>
+      <div class="step"><span class="step__texto">Use o toggle de status para ativar/desativar a avaliação sem excluí-la.</span></div>
+    </div>
+
+    <div class="dica">
+      <strong>Edição inline:</strong> Clique diretamente no título ou em qualquer campo da avaliação para editá-lo sem abrir um modal separado — alterações são salvas com o botão 💾.
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  PERFIL: COORDENADOR                                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina coordenador">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Perfil — Coordenador</span>
+  </div>
+
+  <div class="perfil-banner" style="background: linear-gradient(135deg,#d1fae5,#f0fdf4);">
+    <div style="width:56px;height:56px;border-radius:16px;background:#10b981;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🎓</div>
+    <div>
+      <p class="perfil-banner__nome" style="color:#064e3b;">Perfil: Coordenador</p>
+      <p class="perfil-banner__desc">Gestão acadêmica de cursos, turmas, matrículas e usuários</p>
+    </div>
+    <span class="chip chip--verde" style="font-size:11px;padding:6px 16px;margin-left:auto;">Seção 9</span>
+  </div>
+
+  <div class="inner" style="padding-top:16px;">
+
+    <div class="secao-header" style="border-bottom-color:#10b981;">
+      <span class="secao-header__num" style="background:#10b981;">9</span>
+      <span class="secao-header__titulo">Manual do Coordenador</span>
+    </div>
+
+    <p class="texto">O coordenador é responsável pela gestão acadêmica da plataforma: gerencia os cursos sob sua responsabilidade, analisa matrículas, organiza turmas e acompanha o desempenho de alunos e professores.</p>
+
+    <h3 class="sub">9.1 Dashboard do Coordenador</h3>
+    <div class="func-lista">
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#d1fae5;">📊</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">KPIs Acadêmicos</p>
+          <p class="func-card__desc">Resumo visual com cursos ativos, total de alunos, turmas ativas e matrículas pendentes aguardando análise — com destaque visual quando há pendências.</p>
+        </div>
+      </div>
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#d1fae5;">📋</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Matrículas Pendentes</p>
+          <p class="func-card__desc">Lista de alunos aguardando aprovação, com botão de aprovar ou rejeitar diretamente pelo dashboard. Aprovações em massa disponíveis na tela de Matrículas.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">9.2 Gerenciar Cursos</h3>
+    <p class="texto">O coordenador visualiza apenas os cursos atribuídos a ele. Para cada curso, pode:</p>
+    <ul class="func-card__lista" style="margin-bottom:12px;">
+      <li>Atribuir ou trocar o professor responsável (via select de usuários)</li>
+      <li>Ver número de turmas ativas e total de alunos</li>
+      <li>Ativar ou desativar o curso na plataforma</li>
+      <li>Verificar o nível do curso (Iniciante / Intermediário / Avançado)</li>
+    </ul>
+
+    <div class="aviso">
+      <strong>Regra importante:</strong> Cada curso pode ter apenas <strong>uma turma ativa</strong> por vez. Ao tentar criar uma segunda turma ativa para o mesmo curso, o sistema exibirá um aviso.
+    </div>
+
+    <h3 class="sub">9.3 Gerenciar Turmas</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Ação</th>
+          <th>Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Criar Turma</strong></td>
+          <td>Preencha nome, curso, professor e período. Apenas uma turma ativa por curso é permitida.</td>
+        </tr>
+        <tr>
+          <td><strong>Editar Turma</strong></td>
+          <td>Altere nome, professor responsável e datas via modal de edição.</td>
+        </tr>
+        <tr>
+          <td><strong>Ativar / Encerrar</strong></td>
+          <td>Toggle de status na lista de turmas altera entre Ativa e Encerrada.</td>
+        </tr>
+        <tr>
+          <td><strong>Excluir Turma</strong></td>
+          <td>Modal de confirmação antes da exclusão definitiva.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub">9.4 Matrículas</h3>
+    <div class="steps">
+      <div class="step"><span class="step__texto">Acesse <strong>Matrículas</strong> na barra lateral.</span></div>
+      <div class="step"><span class="step__texto">Filtre por status: <span class="chip chip--laranja">Pendente</span> <span class="chip chip--verde">Aprovada</span> <span class="chip chip--cinza">Rejeitada</span></span></div>
+      <div class="step"><span class="step__texto">Aprove ou rejeite individualmente pela linha, ou use <strong>"Aprovar todas pendentes"</strong> para aprovação em massa.</span></div>
+      <div class="step"><span class="step__texto">O aluno recebe acesso imediato ao curso após aprovação.</span></div>
+    </div>
+
+    <h3 class="sub">9.5 Gerenciar Alunos e Professores</h3>
+    <p class="texto">O coordenador pode visualizar e gerenciar os perfis de alunos e professores vinculados aos seus cursos:</p>
+    <ul class="func-card__lista">
+      <li>Buscar por nome com filtro em tempo real</li>
+      <li>Filtrar por turma ou status (Ativo / Inativo)</li>
+      <li>Editar dados cadastrais via modal inline</li>
+      <li>Ativar ou desativar o usuário na plataforma (toggle com confirmação)</li>
+      <li>Visualizar turmas associadas em carrossel (alunos com múltiplas matrículas)</li>
+    </ul>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  PERFIL: ADMINISTRADOR                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina admin">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Perfil — Administrador</span>
+  </div>
+
+  <div class="perfil-banner" style="background: linear-gradient(135deg,#fef3c7,#fffbeb);">
+    <div style="width:56px;height:56px;border-radius:16px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">⚙️</div>
+    <div>
+      <p class="perfil-banner__nome" style="color:#78350f;">Perfil: Administrador</p>
+      <p class="perfil-banner__desc">Controle total da plataforma — usuários, dados e configurações</p>
+    </div>
+    <span class="chip chip--laranja" style="font-size:11px;padding:6px 16px;margin-left:auto;">Seção 10</span>
+  </div>
+
+  <div class="inner" style="padding-top:16px;">
+
+    <div class="secao-header" style="border-bottom-color:#f59e0b;">
+      <span class="secao-header__num" style="background:#f59e0b;">10</span>
+      <span class="secao-header__titulo">Manual do Administrador</span>
+    </div>
+
+    <p class="texto">O Administrador possui acesso irrestrito a toda a plataforma. É o único perfil capaz de gerenciar <strong>todos</strong> os usuários (incluindo coordenadores e outros admins), resetar dados da plataforma e visualizar relatórios globais.</p>
+
+    <h3 class="sub">10.1 Dashboard Administrativo</h3>
+    <div class="func-lista">
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#fef3c7;">📊</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">4 KPI Cards Globais</p>
+          <p class="func-card__desc">Usuários totais (com quantos estão ativos), alunos ativos, matrículas pendentes (destaque em laranja quando > 0) e taxa de conclusão média da plataforma.</p>
+        </div>
+      </div>
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#fef3c7;">📉</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Gráfico de Matrículas</p>
+          <p class="func-card__desc">Gráfico de barras interativo (Recharts) exibindo volume de matrículas nos últimos 6 meses, com tooltip ao passar o mouse em cada coluna.</p>
+        </div>
+      </div>
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#fef3c7;">🔗</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Acesso Rápido (Grid 3×2)</p>
+          <p class="func-card__desc">6 atalhos diretos para as seções principais: Usuários, Alunos, Professores, Coordenadores, Cursos e Matrículas.</p>
+        </div>
+      </div>
+      <div class="func-card">
+        <div class="func-card__icone" style="background:#fee2e2;">🔄</div>
+        <div class="func-card__corpo">
+          <p class="func-card__titulo">Reset da Plataforma</p>
+          <p class="func-card__desc">Botão de reset restaura todos os dados para o estado inicial do mock. Requer confirmação dupla antes de executar — operação irreversível.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">10.2 Gestão Completa de Usuários</h3>
+    <p class="texto">A tela de Usuários lista todos os perfis da plataforma em uma única view. O admin pode:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ação</th>
+          <th>Descrição</th>
+          <th>Perfis que pode gerenciar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Criar usuário</strong></td>
+          <td>Wizard multi-etapas com dados pessoais e acadêmicos</td>
+          <td>Todos os perfis</td>
+        </tr>
+        <tr>
+          <td><strong>Editar</strong></td>
+          <td>Modal de edição inline com campos pré-preenchidos</td>
+          <td>Todos os perfis</td>
+        </tr>
+        <tr>
+          <td><strong>Ativar/Desativar</strong></td>
+          <td>Toggle com popup de confirmação</td>
+          <td>Todos os perfis</td>
+        </tr>
+        <tr>
+          <td><strong>Excluir</strong></td>
+          <td>Modal de confirmação com aviso de irreversibilidade</td>
+          <td>Todos os perfis</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub">10.3 Gerenciar Coordenadores</h3>
+    <p class="texto">Seção exclusiva do Admin para gerir coordenadores: criar, editar dados, ativar/desativar e atribuir cursos. Coordenadores inativos ficam ocultos para os demais perfis.</p>
+
+    <h3 class="sub">10.4 Visibilidade de Módulos e Conteúdos</h3>
+    <p class="texto">Administrador e Coordenador podem alternar a visibilidade de módulos e conteúdos para os alunos via switch na tela de Módulos. Um popup de confirmação é exibido antes de ocultar qualquer item publicado.</p>
+
+    <div class="aviso">
+      <strong>Permissões RBAC resumidas:</strong> Admin vê tudo. Coordenador gerencia seus cursos. Professor gerencia suas turmas. Aluno acessa apenas seu conteúdo e progresso.
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  PARTICIPAÇÃO DO ALUNO + CONCLUSÃO                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Participação &amp; Conclusão</span>
+  </div>
+  <div class="inner">
+
+    <div class="secao-header">
+      <span class="secao-header__num">11</span>
+      <span class="secao-header__titulo">Descrição da Participação do Aluno</span>
+    </div>
+
+    <h3 class="sub" style="margin-top:0;">Krigor Nasare</h3>
+    <p class="texto">
+      Fui responsável pelo desenvolvimento integral do protótipo frontend da plataforma <strong>CodeRyse Academy</strong>, desde a concepção da identidade visual até a implementação de todas as telas e funcionalidades. Utilizando <em>React</em> e <em>Vite</em>, estruturei a aplicação com roteamento via React Router, gerenciamento de estado local e persistência de dados via <em>localStorage</em> — eliminando a necessidade de backend para fins de demonstração acadêmica.
+    </p>
+    <p class="texto">
+      As disciplinas de <em>Programação para Dispositivos Móveis e Web</em> e <em>Análise e Projeto de Sistemas</em> foram fundamentais para estruturar a arquitetura de componentes e definir os fluxos de navegação por perfil (RBAC). Já as disciplinas de <em>Banco de Dados</em> e <em>Engenharia de Software</em> orientaram o design dos dados mockados e a organização dos módulos pedagógicos. A disciplina de <em>Interface Homem-Máquina</em> embasou as decisões de UX, acessibilidade (WCAG 2.1 AA) e responsividade mobile.
+    </p>
+    <p class="texto">
+      O resultado é uma plataforma funcional com mais de 30 telas distintas, 4 perfis de usuário completamente diferenciados, animações com Framer Motion, gráficos com Recharts, sistema de quizzes interativos, emissão de certificados digitais e diagramas de banco de dados (MER, Conceitual, ER e Diagrama de Classes) documentados em HTML estático para apresentação.
+    </p>
+
+    <hr class="divisor" />
+
+    <div class="secao-header" style="margin-top:8px;">
+      <span class="secao-header__num">12</span>
+      <span class="secao-header__titulo">Conclusão</span>
+    </div>
+
+    <p class="texto">
+      O desenvolvimento da <strong>CodeRyse Academy</strong> como atividade de extensão universitária demonstrou na prática como os conhecimentos acadêmicos acumulados ao longo do curso de Análise e Desenvolvimento de Sistemas se traduzem em soluções reais e funcionais para a comunidade. A construção de uma plataforma EAD completa — com autenticação por perfil, gestão pedagógica, avaliações interativas e certificação digital — exigiu a integração de competências de programação, design de sistemas, banco de dados, UX e acessibilidade.
+    </p>
+    <p class="texto">
+      Do ponto de vista técnico, o projeto comprova a viabilidade de desenvolver aplicações web modernas e de alta qualidade com React sem dependência de backend, utilizando estratégias como localStorage e dados mockados estruturados para simular um ambiente real. A adoção de boas práticas como controle de acesso por papel (RBAC), design responsivo e conformidade com WCAG 2.1 AA demonstra maturidade no desenvolvimento e compromisso com a inclusão digital.
+    </p>
+    <p class="texto">
+      A experiência fortaleceu habilidades essenciais ao mercado de trabalho — resolução de problemas, trabalho sob pressão de prazos acadêmicos, leitura de documentação técnica e tomada de decisões de arquitetura — constituindo um diferencial competitivo significativo e reforçando o valor das atividades extensionistas como ponte entre a academia e o mercado.
+    </p>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  LOCAL                                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="pagina-header">
+    <span class="pagina-header__marca">CodeRyse Academy</span>
+    <span class="pagina-header__secao">Local</span>
+  </div>
+  <div class="inner">
+
+    <div class="secao-header">
+      <span class="secao-header__num">13</span>
+      <span class="secao-header__titulo">Local onde o Projeto foi Desenvolvido</span>
+    </div>
+
+    <table style="margin-bottom:24px;">
+      <thead>
+        <tr>
+          <th>Campus</th>
+          <th>Local de Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Campus Dutra — São José dos Campos (SP)</td>
+          <td>Desenvolvimento remoto / laboratório de informática da UNIP</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+</body>
+</html>
