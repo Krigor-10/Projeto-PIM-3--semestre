@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeRyse Academy — Infográfico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fundo:       #191b21;
+      --fundo-card:  #22242e;
+      --marca:       #7b2ff7;
+      --marca-clara: #b992ff;
+      --acento:      #9d67ff;
+      --sucesso:     #22c55e;
+      --aviso:       #f59e0b;
+      --info:        #3b82f6;
+      --texto:       #f3f5ff;
+      --suave:       #aeb6cb;
+      --mudo:        #6b7280;
+      --borda:       rgba(255,255,255,0.07);
+    }
+
+    /* ── SCAFFOLDING ─────────────────────────────────────────────────────── */
+    html, body {
+      background: #0d0e14;
+      font-family: "Inter", system-ui, sans-serif;
+      color: var(--texto);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* ── PÁGINA A4 ───────────────────────────────────────────────────────── */
+    .pagina {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--fundo);
+      padding: 11mm 13mm 10mm;
+      overflow: hidden;
+    }
+
+    @media print {
+      html, body { background: var(--fundo); padding: 0; margin: 0; }
+      @page { size: A4 portrait; margin: 0; }
+      .pagina { padding: 11mm 13mm 10mm; width: 210mm; min-height: 297mm; box-shadow: none; }
+    }
+
+    /* ── CABEÇALHO ───────────────────────────────────────────────────────── */
+    .cabecalho {
+      background: linear-gradient(135deg, #2a1060 0%, #1a0848 45%, #0d0620 100%);
+      border: 1px solid rgba(123,47,247,0.4);
+      border-radius: 14px;
+      padding: 18px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .cabecalho::before {
+      content: "";
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(123,47,247,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .logo-grupo {
+      display: flex; align-items: center; gap: 13px; z-index: 1;
+    }
+    .logo-icone {
+      width: 48px; height: 48px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--marca), var(--acento));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 6px 20px rgba(123,47,247,0.5);
+    }
+    .logo-nome h1 {
+      font-size: 1.55rem; font-weight: 900; letter-spacing: -0.4px;
+      background: linear-gradient(to right, #fff 0%, var(--marca-clara) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1.1;
+    }
+    .logo-nome p { color: var(--suave); font-size: 0.78rem; margin-top: 3px; }
+    .cabecalho-badges {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 6px; z-index: 1;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 11px; border-radius: 999px;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2px;
+    }
+    .badge-roxo { background: rgba(123,47,247,0.25); color: var(--marca-clara); border: 1px solid rgba(123,47,247,0.4); }
+    .badge-verde { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .badge-azul  { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+
+    /* ── STATS ───────────────────────────────────────────────────────────── */
+    .stats {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+      margin-bottom: 10px;
+    }
+    .stat {
+      background: var(--fundo-card); border: 1px solid var(--borda);
+      border-radius: 10px; padding: 10px 8px; text-align: center;
+      break-inside: avoid;
+    }
+    .stat .emoji { font-size: 1.15rem; display: block; margin-bottom: 4px; }
+    .stat .num {
+      font-size: 1.45rem; font-weight: 800; line-height: 1;
+      background: linear-gradient(135deg, var(--marca-clara), var(--acento));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stat .rot { font-size: 0.64rem; color: var(--suave); margin-top: 3px; font-weight: 500; }
+
+    /* ── SEÇÃO ───────────────────────────────────────────────────────────── */
+    .secao { margin-bottom: 10px; break-inside: avoid; }
+    .secao-tit {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 1.6px;
+      text-transform: uppercase; color: var(--acento);
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .secao-tit::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
+
+    /* ── PERFIS ──────────────────────────────────────────────────────────── */
+    .grid-perfis {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    }
+    .card-perfil {
+      background: var(--fundo-card); border: 1px solid var(--borda);
+      border-radius: 11px; padding: 13px 12px;
+      position: relative; overflow: hidden;
+      break-inside: avoid;
+    }
+    .card-perfil::before {
+      content: ""; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px; border-radius: 11px 11px 0 0;
+    }
+    .p-aluno::before     { background: linear-gradient(to right, var(--marca), var(--acento)); }
+    .p-professor::before { background: linear-gradient(to right, var(--sucesso), #16a34a); }
+    .p-coord::before     { background: linear-gradient(to right, var(--aviso), #d97706); }
+    .p-admin::before     { background: linear-gradient(to right, var(--info), #2563eb); }
+
+    .p-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .p-icone {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .pi-aluno     { background: rgba(123,47,247,0.2); }
+    .pi-professor { background: rgba(34,197,94,0.2); }
+    .pi-coord     { background: rgba(245,158,11,0.2); }
+    .pi-admin     { background: rgba(59,130,246,0.2); }
+    .p-header h3  { font-size: 0.82rem; font-weight: 700; color: var(--texto); }
+    .p-header span { font-size: 0.62rem; color: var(--mudo); display: block; margin-top: 1px; }
+
+    .p-feats { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .p-feats li {
+      display: flex; align-items: flex-start; gap: 5px;
+      font-size: 0.68rem; color: var(--suave); line-height: 1.35;
+    }
+    .p-feats li::before { content: "▸"; flex-shrink: 0; margin-top: 1px; }
+    .p-aluno     .p-feats li::before { color: var(--acento); }
+    .p-professor .p-feats li::before { color: var(--sucesso); }
+    .p-coord     .p-feats li::before { color: var(--aviso); }
+    .p-admin     .p-feats li::before { color: var(--info); }
+
+    /* ── CURSOS ──────────────────────────────────────────────────────────── */
+    .grid-cursos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .card-curso {
+      background: var(--fundo-card); border: 1px solid var(--borda);
+      border-radius: 9px; padding: 10px 12px;
+      display: flex; align-items: center; gap: 10px;
+      break-inside: avoid;
+    }
+    .c-icone {
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .card-curso h4 { font-size: 0.76rem; font-weight: 700; color: var(--texto); margin-bottom: 2px; }
+    .c-meta { font-size: 0.64rem; color: var(--mudo); display: flex; gap: 8px; }
+
+    /* ── FLUXO ───────────────────────────────────────────────────────────── */
+    .fluxo {
+      background: var(--fundo-card); border: 1px solid var(--borda);
+      border-radius: 11px; padding: 13px 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+      break-inside: avoid;
+    }
+    .passo { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; text-align: center; }
+    .p-num {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--marca), var(--acento));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.82rem; font-weight: 800; color: #fff;
+      box-shadow: 0 3px 12px rgba(123,47,247,0.4);
+    }
+    .passo h4 { font-size: 0.72rem; font-weight: 700; color: var(--texto); }
+    .passo p  { font-size: 0.6rem; color: var(--mudo); line-height: 1.35; }
+    .seta { font-size: 1.1rem; color: var(--mudo); flex-shrink: 0; }
+
+    /* ── FUNCIONALIDADES ─────────────────────────────────────────────────── */
+    .grid-feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .feat {
+      background: var(--fundo-card); border: 1px solid var(--borda);
+      border-radius: 9px; padding: 10px 12px;
+      display: flex; align-items: flex-start; gap: 10px;
+      break-inside: avoid;
+    }
+    .f-ico { font-size: 1.2rem; flex-shrink: 0; width: 22px; margin-top: 1px; }
+    .feat h4 { font-size: 0.74rem; font-weight: 600; color: var(--texto); margin-bottom: 2px; }
+    .feat p  { font-size: 0.62rem; color: var(--mudo); line-height: 1.35; }
+
+    /* ── LINHA DUPLA: STACK + RODAPÉ ─────────────────────────────────────── */
+    .linha-final {
+      display: grid; grid-template-columns: 1fr auto; gap: 12px;
+      align-items: end; margin-top: 10px;
+    }
+
+    /* ── STACK ───────────────────────────────────────────────────────────── */
+    .grid-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 11px; background: var(--fundo-card);
+      border: 1px solid var(--borda); border-radius: 8px;
+      font-size: 0.72rem; font-weight: 600; color: var(--suave);
+      break-inside: avoid;
+    }
+    .chip .ci { font-size: 0.95rem; }
+    .chip .ct { font-size: 0.58rem; color: var(--mudo); font-weight: 400; }
+
+    /* ── RODAPÉ ──────────────────────────────────────────────────────────── */
+    .rodape {
+      border-top: 1px solid var(--borda); padding-top: 10px;
+      text-align: right;
+    }
+    .rodape p { font-size: 0.66rem; color: var(--mudo); line-height: 1.6; }
+    .rodape strong { color: var(--suave); }
+    .dot-marca {
+      display: inline-block; width: 7px; height: 7px;
+      border-radius: 50%; background: var(--marca); margin-right: 5px; vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<div class="pagina">
+
+  <!-- CABEÇALHO -->
+  <header class="cabecalho">
+    <div class="logo-grupo">
+      <div class="logo-icone">🚀</div>
+      <div class="logo-nome">
+        <h1>CodeRyse Academy</h1>
+        <p>Plataforma EAD com gestão inteligente de cursos e aprendizado</p>
+      </div>
+    </div>
+    <div class="cabecalho-badges">
+      <span class="badge badge-roxo">🎓 PIM3 — UNIP 2026</span>
+      <span class="badge badge-verde">✦ Protótipo Frontend</span>
+      <span class="badge badge-azul">⚛ React + Vite</span>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><span class="emoji">📚</span><div class="num">6</div><div class="rot">Cursos disponíveis</div></div>
+    <div class="stat"><span class="emoji">🧩</span><div class="num">50+</div><div class="rot">Módulos de conteúdo</div></div>
+    <div class="stat"><span class="emoji">👥</span><div class="num">240+</div><div class="rot">Alunos cadastrados</div></div>
+    <div class="stat"><span class="emoji">👨‍🏫</span><div class="num">12</div><div class="rot">Professores ativos</div></div>
+    <div class="stat"><span class="emoji">🔐</span><div class="num">4</div><div class="rot">Perfis de acesso</div></div>
+  </div>
+
+  <!-- PERFIS -->
+  <section class="secao">
+    <div class="secao-tit">Perfis de acesso (RBAC)</div>
+    <div class="grid-perfis">
+
+      <div class="card-perfil p-aluno">
+        <div class="p-header">
+          <div class="p-icone pi-aluno">🎒</div>
+          <div><h3>Aluno</h3><span>Foco em aprendizado</span></div>
+        </div>
+        <ul class="p-feats">
+          <li>Dashboard com progresso pessoal</li>
+          <li>Conteúdos e vídeos por módulo</li>
+          <li>Quiz interativo com feedback</li>
+          <li>Avaliações e certificados</li>
+          <li>Catálogo e solicitação de matrícula</li>
+          <li>Desbloqueio sequencial de módulos</li>
+        </ul>
+      </div>
+
+      <div class="card-perfil p-professor">
+        <div class="p-header">
+          <div class="p-icone pi-professor">👨‍🏫</div>
+          <div><h3>Professor</h3><span>Criação de conteúdo</span></div>
+        </div>
+        <ul class="p-feats">
+          <li>Criar e editar módulos de curso</li>
+          <li>Publicar vídeos, textos e PDFs</li>
+          <li>Criar e gerenciar avaliações/quiz</li>
+          <li>Visualizar progresso dos alunos</li>
+          <li>Gerenciar turmas e alunos</li>
+          <li>Ativar/desativar conteúdos</li>
+        </ul>
+      </div>
+
+      <div class="card-perfil p-coord">
+        <div class="p-header">
+          <div class="p-icone pi-coord">🏫</div>
+          <div><h3>Coordenador</h3><span>Gestão acadêmica</span></div>
+        </div>
+        <ul class="p-feats">
+          <li>Dashboard com KPIs institucionais</li>
+          <li>Cadastrar alunos e professores</li>
+          <li>Criar turmas e atribuir cursos</li>
+          <li>Editar cursos e módulos</li>
+          <li>Relatórios de desempenho</li>
+          <li>Visibilidade de cursos no catálogo</li>
+        </ul>
+      </div>
+
+      <div class="card-perfil p-admin">
+        <div class="p-header">
+          <div class="p-icone pi-admin">⚙️</div>
+          <div><h3>Admin</h3><span>Controle total</span></div>
+        </div>
+        <ul class="p-feats">
+          <li>Gerenciar todos os usuários</li>
+          <li>Criar e excluir cursos e turmas</li>
+          <li>Aprovação em massa de matrículas</li>
+          <li>Configurações da plataforma</li>
+          <li>Acesso a todos os relatórios</li>
+          <li>Controle de permissões do sistema</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section class="secao">
+    <div class="secao-tit">Catálogo de cursos</div>
+    <div class="grid-cursos">
+
+      <div class="card-curso">
+        <div class="c-icone" style="background:rgba(123,47,247,0.18)">🌐</div>
+        <div><h4>Desenvolvimento Web</h4><div class="c-meta"><span>🧩 8 módulos</span><span>👥 142 alunos</span></div></div>
+      </div>
+      <div class="card-curso">
+        <div class="c-icone" style="background:rgba(59,130,246,0.18)">📊</div>
+        <div><h4>Ciência de Dados</h4><div class="c-meta"><span>🧩 10 módulos</span><span>👥 98 alunos</span></div></div>
+      </div>
+      <div class="card-curso">
+        <div class="c-icone" style="background:rgba(245,158,11,0.18)">🤖</div>
+        <div><h4>Inteligência Artificial</h4><div class="c-meta"><span>🧩 9 módulos</span><span>👥 74 alunos</span></div></div>
+      </div>
+      <div class="card-curso">
+        <div class="c-icone" style="background:rgba(239,68,68,0.18)">🔐</div>
+        <div><h4>Cybersegurança</h4><div class="c-meta"><span>🧩 7 módulos</span><span>👥 61 alunos</span></div></div>
+      </div>
+      <div class="card-curso">
+        <div class="c-icone" style="background:rgba(34,197,94,0.18)">🎨</div>
+        <div><h4>UX &amp; UI Design</h4><div class="c-meta"><span>🧩 6 módulos</span><span>👥 53 alunos</span></div></div>
+      </div>
+      <div class="card-curso">
+        <div class="c-icone" style="background:rgba(157,103,255,0.18)">🦾</div>
+        <div><h4>Robótica</h4><div class="c-meta"><span>🧩 8 módulos</span><span>👥 45 alunos</span></div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FLUXO DO ALUNO -->
+  <section class="secao">
+    <div class="secao-tit">Fluxo de uso — aluno</div>
+    <div class="fluxo">
+      <div class="passo"><div class="p-num">1</div><h4>Cadastro</h4><p>Cria conta e escolhe o perfil</p></div>
+      <div class="seta">›</div>
+      <div class="passo"><div class="p-num">2</div><h4>Matrícula</h4><p>Solicita matrícula no catálogo</p></div>
+      <div class="seta">›</div>
+      <div class="passo"><div class="p-num">3</div><h4>Estudo</h4><p>Acessa módulos e conteúdos</p></div>
+      <div class="seta">›</div>
+      <div class="passo"><div class="p-num">4</div><h4>Avaliação</h4><p>Realiza quizzes com feedback</p></div>
+      <div class="seta">›</div>
+      <div class="passo"><div class="p-num">5</div><h4>Certificado</h4><p>Conclui e obtém certificado</p></div>
+    </div>
+  </section>
+
+  <!-- FUNCIONALIDADES -->
+  <section class="secao">
+    <div class="secao-tit">Funcionalidades da plataforma</div>
+    <div class="grid-feats">
+      <div class="feat"><div class="f-ico">📊</div><div><h4>Dashboards por perfil</h4><p>KPIs e resumo personalizado para cada tipo de usuário</p></div></div>
+      <div class="feat"><div class="f-ico">🧩</div><div><h4>Módulos e conteúdos</h4><p>Hierarquia curso → módulo → conteúdo com desbloqueio sequencial</p></div></div>
+      <div class="feat"><div class="f-ico">📝</div><div><h4>Quiz interativo</h4><p>Múltipla escolha, feedback imediato e cálculo de nota</p></div></div>
+      <div class="feat"><div class="f-ico">📈</div><div><h4>Progresso e desempenho</h4><p>Barra de progresso por módulo e histórico de avaliações</p></div></div>
+      <div class="feat"><div class="f-ico">🏆</div><div><h4>Certificados</h4><p>Geração e impressão de certificado de conclusão</p></div></div>
+      <div class="feat"><div class="f-ico">🔐</div><div><h4>Controle de acesso (RBAC)</h4><p>Permissões granulares por perfil em cada seção</p></div></div>
+      <div class="feat"><div class="f-ico">👁️</div><div><h4>Visibilidade de módulos</h4><p>Professor/Coord. ativam e desativam módulos e conteúdos</p></div></div>
+      <div class="feat"><div class="f-ico">📱</div><div><h4>Design responsivo</h4><p>Sidebar colapsável, hamburger e layout mobile</p></div></div>
+      <div class="feat"><div class="f-ico">♿</div><div><h4>Acessibilidade WCAG 2.1</h4><p>Focus trap, skip link, contraste AA e teclado</p></div></div>
+    </div>
+  </section>
+
+  <!-- STACK + RODAPÉ -->
+  <div class="linha-final">
+
+    <div class="secao" style="margin-bottom:0">
+      <div class="secao-tit">Stack técnica</div>
+      <div class="grid-stack">
+        <div class="chip"><span class="ci">⚛</span> React 18 <span class="ct">UI Library</span></div>
+        <div class="chip"><span class="ci">⚡</span> Vite <span class="ct">Build Tool</span></div>
+        <div class="chip"><span class="ci">🎞</span> Framer Motion <span class="ct">Animações</span></div>
+        <div class="chip"><span class="ci">🎨</span> CSS Puro <span class="ct">Design System</span></div>
+        <div class="chip"><span class="ci">🔣</span> React Icons <span class="ct">Ícones</span></div>
+        <div class="chip"><span class="ci">💾</span> localStorage <span class="ct">Persistência</span></div>
+        <div class="chip"><span class="ci">📐</span> CSS Variables <span class="ct">Tema Dark</span></div>
+        <div class="chip"><span class="ci">🔀</span> State Machine <span class="ct">Navegação</span></div>
+      </div>
+    </div>
+
+    <footer class="rodape">
+      <p><strong>Krigor Nasare</strong><br>krigor.nasare@aluno.unip.br</p>
+      <p style="margin-top:6px"><span class="dot-marca"></span><strong>CodeRyse Academy</strong></p>
+      <p>PIM3 · UNIP · 2026</p>
+    </footer>
+
+  </div>
+
+</div>
+</body>
+</html>
